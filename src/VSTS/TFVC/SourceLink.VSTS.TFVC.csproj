@@ -1,0 +1,18 @@
+﻿<Project Sdk="RoslynTools.RepoToolset">
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
+
+    <!-- Using an explicit nuspec file since NuGet Pack target currently doesn't support including dependencies in tools packages -->
+    <IsPackable>true</IsPackable>
+    <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
+    <NuspecBasePath>$(OutputPath)</NuspecBasePath>
+    
+    <Description>Generates source link for VSO TFVC repositories.</Description>
+    <PackageTags>MSBuild Tasks VSO TFVC source link</PackageTags>
+    <DevelopmentDependency>true</DevelopmentDependency>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build" Version="$(MicrosoftBuildVersion)" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="$(MicrosoftBuildTasksCore)" />
+  </ItemGroup>
+</Project>

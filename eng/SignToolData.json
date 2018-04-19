@@ -1,0 +1,15 @@
+{
+  "sign": [
+    {
+      "certificate": "MicrosoftSHA2",
+      "strongName": "MsSharedLib72",
+      "values": [
+        "bin/SourceLink.GitHub/net461/SourceLink.GitHub.dll",
+        "bin/SourceLink.GitHub/netcoreapp2.0/SourceLink.GitHub.dll",
+        "bin/SourceLink.VSTS.Git/net461/SourceLink.VSTS.Git.dll",
+        "bin/SourceLink.VSTS.Git/netcoreapp2.0/SourceLink.VSTS.Git.dll",
+        "bin/SourceLink.VSTS.TFVC/net461/SourceLink.VSTS.TFVC.dll"
+      ]
+    }
+  ]
+}

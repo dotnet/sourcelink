@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <_SourceLinkVsoGitAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)..\tools\net461\SourceLink.VSO.Git.dll</_SourceLinkVsoGitAssemblyFile>
+    <_SourceLinkVsoGitAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\netcoreapp2.0\SourceLink.VSO.Git.dll</_SourceLinkVsoGitAssemblyFile>
+  </PropertyGroup>
+
+  <UsingTask TaskName="SourceLink.VSO.Git.GetVsoGitSourceLinkUrl" AssemblyFile="$(_SourceLinkVsoGitAssemblyFile)"/>
+
+  <PropertyGroup>
+    <InitializeSourceRootSourceLinkUrlDependsOn>$(InitializeSourceRootSourceLinkUrlDependsOn);_InitializeVsoGitSourceLinkUrl</InitializeSourceRootSourceLinkUrlDependsOn>
+  </PropertyGroup>
+
+  <Target Name="_InitializeVsoGitSourceLinkUrl" Inputs="@(SourceRoot)" Outputs="|%(Identity)|">
+    <SourceLink.VSO.Git.GetVsoGitSourceLinkUrl SourceRoot="@(SourceRoot)">
+      <Output TaskParameter="SourceLinkUrl" PropertyName="_SourceLinkUrlToUpdate"/>
+    </SourceLink.VSO.Git.GetVsoGitSourceLinkUrl>
+
+    <ItemGroup>
+      <!-- Only update the SourceLinkUrl metadata if the SourceRoot belongs to this source control -->
+      <SourceRoot Update="%(Identity)" SourceLinkUrl="$(_SourceLinkUrlToUpdate)" Condition="'$(_SourceLinkUrlToUpdate)' != 'N/A'"/>
+    </ItemGroup>
+  </Target>
+
+</Project>
