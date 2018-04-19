@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>$PackageId$</id>
+    <description>$Description$</description>
+    <version>$Version$</version>
+    <authors>$Authors$</authors>
+    <requireLicenseAcceptance>$RequireLicenseAcceptance$</requireLicenseAcceptance>
+    <licenseUrl>$PackageLicenseUrl$</licenseUrl>
+    <projectUrl>$PackageProjectUrl$</projectUrl>
+    <copyright>$Copyright$</copyright>
+    <developmentDependency>$DevelopmentDependency$</developmentDependency>
+    <tags>$PackageTags$</tags>
+    <serviceable>$Serviceable$</serviceable>
+  </metadata>
+  <files>
+    <file src="net46\Microsoft.Build.Tasks.TFVC.*" target="tools\net46" />
+    <file src="net46\Microsoft.TeamFoundation.Client.dll" target="tools\net46" />
+    <file src="net46\Microsoft.TeamFoundation.Common.dll" target="tools\net46" />
+    <file src="net46\Microsoft.TeamFoundation.Core.WebApi.dll" target="tools\net46" />
+    <file src="net46\Microsoft.TeamFoundation.VersionControl.Client.dll" target="tools\net46" />
+    <file src="net46\Microsoft.TeamFoundation.VersionControl.Common.dll" target="tools\net46" />
+    <file src="net46\Microsoft.VisualStudio.Services.Client.Interactive.dll" target="tools\net46" />
+    <file src="net46\Microsoft.VisualStudio.Services.Common.dll" target="tools\net46" />
+    <file src="net46\Microsoft.VisualStudio.Services.WebApi.dll" target="tools\net46" />
+
+    <file src="$ProjectDirectory$\build\*.*" target="build" />
+  </files>
+</package>

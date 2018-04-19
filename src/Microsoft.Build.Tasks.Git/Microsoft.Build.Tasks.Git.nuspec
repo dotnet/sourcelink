@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>$PackageId$</id>
+    <description>$Description$</description>
+    <version>$Version$</version>
+    <authors>$Authors$</authors>
+    <requireLicenseAcceptance>$RequireLicenseAcceptance$</requireLicenseAcceptance>
+    <licenseUrl>$PackageLicenseUrl$</licenseUrl>
+    <projectUrl>$PackageProjectUrl$</projectUrl>
+    <copyright>$Copyright$</copyright>
+    <developmentDependency>$DevelopmentDependency$</developmentDependency>
+    <tags>$PackageTags$</tags>
+    <serviceable>$Serviceable$</serviceable>
+    <repository type="$RepositoryType$" url="$RepositoryUrl$" commit="$RepositoryCommit$" />
+  </metadata>
+  <files>
+    <!-- 
+      List platforms explicitly. If a new platform is supported by libgit2 update GetNativeLibraryRuntimeId method to handle it.
+    -->
+    <file src="netcoreapp2.0\publish\runtimes\linux-x64\native\*.so" target="tools\netcoreapp2.0\runtimes\linux-x64\native" />
+    <file src="netcoreapp2.0\publish\runtimes\osx\native\*.dylib" target="tools\netcoreapp2.0\runtimes\osx\native" />
+    <file src="netcoreapp2.0\publish\runtimes\win7-x86\native\*.dll" target="tools\netcoreapp2.0\runtimes\win7-x86\native" />
+    <file src="netcoreapp2.0\publish\runtimes\win7-x64\native\*.dll" target="tools\netcoreapp2.0\runtimes\win7-x64\native" />
+    
+    <file src="netcoreapp2.0\publish\LibGit2Sharp.dll" target="tools\netcoreapp2.0" />
+    <file src="netcoreapp2.0\publish\Microsoft.Build.Tasks.Git.*" target="tools\netcoreapp2.0" />
+
+    <file src="net461\Microsoft.Build.Tasks.Git.*" target="tools\net461" />
+    <file src="net461\LibGit2Sharp.*" target="tools\net461" />
+    <file src="net461\lib\**\*.dll" target="tools\net461\lib" />
+    <file src="net461\lib\**\*.so" target="tools\net461\lib" />
+    <file src="net461\lib\**\*.dylib" target="tools\net461\lib" />
+
+    <file src="$ProjectDirectory$\build\*.*" target="build" />
+  </files>
+</package>

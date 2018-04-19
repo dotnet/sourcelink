@@ -1,0 +1,8 @@
+﻿<Project Sdk="RoslynTools.RepoToolset">
+  <PropertyGroup>
+    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Build.Tasks.Git\Microsoft.Build.Tasks.Git.csproj" />
+  </ItemGroup>
+</Project>

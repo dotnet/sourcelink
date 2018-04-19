@@ -4,12 +4,37 @@
       "certificate": "MicrosoftSHA2",
       "strongName": "MsSharedLib72",
       "values": [
+        "bin/Microsoft.Build.Tasks.Git/net461/Microsoft.Build.Tasks.Git.dll",
+        "bin/Microsoft.Build.Tasks.Git/netcoreapp2.0/Microsoft.Build.Tasks.Git.dll",
+        "bin/Microsoft.Build.Tasks.SourceControl/net461/Microsoft.Build.Tasks.SourceControl.dll",
+        "bin/Microsoft.Build.Tasks.SourceControl/netcoreapp2.0/Microsoft.Build.Tasks.SourceControl.dll",
+        "bin/Microsoft.Build.Tasks.TFVC/net46/Microsoft.Build.Tasks.TFVC.dll",
         "bin/SourceLink.GitHub/net461/SourceLink.GitHub.dll",
         "bin/SourceLink.GitHub/netcoreapp2.0/SourceLink.GitHub.dll",
         "bin/SourceLink.VSTS.Git/net461/SourceLink.VSTS.Git.dll",
         "bin/SourceLink.VSTS.Git/netcoreapp2.0/SourceLink.VSTS.Git.dll",
-        "bin/SourceLink.VSTS.TFVC/net461/SourceLink.VSTS.TFVC.dll"
+        "bin/SourceLink.VSTS.TFVC/net461/SourceLink.VSTS.TFVC.dll",
+        "bin/SourceLink.VSTS.TFVC/netcoreapp2.0/SourceLink.VSTS.TFVC.dll"
+      ]
+    },
+    {
+      "certificate": "nuget",
+      "strongName": null,
+      "values": [
+        "packages/*.nupkg"
       ]
     }
+  ],
+  "exclude": [
+    "git2-6311e88.dll",
+    "LibGit2Sharp.dll",
+    "Microsoft.TeamFoundation.Client.dll",
+    "Microsoft.TeamFoundation.Common.dll",
+    "Microsoft.TeamFoundation.Core.WebApi.dll",
+    "Microsoft.TeamFoundation.VersionControl.Client.dll",
+    "Microsoft.TeamFoundation.VersionControl.Common.dll",
+    "Microsoft.VisualStudio.Services.Client.Interactive.dll",
+    "Microsoft.VisualStudio.Services.Common.dll",
+    "Microsoft.VisualStudio.Services.WebApi.dll"
   ]
 }

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+  </PropertyGroup>
+
+  <!--
+    Default values for properties initialized from Standard CI environment variables.
+    See https://github.com/dotnet/designs/blob/master/accepted/build/standard-ci-env-variables.md.
+
+    Build servers that comply with Standard CI specification set STANDARD_CI_* variables.
+    
+    Initialize the following properties from their corresponding Standard CI variables:
+      - SourceRevisionId from STANDARD_CI_SOURCE_REVISION_ID,
+      - PrivateRepositoryUrl from STANDARD_CI_REPOSITORY_URL,
+      - RepositoryType from STANDARD_CI_REPOSITORY_TYPE.
+  -->
+  <PropertyGroup>
+    <!--
+      ContinuousIntegrationBuild is set to true when building on a build server. The variable is used to enable settings that only 
+      apply to official or pull request builds, as opposed to local builds on developer machine.
+    -->
+    <ContinuousIntegrationBuild Condition="'$(ContinuousIntegrationBuild)' == '' and '$(DesignTimeBuild)' != 'true' and '$(STANDARD_CI_REPOSITORY_URL)' != ''">true</ContinuousIntegrationBuild>
+
+    <!--
+      SourceRevisionId uniquely identifies the source control revision of the repository the project belongs to.
+      For Git repositories this id is a commit hash, for TFVC repositories it's the changeset number, etc.
+    -->
+    <SourceRevisionId Condition="'$(SourceRevisionId)' == ''">$(STANDARD_CI_SOURCE_REVISION_ID)</SourceRevisionId>
+
+    <!--
+      PrivateRepositoryUrl is the URL of the repository supplied by the CI server or retrieved from source control manager.
+
+      Targets consuming this property shall not publish its value implicitly as it might inadvertently reveal an internal URL.
+      Instead, they shall only do so if the project sets PublishRepositoryUrl property to true. For example, the NuGet Pack target
+      may include the repository URL in the nuspec file generated for NuGet package produced by the project if PublishRepositoryUrl is true.
+    -->
+    <PrivateRepositoryUrl Condition="'$(PrivateRepositoryUrl)' == ''">$(STANDARD_CI_REPOSITORY_URL)</PrivateRepositoryUrl>
+
+    <!--
+      RepositoryType is the name of the source control ('git', 'tfvc', 'svn', 'mercurial', etc.)
+    -->
+    <RepositoryType Condition="'$(RepositoryType)' == ''">$(STANDARD_CI_REPOSITORY_TYPE)</RepositoryType>
+  </PropertyGroup>
+</Project>

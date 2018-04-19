@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>$PackageId$</id>
+    <description>$Description$</description>
+    <version>$Version$</version>
+    <authors>$Authors$</authors>
+    <requireLicenseAcceptance>$RequireLicenseAcceptance$</requireLicenseAcceptance>
+    <licenseUrl>$PackageLicenseUrl$</licenseUrl>
+    <projectUrl>$PackageProjectUrl$</projectUrl>
+    <copyright>$Copyright$</copyright>
+    <developmentDependency>$DevelopmentDependency$</developmentDependency>
+    <tags>$PackageTags$</tags>
+    <serviceable>$Serviceable$</serviceable>
+  </metadata>
+  <files>
+    <file src="$ProjectDirectory$\build\*.*" target="build" />
+  </files>
+</package>

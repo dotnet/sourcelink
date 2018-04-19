@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <_SourceControlAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)..\tools\net461\Microsoft.Build.Tasks.SourceControl.dll</_SourceControlAssemblyFile>
+    <_SourceControlAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\netcoreapp2.0\Microsoft.Build.Tasks.SourceControl.dll</_SourceControlAssemblyFile>
+  </PropertyGroup>
+  
+  <UsingTask TaskName="Microsoft.Build.Tasks.GetExternalFiles" AssemblyFile="$(_SourceControlAssemblyFile)"/>
+  <UsingTask TaskName="Microsoft.Build.Tasks.GenerateSourceLinkFile" AssemblyFile="$(_SourceControlAssemblyFile)"/>
+
+  <!-- A single SourceControlBuildTasks is expected to be found, error is reported otherwise. -->
+  <UsingTask TaskName="@(SourceControlBuildTasks->'%(Namespace)').LocateRepository" AssemblyFile="@(SourceControlBuildTasks->'%(AssemblyFile)')"/>
+  <UsingTask TaskName="@(SourceControlBuildTasks->'%(Namespace)').GetSourceRoots" AssemblyFile="@(SourceControlBuildTasks->'%(AssemblyFile)')"/>
+  <UsingTask TaskName="@(SourceControlBuildTasks->'%(Namespace)').GetRepositoryUrl" AssemblyFile="@(SourceControlBuildTasks->'%(AssemblyFile)')"/>
+  <UsingTask TaskName="@(SourceControlBuildTasks->'%(Namespace)').GetSourceRevisionId" AssemblyFile="@(SourceControlBuildTasks->'%(AssemblyFile)')" />
+  <UsingTask TaskName="@(SourceControlBuildTasks->'%(Namespace)').GetUntrackedFiles" AssemblyFile="@(SourceControlBuildTasks->'%(AssemblyFile)')"/>
+
+  <Target Name="_InitializeSourceControlInformationFromSCM"
+          BeforeTargets="InitializeSourceControlInformation">
+    
+    <Error Text="A single source control package required, found multiple: @(SourceControlBuildTasks, ', ')"
+           Condition="@(SourceControlBuildTasks->Count()) != 1"/>
+
+    <!-- 
+      Determines id of the repository the project belongs to. Tasks use this id to identify repository without 
+      repeatedly traversing the directory structure.
+      
+      Reports and error if the given project doesn't belong to a repository under source control.
+    -->
+    <LocateRepository Directory="$(MSBuildProjectDirectory)" >
+      <Output TaskParameter="Id" PropertyName="_SourceControlLocalRepositoryId" />
+    </LocateRepository>
+
+    <PropertyGroup>
+      <RepositoryType Condition="'$(RepositoryType)' == ''">@(SourceControlBuildTasks)</RepositoryType>
+    </PropertyGroup>
+    
+    <GetRepositoryUrl LocalRepositoryId="$(_SourceControlLocalRepositoryId)" Condition="'$(PrivateRepositoryUrl)' == ''">
+      <Output TaskParameter="Url" PropertyName="PrivateRepositoryUrl" />
+    </GetRepositoryUrl>
+
+    <GetSourceRevisionId LocalRepositoryId="$(_SourceControlLocalRepositoryId)" Condition="'$(SourceRevisionId)' == ''">
+      <Output TaskParameter="RevisionId" PropertyName="SourceRevisionId" />
+    </GetSourceRevisionId>
+
+    <GetSourceRoots LocalRepositoryId="$(_SourceControlLocalRepositoryId)">
+      <Output TaskParameter="Roots" ItemName="SourceRoot" />
+    </GetSourceRoots>
+  </Target>
+
+  <!--
+    Embed files to the PDB that either do not belong to any of the SourceRoot directories
+    or belong to the source repository, but are explicitly ignored (excluded) from source control.
+  -->
+  <Target Name="_SetEmbeddedFilesFromSCMUntrackedFiles"
+          DependsOnTargets="_InitializeSourceControlInformationFromSCM"
+          BeforeTargets="CoreCompile"
+          Condition="'$(EmbedUntrackedSources)' == 'true' and '$(EmbedAllSources)' != 'true' and '$(DebugType)' != 'none'">
+    
+    <GetUntrackedFiles LocalRepositoryId="$(_SourceControlLocalRepositoryId)" Files="@(Compile)">
+      <Output TaskParameter="UntrackedFiles" ItemName="EmbeddedFiles" />
+    </GetUntrackedFiles>
+    
+    <!-- Add files that do not belong to the repository or any source root. -->
+    <GetExternalFiles Directories="@(SourceRoot)" Files="@(Compile)">
+      <Output TaskParameter="ExternalFiles" ItemName="EmbeddedFiles" />
+    </GetExternalFiles>
+  </Target>
+
+  <!--
+    ===========
+    Source Link
+    ===========
+  -->
+  
+  <PropertyGroup Condition="'$(EnableSourceLink)' == 'true' and '$(DebugType)' != 'none'">
+    <SourceLink>$(IntermediateOutputPath)$(MSBuildProjectName).sourcelink.json</SourceLink>
+  </PropertyGroup>
+
+  <!-- 
+    Fills in SourceLinkUrl metadata on SourceRoot items that don't have it yet.
+    
+    InitializeSourceRootMappedPaths target defined by compiler targets ensures that SourceRoot items were populated by the source control targets 
+    and that MappedPath metadata have been initialized on these items.
+    
+    A source control provider package shall add its SourceLinkUrl initialization target to InitializeSourceRootSourceLinkUrlDependsOn.
+    This target shall initialize SourceLinkUrl of all items that don't have it initialized yet and belong to the source control provider.
+  -->
+  <Target Name="_InitializeSourceRootSourceLinkUrl"
+          DependsOnTargets="InitializeSourceRootMappedPaths;$(InitializeSourceRootSourceLinkUrlDependsOn)">
+  </Target>
+
+  <!--
+    Generates source link file.
+  -->
+  <Target Name="_GenerateSourceLinkFile"
+          DependsOnTargets="_InitializeSourceRootSourceLinkUrl"
+          BeforeTargets="CoreCompile"
+          Outputs="$(SourceLink)"
+          Condition="'$(SourceLink)' != ''">
+
+    <GenerateSourceLinkFile SourceRoots="@(SourceRoot)" OutputFile="$(SourceLink)" />
+
+    <ItemGroup>
+      <FileWrites Include="$(SourceLink)" />
+    </ItemGroup>
+  </Target>
+  
+</Project>
