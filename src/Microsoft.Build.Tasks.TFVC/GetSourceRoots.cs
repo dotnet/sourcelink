@@ -50,7 +50,7 @@ namespace Microsoft.Build.Tasks.Tfvc
                         // Extract GUID from ArtifactUri "vstfs:///Classification/TeamProject/{Guid}":
                         var projectId = Path.GetFileName(project.ArtifactUri.LocalPath);
 
-                        // SourceLink.VSO will map each source root to:
+                        // SourceLink.VSTS will map each source root to:
                         // {RepositoryUrl}/_versionControl?path={ServerPath}&version={RevisionId}
                         var item = new TaskItem(folder.LocalItem);
                         item.SetMetadata("SourceControl", "TFVC");

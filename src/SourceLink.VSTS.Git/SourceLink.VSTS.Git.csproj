@@ -7,8 +7,8 @@
     <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
     <NuspecBasePath>$(OutputPath)</NuspecBasePath>
 
-    <Description>Generates source link for VSO Git repositories.</Description>
-    <PackageTags>MSBuild Tasks VSO TFVC source link</PackageTags>
+    <Description>Generates source link for VSTS Git repositories.</Description>
+    <PackageTags>MSBuild Tasks VSTS TFVC source link</PackageTags>
     <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>
   <ItemGroup>

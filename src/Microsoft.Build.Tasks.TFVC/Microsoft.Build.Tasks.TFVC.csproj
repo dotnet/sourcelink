@@ -8,7 +8,7 @@
     <NuspecBasePath>$(OutputPath)</NuspecBasePath>
 
     <Description>MSBuild tasks providing TFVC repository information.</Description>
-    <PackageTags>MSBuild Tasks VSO TFVC source link</PackageTags>
+    <PackageTags>MSBuild Tasks VSTS TFVC source link</PackageTags>
     <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>
   <ItemGroup>
