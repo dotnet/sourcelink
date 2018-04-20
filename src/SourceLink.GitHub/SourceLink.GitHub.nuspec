@@ -14,8 +14,8 @@
     <serviceable>$Serviceable$</serviceable>
     <repository type="$RepositoryType$" url="$RepositoryUrl$" commit="$RepositoryCommit$" />
     <dependencies>
-      <dependency id="Microsoft.Build.Tasks.SourceControl" version="$version$" />
-      <dependency id="Microsoft.Build.Tasks.Git" version="$version$" />
+      <dependency id="Microsoft.Build.Tasks.SourceControl" version="$Version$" />
+      <dependency id="Microsoft.Build.Tasks.Git" version="$Version$" />
     </dependencies>
   </metadata>
   <files>

@@ -1,8 +1,7 @@
 ﻿<Project Sdk="RoslynTools.RepoToolset">
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
-    <VersionPrefix>3.0.0</VersionPrefix>
-    
+
     <!-- Using an explicit nuspec file since NuGet Pack target currently doesn't support including dependencies in tools packages -->
     <IsPackable>true</IsPackable>
     <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>

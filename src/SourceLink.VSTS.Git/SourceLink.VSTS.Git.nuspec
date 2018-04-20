@@ -12,9 +12,9 @@
     <developmentDependency>$DevelopmentDependency$</developmentDependency>
     <tags>$PackageTags$</tags>
     <serviceable>$Serviceable$</serviceable>
-    <repository type="$repositoryType$" url="$repositoryUrl$" commit="$repositoryCommit$" />
+    <repository type="$RepositoryType$" url="$RepositoryUrl$" commit="$RepositoryCommit$" />
     <dependencies>
-      <dependency id="Microsoft.Build.Tasks.Git" version="$version$" />
+      <dependency id="Microsoft.Build.Tasks.Git" version="$Version$" />
     </dependencies>
   </metadata>
   <files>
