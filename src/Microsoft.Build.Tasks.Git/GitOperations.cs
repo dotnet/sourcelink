@@ -8,12 +8,15 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using LibGit2Sharp;
 using Microsoft.Build.Framework;
+using Microsoft.Build.Tasks.SourceControl;
 using Microsoft.Build.Utilities;
 
 namespace Microsoft.Build.Tasks.Git
 {
     internal static class GitOperations
     {
+        private const string SourceControlName = "git";
+
         static GitOperations()
         {
             // .NET Core apps that depend on native libraries load them directly from paths specified
@@ -94,14 +97,14 @@ namespace Microsoft.Build.Tasks.Git
             if (revisionId != null)
             {
                 var item = new TaskItem(repoRoot);
-                item.SetMetadata("SourceControl", "Git");
-                item.SetMetadata("RepositoryUrl", GetRepositoryUrl(repository));
-                item.SetMetadata("RevisionId", revisionId);
+                item.SetMetadata(Names.SourceRoot.SourceControl, SourceControlName);
+                item.SetMetadata(Names.SourceRoot.RepositoryUrl, GetRepositoryUrl(repository));
+                item.SetMetadata(Names.SourceRoot.RevisionId, revisionId);
                 result.Add(item);
             }
             else
             {
-                logWarning("Repository doesn't have any commit, the source code won't be available via source link.", Array.Empty<object>());
+                logWarning("RepositoryWithoutCommit_SourceLink", Array.Empty<string>());
             }
 
             foreach (var submodule in repository.Submodules)
@@ -110,16 +113,16 @@ namespace Microsoft.Build.Tasks.Git
                 if (commitId != null)
                 {
                     var item = new TaskItem(Path.GetFullPath(Path.Combine(repoRoot, submodule.Path)).EndWithSeparator());
-                    item.SetMetadata("SourceControl", "Git");
-                    item.SetMetadata("RepositoryUrl", submodule.Url);
-                    item.SetMetadata("RevisionId", commitId.Sha);
-                    item.SetMetadata("ContainingRoot", repoRoot);
-                    item.SetMetadata("NestedRoot", submodule.Path.EndWithSeparator('/'));
+                    item.SetMetadata(Names.SourceRoot.SourceControl, SourceControlName);
+                    item.SetMetadata(Names.SourceRoot.RepositoryUrl, submodule.Url);
+                    item.SetMetadata(Names.SourceRoot.RevisionId, commitId.Sha);
+                    item.SetMetadata(Names.SourceRoot.ContainingRoot, repoRoot);
+                    item.SetMetadata(Names.SourceRoot.NestedRoot, submodule.Path.EndWithSeparator('/'));
                     result.Add(item);
                 }
                 else
                 {
-                    logWarning($"Submodule '{submodule.Name}' doesn't have any commit, the source code won't be available via source link.", Array.Empty<object>());
+                    logWarning("SubmoduleWithoutCommit_SourceLink", new[] { submodule.Name });
                 }
             }
 

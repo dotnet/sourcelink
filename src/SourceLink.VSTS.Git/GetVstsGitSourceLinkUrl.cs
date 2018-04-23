@@ -4,12 +4,16 @@ using System;
 using System.IO;
 using System.Linq;
 using Microsoft.Build.Framework;
+using Microsoft.Build.Tasks.SourceControl;
 using Microsoft.Build.Utilities;
 
 namespace SourceLink.VSTS.Git
 {
     public sealed class GetVstsGitSourceLinkUrl : Task
     {
+        private const string SourceControlName = "git";
+        private const string NotApplicableValue = "N/A";
+
         [Required]
         public ITaskItem SourceRoot { get; set; }
 
@@ -18,33 +22,33 @@ namespace SourceLink.VSTS.Git
 
         public override bool Execute()
         {
-            if (!string.IsNullOrEmpty(SourceRoot.GetMetadata("SourceLinkUrl")) ||
-                !string.Equals(SourceRoot.GetMetadata("SourceControl"), "git", StringComparison.OrdinalIgnoreCase))
+            if (!string.IsNullOrEmpty(SourceRoot.GetMetadata(Names.SourceRoot.SourceLinkUrl)) ||
+                !string.Equals(SourceRoot.GetMetadata(Names.SourceRoot.SourceControl), SourceControlName, StringComparison.OrdinalIgnoreCase))
             {
-                SourceLinkUrl = "N/A";
+                SourceLinkUrl = NotApplicableValue;
                 return true;
             }
 
-            var repoUrl = SourceRoot.GetMetadata("RepositoryUrl");
+            var repoUrl = SourceRoot.GetMetadata(Names.SourceRoot.RepositoryUrl);
             if (!Uri.TryCreate(repoUrl, UriKind.Absolute, out var repoUri))
             {
-                Log.LogError($"SourceRoot.RepositoryUrl of '{SourceRoot.ItemSpec}' is invalid: '{repoUrl}'");
+                Log.LogErrorFromResources("ValueOfOWithIdentityIsInvalid", Names.SourceRoot.RepositoryUrlFullName, SourceRoot.ItemSpec, repoUrl);
                 return false;
             }
 
             if (!TryParseRepositoryUrl(repoUri, out var projectName, out var repositoryName))
             {
-                SourceLinkUrl = "N/A";
+                SourceLinkUrl = NotApplicableValue;
                 return true;
             }
 
             bool IsHexDigit(char c)
                 => c >= '0' && c <= '9' || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F';
 
-            string revisionId = SourceRoot.GetMetadata("RevisionId");
+            string revisionId = SourceRoot.GetMetadata(Names.SourceRoot.RevisionId);
             if (revisionId == null || revisionId.Length != 40 || !revisionId.All(IsHexDigit))
             {
-                Log.LogError($"SourceRoot.RevisionId of '{SourceRoot.ItemSpec}' is not a valid commit hash: '{revisionId}'");
+                Log.LogError("ValueOfWithIdentityIsNotValidCommitHash", Names.SourceRoot.RevisionIdFullName, SourceRoot.ItemSpec, revisionId);
                 return false;
             }
 

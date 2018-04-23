@@ -7,9 +7,8 @@ using System.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
-namespace Microsoft.Build.Tasks
+namespace Microsoft.Build.Tasks.SourceControl
 {
-    // TODO: move to Microsoft.Build.Tasks
     public class GetExternalFiles : Task
     {
         [Required]

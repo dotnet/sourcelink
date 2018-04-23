@@ -7,7 +7,7 @@ using System.Text;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
-namespace Microsoft.Build.Tasks
+namespace Microsoft.Build.Tasks.SourceControl
 {
     public sealed class GenerateSourceLinkFile : Task
     {
@@ -19,12 +19,6 @@ namespace Microsoft.Build.Tasks
 
         public override bool Execute()
         {
-            if (string.IsNullOrEmpty(OutputFile))
-            {
-                Log.LogError("OutputFile not specified");
-                return false;
-            }
-
             string JsonEscape(string str)
                 => str.Replace(@"\", @"\\").Replace("\"", "\\\"");
 
@@ -35,32 +29,32 @@ namespace Microsoft.Build.Tasks
             bool first = true;
             foreach (var root in SourceRoots)
             {
-                string mappedPath = root.GetMetadata("MappedPath");
+                string mappedPath = root.GetMetadata(Names.SourceRoot.MappedPath);
                 bool isMapped = !string.IsNullOrEmpty(mappedPath);
                 string localPath = isMapped ? mappedPath : root.ItemSpec;
 
                 if (!localPath.EndsWithSeparator())
                 {
-                    Log.LogError($"{(isMapped ? "SourceLink.MappedPath" : "SourceLink")} must end with a directory separator: '{localPath}'");
+                    Log.LogErrorFromResources("MustEndWithDirectorySeparator", (isMapped ? Names.SourceRoot.MappedPathFullName : Names.SourceRoot.Name), localPath);
                     success = false;
                     continue;
                 }
 
                 if (localPath.Contains('*'))
                 {
-                    Log.LogError($"{(isMapped ? "SourceLink.MappedPath" : "SourceLink")} must not contain wildcard '*': '{localPath}'");
+                    Log.LogErrorFromResources("MustNotContainWildcard", (isMapped ? Names.SourceRoot.MappedPathFullName : Names.SourceRoot.Name), localPath);
                     success = false;
                     continue;
                 }
 
-                var url = root.GetMetadata("SourceLinkUrl");
+                var url = root.GetMetadata(Names.SourceRoot.SourceLinkUrl);
                 if (string.IsNullOrEmpty(url))
                 {
                     // Only report an error if the root comes from source control.
                     // SourceRoots can be specified by the project to make other features like deterministic paths.
-                    if (!string.IsNullOrEmpty(root.GetMetadata("SourceControl")))
+                    if (!string.IsNullOrEmpty(root.GetMetadata(Names.SourceRoot.SourceControl)))
                     {
-                        Log.LogError($"SourceRoot.SourceLinkUrl is empty: '{root.ItemSpec}'");
+                        Log.LogError("IsEmpty", Names.SourceRoot.SourceLinkUrlFullName, root.ItemSpec);
                         success = false;
                     }
                     
@@ -69,7 +63,7 @@ namespace Microsoft.Build.Tasks
 
                 if (url.Count(c => c == '*') != 1)
                 {
-                    Log.LogError($"SourceRoot.SourceLinkUrl must contain a single wildcard '*': '{url}'");
+                    Log.LogError("MustContainSingleWildcard", Names.SourceRoot.SourceLinkUrlFullName, url);
                     success = false;
                     continue;
                 }
@@ -102,7 +96,7 @@ namespace Microsoft.Build.Tasks
 
             if (first)
             {
-                Log.LogWarning("No SourceRoots specified - the generated source link is empty.");
+                Log.LogWarning("NoItemsSpecifiedSourceLinkEmpty", Names.SourceRoot.Name);
             }
 
             return TryWriteSourceLinkFile(result.ToString());
@@ -117,7 +111,7 @@ namespace Microsoft.Build.Tasks
             }
             catch (Exception e)
             {
-                Log.LogError($"Error writing to source link file '{OutputFile}': {e.Message}");
+                Log.LogErrorFromResources("ErrorWritingToSourceLinkFile", OutputFile, e.Message);
                 return false;
             }
         }

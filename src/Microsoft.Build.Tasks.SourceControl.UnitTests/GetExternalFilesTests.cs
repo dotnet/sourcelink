@@ -2,7 +2,7 @@
 using System.Linq;
 using Xunit;
 
-namespace Microsoft.Build.Tasks.UnitTests
+namespace Microsoft.Build.Tasks.SourceControl.UnitTests
 {
     public class GetExternalFilesTests
     {

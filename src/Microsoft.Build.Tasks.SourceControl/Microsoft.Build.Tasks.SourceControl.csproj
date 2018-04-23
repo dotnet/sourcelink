@@ -12,6 +12,7 @@
     <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\Common\Names.cs" Link="Common\Names.cs" />
     <Compile Include="..\Common\PathUtilities.cs" Link="Common\PathUtilities.cs" />
   </ItemGroup>
   <ItemGroup>

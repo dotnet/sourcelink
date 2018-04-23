@@ -11,8 +11,8 @@ namespace Microsoft.Build.Tasks.Git
         /// Returns items describing repository source roots:
         /// 
         /// Metadata
-        ///   SourceControl: "Git"
         ///   Identity: Normalized path. Ends with a directory separator.
+        ///   SourceControl: "Git"
         ///   RepositoryUrl: URL of the repository.
         ///   RevisionId: Revision (commit SHA).
         ///   ContainingRoot: Identity of the containing source root.
@@ -23,7 +23,7 @@ namespace Microsoft.Build.Tasks.Git
 
         protected override bool Execute(Repository repo)
         {
-            Roots = repo.GetSourceRoots(Log.LogWarning);
+            Roots = repo.GetSourceRoots(Log.LogErrorFromResources);
             return true;
         }
     }

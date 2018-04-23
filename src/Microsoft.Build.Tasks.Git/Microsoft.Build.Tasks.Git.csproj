@@ -12,6 +12,7 @@
     <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\Common\Names.cs" Link="Common\Names.cs" />
     <Compile Include="..\Common\PathUtilities.cs" Link="Common\PathUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -20,6 +21,6 @@
     <PackageReference Include="Microsoft.Build.Tasks.Core" Version="$(MicrosoftBuildTasksCore)" />
   </ItemGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="Microsoft.Build.Tasks.Git.UnitTests"/>
+    <InternalsVisibleTo Include="Microsoft.Build.Tasks.Git.UnitTests" />
   </ItemGroup>
 </Project>

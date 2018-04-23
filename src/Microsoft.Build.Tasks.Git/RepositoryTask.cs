@@ -22,13 +22,13 @@ namespace Microsoft.Build.Tasks.Git
             }
             catch (RepositoryNotFoundException e)
             {
-                Log.LogError(e.Message);
+                Log.LogErrorFromException(e);
                 return false;
             }
 
             if (repo.Info.IsBare)
             {
-                Log.LogError($"Bare repositories are not supported: '{LocalRepositoryId}'.");
+                Log.LogErrorFromResources("BareRepositoriesNotSupported", LocalRepositoryId);
                 return false;
             }
 
@@ -40,7 +40,7 @@ namespace Microsoft.Build.Tasks.Git
                 }
                 catch (LibGit2SharpException e)
                 {
-                    Log.LogError(e.Message);
+                    Log.LogErrorFromException(e);
                     return false;
                 }
             }

@@ -9,8 +9,8 @@
     <_SourceControlAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\netcoreapp2.0\Microsoft.Build.Tasks.SourceControl.dll</_SourceControlAssemblyFile>
   </PropertyGroup>
   
-  <UsingTask TaskName="Microsoft.Build.Tasks.GetExternalFiles" AssemblyFile="$(_SourceControlAssemblyFile)"/>
-  <UsingTask TaskName="Microsoft.Build.Tasks.GenerateSourceLinkFile" AssemblyFile="$(_SourceControlAssemblyFile)"/>
+  <UsingTask TaskName="Microsoft.Build.Tasks.SourceControl.GetExternalFiles" AssemblyFile="$(_SourceControlAssemblyFile)"/>
+  <UsingTask TaskName="Microsoft.Build.Tasks.SourceControl.GenerateSourceLinkFile" AssemblyFile="$(_SourceControlAssemblyFile)"/>
 
   <!-- A single SourceControlBuildTasks is expected to be found, error is reported otherwise. -->
   <UsingTask TaskName="@(SourceControlBuildTasks->'%(Namespace)').LocateRepository" AssemblyFile="@(SourceControlBuildTasks->'%(AssemblyFile)')"/>
@@ -60,15 +60,15 @@
           DependsOnTargets="_InitializeSourceControlInformationFromSCM"
           BeforeTargets="CoreCompile"
           Condition="'$(EmbedUntrackedSources)' == 'true' and '$(EmbedAllSources)' != 'true' and '$(DebugType)' != 'none'">
-    
+
     <GetUntrackedFiles LocalRepositoryId="$(_SourceControlLocalRepositoryId)" Files="@(Compile)">
       <Output TaskParameter="UntrackedFiles" ItemName="EmbeddedFiles" />
     </GetUntrackedFiles>
     
     <!-- Add files that do not belong to the repository or any source root. -->
-    <GetExternalFiles Directories="@(SourceRoot)" Files="@(Compile)">
+    <Microsoft.Build.Tasks.SourceControl.GetExternalFiles Directories="@(SourceRoot)" Files="@(Compile)">
       <Output TaskParameter="ExternalFiles" ItemName="EmbeddedFiles" />
-    </GetExternalFiles>
+    </Microsoft.Build.Tasks.SourceControl.GetExternalFiles>
   </Target>
 
   <!--
@@ -103,7 +103,7 @@
           Outputs="$(SourceLink)"
           Condition="'$(SourceLink)' != ''">
 
-    <GenerateSourceLinkFile SourceRoots="@(SourceRoot)" OutputFile="$(SourceLink)" />
+    <Microsoft.Build.Tasks.SourceControl.GenerateSourceLinkFile SourceRoots="@(SourceRoot)" OutputFile="$(SourceLink)" />
 
     <ItemGroup>
       <FileWrites Include="$(SourceLink)" />
