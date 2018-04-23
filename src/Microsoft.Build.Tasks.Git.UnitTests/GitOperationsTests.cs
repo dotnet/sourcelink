@@ -30,6 +30,9 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
               (string.IsNullOrEmpty(sourceLinkUrl) ? "" : $" SourceLinkUrl='{sourceLinkUrl}'");
         }
 
+        private static string InspectDiagnostic((string resourceName, string[] args) warning)
+            => (warning.args.Length == 0) ? warning.resourceName : warning.resourceName + ": " + string.Join(",", warning.args);
+
         [Fact]
         public void GetRevisionId_RepoWithoutCommits()
         {
@@ -49,11 +52,11 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         {
             var repo = new TestRepository(workingDir: s_root, commitSha: null);
 
-            var warnings = new List<(string message, object[] args)>();
+            var warnings = new List<(string message, string[] args)>();
             var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
 
             Assert.Empty(items);
-            AssertEx.Equal(new[] { "'Repository doesn't have any commit, the source code won't be available via source link.' " }, warnings.Select(w => $"'{w.message}' {string.Join(",", w.args)}"));
+            AssertEx.Equal(new[] { "RepositoryWithoutCommit_SourceLink" }, warnings.Select(InspectDiagnostic));
         }
 
         [Fact]
@@ -68,16 +71,16 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     new TestSubmodule("1", "sub/2", "http://2.com", "2222222222222222222222222222222222222222")
                 });
 
-            var warnings = new List<(string message, object[] args)>();
+            var warnings = new List<(string message, string[] args)>();
             var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
             {
-                $@"'{s_root}{s}sub{s}1{s}' SourceControl='Git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/1/' ContainingRoot='{s_root}{s}'",
-                $@"'{s_root}{s}sub{s}2{s}' SourceControl='Git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='{s_root}{s}'",
+                $@"'{s_root}{s}sub{s}1{s}' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/1/' ContainingRoot='{s_root}{s}'",
+                $@"'{s_root}{s}sub{s}2{s}' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='{s_root}{s}'",
             }, items.Select(InspectSourceRoot));
 
-            AssertEx.Equal(new[] { "'Repository doesn't have any commit, the source code won't be available via source link.' " }, warnings.Select(w => $"'{w.message}' {string.Join(",", w.args)}"));
+            AssertEx.Equal(new[] { "RepositoryWithoutCommit_SourceLink" }, warnings.Select(InspectDiagnostic));
         }
 
         [Fact]
@@ -92,16 +95,16 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     new TestSubmodule("1", "sub/2", "http://2.com", "2222222222222222222222222222222222222222")
                 });
 
-            var warnings = new List<(string message, object[] args)>();
+            var warnings = new List<(string message, string[] args)>();
             var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
             {
-                $@"'{s_root}{s}' SourceControl='Git' RevisionId='0000000000000000000000000000000000000000'",
-                $@"'{s_root}{s}sub{s}2{s}' SourceControl='Git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='{s_root}{s}'",
+                $@"'{s_root}{s}' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
+                $@"'{s_root}{s}sub{s}2{s}' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='{s_root}{s}'",
             }, items.Select(InspectSourceRoot));
 
-            AssertEx.Equal(new[] { "'Submodule '1' doesn't have any commit, the source code won't be available via source link.' " }, warnings.Select(w => $"'{w.message}' {string.Join(",", w.args)}"));
+            AssertEx.Equal(new[] { "SubmoduleWithoutCommit_SourceLink: 1" }, warnings.Select(InspectDiagnostic));
         }
     }
 }

@@ -88,7 +88,7 @@ namespace Microsoft.Build.Tasks.Git
             return repository.Head.Tip?.Sha;
         }
 
-        public static ITaskItem[] GetSourceRoots(this IRepository repository, Action<string, object[]> logWarning)
+        public static ITaskItem[] GetSourceRoots(this IRepository repository, Action<string, string[]> logWarning)
         {
             var result = new List<TaskItem>();
             var repoRoot = GetRepositoryRoot(repository);
