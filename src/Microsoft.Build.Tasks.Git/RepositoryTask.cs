@@ -13,6 +13,11 @@ namespace Microsoft.Build.Tasks.Git
 
         protected abstract bool Execute(Repository repo);
 
+        public RepositoryTask()
+        {
+            TaskResources = Resources.ResourceManager;
+        }
+
         public sealed override bool Execute()
         {
             Repository repo;

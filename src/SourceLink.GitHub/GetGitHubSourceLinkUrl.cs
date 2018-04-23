@@ -22,6 +22,11 @@ namespace SourceLink.GitHub
         [Output]
         public string SourceLinkUrl { get; set; }
 
+        public GetGitHubSourceLinkUrl()
+        {
+            TaskResources = Resources.ResourceManager;
+        }
+
         public override bool Execute()
         {
             if (!string.IsNullOrEmpty(SourceRoot.GetMetadata(Names.SourceRoot.SourceLinkUrl)) ||

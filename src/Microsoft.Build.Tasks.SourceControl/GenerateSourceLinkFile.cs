@@ -17,6 +17,11 @@ namespace Microsoft.Build.Tasks.SourceControl
         [Required]
         public string OutputFile { get; set; }
 
+        public GenerateSourceLinkFile()
+        {
+            TaskResources = Resources.ResourceManager;
+        }
+
         public override bool Execute()
         {
             string JsonEscape(string str)

@@ -20,6 +20,11 @@ namespace SourceLink.VSTS.Git
         [Output]
         public string SourceLinkUrl { get; set; }
 
+        public GetVstsGitSourceLinkUrl()
+        {
+            TaskResources = Resources.ResourceManager;
+        }
+
         public override bool Execute()
         {
             if (!string.IsNullOrEmpty(SourceRoot.GetMetadata(Names.SourceRoot.SourceLinkUrl)) ||

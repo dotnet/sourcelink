@@ -20,6 +20,11 @@ namespace Microsoft.Build.Tasks.SourceControl
         [Output]
         public ITaskItem[] ExternalFiles { get; set; }
 
+        public GetExternalFiles()
+        {
+            TaskResources = Resources.ResourceManager;
+        }
+
         public override bool Execute()
         {
             // TODO: Path handling 
