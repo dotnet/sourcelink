@@ -13,6 +13,6 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             _tipCommitSha = tipCommitSha;
         }
 
-        public override Commit Tip => new TestCommit(_tipCommitSha);
+        public override Commit Tip => (_tipCommitSha != null) ? new TestCommit(_tipCommitSha) : null;
     }
 }

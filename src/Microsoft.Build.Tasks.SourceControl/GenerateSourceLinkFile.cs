@@ -9,8 +9,7 @@ using Microsoft.Build.Utilities;
 
 namespace Microsoft.Build.Tasks
 {
-    // TODO: move to Microsoft.Build.Tasks
-    public class GenerateSourceLinkFile : Task
+    public sealed class GenerateSourceLinkFile : Task
     {
         [Required]
         public ITaskItem[] SourceRoots { get; set; }
@@ -23,12 +22,6 @@ namespace Microsoft.Build.Tasks
             if (string.IsNullOrEmpty(OutputFile))
             {
                 Log.LogError("OutputFile not specified");
-                return false;
-            }
-
-            if (SourceRoots.Length == 0)
-            {
-                Log.LogError("No SourceRoots specified");
                 return false;
             }
 
@@ -63,8 +56,14 @@ namespace Microsoft.Build.Tasks
                 var url = root.GetMetadata("SourceLinkUrl");
                 if (string.IsNullOrEmpty(url))
                 {
-                    Log.LogError($"SourceRoot.SourceLinkUrl is empty: '{root.ItemSpec}'");
-                    success = false;
+                    // Only report an error if the root comes from source control.
+                    // SourceRoots can be specified by the project to make other features like deterministic paths.
+                    if (!string.IsNullOrEmpty(root.GetMetadata("SourceControl")))
+                    {
+                        Log.LogError($"SourceRoot.SourceLinkUrl is empty: '{root.ItemSpec}'");
+                        success = false;
+                    }
+                    
                     continue;
                 }
 
@@ -101,17 +100,26 @@ namespace Microsoft.Build.Tasks
                 return false;
             }
 
+            if (first)
+            {
+                Log.LogWarning("No SourceRoots specified - the generated source link is empty.");
+            }
+
+            return TryWriteSourceLinkFile(result.ToString());
+        }
+
+        private bool TryWriteSourceLinkFile(string content)
+        {
             try
             {
-                File.WriteAllText(OutputFile, result.ToString());
+                File.WriteAllText(OutputFile, content);
+                return true;
             }
             catch (Exception e)
             {
                 Log.LogError($"Error writing to source link file '{OutputFile}': {e.Message}");
                 return false;
             }
-
-            return true;
         }
     }
 }

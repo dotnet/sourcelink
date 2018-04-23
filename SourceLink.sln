@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SourceLink.VSTS.Git", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SourceLink.VSTS.TFVC", "src\SourceLink.VSTS.TFVC\SourceLink.VSTS.TFVC.csproj", "{DA058284-2FBD-459C-B9F3-82B5F7713C6F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestUtilities", "src\TestUtilities\TestUtilities.csproj", "{D6ED6730-02A8-4B21-8D62-C7B2009F53A5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{DA058284-2FBD-459C-B9F3-82B5F7713C6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA058284-2FBD-459C-B9F3-82B5F7713C6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA058284-2FBD-459C-B9F3-82B5F7713C6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6ED6730-02A8-4B21-8D62-C7B2009F53A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6ED6730-02A8-4B21-8D62-C7B2009F53A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6ED6730-02A8-4B21-8D62-C7B2009F53A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6ED6730-02A8-4B21-8D62-C7B2009F53A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

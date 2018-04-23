@@ -16,14 +16,14 @@ namespace Microsoft.Build.Tasks.Git
         ///   RepositoryUrl: URL of the repository.
         ///   RevisionId: Revision (commit SHA).
         ///   ContainingRoot: Identity of the containing source root.
-        ///   NestedRoot: For a submodule root, a path of the submodule root relative to the repository root. Ends with a directory separator.
+        ///   NestedRoot: For a submodule root, a path of the submodule root relative to the repository root. Ends with a slash.
         /// </summary>
         [Output]
         public ITaskItem[] Roots { get; private set; }
 
         protected override bool Execute(Repository repo)
         {
-            Roots = repo.GetSourceRoots();
+            Roots = repo.GetSourceRoots(Log.LogWarning);
             return true;
         }
     }

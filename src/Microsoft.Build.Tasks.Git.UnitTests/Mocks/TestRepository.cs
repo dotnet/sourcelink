@@ -11,21 +11,21 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         private readonly IReadOnlyList<Remote> _remotes;
         private readonly IReadOnlyList<Submodule> _submodules;
         private readonly IReadOnlyList<string> _ignoredPaths;
-        private readonly string _headTipCommitSha;
+        private readonly string _headTipCommitShaOpt;
         private readonly string _workingDir;
 
         public TestRepository(
             string workingDir,
-            string headTipCommitSha,
-            IReadOnlyList<Remote> remotes,
-            IReadOnlyList<Submodule> submodules,
-            IReadOnlyList<string> ignoredPaths)
+            string commitSha,
+            IReadOnlyList<Remote> remotes = null,
+            IReadOnlyList<Submodule> submodules = null,
+            IReadOnlyList<string> ignoredPaths = null)
         {
             _workingDir = workingDir;
-            _remotes = remotes;
-            _headTipCommitSha = headTipCommitSha;
-            _submodules = submodules;
-            _ignoredPaths = ignoredPaths;
+            _headTipCommitShaOpt = commitSha;
+            _remotes = remotes ?? new Remote[0];
+            _submodules = submodules ?? new Submodule[0];
+            _ignoredPaths = ignoredPaths ?? new string[0];
         }
 
         public RepositoryInformation Info
@@ -35,7 +35,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             => new TestNetwork(_remotes);
 
         public Branch Head
-            => new TestBranch(_headTipCommitSha);
+            => new TestBranch(_headTipCommitShaOpt);
 
         public SubmoduleCollection Submodules
             => new TestSubmoduleCollection(_submodules);

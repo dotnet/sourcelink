@@ -81,29 +81,46 @@ namespace Microsoft.Build.Tasks.Git
 
         public static string GetRevisionId(this IRepository repository)
         {
-            return repository.Head.Tip.Sha;
+            // An empty repository doesn't have a tip commit:
+            return repository.Head.Tip?.Sha;
         }
 
-        public static ITaskItem[] GetSourceRoots(this IRepository repository)
+        public static ITaskItem[] GetSourceRoots(this IRepository repository, Action<string, object[]> logWarning)
         {
             var result = new List<TaskItem>();
             var repoRoot = GetRepositoryRoot(repository);
 
-            var item = new TaskItem(repoRoot);
-            item.SetMetadata("SourceControl", "Git");
-            item.SetMetadata("RepositoryUrl", GetRepositoryUrl(repository));
-            item.SetMetadata("RevisionId", GetRevisionId(repository));
-            result.Add(item);
+            var revisionId = GetRevisionId(repository);
+            if (revisionId != null)
+            {
+                var item = new TaskItem(repoRoot);
+                item.SetMetadata("SourceControl", "Git");
+                item.SetMetadata("RepositoryUrl", GetRepositoryUrl(repository));
+                item.SetMetadata("RevisionId", revisionId);
+                result.Add(item);
+            }
+            else
+            {
+                logWarning("Repository doesn't have any commit, the source code won't be available via source link.", Array.Empty<object>());
+            }
 
             foreach (var submodule in repository.Submodules)
             {
-                item = new TaskItem(Path.GetFullPath(Path.Combine(repoRoot, submodule.Path)).EndWithSeparator());
-                item.SetMetadata("SourceControl", "Git");
-                item.SetMetadata("RepositoryUrl", submodule.Url);
-                item.SetMetadata("RevisionId", submodule.WorkDirCommitId.Sha);
-                item.SetMetadata("ContainingRoot", repoRoot);
-                item.SetMetadata("NestedRoot", submodule.Path.EndWithSeparator());
-                result.Add(item);
+                var commitId = submodule.WorkDirCommitId;
+                if (commitId != null)
+                {
+                    var item = new TaskItem(Path.GetFullPath(Path.Combine(repoRoot, submodule.Path)).EndWithSeparator());
+                    item.SetMetadata("SourceControl", "Git");
+                    item.SetMetadata("RepositoryUrl", submodule.Url);
+                    item.SetMetadata("RevisionId", commitId.Sha);
+                    item.SetMetadata("ContainingRoot", repoRoot);
+                    item.SetMetadata("NestedRoot", submodule.Path.EndWithSeparator('/'));
+                    result.Add(item);
+                }
+                else
+                {
+                    logWarning($"Submodule '{submodule.Name}' doesn't have any commit, the source code won't be available via source link.", Array.Empty<object>());
+                }
             }
 
             return result.ToArray();
