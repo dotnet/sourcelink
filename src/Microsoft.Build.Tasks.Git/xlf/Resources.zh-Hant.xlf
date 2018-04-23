@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
+  <file datatype="xml" source-language="en" target-language="zh-Hant" original="../Resources.resx">
+    <body>
+      <trans-unit id="RepositoryWithoutCommit_SourceLink">
+        <source>Repository doesn't have any commit, the source code won't be available via source link.</source>
+        <target state="new">Repository doesn't have any commit, the source code won't be available via source link.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="SubmoduleWithoutCommit_SourceLink">
+        <source>Submodule '{0}' doesn't have any commit, the source code won't be available via source link.</source>
+        <target state="new">Submodule '{0}' doesn't have any commit, the source code won't be available via source link.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="UnableToLocateRepository">
+        <source>Unable to locate repository containing directory '{0}'.</source>
+        <target state="new">Unable to locate repository containing directory '{0}'.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="BareRepositoriesNotSupported">
+        <source>Bare repositories are not supported: '{0}'.</source>
+        <target state="new">Bare repositories are not supported: '{0}'.</target>
+        <note />
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
+  <file datatype="xml" source-language="en" target-language="es" original="../Resources.resx">
+    <body>
+      <trans-unit id="MustEndWithDirectorySeparator">
+        <source>{0} must end with a directory separator: '{1}'</source>
+        <target state="new">{0} must end with a directory separator: '{1}'</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="MustNotContainWildcard">
+        <source>{0} must not contain wildcard '*': '{1}'</source>
+        <target state="new">{0} must not contain wildcard '*': '{1}'</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="MustContainSingleWildcard">
+        <source>{0} must contain a single wildcard '*': '{1}'"</source>
+        <target state="new">{0} must contain a single wildcard '*': '{1}'"</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="NoItemsSpecifiedSourceLinkEmpty">
+        <source>No {0} items specified - the generated source link is empty.</source>
+        <target state="new">No {0} items specified - the generated source link is empty.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="IsEmpty">
+        <source>{0} is empty: '{1}'</source>
+        <target state="new">{0} is empty: '{1}'</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ErrorWritingToSourceLinkFile">
+        <source>Error writing to source link file '{0}': {1}"</source>
+        <target state="new">Error writing to source link file '{0}': {1}"</target>
+        <note />
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
