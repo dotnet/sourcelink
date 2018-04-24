@@ -7,6 +7,8 @@
     <VersionPrefix>1.0.0</VersionPrefix>
     <PreReleaseVersionLabel>beta</PreReleaseVersionLabel>
     
+    <UsingToolNetFrameworkReferenceAssemblies>true</UsingToolNetFrameworkReferenceAssemblies>
+    
     <!-- Libs -->
     <LibGit2SharpVersion>0.26.0-preview-0017</LibGit2SharpVersion>
     <MicrosoftBuildVersion>15.6.82</MicrosoftBuildVersion>
