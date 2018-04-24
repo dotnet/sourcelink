@@ -2,6 +2,7 @@
 // Jenkins DSL: https://github.com/jenkinsci/job-dsl-plugin/wiki
 
 import jobs.generation.Utilities;
+import jobs.generation.InternalUtilities;
 
 static getJobName(def opsysName, def configName) {
   return "${opsysName}_${configName}"
@@ -57,7 +58,7 @@ static addBuildSteps(def job, def projectName, def os, def configName, def isPR)
       def fullJobName = Utilities.getFullJobName(projectName, jobName, isPR)
       def myJob = job(fullJobName)
 
-      Utilities.standardJobSetup(myJob, projectName, isPR, "*/${branchName}")
+      InternalUtilities.standardJobSetup(myJob, projectName, isPR, "*/${branchName}")
 
       if (isPR) {
         addGithubPRTriggerForBranch(myJob, branchName, jobName)
