@@ -8,8 +8,8 @@ Pre-release builds are available on MyGet gallery: https://dotnet.myget.org/Gall
 
 |    | x64 Debug|x64 Release|
 |:--:|:--:|:--:|
-|**Windows**|[![Build Status](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/Windows_NT_Debug/badge/icon)](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/Windows_NT_Debug/)|[![Build Status](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/Windows_NT_Release/badge/icon)](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/Windows_NT_Release/)|
-|**Ubuntu 16.04**|[![Build Status](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/Ubuntu16.04_Debug/badge/icon)](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/Ubuntu16.04_Debug/)|[![Build Status](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/Ubuntu16.04_Release/badge/icon)](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/Ubuntu16.04_Release/)|
+|**Windows**|[![Build Status](https://ci2.dot.net/job/Private/job/dotnet_sourcelink/job/master/job/Windows_NT_Debug/badge/icon)](https://ci2.dot.net/job/Private/job/dotnet_sourcelink/job/master/job/Windows_NT_Debug/)|[![Build Status](https://ci2.dot.net/job/Private/job/dotnet_sourcelink/job/master/job/Windows_NT_Release/badge/icon)](https://ci2.dot.net/job/Private/job/dotnet_sourcelink/job/master/job/Windows_NT_Release/)|
+|**Ubuntu 16.04**|[![Build Status](https://ci2.dot.net/job/Private/job/dotnet_sourcelink/job/master/job/Ubuntu16.04_Debug/badge/icon)](https://ci2.dot.net/job/Private/job/dotnet_sourcelink/job/master/job/Ubuntu16.04_Debug/)|[![Build Status](https://ci2.dot.net/job/Private/job/dotnet_sourcelink/job/master/job/Ubuntu16.04_Release/badge/icon)](https://ci2.dot.net/job/Private/job/dotnet_sourcelink/job/master/job/Ubuntu16.04_Release/)|
 
 [//]: # (End current test results)
 
