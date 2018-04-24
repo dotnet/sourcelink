@@ -55,7 +55,7 @@ namespace SourceLink.GitHub
             string revisionId = SourceRoot.GetMetadata(Names.SourceRoot.RevisionId);
             if (revisionId == null || revisionId.Length != 40 || !revisionId.All(IsHexDigit))
             {
-                Log.LogError("ValueOfWithIdentityIsNotValidCommitHash", Names.SourceRoot.RevisionIdFullName, SourceRoot.ItemSpec, revisionId);
+                Log.LogErrorFromResources("ValueOfWithIdentityIsNotValidCommitHash", Names.SourceRoot.RevisionIdFullName, SourceRoot.ItemSpec, revisionId);
                 return false;
             }
 

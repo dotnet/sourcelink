@@ -59,7 +59,7 @@ namespace Microsoft.Build.Tasks.SourceControl
                     // SourceRoots can be specified by the project to make other features like deterministic paths.
                     if (!string.IsNullOrEmpty(root.GetMetadata(Names.SourceRoot.SourceControl)))
                     {
-                        Log.LogError("IsEmpty", Names.SourceRoot.SourceLinkUrlFullName, root.ItemSpec);
+                        Log.LogErrorFromResources("IsEmpty", Names.SourceRoot.SourceLinkUrlFullName, root.ItemSpec);
                         success = false;
                     }
                     
@@ -68,7 +68,7 @@ namespace Microsoft.Build.Tasks.SourceControl
 
                 if (url.Count(c => c == '*') != 1)
                 {
-                    Log.LogError("MustContainSingleWildcard", Names.SourceRoot.SourceLinkUrlFullName, url);
+                    Log.LogErrorFromResources("MustContainSingleWildcard", Names.SourceRoot.SourceLinkUrlFullName, url);
                     success = false;
                     continue;
                 }
@@ -101,7 +101,7 @@ namespace Microsoft.Build.Tasks.SourceControl
 
             if (first)
             {
-                Log.LogWarning("NoItemsSpecifiedSourceLinkEmpty", Names.SourceRoot.Name);
+                Log.LogWarningFromResources("NoItemsSpecifiedSourceLinkEmpty", Names.SourceRoot.Name);
             }
 
             return TryWriteSourceLinkFile(result.ToString());
