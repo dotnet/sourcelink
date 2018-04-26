@@ -123,4 +123,7 @@
   <data name="ValueOfWithIdentityIsNotValidCommitHash" xml:space="preserve">
     <value>The value of {0} with identity '{1}' is not a valid commit hash: '{2}'"</value>
   </data>
+  <data name="EnvironmentVariableIsNotAlistOfUrlPairs" xml:space="preserve">
+    <value>The value of environment variable {0} is not a well-formed list of URL pairs: '{1}'"</value>
+  </data>
 </root>
