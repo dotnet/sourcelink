@@ -69,7 +69,7 @@ namespace Microsoft.Build.Tasks.Git
             return Repository.Discover(directory);
         }
 
-        public static string GetRepositoryUrl(this IRepository repository, string remoteName = null)
+        public static string GetRepositoryUrl(this IRepository repository, string rootOpt = null, string remoteName = null)
         {
             var remotes = repository.Network.Remotes;
             var remote = string.IsNullOrEmpty(remoteName) ? (remotes["origin"] ?? remotes.FirstOrDefault()) : remotes[remoteName];
@@ -78,8 +78,76 @@ namespace Microsoft.Build.Tasks.Git
                 return null;
             }
 
-            // Note that the value of the URL is whatever the remote was set to (may be invalid).
-            return remote.Url;
+            return NormalizeUrl(repository, remote.Url, rootOpt);
+        }
+
+        internal static string NormalizeUrl(IRepository repository, string url, string rootOpt)
+        {
+            // Since git supports scp-like syntax for SSH URLs we convert it here, 
+            // so that RepositoryUrl is actually a valid URL in that case.
+            // See https://git-scm.com/book/en/v2/Git-on-the-Server-The-Protocols and
+            // https://github.com/libgit2/libgit2/blob/master/src/transport.c#L72.
+
+            // Windows device path "X:"
+            if (url.Length == 2 && IsWindowsAbsoluteOrDriveRelativePath(url))
+            {
+                return url + "\\";
+            }
+
+            if (TryParseScp(url, out var uri))
+            {
+                return uri.ToString();
+            }
+
+            if (!Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out uri))
+            {
+                return url;
+            }
+
+            if (!uri.IsAbsoluteUri)
+            {
+                // Convert relative local path to absolute:
+                var rootUri = new Uri((rootOpt ?? repository.Info.WorkingDirectory).EndWithSeparator('/'));
+                if (!Uri.TryCreate(rootUri, uri, out uri))
+                {
+                    return url;
+                }
+            }
+
+            return uri.IsFile ? uri.LocalPath : uri.ToString();
+        }
+
+        private static bool IsWindowsAbsoluteOrDriveRelativePath(string value)
+            => Path.DirectorySeparatorChar == '\\' &&
+               value.Length >= 2 &&
+               value[1] == ':' &&
+               (value[0] >= 'A' && value[0] <= 'Z' || value[0] >= 'a' && value[0] <= 'z');
+
+        private static bool TryParseScp(string value, out Uri uri)
+        {
+            uri = null;
+           
+            int colon = value.IndexOf(':');
+            if (colon == -1)
+            {
+                return false;
+            }
+
+            // URLs xxx://xxx
+            if (colon + 2 < value.Length && value[colon + 1] == '/' && value[colon + 2] == '/')
+            {
+                return false;
+            }
+
+            // Windows absolute or driver-relative paths "X:\xxx", "X:xxx"
+            if (IsWindowsAbsoluteOrDriveRelativePath(value))
+            {
+                return false;
+            }
+
+            // [user@]server:path
+            var sshUrl = "ssh://" + value.Substring(0, colon) + "/" + value.Substring(colon + 1);
+            return Uri.TryCreate(sshUrl, UriKind.Absolute, out uri);
         }
 
         public static string GetRevisionId(this IRepository repository)
@@ -98,7 +166,7 @@ namespace Microsoft.Build.Tasks.Git
             {
                 var item = new TaskItem(repoRoot);
                 item.SetMetadata(Names.SourceRoot.SourceControl, SourceControlName);
-                item.SetMetadata(Names.SourceRoot.RepositoryUrl, GetRepositoryUrl(repository));
+                item.SetMetadata(Names.SourceRoot.RepositoryUrl, GetRepositoryUrl(repository, repoRoot));
                 item.SetMetadata(Names.SourceRoot.RevisionId, revisionId);
                 result.Add(item);
             }
@@ -112,9 +180,24 @@ namespace Microsoft.Build.Tasks.Git
                 var commitId = submodule.WorkDirCommitId;
                 if (commitId != null)
                 {
-                    var item = new TaskItem(Path.GetFullPath(Path.Combine(repoRoot, submodule.Path)).EndWithSeparator());
+                    var submoduleRoot = Path.GetFullPath(Path.Combine(repoRoot, submodule.Path)).EndWithSeparator();
+
+                    // TODO: relative URLs
+
+                    // https://git-scm.com/docs/git-submodule
+                    // <repository> is the URL of the new submodule’s origin repository. This may be either an absolute URL, or (if it begins with ./ or../), 
+                    // the location relative to the superproject’s default remote repository (Please note that to specify a repository foo.git which is located 
+                    // right next to a superproject bar.git, you’ll have to use ../ foo.git instead of ./ foo.git - as one might expect when following the rules 
+                    // for relative URLs -because the evaluation of relative URLs in Git is identical to that of relative directories).
+                    // 
+                    // The default remote is the remote of the remote tracking branch of the current branch.If no such remote tracking branch exists or the HEAD
+                    // is detached, "origin" is assumed to be the default remote.If the superproject doesn’t have a default remote configured the superproject
+                    // is its own authoritative upstream and the current working directory is used instead.
+                    var submoduleUrl = NormalizeUrl(repository, submodule.Url, submoduleRoot);
+
+                    var item = new TaskItem(submoduleRoot);
                     item.SetMetadata(Names.SourceRoot.SourceControl, SourceControlName);
-                    item.SetMetadata(Names.SourceRoot.RepositoryUrl, submodule.Url);
+                    item.SetMetadata(Names.SourceRoot.RepositoryUrl, submoduleUrl);
                     item.SetMetadata(Names.SourceRoot.RevisionId, commitId.Sha);
                     item.SetMetadata(Names.SourceRoot.ContainingRoot, repoRoot);
                     item.SetMetadata(Names.SourceRoot.NestedRoot, submodule.Path.EndWithSeparator('/'));

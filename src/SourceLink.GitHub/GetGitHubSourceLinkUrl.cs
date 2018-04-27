@@ -13,11 +13,13 @@ namespace SourceLink.GitHub
     {
         private static readonly Uri s_rawGitHub = new Uri("https://raw.githubusercontent.com");
         private const string SourceControlName = "git";
-        private const string GitHubDomain = "github.com";
+        private const string DefaultDomain = "github.com";
         private const string NotApplicableValue = "N/A";
 
         [Required]
         public ITaskItem SourceRoot { get; set; }
+
+        public string Domain { get; set; }
 
         [Output]
         public string SourceLinkUrl { get; set; }
@@ -43,7 +45,8 @@ namespace SourceLink.GitHub
                 return false;
             }
 
-            if (!repoUri.Host.Equals(GitHubDomain, StringComparison.OrdinalIgnoreCase))
+            if (!repoUri.Host.EndsWith("." + DefaultDomain, StringComparison.OrdinalIgnoreCase) &&
+                !repoUri.Host.Equals(DefaultDomain, StringComparison.OrdinalIgnoreCase))
             {
                 SourceLinkUrl = NotApplicableValue;
                 return true;

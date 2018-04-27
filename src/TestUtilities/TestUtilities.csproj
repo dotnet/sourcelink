@@ -6,6 +6,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Build" Version="$(MicrosoftBuildVersion)" />
     <PackageReference Include="Microsoft.Build.Tasks.Core" Version="$(MicrosoftBuildTasksCore)" />
+    <PackageReference Include="xunit.core" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.assert" Version="$(XunitVersion)" />
   </ItemGroup>
 </Project>
