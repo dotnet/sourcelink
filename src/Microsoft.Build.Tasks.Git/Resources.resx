@@ -123,6 +123,12 @@
   <data name="SubmoduleWithoutCommit_SourceLink" xml:space="preserve">
     <value>Submodule '{0}' doesn't have any commit, the source code won't be available via source link.</value>
   </data>
+  <data name="InvalidSubmoduleUrl_SourceLink" xml:space="preserve">
+    <value>The URL of submodule '{0}' is invalid: '{1}', the source code won't be available via source link.</value>
+  </data>
+  <data name="InvalidSubmodulePath_SourceLink" xml:space="preserve">
+    <value>The path of submodule '{0}' is invalid: '{1}', the source code won't be available via source link.</value>
+  </data>
   <data name="UnableToLocateRepository" xml:space="preserve">
     <value>Unable to locate repository containing directory '{0}'.</value>
   </data>

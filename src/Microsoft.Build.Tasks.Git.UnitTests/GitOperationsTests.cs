@@ -20,6 +20,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var revisionId = sourceRoot.GetMetadata("RevisionId");
             var nestedRoot = sourceRoot.GetMetadata("NestedRoot");
             var containingRoot = sourceRoot.GetMetadata("ContainingRoot");
+            var repositoryUrl = sourceRoot.GetMetadata("RepositoryUrl");
             var sourceLinkUrl = sourceRoot.GetMetadata("SourceLinkUrl");
 
             return $"'{sourceRoot.ItemSpec}'" +
@@ -27,6 +28,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
               (string.IsNullOrEmpty(revisionId) ? "" : $" RevisionId='{revisionId}'") +
               (string.IsNullOrEmpty(nestedRoot) ? "" : $" NestedRoot='{nestedRoot}'") +
               (string.IsNullOrEmpty(containingRoot) ? "" : $" ContainingRoot='{containingRoot}'") +
+              (string.IsNullOrEmpty(repositoryUrl) ? "" : $" RepositoryUrl='{repositoryUrl}'") +
               (string.IsNullOrEmpty(sourceLinkUrl) ? "" : $" SourceLinkUrl='{sourceLinkUrl}'");
         }
 
@@ -177,8 +179,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             AssertEx.Equal(new[]
             {
-                $@"'{s_root}{s}sub{s}1{s}' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/1/' ContainingRoot='{s_root}{s}'",
-                $@"'{s_root}{s}sub{s}2{s}' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='{s_root}{s}'",
+                $@"'{s_root}{s}sub{s}1{s}' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/1/' ContainingRoot='{s_root}{s}' RepositoryUrl='http://1.com/'",
+                $@"'{s_root}{s}sub{s}2{s}' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='{s_root}{s}' RepositoryUrl='http://2.com/'",
             }, items.Select(InspectSourceRoot));
 
             AssertEx.Equal(new[] { "RepositoryWithoutCommit_SourceLink" }, warnings.Select(InspectDiagnostic));
@@ -202,10 +204,89 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             AssertEx.Equal(new[]
             {
                 $@"'{s_root}{s}' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
-                $@"'{s_root}{s}sub{s}2{s}' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='{s_root}{s}'",
+                $@"'{s_root}{s}sub{s}2{s}' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='{s_root}{s}' RepositoryUrl='http://2.com/'",
             }, items.Select(InspectSourceRoot));
 
             AssertEx.Equal(new[] { "SubmoduleWithoutCommit_SourceLink: 1" }, warnings.Select(InspectDiagnostic));
+        }
+
+        [ConditionalFact(typeof(WindowsOnly))]
+        public void GetSourceRoots_RelativeSubmodulePaths_Windows()
+        {
+            var repo = new TestRepository(
+                workingDir: @"C:\src",
+                commitSha: "0000000000000000000000000000000000000000",
+                submodules: new[]
+                {
+                    new TestSubmodule("1", "sub/1", "./a/b", "1111111111111111111111111111111111111111"),
+                    new TestSubmodule("2", "sub/2", "../a", "2222222222222222222222222222222222222222"),
+                });
+
+            var warnings = new List<(string message, string[] args)>();
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
+
+            AssertEx.Equal(new[]
+            {
+                $@"'C:\src\' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
+                $@"'C:\src\sub\1\' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/1/' ContainingRoot='C:\src\' RepositoryUrl='file:///C:/src/a/b'",
+                $@"'C:\src\sub\2\' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='C:\src\' RepositoryUrl='file:///C:/a'",
+            }, items.Select(InspectSourceRoot));
+
+            Assert.Empty(warnings);
+        }
+
+        [ConditionalFact(typeof(UnixOnly))]
+        public void GetSourceRoots_RelativeSubmodulePaths_Unix()
+        {
+            var repo = new TestRepository(
+                workingDir: @"/src",
+                commitSha: "0000000000000000000000000000000000000000",
+                submodules: new[]
+                {
+                    new TestSubmodule("1", "sub/1", "./a/b", "1111111111111111111111111111111111111111"),
+                    new TestSubmodule("2", "sub/2", "../a", "2222222222222222222222222222222222222222"),
+                });
+
+            var warnings = new List<(string message, string[] args)>();
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
+
+            AssertEx.Equal(new[]
+            {
+                $@"'/src/' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
+                $@"'/src/sub/1/' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/1/' ContainingRoot='/src/' RepositoryUrl='file:///src/a/b'",
+                $@"'/src/sub/2/' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='/src/' RepositoryUrl='file:///a'",
+            }, items.Select(InspectSourceRoot));
+
+            Assert.Empty(warnings);
+        }
+
+        [Fact]
+        public void GetSourceRoots_InvalidSubmoduleUrlOrPath()
+        {
+            var repo = new TestRepository(
+                workingDir: s_root,
+                commitSha: "0000000000000000000000000000000000000000",
+                submodules: new[]
+                {
+                    new TestSubmodule("1", "sub/1", "http:///", "1111111111111111111111111111111111111111"),
+                    new TestSubmodule("2", "sub/*", "http://2.com", "2222222222222222222222222222222222222222"),
+                    new TestSubmodule("3", "sub/3", "http://3.com", "3333333333333333333333333333333333333333"),
+                });
+
+            var warnings = new List<(string message, string[] args)>();
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
+
+            AssertEx.Equal(new[]
+            {
+                $@"'{s_root}{s}' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
+                $@"'{s_root}{s}sub{s}3{s}' SourceControl='git' RevisionId='3333333333333333333333333333333333333333' NestedRoot='sub/3/' ContainingRoot='{s_root}{s}' RepositoryUrl='http://3.com/'",
+            }, items.Select(InspectSourceRoot));
+
+            AssertEx.Equal(new[] 
+            {
+                "InvalidSubmoduleUrl_SourceLink: 1,http:///",
+                "InvalidSubmodulePath_SourceLink: 2,sub/*"
+            }, warnings.Select(InspectDiagnostic));
         }
     }
 }
