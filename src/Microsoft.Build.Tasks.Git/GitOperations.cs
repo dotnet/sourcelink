@@ -91,7 +91,7 @@ namespace Microsoft.Build.Tasks.Git
             // Windows device path "X:"
             if (url.Length == 2 && IsWindowsAbsoluteOrDriveRelativePath(url))
             {
-                return url + "\\";
+                return "file:///" + url + "/";
             }
 
             if (TryParseScp(url, out var uri))
@@ -101,20 +101,22 @@ namespace Microsoft.Build.Tasks.Git
 
             if (!Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out uri))
             {
-                return url;
+                return null;
             }
 
-            if (!uri.IsAbsoluteUri)
+            if (uri.IsAbsoluteUri)
             {
-                // Convert relative local path to absolute:
-                var rootUri = new Uri((rootOpt ?? repository.Info.WorkingDirectory).EndWithSeparator('/'));
-                if (!Uri.TryCreate(rootUri, uri, out uri))
-                {
-                    return url;
-                }
+                return uri.ToString();
             }
 
-            return uri.IsFile ? uri.LocalPath : uri.ToString();
+            // Convert relative local path to absolute:
+            var rootUri = new Uri((rootOpt ?? repository.Info.WorkingDirectory).EndWithSeparator('/'));
+            if (Uri.TryCreate(rootUri, uri, out uri))
+            {
+                return uri.ToString();
+            }
+
+            return null;
         }
 
         private static bool IsWindowsAbsoluteOrDriveRelativePath(string value)
@@ -146,8 +148,9 @@ namespace Microsoft.Build.Tasks.Git
             }
 
             // [user@]server:path
-            var sshUrl = "ssh://" + value.Substring(0, colon) + "/" + value.Substring(colon + 1);
-            return Uri.TryCreate(sshUrl, UriKind.Absolute, out uri);
+            int start = value.IndexOf('@', 0, colon) + 1;
+            var url = "https://" + value.Substring(start, colon - start) + "/" + value.Substring(colon + 1);
+            return Uri.TryCreate(url, UriKind.Absolute, out uri);
         }
 
         public static string GetRevisionId(this IRepository repository)

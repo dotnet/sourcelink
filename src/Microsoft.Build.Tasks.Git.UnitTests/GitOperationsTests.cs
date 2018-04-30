@@ -82,24 +82,28 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         }
 
         [ConditionalTheory(typeof(WindowsOnly))]
-        [InlineData(@"C:", @"C:\")]
-        [InlineData(@"C:\", @"C:\")]
-        [InlineData(@"C:x", @"C:x")]
-        [InlineData(@"C:x\y\..\z", @"C:x\y\..\z")]
-        [InlineData(@"C:org/repo", @"C:org/repo")]
-        [InlineData(@"D:\src", @"D:\src")]
-        [InlineData(@"\\", @"\\")]
-        [InlineData(@"\\server", @"\\server")]
-        [InlineData(@"\\server\dir", @"\\server\dir")]
-        [InlineData(@"relative/./path", @"C:\src\a\b\relative\path")]
-        [InlineData(@"../relative/path", @"C:\src\a\relative\path")]
-        [InlineData(@"..\relative\path", @"C:\src\a\relative\path")]
-        [InlineData(@"../relative/path?a=b", @"C:\src\a\relative\path?a=b")]
-        [InlineData(@"../relative/path*<>|\0%00", @"C:\src\a\relative\path*<>|\0%00")]
-        [InlineData(@"../../../../relative/path", @"C:\relative\path")]
-        [InlineData(@"a:/../../relative/path", @"a:\relative\path")]
-        [InlineData(@"Z:/a/b/../../relative/path", @"Z:\relative\path")]
-        [InlineData(@"../.://../../relative/path", @"C:\src\a\relative\path")]
+        [InlineData(@"C:", "file:///C:/")]
+        [InlineData(@"C:\", "file:///C:/")]
+        [InlineData(@"C:x", null)]
+        [InlineData(@"C:x\y\..\z", null)]
+        [InlineData(@"C:org/repo", null)]
+        [InlineData(@"D:\src", "file:///D:/src")]
+        [InlineData(@"\\", null)]
+        [InlineData(@"\\server", "file://server/")]
+        [InlineData(@"\\server\dir", "file://server/dir")]
+        [InlineData(@"relative/./path", "file:///C:/src/a/b/relative/path")]
+        [InlineData(@"../relative/path", "file:///C:/src/a/relative/path")]
+        [InlineData(@"..\relative\path", "file:///C:/src/a/relative/path")]
+        [InlineData(@"../relative/path?a=b", "file:///C:/src/a/relative/path%3Fa=b")]
+        [InlineData(@"../relative/path*<>|\0%00", "file:///C:/src/a/relative/path*<>|/0%00")]
+        [InlineData(@"../../../../relative/path", "file:///C:/relative/path")]
+        [InlineData(@"a:/../../relative/path", "file:///a:/relative/path")]
+        [InlineData(@"Z:/a/b/../../relative/path", "file:///Z:/relative/path")]
+        [InlineData(@"../.://../../relative/path", "file:///C:/src/a/relative/path")]
+        [InlineData(@"../.:./../../relative/path", "file:///C:/src/relative/path")]
+        [InlineData(@".:/../../relative/path", "file:///C:/src/a/relative/path")]
+        [InlineData(@"..:/../../relative/path", "file:///C:/src/a/relative/path")]
+        [InlineData(@"@:org/repo", "file:///C:/src/a/b/@:org/repo")]
         public void GetRepositoryUrl_Windows(string originUrl, string expectedUrl)
         {
             var repo = new TestRepository(workingDir: @"C:\src\a\b", commitSha: "1111111111111111111111111111111111111111",
@@ -109,14 +113,19 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         }
 
         [ConditionalTheory(typeof(UnixOnly))]
-        [InlineData(@"C:org/repo", @"ssh://C/org/repo")]
-        [InlineData(@"/xyz/src", @"D:/xyz/src")]
-        [InlineData(@"\path", @"/usr/src/a/b/\path")]
-        [InlineData(@"relative/./path", @"/usr/src/a/b/relative/path")]
-        [InlineData(@"../relative/path", @"/usr/src/a/relative/path")]
-        [InlineData(@"../relative/path?a=b", @"/usr/src/a/relative/path?a=b")]
-        [InlineData(@"../relative/path*<>|\0%00", @"/usr/src/a/relative/path*<>|\0%00")]
-        [InlineData(@"../../../../relative/path", @"/relative/path")]
+        [InlineData(@"C:org/repo", @"https://C/org/repo")]
+        [InlineData(@"/xyz/src", @"file:///xyz/src")]
+        [InlineData(@"\path", @"file:///usr/src/a/b/\path")]
+        [InlineData(@"relative/./path", @"file:///usr/src/a/b/relative/path")]
+        [InlineData(@"../relative/path", @"file:///usr/src/a/relative/path")]
+        [InlineData(@"../relative/path?a=b", @"file:///usr/src/a/relative/path?a=b")]
+        [InlineData(@"../relative/path*<>|\0%00", @"file:///usr/src/a/relative/path*<>|\0%00")]
+        [InlineData(@"../../../../relative/path", @"file:///relative/path")]
+        [InlineData(@"../.://../../relative/path", "file:///usr/src/a/relative/path")]
+        [InlineData(@"../.:./../../relative/path", "file:///usr/src/relative/path")]
+        [InlineData(@".:/../../relative/path", "file:///usr/src/a/relative/path")]
+        [InlineData(@"..:/../../relative/path", "file:///usr/src/a/relative/path")]
+        [InlineData(@"@:org/repo", @"file:///usr/src/a/b/@:org\repo")]
         public void GetRepositoryUrl_Unix(string originUrl, string expectedUrl)
         {
             var repo = new TestRepository(workingDir: "/usr/src/a/b", commitSha: "1111111111111111111111111111111111111111",
@@ -126,13 +135,11 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         }
 
         [Theory]
-        [InlineData("abc:org/repo", "ssh://abc/org/repo")]
-        [InlineData("github.com:org/repo", "ssh://github.com/org/repo")]
-        [InlineData("git@github.com:org/repo", "ssh://git@github.com/org/repo")]
-        [InlineData("../.:./../../relative/path", "ssh://../relative/path")]
-        [InlineData(".:/../../relative/path", "ssh://./relative/path")]
-        [InlineData("..:/../../relative/path", "ssh://../relative/path")]
-        [InlineData("http:x//y", "ssh://http/x//y")]
+        [InlineData("abc:org/repo", "https://abc/org/repo")]
+        [InlineData("github.com:org/repo", "https://github.com/org/repo")]
+        [InlineData("git@github.com:org/repo", "https://github.com/org/repo")]
+        [InlineData("@github.com:org/repo", "https://github.com/org/repo")]
+        [InlineData("http:x//y", "https://http/x//y")]
         public void GetRepositoryUrl_ScpSyntax(string originUrl, string expectedUrl)
         {
             var repo = new TestRepository(workingDir: s_root, commitSha: "1111111111111111111111111111111111111111",
