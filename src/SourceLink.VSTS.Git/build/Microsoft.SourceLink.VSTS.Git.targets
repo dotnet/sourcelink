@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <_SourceLinkVstsGitAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)..\tools\net461\SourceLink.VSTS.Git.dll</_SourceLinkVstsGitAssemblyFile>
-    <_SourceLinkVstsGitAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\netcoreapp2.0\SourceLink.VSTS.Git.dll</_SourceLinkVstsGitAssemblyFile>
+    <_SourceLinkVstsGitAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)..\tools\net461\Microsoft.SourceLink.VSTS.Git.dll</_SourceLinkVstsGitAssemblyFile>
+    <_SourceLinkVstsGitAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\netcoreapp2.0\Microsoft.SourceLink.VSTS.Git.dll</_SourceLinkVstsGitAssemblyFile>
   </PropertyGroup>
 
   <UsingTask TaskName="Microsoft.SourceLink.VSTS.Git.GetVstsGitSourceLinkUrl" AssemblyFile="$(_SourceLinkVstsGitAssemblyFile)"/>

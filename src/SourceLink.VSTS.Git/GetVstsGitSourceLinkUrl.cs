@@ -55,7 +55,8 @@ namespace Microsoft.SourceLink.VSTS.Git
             string domain = string.IsNullOrEmpty(Domain) ? DefaultDomain : Domain;
             if (!TryParseRepositoryUrl(repoUri, domain, out var projectName, out var repositoryName))
             {
-                return false;
+                SourceLinkUrl = NotApplicableValue;
+                return true;
             }
 
             var query = GetSourceLinkQuery();

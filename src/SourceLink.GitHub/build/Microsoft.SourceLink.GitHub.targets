@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <_SourceLinkGitHubAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)..\tools\net461\SourceLink.GitHub.dll</_SourceLinkGitHubAssemblyFile>
-    <_SourceLinkGitHubAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\netcoreapp2.0\SourceLink.GitHub.dll</_SourceLinkGitHubAssemblyFile>
+    <_SourceLinkGitHubAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)..\tools\net461\Microsoft.SourceLink.GitHub.dll</_SourceLinkGitHubAssemblyFile>
+    <_SourceLinkGitHubAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\netcoreapp2.0\Microsoft.SourceLink.GitHub.dll</_SourceLinkGitHubAssemblyFile>
   </PropertyGroup>
 
   <UsingTask TaskName="Microsoft.SourceLink.GitHub.GetGitHubSourceLinkUrl" AssemblyFile="$(_SourceLinkGitHubAssemblyFile)"/>
