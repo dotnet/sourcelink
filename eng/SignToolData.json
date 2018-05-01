@@ -13,14 +13,14 @@
         "bin/Microsoft.Build.Tasks.SourceControl/netcoreapp2.0/Microsoft.Build.Tasks.SourceControl.dll",
         "bin/Microsoft.Build.Tasks.SourceControl/netcoreapp2.0/*/Microsoft.Build.Tasks.SourceControl.resources.dll",
         "bin/Microsoft.Build.Tasks.TFVC/net46/Microsoft.Build.Tasks.TFVC.dll",
-        "bin/SourceLink.GitHub/net461/SourceLink.GitHub.dll",
-        "bin/SourceLink.GitHub/net461/*/SourceLink.GitHub.resources.dll",
-        "bin/SourceLink.GitHub/netcoreapp2.0/SourceLink.GitHub.dll",
-        "bin/SourceLink.GitHub/netcoreapp2.0/*/SourceLink.GitHub.resources.dll",
-        "bin/SourceLink.VSTS.Git/net461/SourceLink.VSTS.Git.dll",
-        "bin/SourceLink.VSTS.Git/netcoreapp2.0/SourceLink.VSTS.Git.dll",
-        "bin/SourceLink.VSTS.TFVC/net461/SourceLink.VSTS.TFVC.dll",
-        "bin/SourceLink.VSTS.TFVC/netcoreapp2.0/SourceLink.VSTS.TFVC.dll"
+        "bin/Microsoft.SourceLink.GitHub/net461/Microsoft.SourceLink.GitHub.dll",
+        "bin/Microsoft.SourceLink.GitHub/net461/*/Microsoft.SourceLink.GitHub.resources.dll",
+        "bin/Microsoft.SourceLink.GitHub/netcoreapp2.0/Microsoft.SourceLink.GitHub.dll",
+        "bin/Microsoft.SourceLink.GitHub/netcoreapp2.0/*/Microsoft.SourceLink.GitHub.resources.dll",
+        "bin/Microsoft.SourceLink.VSTS.Git/net461/Microsoft.SourceLink.VSTS.Git.dll",
+        "bin/Microsoft.SourceLink.VSTS.Git/netcoreapp2.0/Microsoft.SourceLink.VSTS.Git.dll",
+        "bin/Microsoft.SourceLink.VSTS.TFVC/net461/Microsoft.SourceLink.VSTS.TFVC.dll",
+        "bin/Microsoft.SourceLink.VSTS.TFVC/netcoreapp2.0/Microsoft.SourceLink.VSTS.TFVC.dll"
       ]
     },
     {

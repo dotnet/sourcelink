@@ -9,16 +9,16 @@
     <_SourceLinkVstsGitAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\netcoreapp2.0\SourceLink.VSTS.Git.dll</_SourceLinkVstsGitAssemblyFile>
   </PropertyGroup>
 
-  <UsingTask TaskName="SourceLink.VSTS.Git.GetVstsGitSourceLinkUrl" AssemblyFile="$(_SourceLinkVstsGitAssemblyFile)"/>
+  <UsingTask TaskName="Microsoft.SourceLink.VSTS.Git.GetVstsGitSourceLinkUrl" AssemblyFile="$(_SourceLinkVstsGitAssemblyFile)"/>
 
   <PropertyGroup>
     <InitializeSourceRootSourceLinkUrlDependsOn>$(InitializeSourceRootSourceLinkUrlDependsOn);_InitializeVstsGitSourceLinkUrl</InitializeSourceRootSourceLinkUrlDependsOn>
   </PropertyGroup>
 
   <Target Name="_InitializeVstsGitSourceLinkUrl" Inputs="@(SourceRoot)" Outputs="|%(Identity)|">
-    <SourceLink.VSTS.Git.GetVstsGitSourceLinkUrl SourceRoot="@(SourceRoot)">
+    <Microsoft.SourceLink.VSTS.Git.GetVstsGitSourceLinkUrl SourceRoot="@(SourceRoot)">
       <Output TaskParameter="SourceLinkUrl" PropertyName="_SourceLinkUrlToUpdate"/>
-    </SourceLink.VSTS.Git.GetVstsGitSourceLinkUrl>
+    </Microsoft.SourceLink.VSTS.Git.GetVstsGitSourceLinkUrl>
 
     <ItemGroup>
       <!-- Only update the SourceLinkUrl metadata if the SourceRoot belongs to this source control -->
