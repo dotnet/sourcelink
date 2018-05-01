@@ -115,19 +115,19 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         }
 
         [ConditionalTheory(typeof(UnixOnly))]
-        [InlineData(@"C:org/repo", @"https://C/org/repo")]
+        [InlineData(@"C:org/repo", @"https://c/org/repo")]
         [InlineData(@"/xyz/src", @"file:///xyz/src")]
-        [InlineData(@"\path", @"file:///usr/src/a/b/\path")]
+        [InlineData(@"\path\a\b", @"file:///path/a/b")]
         [InlineData(@"relative/./path", @"file:///usr/src/a/b/relative/path")]
         [InlineData(@"../relative/path", @"file:///usr/src/a/relative/path")]
-        [InlineData(@"../relative/path?a=b", @"file:///usr/src/a/relative/path?a=b")]
+        [InlineData(@"../relative/path?a=b", @"file:///usr/src/a/relative/path%3Fa=b")]
         [InlineData(@"../relative/path*<>|\0%00", @"file:///usr/src/a/relative/path*<>|\0%00")]
         [InlineData(@"../../../../relative/path", @"file:///relative/path")]
         [InlineData(@"../.://../../relative/path", "file:///usr/src/a/relative/path")]
         [InlineData(@"../.:./../../relative/path", "file:///usr/src/relative/path")]
         [InlineData(@".:/../../relative/path", "file:///usr/src/a/relative/path")]
         [InlineData(@"..:/../../relative/path", "file:///usr/src/a/relative/path")]
-        [InlineData(@"@:org/repo", @"file:///usr/src/a/b/@:org\repo")]
+        [InlineData(@"@:org/repo", @"file:///usr/src/a/b/@:org/repo")]
         public void GetRepositoryUrl_Unix(string originUrl, string expectedUrl)
         {
             var repo = new TestRepository(workingDir: "/usr/src/a/b", commitSha: "1111111111111111111111111111111111111111",
@@ -138,6 +138,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
         [Theory]
         [InlineData("abc:org/repo", "https://abc/org/repo")]
+        [InlineData("ABC:ORG/REPO/X/Y", "https://abc/ORG/REPO/X/Y")]
         [InlineData("github.com:org/repo", "https://github.com/org/repo")]
         [InlineData("git@github.com:org/repo", "https://github.com/org/repo")]
         [InlineData("@github.com:org/repo", "https://github.com/org/repo")]
@@ -269,7 +270,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 submodules: new[]
                 {
                     new TestSubmodule("1", "sub/1", "http:///", "1111111111111111111111111111111111111111"),
-                    new TestSubmodule("2", "sub/*", "http://2.com", "2222222222222222222222222222222222222222"),
+                    new TestSubmodule("2", "sub/\0*<>|:", "http://2.com", "2222222222222222222222222222222222222222"),
                     new TestSubmodule("3", "sub/3", "http://3.com", "3333333333333333333333333333333333333333"),
                 });
 
@@ -285,7 +286,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             AssertEx.Equal(new[] 
             {
                 "InvalidSubmoduleUrl_SourceLink: 1,http:///",
-                "InvalidSubmodulePath_SourceLink: 2,sub/*"
+                "InvalidSubmodulePath_SourceLink: 2,/\0*<>|:"
             }, warnings.Select(InspectDiagnostic));
         }
     }
