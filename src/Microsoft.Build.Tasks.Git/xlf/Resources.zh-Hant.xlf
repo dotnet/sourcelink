@@ -2,6 +2,16 @@
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
   <file datatype="xml" source-language="en" target-language="zh-Hant" original="../Resources.resx">
     <body>
+      <trans-unit id="InvalidSubmodulePath_SourceLink">
+        <source>The path of submodule '{0}' is invalid: '{1}', the source code won't be available via source link.</source>
+        <target state="new">The path of submodule '{0}' is invalid: '{1}', the source code won't be available via source link.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="InvalidSubmoduleUrl_SourceLink">
+        <source>The URL of submodule '{0}' is invalid: '{1}', the source code won't be available via source link.</source>
+        <target state="new">The URL of submodule '{0}' is invalid: '{1}', the source code won't be available via source link.</target>
+        <note />
+      </trans-unit>
       <trans-unit id="RepositoryWithoutCommit_SourceLink">
         <source>Repository doesn't have any commit, the source code won't be available via source link.</source>
         <target state="new">Repository doesn't have any commit, the source code won't be available via source link.</target>
