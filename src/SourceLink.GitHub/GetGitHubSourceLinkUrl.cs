@@ -7,7 +7,7 @@ using Microsoft.Build.Framework;
 using Microsoft.Build.Tasks.SourceControl;
 using Microsoft.Build.Utilities;
 
-namespace SourceLink.GitHub
+namespace Microsoft.SourceLink.GitHub
 {
     public sealed class GetGitHubSourceLinkUrl : Task
     {

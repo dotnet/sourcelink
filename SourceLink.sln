@@ -15,11 +15,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Build.StandardCI"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Build.Tasks.Git.UnitTests", "src\Microsoft.Build.Tasks.Git.UnitTests\Microsoft.Build.Tasks.Git.UnitTests.csproj", "{E8B3BCCA-0C81-4B47-BFC1-67960E214D0A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SourceLink.GitHub", "src\SourceLink.GitHub\SourceLink.GitHub.csproj", "{6B305358-98A3-4F3D-8D69-32475523EE02}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.GitHub", "src\SourceLink.GitHub\Microsoft.SourceLink.GitHub.csproj", "{6B305358-98A3-4F3D-8D69-32475523EE02}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SourceLink.VSTS.Git", "src\SourceLink.VSTS.Git\SourceLink.VSTS.Git.csproj", "{076D322B-A705-4C57-A5A0-39C81BCFC285}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.VSTS.Git", "src\SourceLink.VSTS.Git\Microsoft.SourceLink.VSTS.Git.csproj", "{076D322B-A705-4C57-A5A0-39C81BCFC285}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SourceLink.VSTS.TFVC", "src\SourceLink.VSTS.TFVC\SourceLink.VSTS.TFVC.csproj", "{DA058284-2FBD-459C-B9F3-82B5F7713C6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.VSTS.TFVC", "src\SourceLink.VSTS.TFVC\Microsoft.SourceLink.VSTS.TFVC.csproj", "{DA058284-2FBD-459C-B9F3-82B5F7713C6F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestUtilities", "src\TestUtilities\TestUtilities.csproj", "{D6ED6730-02A8-4B21-8D62-C7B2009F53A5}"
 EndProject

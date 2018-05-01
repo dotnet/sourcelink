@@ -8,7 +8,7 @@ using Microsoft.Build.Framework;
 using Microsoft.Build.Tasks.SourceControl;
 using Microsoft.Build.Utilities;
 
-namespace SourceLink.VSTS.Git
+namespace Microsoft.SourceLink.VSTS.Git
 {
     public sealed class GetVstsGitSourceLinkUrl : Task
     {
