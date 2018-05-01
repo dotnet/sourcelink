@@ -286,7 +286,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             AssertEx.Equal(new[] 
             {
                 "InvalidSubmoduleUrl_SourceLink: 1,http:///",
-                "InvalidSubmodulePath_SourceLink: 2,/\0*<>|:"
+                "InvalidSubmodulePath_SourceLink: 2,sub/\0*<>|:"
             }, warnings.Select(InspectDiagnostic));
         }
     }
