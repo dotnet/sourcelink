@@ -33,8 +33,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
               (string.IsNullOrEmpty(sourceLinkUrl) ? "" : $" SourceLinkUrl='{sourceLinkUrl}'");
         }
 
-        private static string InspectDiagnostic((string resourceName, string[] args) warning)
-            => (warning.args.Length == 0) ? warning.resourceName : warning.resourceName + ": " + string.Join(",", warning.args);
+        private static string InspectDiagnostic((string message, object[] args) warning)
+            => string.Format(warning.message, warning.args);
 
         [Fact]
         public void GetRevisionId_RepoWithoutCommits()
@@ -157,11 +157,11 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         {
             var repo = new TestRepository(workingDir: s_root, commitSha: null);
 
-            var warnings = new List<(string message, string[] args)>();
+            var warnings = new List<(string message, object[] args)>();
             var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
 
             Assert.Empty(items);
-            AssertEx.Equal(new[] { "RepositoryWithoutCommit_SourceLink" }, warnings.Select(InspectDiagnostic));
+            AssertEx.Equal(new[] { Resources.RepositoryWithoutCommit_SourceLink }, warnings.Select(InspectDiagnostic));
         }
 
         [Fact]
@@ -176,7 +176,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     new TestSubmodule("1", "sub/2", "http://2.com", "2222222222222222222222222222222222222222")
                 });
 
-            var warnings = new List<(string message, string[] args)>();
+            var warnings = new List<(string message, object[] args)>();
             var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
@@ -185,7 +185,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 $@"'{s_root}{s}sub{s}2{s}' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='{s_root}{s}' RepositoryUrl='http://2.com/'",
             }, items.Select(InspectSourceRoot));
 
-            AssertEx.Equal(new[] { "RepositoryWithoutCommit_SourceLink" }, warnings.Select(InspectDiagnostic));
+            AssertEx.Equal(new[] { Resources.RepositoryWithoutCommit_SourceLink }, warnings.Select(InspectDiagnostic));
         }
 
         [Fact]
@@ -200,7 +200,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     new TestSubmodule("1", "sub/2", "http://2.com", "2222222222222222222222222222222222222222")
                 });
 
-            var warnings = new List<(string message, string[] args)>();
+            var warnings = new List<(string message, object[] args)>();
             var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
@@ -209,7 +209,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 $@"'{s_root}{s}sub{s}2{s}' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='{s_root}{s}' RepositoryUrl='http://2.com/'",
             }, items.Select(InspectSourceRoot));
 
-            AssertEx.Equal(new[] { "SubmoduleWithoutCommit_SourceLink: 1" }, warnings.Select(InspectDiagnostic));
+            AssertEx.Equal(new[] { string.Format(Resources.SubmoduleWithoutCommit_SourceLink, "1") }, warnings.Select(InspectDiagnostic));
         }
 
         [ConditionalFact(typeof(WindowsOnly))]
@@ -224,7 +224,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     new TestSubmodule("2", "sub/2", "../a", "2222222222222222222222222222222222222222"),
                 });
 
-            var warnings = new List<(string message, string[] args)>();
+            var warnings = new List<(string message, object[] args)>();
             var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
@@ -249,7 +249,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     new TestSubmodule("2", "sub/2", "../a", "2222222222222222222222222222222222222222"),
                 });
 
-            var warnings = new List<(string message, string[] args)>();
+            var warnings = new List<(string message, object[] args)>();
             var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
@@ -275,7 +275,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     new TestSubmodule("3", "sub/3", "http://3.com", "3333333333333333333333333333333333333333"),
                 });
 
-            var warnings = new List<(string message, string[] args)>();
+            var warnings = new List<(string message, object[] args)>();
             var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
@@ -286,8 +286,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             AssertEx.Equal(new[] 
             {
-                "InvalidSubmoduleUrl_SourceLink: 1,http:///",
-                "InvalidSubmodulePath_SourceLink: 2,sub/\0*<>|:"
+                string.Format(Resources.InvalidSubmoduleUrl_SourceLink, "1", "http:///"),
+                string.Format(Resources.InvalidSubmodulePath_SourceLink, "2", "sub/\0*<>|:")
             }, warnings.Select(InspectDiagnostic));
         }
 

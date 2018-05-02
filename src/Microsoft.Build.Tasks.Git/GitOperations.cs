@@ -159,7 +159,7 @@ namespace Microsoft.Build.Tasks.Git
             return repository.Head.Tip?.Sha;
         }
 
-        public static ITaskItem[] GetSourceRoots(this IRepository repository, Action<string, string[]> logWarning)
+        public static ITaskItem[] GetSourceRoots(this IRepository repository, Action<string, object[]> logWarning)
         {
             var result = new List<TaskItem>();
             var repoRoot = GetRepositoryRoot(repository);
@@ -175,7 +175,7 @@ namespace Microsoft.Build.Tasks.Git
             }
             else
             {
-                logWarning("RepositoryWithoutCommit_SourceLink", Array.Empty<string>());
+                logWarning(Resources.RepositoryWithoutCommit_SourceLink, Array.Empty<object>());
             }
 
             foreach (var submodule in repository.Submodules)
@@ -183,7 +183,7 @@ namespace Microsoft.Build.Tasks.Git
                 var commitId = submodule.WorkDirCommitId;
                 if (commitId == null)
                 {
-                    logWarning("SubmoduleWithoutCommit_SourceLink", new[] { submodule.Name });
+                    logWarning(Resources.SubmoduleWithoutCommit_SourceLink, new[] { submodule.Name });
                     continue;
                 }
 
@@ -200,7 +200,7 @@ namespace Microsoft.Build.Tasks.Git
                 var submoduleUrl = NormalizeUrl(submodule.Url, repoRoot);
                 if (submoduleUrl == null)
                 {
-                    logWarning("InvalidSubmoduleUrl_SourceLink", new[] { submodule.Name, submodule.Url });
+                    logWarning(Resources.InvalidSubmoduleUrl_SourceLink, new[] { submodule.Name, submodule.Url });
                     continue;
                 }
 
@@ -211,7 +211,7 @@ namespace Microsoft.Build.Tasks.Git
                 }
                 catch
                 {
-                    logWarning("InvalidSubmodulePath_SourceLink", new[] { submodule.Name, submodule.Path });
+                    logWarning(Resources.InvalidSubmodulePath_SourceLink, new[] { submodule.Name, submodule.Path });
                     continue;
                 }
 

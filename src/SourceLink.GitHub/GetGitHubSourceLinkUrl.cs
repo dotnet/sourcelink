@@ -24,11 +24,6 @@ namespace Microsoft.SourceLink.GitHub
         [Output]
         public string SourceLinkUrl { get; set; }
 
-        public GetGitHubSourceLinkUrl()
-        {
-            TaskResources = Resources.ResourceManager;
-        }
-
         public override bool Execute()
         {
             if (!string.IsNullOrEmpty(SourceRoot.GetMetadata(Names.SourceRoot.SourceLinkUrl)) ||
@@ -41,7 +36,7 @@ namespace Microsoft.SourceLink.GitHub
             var repoUrl = SourceRoot.GetMetadata(Names.SourceRoot.RepositoryUrl);
             if (!Uri.TryCreate(repoUrl, UriKind.Absolute, out var repoUri))
             {
-                Log.LogErrorFromResources("ValueOfOWithIdentityIsInvalid", Names.SourceRoot.RepositoryUrlFullName, SourceRoot.ItemSpec, repoUrl);
+                Log.LogError(Resources.ValueOfOWithIdentityIsInvalid, Names.SourceRoot.RepositoryUrlFullName, SourceRoot.ItemSpec, repoUrl);
                 return false;
             }
 
@@ -58,7 +53,7 @@ namespace Microsoft.SourceLink.GitHub
             string revisionId = SourceRoot.GetMetadata(Names.SourceRoot.RevisionId);
             if (revisionId == null || revisionId.Length != 40 || !revisionId.All(IsHexDigit))
             {
-                Log.LogErrorFromResources("ValueOfWithIdentityIsNotValidCommitHash", Names.SourceRoot.RevisionIdFullName, SourceRoot.ItemSpec, revisionId);
+                Log.LogError(Resources.ValueOfWithIdentityIsNotValidCommitHash, Names.SourceRoot.RevisionIdFullName, SourceRoot.ItemSpec, revisionId);
                 return false;
             }
 

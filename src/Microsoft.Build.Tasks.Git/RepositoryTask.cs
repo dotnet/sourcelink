@@ -13,11 +13,6 @@ namespace Microsoft.Build.Tasks.Git
 
         protected abstract bool Execute(Repository repo);
 
-        public RepositoryTask()
-        {
-            TaskResources = Resources.ResourceManager;
-        }
-
         public sealed override bool Execute()
         {
             Repository repo;
@@ -33,7 +28,7 @@ namespace Microsoft.Build.Tasks.Git
 
             if (repo.Info.IsBare)
             {
-                Log.LogErrorFromResources("BareRepositoriesNotSupported", LocalRepositoryId);
+                Log.LogError(Resources.BareRepositoriesNotSupported, LocalRepositoryId);
                 return false;
             }
 

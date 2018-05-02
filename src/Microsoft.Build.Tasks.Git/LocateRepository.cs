@@ -20,7 +20,7 @@ namespace Microsoft.Build.Tasks.Git
 
             if (Id == null)
             {
-                Log.LogErrorFromResources("UnableToLocateRepository", Directory);
+                Log.LogError(Resources.UnableToLocateRepository, Directory);
                 return false;
             }
 

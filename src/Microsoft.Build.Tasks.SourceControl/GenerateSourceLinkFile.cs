@@ -17,11 +17,6 @@ namespace Microsoft.Build.Tasks.SourceControl
         [Required]
         public string OutputFile { get; set; }
 
-        public GenerateSourceLinkFile()
-        {
-            TaskResources = Resources.ResourceManager;
-        }
-
         public override bool Execute()
         {
             string JsonEscape(string str)
@@ -40,14 +35,14 @@ namespace Microsoft.Build.Tasks.SourceControl
 
                 if (!localPath.EndsWithSeparator())
                 {
-                    Log.LogErrorFromResources("MustEndWithDirectorySeparator", (isMapped ? Names.SourceRoot.MappedPathFullName : Names.SourceRoot.Name), localPath);
+                    Log.LogError(Resources.MustEndWithDirectorySeparator, (isMapped ? Names.SourceRoot.MappedPathFullName : Names.SourceRoot.Name), localPath);
                     success = false;
                     continue;
                 }
 
                 if (localPath.Contains('*'))
                 {
-                    Log.LogErrorFromResources("MustNotContainWildcard", (isMapped ? Names.SourceRoot.MappedPathFullName : Names.SourceRoot.Name), localPath);
+                    Log.LogError(Resources.MustNotContainWildcard, (isMapped ? Names.SourceRoot.MappedPathFullName : Names.SourceRoot.Name), localPath);
                     success = false;
                     continue;
                 }
@@ -59,7 +54,7 @@ namespace Microsoft.Build.Tasks.SourceControl
                     // SourceRoots can be specified by the project to make other features like deterministic paths.
                     if (!string.IsNullOrEmpty(root.GetMetadata(Names.SourceRoot.SourceControl)))
                     {
-                        Log.LogErrorFromResources("IsEmpty", Names.SourceRoot.SourceLinkUrlFullName, root.ItemSpec);
+                        Log.LogError(Resources.IsEmpty, Names.SourceRoot.SourceLinkUrlFullName, root.ItemSpec);
                         success = false;
                     }
                     
@@ -68,7 +63,7 @@ namespace Microsoft.Build.Tasks.SourceControl
 
                 if (url.Count(c => c == '*') != 1)
                 {
-                    Log.LogErrorFromResources("MustContainSingleWildcard", Names.SourceRoot.SourceLinkUrlFullName, url);
+                    Log.LogError(Resources.MustContainSingleWildcard, Names.SourceRoot.SourceLinkUrlFullName, url);
                     success = false;
                     continue;
                 }
@@ -101,7 +96,7 @@ namespace Microsoft.Build.Tasks.SourceControl
 
             if (first)
             {
-                Log.LogWarningFromResources("NoItemsSpecifiedSourceLinkEmpty", Names.SourceRoot.Name);
+                Log.LogWarning(Resources.NoItemsSpecifiedSourceLinkEmpty, Names.SourceRoot.Name);
             }
 
             return TryWriteSourceLinkFile(result.ToString());
@@ -116,7 +111,7 @@ namespace Microsoft.Build.Tasks.SourceControl
             }
             catch (Exception e)
             {
-                Log.LogErrorFromResources("ErrorWritingToSourceLinkFile", OutputFile, e.Message);
+                Log.LogError(Resources.ErrorWritingToSourceLinkFile, OutputFile, e.Message);
                 return false;
             }
         }
