@@ -248,8 +248,14 @@ namespace Microsoft.Build.Tasks.Git
 
                 var containingDirectory = GetContainingRepository(fullPath, directoryTree);
 
-                // libgit API doesn't work with backslashes:
-                return containingDirectory?.GetRepository(repositoryFactory).Ignore.IsPathIgnored(fullPath.Replace('\\', '/')) == true;
+                // Files that are outside of the repository are considered untracked.
+                if (containingDirectory == null)
+                {
+                    return true;
+                }   
+
+                // Note: libgit API doesn't work with backslashes.
+                return containingDirectory.GetRepository(repositoryFactory).Ignore.IsPathIgnored(fullPath.Replace('\\', '/'));
             }).ToArray();
         }
 

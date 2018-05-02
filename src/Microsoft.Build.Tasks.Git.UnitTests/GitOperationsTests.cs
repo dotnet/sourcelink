@@ -425,6 +425,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     new MockItem(@"..\sub\1\x.cs"),       // ignored in the main repository, but not in the submodule (which has a priority)
                     new MockItem(@"../sub/2/obj/b.cs"),   // ignored in submodule #2
                     new MockItem(@"d.cs"),                // not ignored
+                    new MockItem(@"..\..\w.cs"),          // outside of repo
+                    new MockItem(@"D:\w.cs"),             // outside of repo
                 },
                 projectDirectory: Path.Combine(s_root, "p"),
                 root => subRepos[root]);
@@ -432,7 +434,9 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             AssertEx.Equal(new[] 
             {
                 "../sub/2/obj/b.cs",
-                "d.cs"
+                "d.cs",
+                @"..\..\w.cs",
+                @"D:\w.cs"
             }, actual.Select(item => item.ItemSpec));
         }
 
