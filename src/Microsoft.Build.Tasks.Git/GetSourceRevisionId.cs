@@ -10,10 +10,9 @@ namespace Microsoft.Build.Tasks.Git
         [Output]
         public string RevisionId { get; private set; }
 
-        protected override bool Execute(Repository repo)
+        protected override void Execute(Repository repo)
         {
             RevisionId = repo.GetRevisionId();
-            return true;
         }
     }
 }

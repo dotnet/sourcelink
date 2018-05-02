@@ -324,6 +324,23 @@ namespace Microsoft.Build.Tasks.SourceControl.UnitTests
             Assert.False(AssertEqualityComparer<T>.IsNull(@object), message);
         }
 
+        // compares against a baseline
+        public static void AssertEqualToleratingWhitespaceDifferences(
+            string expected,
+            string actual,
+            bool escapeQuotes = true,
+            [CallerFilePath]string expectedValueSourcePath = null,
+            [CallerLineNumber]int expectedValueSourceLine = 0)
+        {
+            var normalizedExpected = NormalizeWhitespace(expected);
+            var normalizedActual = NormalizeWhitespace(actual);
+
+            if (normalizedExpected != normalizedActual)
+            {
+                Assert.True(false, GetAssertMessage(expected, actual, escapeQuotes, expectedValueSourcePath, expectedValueSourceLine));
+            }
+        }
+
         public static void ThrowsArgumentNull(string parameterName, Action del)
         {
             try
@@ -396,6 +413,11 @@ namespace Microsoft.Build.Tasks.SourceControl.UnitTests
             }
 
             return output.ToString();
+        }
+
+        public static string GetAssertMessage(string expected, string actual, bool escapeQuotes = false, string expectedValueSourcePath = null, int expectedValueSourceLine = 0)
+        {
+            return GetAssertMessage(DiffUtil.Lines(expected), DiffUtil.Lines(actual), escapeQuotes, expectedValueSourcePath, expectedValueSourceLine);
         }
 
         public static string GetAssertMessage<T>(IEnumerable<T> expected, IEnumerable<T> actual, bool escapeQuotes, string expectedValueSourcePath = null, int expectedValueSourceLine = 0)

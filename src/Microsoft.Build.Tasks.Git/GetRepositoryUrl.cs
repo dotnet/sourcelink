@@ -12,10 +12,9 @@ namespace Microsoft.Build.Tasks.Git
         [Output]
         public string Url { get; private set; }
 
-        protected override bool Execute(Repository repo)
+        protected override void Execute(Repository repo)
         {
             Url = repo.GetRepositoryUrl(RemoteName);
-            return true;
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Microsoft.Build.Tasks.Git
         [Required]
         public string LocalRepositoryId { get; set; }
 
-        protected abstract bool Execute(Repository repo);
+        protected abstract void Execute(Repository repo);
 
         public sealed override bool Execute()
         {
@@ -36,14 +36,15 @@ namespace Microsoft.Build.Tasks.Git
             {
                 try
                 {
-                    return Execute(repo);
+                    Execute(repo);
                 }
                 catch (LibGit2SharpException e)
                 {
                     Log.LogErrorFromException(e);
-                    return false;
                 }
             }
+
+            return !Log.HasLoggedErrors;
         }
     }
 }

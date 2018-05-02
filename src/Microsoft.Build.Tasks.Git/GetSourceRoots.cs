@@ -21,10 +21,9 @@ namespace Microsoft.Build.Tasks.Git
         [Output]
         public ITaskItem[] Roots { get; private set; }
 
-        protected override bool Execute(Repository repo)
+        protected override void Execute(Repository repo)
         {
             Roots = repo.GetSourceRoots(Log.LogWarning);
-            return true;
         }
     }
 }
