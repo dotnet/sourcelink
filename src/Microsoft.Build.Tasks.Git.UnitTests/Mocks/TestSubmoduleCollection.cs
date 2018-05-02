@@ -15,6 +15,6 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         }
 
         public override IEnumerator<Submodule> GetEnumerator()
-            => _submodules.GetEnumerator();
+            => _submodules?.GetEnumerator() ?? throw new LibGit2SharpException("Submodules not supported");
     }
 }
