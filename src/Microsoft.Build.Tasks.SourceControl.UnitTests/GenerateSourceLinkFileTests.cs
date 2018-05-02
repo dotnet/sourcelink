@@ -40,14 +40,14 @@ namespace Microsoft.Build.Tasks.SourceControl.UnitTests
                 BuildEngine = engine,
                 SourceRoots = new[]
                 {
-                    new MockItem(@"/_\_""_/", ("SourceLinkUrl", "https://raw.githubusercontent.com/repo/*"), ("SourceControl", "git")),
+                    new MockItem(@"/_""_/", ("SourceLinkUrl", "https://raw.githubusercontent.com/repo/*"), ("SourceControl", "git")),
                 },
             };
 
             var content = task.GenerateSourceLinkContent();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
 
-            AssertEx.AreEqual(@"{""documents"":{""/_\\_\""_/*"":""https://raw.githubusercontent.com/repo/*""}}", content);
+            AssertEx.AreEqual(@"{""documents"":{""/_\""_/*"":""https://raw.githubusercontent.com/repo/*""}}", content);
         }
 
         [Fact]
@@ -131,9 +131,9 @@ namespace Microsoft.Build.Tasks.SourceControl.UnitTests
 
             var content = task.GenerateSourceLinkContent();
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
-                "ERROR : " + string.Format(Resources.IsEmpty, "SourceRoot.SourceLinkUrl", @"C:\src\") + Environment.NewLine +
-                "ERROR : " + string.Format(Resources.MustNotContainWildcard, "SourceRoot", @"C:\x\b\*\") + Environment.NewLine +
-                "ERROR : " + string.Format(Resources.MustEndWithDirectorySeparator, "SourceRoot", @"C:\x\c") + Environment.NewLine +
+                "ERROR : " + string.Format(Resources.IsEmpty, "SourceRoot.SourceLinkUrl", MockItem.AdjustSeparators(@"C:\src\")) + Environment.NewLine +
+                "ERROR : " + string.Format(Resources.MustNotContainWildcard, "SourceRoot", MockItem.AdjustSeparators(@"C:\x\b\*\")) + Environment.NewLine +
+                "ERROR : " + string.Format(Resources.MustEndWithDirectorySeparator, "SourceRoot", MockItem.AdjustSeparators(@"C:\x\c")) + Environment.NewLine +
                 "ERROR : " + string.Format(Resources.MustContainSingleWildcard, "SourceRoot.SourceLinkUrl", "http://a/**"), engine.Log);
 
             Assert.Null(content);
