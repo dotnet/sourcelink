@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.Build.Framework;
 
@@ -10,13 +11,20 @@ namespace Microsoft.Build.Tasks.SourceControl.UnitTests
 {
     public sealed class MockItem : ITaskItem
     {
+        private readonly Dictionary<string, string> _metadata = new Dictionary<string, string>();
+
         public static string AdjustSeparators(string path)
             => Path.DirectorySeparatorChar == '/' ? path.Replace('\\', '/') : path;
 
-        public MockItem(string spec)
+        public MockItem(string spec, params (string, string)[] metadata)
         {
             // msbuild normalizes paths on non-Windows like so:
             ItemSpec = AdjustSeparators(spec);
+
+            foreach (var (name, value) in metadata)
+            {
+                SetMetadata(name, value);
+            }
         }
 
         public string ItemSpec { get; set; }
@@ -37,7 +45,7 @@ namespace Microsoft.Build.Tasks.SourceControl.UnitTests
 
         public string GetMetadata(string metadataName)
         {
-            throw new NotImplementedException();
+            return _metadata.TryGetValue(metadataName, out var value) ? value : null;
         }
 
         public void RemoveMetadata(string metadataName)
@@ -47,7 +55,7 @@ namespace Microsoft.Build.Tasks.SourceControl.UnitTests
 
         public void SetMetadata(string metadataName, string metadataValue)
         {
-            throw new NotImplementedException();
+            _metadata[metadataName] = metadataValue;
         }
     }
 }

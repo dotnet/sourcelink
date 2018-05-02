@@ -19,6 +19,17 @@ namespace Microsoft.Build.Tasks.SourceControl
 
         public override bool Execute()
         {
+            var content = GenerateSourceLinkContent();
+            if (content != null)
+            {
+                WriteSourceLinkFile(content);
+            }
+
+            return !Log.HasLoggedErrors;
+        }
+
+        internal string GenerateSourceLinkContent()
+        {
             string JsonEscape(string str)
                 => str.Replace(@"\", @"\\").Replace("\"", "\\\"");
 
@@ -57,7 +68,7 @@ namespace Microsoft.Build.Tasks.SourceControl
                         Log.LogError(Resources.IsEmpty, Names.SourceRoot.SourceLinkUrlFullName, root.ItemSpec);
                         success = false;
                     }
-                    
+
                     continue;
                 }
 
@@ -91,7 +102,7 @@ namespace Microsoft.Build.Tasks.SourceControl
 
             if (!success)
             {
-                return false;
+                return null;
             }
 
             if (first)
@@ -99,20 +110,18 @@ namespace Microsoft.Build.Tasks.SourceControl
                 Log.LogWarning(Resources.NoItemsSpecifiedSourceLinkEmpty, Names.SourceRoot.Name);
             }
 
-            return TryWriteSourceLinkFile(result.ToString());
+            return result.ToString();
         }
 
-        private bool TryWriteSourceLinkFile(string content)
+        private void WriteSourceLinkFile(string content)
         {
             try
             {
                 File.WriteAllText(OutputFile, content);
-                return true;
             }
             catch (Exception e)
             {
                 Log.LogError(Resources.ErrorWritingToSourceLinkFile, OutputFile, e.Message);
-                return false;
             }
         }
     }

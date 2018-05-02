@@ -26,25 +26,31 @@ namespace Microsoft.SourceLink.GitHub
 
         public override bool Execute()
         {
+            ExecuteImpl();
+            return !Log.HasLoggedErrors;
+        }
+
+        private void ExecuteImpl()
+        {
             if (!string.IsNullOrEmpty(SourceRoot.GetMetadata(Names.SourceRoot.SourceLinkUrl)) ||
                 !string.Equals(SourceRoot.GetMetadata(Names.SourceRoot.SourceControl), SourceControlName, StringComparison.OrdinalIgnoreCase))
             {
                 SourceLinkUrl = NotApplicableValue;
-                return true;
+                return;
             }
 
             var repoUrl = SourceRoot.GetMetadata(Names.SourceRoot.RepositoryUrl);
             if (!Uri.TryCreate(repoUrl, UriKind.Absolute, out var repoUri))
             {
                 Log.LogError(Resources.ValueOfOWithIdentityIsInvalid, Names.SourceRoot.RepositoryUrlFullName, SourceRoot.ItemSpec, repoUrl);
-                return false;
+                return;
             }
 
             if (!repoUri.Host.EndsWith("." + DefaultDomain, StringComparison.OrdinalIgnoreCase) &&
                 !repoUri.Host.Equals(DefaultDomain, StringComparison.OrdinalIgnoreCase))
             {
                 SourceLinkUrl = NotApplicableValue;
-                return true;
+                return;
             }
 
             bool IsHexDigit(char c)
@@ -54,7 +60,7 @@ namespace Microsoft.SourceLink.GitHub
             if (revisionId == null || revisionId.Length != 40 || !revisionId.All(IsHexDigit))
             {
                 Log.LogError(Resources.ValueOfWithIdentityIsNotValidCommitHash, Names.SourceRoot.RevisionIdFullName, SourceRoot.ItemSpec, revisionId);
-                return false;
+                return;
             }
 
             var relativeUrl = repoUri.LocalPath.TrimEnd('/');
@@ -67,7 +73,6 @@ namespace Microsoft.SourceLink.GitHub
             }
 
             SourceLinkUrl = new Uri(s_rawGitHub, relativeUrl).ToString() + "/" + revisionId + "/*";
-            return true;
         }
     }
 }
