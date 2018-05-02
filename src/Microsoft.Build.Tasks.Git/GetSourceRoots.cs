@@ -23,7 +23,7 @@ namespace Microsoft.Build.Tasks.Git
 
         protected override bool Execute(Repository repo)
         {
-            Roots = repo.GetSourceRoots(Log.LogWarningFromResources);
+            Roots = repo.GetSourceRoots(Log.LogWarning);
             return true;
         }
     }

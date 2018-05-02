@@ -25,11 +25,6 @@ namespace Microsoft.SourceLink.VSTS.Git
         [Output]
         public string SourceLinkUrl { get; set; }
 
-        public GetVstsGitSourceLinkUrl()
-        {
-            TaskResources = Resources.ResourceManager;
-        }
-
         public override bool Execute()
         {
             if (!string.IsNullOrEmpty(SourceRoot.GetMetadata(Names.SourceRoot.SourceLinkUrl)) ||
@@ -42,7 +37,7 @@ namespace Microsoft.SourceLink.VSTS.Git
             var repoUrl = SourceRoot.GetMetadata(Names.SourceRoot.RepositoryUrl);
             if (!Uri.TryCreate(repoUrl, UriKind.Absolute, out var repoUri))
             {
-                Log.LogErrorFromResources("ValueOfOWithIdentityIsInvalid", Names.SourceRoot.RepositoryUrlFullName, SourceRoot.ItemSpec, repoUrl);
+                Log.LogError(Resources.ValueOfOWithIdentityIsInvalid, Names.SourceRoot.RepositoryUrlFullName, SourceRoot.ItemSpec, repoUrl);
                 return false;
             }
 
@@ -129,7 +124,7 @@ namespace Microsoft.SourceLink.VSTS.Git
             {
                 if (!parse(variable.Value))
                 {
-                    Log.LogErrorFromResources("EnvironmentVariableIsNotAlistOfUrlPairs", variable.Key, variable.Value);
+                    Log.LogError(Resources.EnvironmentVariableIsNotAlistOfUrlPairs, variable.Key, variable.Value);
                     return null;
                 }
             }
@@ -180,7 +175,7 @@ namespace Microsoft.SourceLink.VSTS.Git
             string revisionId = SourceRoot.GetMetadata(Names.SourceRoot.RevisionId);
             if (revisionId == null || revisionId.Length != 40 || !revisionId.All(IsHexDigit))
             {
-                Log.LogErrorFromResources("ValueOfWithIdentityIsNotValidCommitHash", Names.SourceRoot.RevisionIdFullName, SourceRoot.ItemSpec, revisionId);
+                Log.LogError(Resources.ValueOfWithIdentityIsNotValidCommitHash, Names.SourceRoot.RevisionIdFullName, SourceRoot.ItemSpec, revisionId);
                 return null;
             }
 
