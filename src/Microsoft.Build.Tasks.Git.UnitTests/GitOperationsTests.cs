@@ -400,7 +400,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             string gitRoot = s_root.Replace('\\', '/');
 
             var repo = new TestRepository(
-                workingDir: @"C:\src",
+                workingDir: s_root,
                 commitSha: "0000000000000000000000000000000000000000",
                 submodules: new[]
                 {
@@ -433,10 +433,10 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             AssertEx.Equal(new[] 
             {
-                "../sub/2/obj/b.cs",
-                "d.cs",
-                @"..\..\w.cs",
-                @"D:\w.cs"
+                MockItem.AdjustSeparators("../sub/2/obj/b.cs"),
+                MockItem.AdjustSeparators("d.cs"),
+                MockItem.AdjustSeparators(@"..\..\w.cs"),
+                MockItem.AdjustSeparators(@"D:\w.cs")
             }, actual.Select(item => item.ItemSpec));
         }
 
@@ -479,9 +479,9 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             AssertEx.Equal(new[]
             {
-                @"obj\a.cs",
-                @"..\2\obj\b.cs",
-                @"..\..\c.cs"
+                MockItem.AdjustSeparators(@"obj\a.cs"),
+                MockItem.AdjustSeparators(@"..\2\obj\b.cs"),
+                MockItem.AdjustSeparators(@"..\..\c.cs")
             }, actual.Select(item => item.ItemSpec));
         }
     }

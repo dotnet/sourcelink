@@ -10,10 +10,13 @@ namespace Microsoft.Build.Tasks.SourceControl.UnitTests
 {
     public sealed class MockItem : ITaskItem
     {
+        public static string AdjustSeparators(string path)
+            => Path.DirectorySeparatorChar == '/' ? path.Replace('\\', '/') : path;
+
         public MockItem(string spec)
         {
             // msbuild normalizes paths on non-Windows like so:
-            ItemSpec = Path.DirectorySeparatorChar == '/' ? spec.Replace('\\', '/') : spec;
+            ItemSpec = AdjustSeparators(spec);
         }
 
         public string ItemSpec { get; set; }
