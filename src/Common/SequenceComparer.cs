@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Microsoft.Build.Tasks
+namespace Microsoft.Build.Tasks.SourceControl
 {
     internal sealed class SequenceComparer<T> : IComparer<T[]>
         where T : IComparable<T>

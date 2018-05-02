@@ -61,14 +61,9 @@
           BeforeTargets="CoreCompile"
           Condition="'$(EmbedUntrackedSources)' == 'true' and '$(EmbedAllSources)' != 'true' and '$(DebugType)' != 'none'">
 
-    <GetUntrackedFiles LocalRepositoryId="$(_SourceControlLocalRepositoryId)" Files="@(Compile)">
+    <GetUntrackedFiles LocalRepositoryId="$(_SourceControlLocalRepositoryId)" ProjectDirectory="$(MSBuildProjectDirectory)" Files="@(Compile)">
       <Output TaskParameter="UntrackedFiles" ItemName="EmbeddedFiles" />
     </GetUntrackedFiles>
-    
-    <!-- Add files that do not belong to the repository or any source root. -->
-    <Microsoft.Build.Tasks.SourceControl.GetExternalFiles Directories="@(SourceRoot)" Files="@(Compile)">
-      <Output TaskParameter="ExternalFiles" ItemName="EmbeddedFiles" />
-    </Microsoft.Build.Tasks.SourceControl.GetExternalFiles>
   </Target>
 
   <!--

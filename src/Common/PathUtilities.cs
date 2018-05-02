@@ -5,25 +5,28 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
-namespace Microsoft.Build.Tasks
+namespace Microsoft.Build.Tasks.SourceControl
 {
     internal static class PathUtilities
     {
         private static readonly char[] s_directorySeparators = { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar };
-        private const string UncPrefix = @"\\\\";
+        private const string UncPrefix = @"\\";
         private const string UnixRoot = "/";
 
-        public static string[] Split(string path)
+        public static string[] Split(string fullPath)
         {
-            var result = path.Split(s_directorySeparators, StringSplitOptions.RemoveEmptyEntries);
+            var result = fullPath.Split(s_directorySeparators, StringSplitOptions.RemoveEmptyEntries);
 
-            if (Path.DirectorySeparatorChar == '\\' && path.StartsWith(UncPrefix, StringComparison.Ordinal))
+            if (Path.DirectorySeparatorChar == '\\')
             {
-                var list = new List<string> { UncPrefix };
-                list.AddRange(result);
-                result = list.ToArray();
+                if (fullPath.StartsWith(UncPrefix, StringComparison.Ordinal))
+                {
+                    var list = new List<string> { UncPrefix };
+                    list.AddRange(result);
+                    result = list.ToArray();
+                }
             }
-            else if (path.StartsWith(UnixRoot, StringComparison.Ordinal))
+            else if (fullPath.StartsWith(UnixRoot, StringComparison.Ordinal))
             {
                 var list = new List<string> { UnixRoot };
                 list.AddRange(result);

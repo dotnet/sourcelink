@@ -13,12 +13,15 @@ namespace Microsoft.Build.Tasks.Git
         [Required]
         public ITaskItem[] Files { get; set; }
 
+        [Required]
+        public string ProjectDirectory { get; set; }
+
         [Output]
         public ITaskItem[] UntrackedFiles { get; set; }
 
         protected override bool Execute(Repository repo)
         {
-            UntrackedFiles = repo.GetUntrackedFiles(Files);
+            UntrackedFiles = repo.GetUntrackedFiles(Files, ProjectDirectory, dir => new Repository(dir));
             return true;
         }
     }

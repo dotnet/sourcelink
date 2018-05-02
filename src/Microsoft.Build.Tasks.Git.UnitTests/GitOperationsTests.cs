@@ -11,6 +11,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 {
     public class GitOperationsTests
     {
+        private static readonly bool IsUnix = Path.DirectorySeparatorChar == '/';
         private static readonly char s = Path.DirectorySeparatorChar;
         private static readonly string s_root = (s == '/') ? "/usr/src" : @"C:\src";
 
@@ -288,6 +289,205 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 "InvalidSubmoduleUrl_SourceLink: 1,http:///",
                 "InvalidSubmodulePath_SourceLink: 2,sub/\0*<>|:"
             }, warnings.Select(InspectDiagnostic));
+        }
+
+        [ConditionalTheory(typeof(WindowsOnly))]
+        [InlineData(@"C:\", null)]
+        [InlineData(@"C:\x", null)]
+        [InlineData(@"C:\x\y\z", null)]
+        [InlineData(@"C:\src", null)]
+        [InlineData(@"C:\src\", null)]
+        [InlineData(@"C:\src\a\x.cs", @"C:\src\a")]
+        [InlineData(@"C:\src\b\x.cs", @"C:\src")]
+        [InlineData(@"C:\src\ab\x.cs", @"C:\src")]
+        [InlineData(@"C:\src\a\b\x.cs", @"C:\src\a")]
+        [InlineData(@"C:\src\c\x.cs", @"C:\src\c")]
+        [InlineData(@"C:\src\c", @"C:\src")]
+        [InlineData(@"C:\src\c\", @"C:\src")]
+        [InlineData(@"C:\src\c.cs", @"C:\src")]
+        [InlineData(@"C:\src\c\x\x.cs", @"C:\src\c\x")]
+        [InlineData(@"C:\src\d\x.cs", @"C:\src")]
+        [InlineData(@"C:\src\e\x.cs", @"C:\src\e")]
+        public void GetContainingRepository_Windows(string path, string expectedDirectory)
+        {
+            var actual = GitOperations.GetContainingRepository(path,
+                new GitOperations.SourceControlDirectory("", null,
+                    new List<GitOperations.SourceControlDirectory>
+                    {
+                        new GitOperations.SourceControlDirectory("C:", null, new List<GitOperations.SourceControlDirectory>
+                        {
+                            new GitOperations.SourceControlDirectory("src", @"C:\src", new List<GitOperations.SourceControlDirectory>
+                            {
+                                new GitOperations.SourceControlDirectory("a", @"C:\src\a"),
+                                new GitOperations.SourceControlDirectory("c", @"C:\src\c", new List<GitOperations.SourceControlDirectory>
+                                {
+                                    new GitOperations.SourceControlDirectory("x", @"C:\src\c\x")
+                                }),
+                                new GitOperations.SourceControlDirectory("e", @"C:\src\e")
+                            }),
+                        })
+                    }));
+
+            Assert.Equal(expectedDirectory, actual?.RepositoryFullPath);
+        }
+
+        [ConditionalTheory(typeof(UnixOnly))]
+        [InlineData(@"/", null)]
+        [InlineData(@"/x", null)]
+        [InlineData(@"/x/y/z", null)]
+        [InlineData(@"/src", null)]
+        [InlineData(@"/src/", null)]
+        [InlineData(@"/src/a/x.cs", @"/src/a")]
+        [InlineData(@"/src/b/x.cs", @"/src")]
+        [InlineData(@"/src/ab/x.cs", @"/src")]
+        [InlineData(@"/src/a/b/x.cs", @"/src/a")]
+        [InlineData(@"/src/c/x.cs", @"/src/c")]
+        [InlineData(@"/src/c", @"/src")]
+        [InlineData(@"/src/c/", @"/src")]
+        [InlineData(@"/src/c.cs", @"/src")]
+        [InlineData(@"/src/c/x/x.cs", @"/src/c/x")]
+        [InlineData(@"/src/d/x.cs", @"/src")]
+        [InlineData(@"/src/e/x.cs", @"/src/e")]
+        public void GetContainingRepository_Unix(string path, string expectedDirectory)
+        {
+            var actual = GitOperations.GetContainingRepository(path,
+                new GitOperations.SourceControlDirectory("", null,
+                    new List<GitOperations.SourceControlDirectory>
+                    {
+                        new GitOperations.SourceControlDirectory("/", null, new List<GitOperations.SourceControlDirectory>
+                        {
+                            new GitOperations.SourceControlDirectory("src", "/src", new List<GitOperations.SourceControlDirectory>
+                            {
+                                new GitOperations.SourceControlDirectory("a", "/src/a"),
+                                new GitOperations.SourceControlDirectory("c", "/src/c", new List<GitOperations.SourceControlDirectory>
+                                {
+                                    new GitOperations.SourceControlDirectory("x", "/src/c/x"),
+                                }),
+                                new GitOperations.SourceControlDirectory("e", "/src/e"),
+                            }),
+                        })
+                    }));
+
+            Assert.Equal(expectedDirectory, actual?.RepositoryFullPath);
+        }
+
+        [Fact]
+        public void BuildDirectoryTree()
+        {
+            var repo = new TestRepository(
+                workingDir: s_root,
+                commitSha: null,
+                submodules: new[]
+                {
+                    new TestSubmodule(null, "c/x", null, null),
+                    new TestSubmodule(null, "e", null, null),
+                    new TestSubmodule(null, "a", null, null),
+                    new TestSubmodule(null, "a/a/a/a/", null, null),
+                    new TestSubmodule(null, "c", null, null),
+                    new TestSubmodule(null, "a/z", null, null),
+                });
+
+            var root = GitOperations.BuildDirectoryTree(repo);
+
+            string inspect(GitOperations.SourceControlDirectory node)
+                => node.Name + (node.RepositoryFullPath != null ? $"!" : "") + "{" + string.Join(",", node.OrderedChildren.Select(inspect)) + "}";
+
+            var expected = IsUnix ?
+                "{/{usr{src!{a!{a{a{a!{}}},z!{}},c!{x!{}},e!{}}}}}" :
+                "{C:{src!{a!{a{a{a!{}}},z!{}},c!{x!{}},e!{}}}}";
+
+            Assert.Equal(expected, inspect(root));
+        }
+
+        [Fact]
+        public void GetUntrackedFiles_ProjectInMainRepoIncludesFilesInSubmodules()
+        {
+            string gitRoot = s_root.Replace('\\', '/');
+
+            var repo = new TestRepository(
+                workingDir: s_root,
+                commitSha: "0000000000000000000000000000000000000000",
+                submodules: new[]
+                {
+                    new TestSubmodule("1", "sub/1", "http://1.com", "1111111111111111111111111111111111111111"),
+                    new TestSubmodule("2", "sub/2", "http://2.com", "2222222222222222222222222222222222222222")
+                },
+                ignoredPaths: new[] { gitRoot + @"/c.cs", gitRoot + @"/p/d.cs", gitRoot + @"/sub/1/x.cs" });
+
+            var subRoot1 = Path.Combine(s_root, "sub", "1");
+            var subRoot2 = Path.Combine(s_root, "sub", "2");
+
+            var subRepos = new Dictionary<string, TestRepository>()
+            {
+                { subRoot1, new TestRepository(subRoot1, commitSha: null, ignoredPaths: new[] { gitRoot + @"/sub/1/obj/a.cs" }) },
+                { subRoot2, new TestRepository(subRoot2, commitSha: null, ignoredPaths: new[] { gitRoot + @"/sub/2/obj/b.cs" }) },
+            };
+
+            var actual = repo.GetUntrackedFiles(
+                new[]
+                {
+                    new MockItem(@"c.cs"),                         // not ignored
+                    new MockItem(@"..\sub\1\x.cs"),                // ignored in the main repository, but not in the submodule (which has a priority)
+                    new MockItem(@"../sub/2/obj/b.cs"),            // ignored in submodule #2
+                    new MockItem(@"d.cs"),                         // not ignored
+                    new MockItem(@"..\..\w.cs"),                   // outside of repo
+                    new MockItem(IsUnix ? "/d/w.cs" : @"D:\w.cs"), // outside of repo
+                },
+                projectDirectory: Path.Combine(s_root, "p"),
+                root => subRepos[root]);
+
+            AssertEx.Equal(new[] 
+            {
+                MockItem.AdjustSeparators("../sub/2/obj/b.cs"),
+                MockItem.AdjustSeparators("d.cs"),
+                MockItem.AdjustSeparators(@"..\..\w.cs"),
+                MockItem.AdjustSeparators(IsUnix ? "/d/w.cs" : @"D:\w.cs")
+            }, actual.Select(item => item.ItemSpec));
+        }
+
+        [Fact]
+        public void GetUntrackedFiles_ProjectInSubmodule()
+        {
+            string gitRoot = s_root.Replace('\\', '/');
+
+            var repo = new TestRepository(
+                workingDir: s_root,
+                commitSha: "0000000000000000000000000000000000000000",
+                submodules: new[]
+                {
+                    new TestSubmodule("1", "sub/1", "http://1.com", "1111111111111111111111111111111111111111"),
+                    new TestSubmodule("2", "sub/2", "http://2.com", "2222222222222222222222222222222222222222")
+                },
+                ignoredPaths: new[] { gitRoot + "/c.cs", gitRoot + "/sub/1/x.cs" });
+
+            var subRoot1 = Path.Combine(s_root, "sub", "1");
+            var subRoot2 = Path.Combine(s_root, "sub", "2");
+
+            var subRepos = new Dictionary<string, TestRepository>()
+            {
+                { subRoot1, new TestRepository(subRoot1, commitSha: null, ignoredPaths: new[] { gitRoot + "/sub/1/obj/a.cs" }) },
+                { subRoot2, new TestRepository(subRoot2, commitSha: null, ignoredPaths: new[] { gitRoot + "/sub/2/obj/b.cs" }) },
+            };
+
+            var actual = repo.GetUntrackedFiles(
+                new[]
+                {
+                    new MockItem(@"c.cs"),           // not ignored
+                    new MockItem(@"x.cs"),           // ignored in the main repository, but not in the submodule (which has a priority)
+                    new MockItem(@"obj\a.cs"),       // ignored in submodule #1
+                    new MockItem(@"obj\b.cs"),       // not ignored
+                    new MockItem(@"..\2\obj\b.cs"),  // ignored in submodule #2
+                    new MockItem(@"..\..\c.cs"),     // ignored in main repo
+                },
+                projectDirectory: subRoot1,
+                root => subRepos[root]);
+
+            AssertEx.Equal(new[]
+            {
+                MockItem.AdjustSeparators(@"obj\a.cs"),
+                MockItem.AdjustSeparators(@"..\2\obj\b.cs"),
+                MockItem.AdjustSeparators(@"..\..\c.cs")
+            }, actual.Select(item => item.ItemSpec));
         }
     }
 }

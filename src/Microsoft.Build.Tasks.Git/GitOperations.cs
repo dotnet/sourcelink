@@ -233,21 +233,182 @@ namespace Microsoft.Build.Tasks.Git
             return Path.GetFullPath(repository.Info.WorkingDirectory).EndWithSeparator();
         }
 
-        public static ITaskItem[] GetUntrackedFiles(this IRepository repository, ITaskItem[] files)
+        public static ITaskItem[] GetUntrackedFiles(
+            this IRepository repository,
+            ITaskItem[] files, 
+            string projectDirectory,
+            Func<string, IRepository> repositoryFactory)
         {
-            var repoRoot = GetRepositoryRoot(repository);
+            var directoryTree = BuildDirectoryTree(repository);
 
-            var pathComparer = Path.DirectorySeparatorChar == '\\' ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
-
-            // TODO: 
-            // file.ItemSpec are relative to the project dir.
-            // Does gitlib handle backslashes on Windows?
-            // Consider using paths relative to the repo root to avoid GetFullPath.
             return files.Where(file =>
             {
-                var fullPath = Path.GetFullPath(file.ItemSpec);
-                return fullPath.StartsWith(repoRoot, pathComparer) && repository.Ignore.IsPathIgnored(fullPath);
+                // file.ItemSpec are relative to projectDirectory.
+                var fullPath = Path.GetFullPath(Path.Combine(projectDirectory, file.ItemSpec));
+
+                var containingDirectory = GetContainingRepository(fullPath, directoryTree);
+
+                // Files that are outside of the repository are considered untracked.
+                if (containingDirectory == null)
+                {
+                    return true;
+                }   
+
+                // Note: libgit API doesn't work with backslashes.
+                return containingDirectory.GetRepository(repositoryFactory).Ignore.IsPathIgnored(fullPath.Replace('\\', '/'));
             }).ToArray();
+        }
+
+        internal sealed class SourceControlDirectory
+        {
+            public readonly string Name;
+            public readonly List<SourceControlDirectory> OrderedChildren;
+
+            public string RepositoryFullPath;
+            private IRepository _lazyRepository;
+
+            public SourceControlDirectory(string name)
+                : this(name, null, new List<SourceControlDirectory>())
+            {
+            }
+
+            public SourceControlDirectory(string name, string repositoryFullPath)
+                : this(name, repositoryFullPath, new List<SourceControlDirectory>())
+            {
+            }
+
+            public SourceControlDirectory(string name, string repositoryFullPath, List<SourceControlDirectory> orderedChildren)
+            {
+                Name = name;
+                RepositoryFullPath = repositoryFullPath;
+                OrderedChildren = orderedChildren;
+            }
+
+            public void SetRepository(string fullPath, IRepository repository)
+            {
+                RepositoryFullPath = fullPath;
+                _lazyRepository = repository;
+            }
+
+            public int FindChildIndex(string name)
+                => BinarySearch(OrderedChildren, name, (n, v) => n.Name.CompareTo(v));
+
+            public IRepository GetRepository(Func<string, IRepository> repositoryFactory)
+                => _lazyRepository ?? (_lazyRepository = repositoryFactory(RepositoryFullPath));
+        }
+
+        internal static SourceControlDirectory BuildDirectoryTree(IRepository repository)
+        {
+            var repoRoot = Path.GetFullPath(repository.Info.WorkingDirectory);
+
+            var treeRoot = new SourceControlDirectory("");
+            AddTreeNode(treeRoot, repoRoot, repository);
+
+            foreach (var submodule in repository.Submodules)
+            {
+                string fullPath;
+
+                try
+                {
+                    fullPath = Path.GetFullPath(Path.Combine(repoRoot, submodule.Path));
+                }
+                catch
+                {
+                    // ignore submodules with bad paths
+                    continue;
+                }
+
+                AddTreeNode(treeRoot, fullPath, repositoryOpt: null);
+            }
+
+            return treeRoot;
+        }
+
+        private static void AddTreeNode(SourceControlDirectory root, string fullPath, IRepository repositoryOpt)
+        {
+            var segments = PathUtilities.Split(fullPath);
+
+            var node = root;
+
+            for (int i = 0; i < segments.Length; i++)
+            {
+                int index = node.FindChildIndex(segments[i]);
+                if (index >= 0)
+                {
+                    node = node.OrderedChildren[index];
+                }
+                else
+                {
+                    var newNode = new SourceControlDirectory(segments[i]);
+                    node.OrderedChildren.Insert(~index, newNode);
+                    node = newNode;
+                }
+
+                if (i == segments.Length - 1)
+                {
+                    node.SetRepository(fullPath, repositoryOpt);
+                }
+            }
+        }
+
+        // internal for testing
+        internal static SourceControlDirectory GetContainingRepository(string fullPath, SourceControlDirectory root)
+        {
+            var segments = PathUtilities.Split(fullPath);
+            Debug.Assert(segments.Length > 0);
+
+            Debug.Assert(root.RepositoryFullPath == null);
+            SourceControlDirectory containingRepositoryNode = null;
+
+            var node = root;
+            for (int i = 0; i < segments.Length - 1; i++)
+            {
+                int index = node.FindChildIndex(segments[i]);
+                if (index < 0)
+                {
+                    break;
+                }
+
+                node = node.OrderedChildren[index];
+                if (node.RepositoryFullPath != null)
+                {
+                    containingRepositoryNode = node;
+                }
+            }
+
+            return containingRepositoryNode;
+        }
+
+        private static readonly SequenceComparer<string> SplitPathComparer =
+             new SequenceComparer<string>(Path.DirectorySeparatorChar == '\\' ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
+
+        internal static int BinarySearch<T, TValue>(IReadOnlyList<T> list, TValue value, Func<T, TValue, int> compare)
+        {
+            var low = 0;
+            var high = list.Count - 1;
+
+            while (low <= high)
+            {
+                var middle = low + ((high - low) >> 1);
+                var midValue = list[middle];
+
+                var comparison = compare(midValue, value);
+                if (comparison == 0)
+                {
+                    return middle;
+                }
+
+                if (comparison > 0)
+                {
+                    high = middle - 1;
+                }
+                else
+                {
+                    low = middle + 1;
+                }
+            }
+
+            return ~low;
         }
     }
 }
