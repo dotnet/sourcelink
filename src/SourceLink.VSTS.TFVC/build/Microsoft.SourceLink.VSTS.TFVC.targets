@@ -9,16 +9,16 @@
     <_SourceLinkVstsTfvcAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\netcoreapp2.0\Microsoft.SourceLink.VSTS.TFVC.dll</_SourceLinkVstsTfvcAssemblyFile>
   </PropertyGroup>
 
-  <UsingTask TaskName="Microsoft.SourceLink.VSTS.TFVC.GetVstsTfvcSourceLinkUrl" AssemblyFile="$(_SourceLinkVstsTfvcAssemblyFile)"/>
+  <UsingTask TaskName="Microsoft.SourceLink.VSTS.TFVC.GetSourceLinkUrl" AssemblyFile="$(_SourceLinkVstsTfvcAssemblyFile)"/>
 
   <PropertyGroup>
-    <InitializeSourceRootSourceLinkUrlDependsOn>$(InitializeSourceRootSourceLinkUrlDependsOn);_InitializeVstsTfvcSourceLinkUrl</InitializeSourceRootSourceLinkUrlDependsOn>
+    <SourceLinkUrlInitializerTargets>$(SourceLinkUrlInitializerTargets);_InitializeVstsTfvcSourceLinkUrl</SourceLinkUrlInitializerTargets>
   </PropertyGroup>
 
   <Target Name="_InitializeVstsTfvcSourceLinkUrl" Inputs="@(SourceRoot)" Outputs="|%(Identity)|">
-    <Microsoft.SourceLink.VSTS.TFVC.GetVstsTfvcSourceLinkUrl SourceRoot="@(SourceRoot)">
+    <Microsoft.SourceLink.VSTS.TFVC.GetSourceLinkUrl SourceRoot="@(SourceRoot)">
       <Output TaskParameter="SourceLinkUrl" PropertyName="_SourceLinkUrlToUpdate"/>
-    </Microsoft.SourceLink.VSTS.TFVC.GetVstsTfvcSourceLinkUrl>
+    </Microsoft.SourceLink.VSTS.TFVC.GetSourceLinkUrl>
 
     <ItemGroup>
       <!-- Only update the SourceLinkUrl metadata if the SourceRoot belongs to this source control -->

@@ -4,7 +4,7 @@ using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using Microsoft.TeamFoundation.VersionControl.Client;
 
-namespace Microsoft.Build.Tasks.Git
+namespace SourceControlBuildTasks
 {
     public class LocateRepository : Task
     {

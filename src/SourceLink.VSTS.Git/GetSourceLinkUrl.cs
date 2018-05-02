@@ -10,7 +10,7 @@ using Microsoft.Build.Utilities;
 
 namespace Microsoft.SourceLink.VSTS.Git
 {
-    public sealed class GetVstsGitSourceLinkUrl : Task
+    public sealed class GetSourceLinkUrl : Task
     {
         private const string UrlMapEnvironmentVariableName = "STANDARD_CI_REPOSITORY_URL_MAP";
         private const string DefaultDomain = "visualstudio.com";

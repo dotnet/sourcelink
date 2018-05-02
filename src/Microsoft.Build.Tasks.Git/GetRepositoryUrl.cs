@@ -2,8 +2,9 @@
 
 using LibGit2Sharp;
 using Microsoft.Build.Framework;
+using Microsoft.Build.Tasks.Git;
 
-namespace Microsoft.Build.Tasks.Git
+namespace SourceControlBuildTasks
 {
     public sealed class GetRepositoryUrl : RepositoryTask
     {

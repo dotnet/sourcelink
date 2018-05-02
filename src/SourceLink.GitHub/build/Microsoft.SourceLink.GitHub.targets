@@ -9,16 +9,16 @@
     <_SourceLinkGitHubAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\netcoreapp2.0\Microsoft.SourceLink.GitHub.dll</_SourceLinkGitHubAssemblyFile>
   </PropertyGroup>
 
-  <UsingTask TaskName="Microsoft.SourceLink.GitHub.GetGitHubSourceLinkUrl" AssemblyFile="$(_SourceLinkGitHubAssemblyFile)"/>
+  <UsingTask TaskName="Microsoft.SourceLink.GitHub.GetSourceLinkUrl" AssemblyFile="$(_SourceLinkGitHubAssemblyFile)"/>
 
   <PropertyGroup>
-    <InitializeSourceRootSourceLinkUrlDependsOn>$(InitializeSourceRootSourceLinkUrlDependsOn);_InitializeGitHubSourceLinkUrl</InitializeSourceRootSourceLinkUrlDependsOn>
+    <SourceLinkUrlInitializerTargets>$(SourceLinkUrlInitializerTargets);_InitializeGitHubSourceLinkUrl</SourceLinkUrlInitializerTargets>
   </PropertyGroup>
 
   <Target Name="_InitializeGitHubSourceLinkUrl" Inputs="@(SourceRoot)" Outputs="|%(Identity)|">
-    <Microsoft.SourceLink.GitHub.GetGitHubSourceLinkUrl SourceRoot="@(SourceRoot)">
+    <Microsoft.SourceLink.GitHub.GetSourceLinkUrl SourceRoot="@(SourceRoot)">
       <Output TaskParameter="SourceLinkUrl" PropertyName="_SourceLinkUrlToUpdate"/>
-    </Microsoft.SourceLink.GitHub.GetGitHubSourceLinkUrl>
+    </Microsoft.SourceLink.GitHub.GetSourceLinkUrl>
 
     <ItemGroup>
       <!-- Only update the SourceLinkUrl metadata if the SourceRoot belongs to this source control -->
