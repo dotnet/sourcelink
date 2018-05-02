@@ -11,6 +11,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 {
     public class GitOperationsTests
     {
+        private static readonly bool IsUnix = Path.DirectorySeparatorChar == '/';
         private static readonly char s = Path.DirectorySeparatorChar;
         private static readonly string s_root = (s == '/') ? "/usr/src" : @"C:\src";
 
@@ -391,7 +392,11 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             string inspect(GitOperations.SourceControlDirectory node)
                 => node.Name + (node.RepositoryFullPath != null ? $"!" : "") + "{" + string.Join(",", node.OrderedChildren.Select(inspect)) + "}";
 
-            Assert.Equal(@"{C:{src!{a!{a{a{a!{}}},z!{}},c!{x!{}},e!{}}}}", inspect(root));
+            var expected = IsUnix ?
+                "{/{usr{src!{a!{a{a{a!{}}},z!{}},c!{x!{}},e!{}}}}}" :
+                "{C:{src!{a!{a{a{a!{}}},z!{}},c!{x!{}},e!{}}}}";
+
+            Assert.Equal(expected, inspect(root));
         }
 
         [Fact]
@@ -421,12 +426,12 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var actual = repo.GetUntrackedFiles(
                 new[]
                 {
-                    new MockItem(@"c.cs"),                // not ignored
-                    new MockItem(@"..\sub\1\x.cs"),       // ignored in the main repository, but not in the submodule (which has a priority)
-                    new MockItem(@"../sub/2/obj/b.cs"),   // ignored in submodule #2
-                    new MockItem(@"d.cs"),                // not ignored
-                    new MockItem(@"..\..\w.cs"),          // outside of repo
-                    new MockItem(@"D:\w.cs"),             // outside of repo
+                    new MockItem(@"c.cs"),                         // not ignored
+                    new MockItem(@"..\sub\1\x.cs"),                // ignored in the main repository, but not in the submodule (which has a priority)
+                    new MockItem(@"../sub/2/obj/b.cs"),            // ignored in submodule #2
+                    new MockItem(@"d.cs"),                         // not ignored
+                    new MockItem(@"..\..\w.cs"),                   // outside of repo
+                    new MockItem(IsUnix ? "/d/w.cs" : @"D:\w.cs"), // outside of repo
                 },
                 projectDirectory: Path.Combine(s_root, "p"),
                 root => subRepos[root]);
@@ -436,7 +441,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 MockItem.AdjustSeparators("../sub/2/obj/b.cs"),
                 MockItem.AdjustSeparators("d.cs"),
                 MockItem.AdjustSeparators(@"..\..\w.cs"),
-                MockItem.AdjustSeparators(@"D:\w.cs")
+                MockItem.AdjustSeparators(IsUnix ? "/d/w.cs" : @"D:\w.cs")
             }, actual.Select(item => item.ItemSpec));
         }
 
