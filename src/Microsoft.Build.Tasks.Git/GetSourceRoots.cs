@@ -2,6 +2,7 @@
 
 using LibGit2Sharp;
 using Microsoft.Build.Framework;
+using System.IO;
 
 namespace Microsoft.Build.Tasks.Git
 {
@@ -23,7 +24,7 @@ namespace Microsoft.Build.Tasks.Git
 
         protected override void Execute(Repository repo)
         {
-            Roots = repo.GetSourceRoots(Log.LogWarning);
+            Roots = repo.GetSourceRoots(Log.LogWarning, File.Exists);
         }
     }
 }

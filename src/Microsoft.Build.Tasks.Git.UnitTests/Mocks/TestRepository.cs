@@ -11,6 +11,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         private readonly IReadOnlyList<Remote> _remotes;
         private readonly IReadOnlyList<Submodule> _submodules;
         private readonly IReadOnlyList<string> _ignoredPaths;
+        private readonly IReadOnlyDictionary<string, object> _config;
         private readonly string _headTipCommitShaOpt;
         private readonly string _workingDir;
 
@@ -19,13 +20,16 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             string commitSha,
             IReadOnlyList<Remote> remotes = null,
             IReadOnlyList<Submodule> submodules = null,
-            IReadOnlyList<string> ignoredPaths = null)
+            IReadOnlyList<string> ignoredPaths = null,
+            IReadOnlyDictionary<string, object> config = null,
+            bool submodulesSupported = true)
         {
             _workingDir = workingDir;
             _headTipCommitShaOpt = commitSha;
             _remotes = remotes ?? new Remote[0];
-            _submodules = submodules ?? new Submodule[0];
+            _submodules = submodulesSupported ? (submodules ?? new Submodule[0]) : null;
             _ignoredPaths = ignoredPaths ?? new string[0];
+            _config = config ?? new Dictionary<string, object>();
         }
 
         public RepositoryInformation Info
@@ -43,9 +47,10 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         public Ignore Ignore
             => new TestIgnore(_ignoredPaths);
 
-        #region Not Implemented
+        public Configuration Config
+            => new TestConfiguration(_config);
 
-        public Configuration Config => throw new NotImplementedException();
+        #region Not Implemented
 
         public Index Index => throw new NotImplementedException();
 

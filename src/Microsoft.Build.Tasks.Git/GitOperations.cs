@@ -159,7 +159,26 @@ namespace Microsoft.Build.Tasks.Git
             return repository.Head.Tip?.Sha;
         }
 
-        public static ITaskItem[] GetSourceRoots(this IRepository repository, Action<string, object[]> logWarning)
+        // GVFS doesn't support submodules. gitlib throws when submodule enumeration is attempted.
+        private static bool SubmodulesSupported(IRepository repository, Func<string, bool> fileExists)
+        {
+            try
+            {
+                if (repository.Config.GetValueOrDefault<bool>("core.gvfs"))
+                {
+                    // Checking core.gvfs is not sufficient, check the presence of the file as well:
+                    return fileExists(Path.Combine(repository.Info.WorkingDirectory, ".gitmodules"));
+                }
+            }
+            catch (LibGit2SharpException)
+            {
+                // exception thrown if the value is not Boolean
+            }
+
+            return true;
+        }
+
+        public static ITaskItem[] GetSourceRoots(this IRepository repository, Action<string, object[]> logWarning, Func<string, bool> fileExists)
         {
             var result = new List<TaskItem>();
             var repoRoot = GetRepositoryRoot(repository);
@@ -178,50 +197,53 @@ namespace Microsoft.Build.Tasks.Git
                 logWarning(Resources.RepositoryWithoutCommit_SourceLink, Array.Empty<object>());
             }
 
-            foreach (var submodule in repository.Submodules)
+            if (SubmodulesSupported(repository, fileExists))
             {
-                var commitId = submodule.WorkDirCommitId;
-                if (commitId == null)
+                foreach (var submodule in repository.Submodules)
                 {
-                    logWarning(Resources.SubmoduleWithoutCommit_SourceLink, new[] { submodule.Name });
-                    continue;
-                }
+                    var commitId = submodule.WorkDirCommitId;
+                    if (commitId == null)
+                    {
+                        logWarning(Resources.SubmoduleWithoutCommit_SourceLink, new[] { submodule.Name });
+                        continue;
+                    }
 
-                // https://git-scm.com/docs/git-submodule
-                // <repository> is the URL of the new submodule's origin repository. This may be either an absolute URL, or (if it begins with ./ or ../), 
-                // the location relative to the superproject's default remote repository (Please note that to specify a repository foo.git which is located 
-                // right next to a superproject bar.git, you'll have to use ../foo.git instead of ./foo.git - as one might expect when following the rules 
-                // for relative URLs -- because the evaluation of relative URLs in Git is identical to that of relative directories).
-                //
-                // The given URL is recorded into .gitmodules for use by subsequent users cloning the superproject. 
-                // If the URL is given relative to the superproject's repository, the presumption is the superproject and submodule repositories
-                // will be kept together in the same relative location, and only the superproject's URL needs to be provided.git --
-                // submodule will correctly locate the submodule using the relative URL in .gitmodules.
-                var submoduleUrl = NormalizeUrl(submodule.Url, repoRoot);
-                if (submoduleUrl == null)
-                {
-                    logWarning(Resources.InvalidSubmoduleUrl_SourceLink, new[] { submodule.Name, submodule.Url });
-                    continue;
-                }
+                    // https://git-scm.com/docs/git-submodule
+                    // <repository> is the URL of the new submodule's origin repository. This may be either an absolute URL, or (if it begins with ./ or ../), 
+                    // the location relative to the superproject's default remote repository (Please note that to specify a repository foo.git which is located 
+                    // right next to a superproject bar.git, you'll have to use ../foo.git instead of ./foo.git - as one might expect when following the rules 
+                    // for relative URLs -- because the evaluation of relative URLs in Git is identical to that of relative directories).
+                    //
+                    // The given URL is recorded into .gitmodules for use by subsequent users cloning the superproject. 
+                    // If the URL is given relative to the superproject's repository, the presumption is the superproject and submodule repositories
+                    // will be kept together in the same relative location, and only the superproject's URL needs to be provided.git --
+                    // submodule will correctly locate the submodule using the relative URL in .gitmodules.
+                    var submoduleUrl = NormalizeUrl(submodule.Url, repoRoot);
+                    if (submoduleUrl == null)
+                    {
+                        logWarning(Resources.InvalidSubmoduleUrl_SourceLink, new[] { submodule.Name, submodule.Url });
+                        continue;
+                    }
 
-                string submoduleRoot;
-                try
-                {
-                    submoduleRoot = Path.GetFullPath(Path.Combine(repoRoot, submodule.Path)).EndWithSeparator();
-                }
-                catch
-                {
-                    logWarning(Resources.InvalidSubmodulePath_SourceLink, new[] { submodule.Name, submodule.Path });
-                    continue;
-                }
+                    string submoduleRoot;
+                    try
+                    {
+                        submoduleRoot = Path.GetFullPath(Path.Combine(repoRoot, submodule.Path)).EndWithSeparator();
+                    }
+                    catch
+                    {
+                        logWarning(Resources.InvalidSubmodulePath_SourceLink, new[] { submodule.Name, submodule.Path });
+                        continue;
+                    }
 
-                var item = new TaskItem(submoduleRoot);
-                item.SetMetadata(Names.SourceRoot.SourceControl, SourceControlName);
-                item.SetMetadata(Names.SourceRoot.RepositoryUrl, submoduleUrl);
-                item.SetMetadata(Names.SourceRoot.RevisionId, commitId.Sha);
-                item.SetMetadata(Names.SourceRoot.ContainingRoot, repoRoot);
-                item.SetMetadata(Names.SourceRoot.NestedRoot, submodule.Path.EndWithSeparator('/'));
-                result.Add(item);
+                    var item = new TaskItem(submoduleRoot);
+                    item.SetMetadata(Names.SourceRoot.SourceControl, SourceControlName);
+                    item.SetMetadata(Names.SourceRoot.RepositoryUrl, submoduleUrl);
+                    item.SetMetadata(Names.SourceRoot.RevisionId, commitId.Sha);
+                    item.SetMetadata(Names.SourceRoot.ContainingRoot, repoRoot);
+                    item.SetMetadata(Names.SourceRoot.NestedRoot, submodule.Path.EndWithSeparator('/'));
+                    result.Add(item);
+                }
             }
 
             return result.ToArray();

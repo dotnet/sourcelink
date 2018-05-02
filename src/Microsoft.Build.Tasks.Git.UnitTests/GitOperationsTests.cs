@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using LibGit2Sharp;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Tasks.SourceControl.UnitTests;
 using Xunit;
@@ -158,7 +159,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var repo = new TestRepository(workingDir: s_root, commitSha: null);
 
             var warnings = new List<(string message, object[] args)>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)), fileExists: null);
 
             Assert.Empty(items);
             AssertEx.Equal(new[] { Resources.RepositoryWithoutCommit_SourceLink }, warnings.Select(InspectDiagnostic));
@@ -177,7 +178,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 });
 
             var warnings = new List<(string message, object[] args)>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)), fileExists: null);
 
             AssertEx.Equal(new[]
             {
@@ -201,7 +202,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 });
 
             var warnings = new List<(string message, object[] args)>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)), fileExists: null);
 
             AssertEx.Equal(new[]
             {
@@ -225,7 +226,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 });
 
             var warnings = new List<(string message, object[] args)>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)), fileExists: null);
 
             AssertEx.Equal(new[]
             {
@@ -250,7 +251,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 });
 
             var warnings = new List<(string message, object[] args)>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)), fileExists: null);
 
             AssertEx.Equal(new[]
             {
@@ -276,7 +277,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 });
 
             var warnings = new List<(string message, object[] args)>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)), fileExists: null);
 
             AssertEx.Equal(new[]
             {
@@ -289,6 +290,58 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 string.Format(Resources.InvalidSubmoduleUrl_SourceLink, "1", "http:///"),
                 string.Format(Resources.InvalidSubmodulePath_SourceLink, "2", "sub/\0*<>|:")
             }, warnings.Select(InspectDiagnostic));
+        }
+
+        [Fact]
+        public void GetSourceRoots_GvfsWithoutModules()
+        {
+            var repo = new TestRepository(
+                workingDir: s_root,
+                commitSha: "0000000000000000000000000000000000000000",
+                config: new Dictionary<string, object> { { "core.gvfs", true } },
+                submodulesSupported: false);
+
+            var warnings = new List<(string message, object[] args)>();
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)), fileExists: _ => false);
+
+            AssertEx.Equal(new[]
+            {
+                $@"'{s_root}{s}' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
+            }, items.Select(InspectSourceRoot));
+        }
+
+        [Fact]
+        public void GetSourceRoots_GvfsWithModules()
+        {
+            var repo = new TestRepository(
+                workingDir: s_root,
+                commitSha: "0000000000000000000000000000000000000000",
+                config: new Dictionary<string, object> { { "core.gvfs", true } },
+                submodulesSupported: false);
+
+            Assert.Throws<LibGit2SharpException>(() => GitOperations.GetSourceRoots(repo, null, fileExists: _ => true));
+        }
+
+        [Fact]
+        public void GetSourceRoots_GvfsBadOptionType()
+        {
+            var repo = new TestRepository(
+                workingDir: s_root,
+                commitSha: "0000000000000000000000000000000000000000",
+                config: new Dictionary<string, object> { { "core.gvfs", 1 } },
+                submodules: new[]
+                {
+                    new TestSubmodule("1", "sub/1", "http://1.com/", "1111111111111111111111111111111111111111"),
+                });
+
+            var warnings = new List<(string message, object[] args)>();
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)), fileExists: null);
+
+            AssertEx.Equal(new[]
+            {
+                $@"'{s_root}{s}' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
+                $@"'{s_root}{s}sub{s}1{s}' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/1/' ContainingRoot='{s_root}{s}' RepositoryUrl='http://1.com/'",
+            }, items.Select(InspectSourceRoot));
         }
 
         [ConditionalTheory(typeof(WindowsOnly))]
