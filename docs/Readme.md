@@ -14,7 +14,7 @@ the repository URL, source files that are not tracked by the source control and 
 
 Having this information available enables the following features:
 
-1) Including source revision id in ```AssemblyInformationalVersionAttribute``` and in NuSpec of the package produced by the project.
+1) Including source revision id in `AssemblyInformationalVersionAttribute` and in NuSpec of the package produced by the project.
 2) Automatic detection and publishing of the repository URL.
 3) Embedding sources to the PDB that are not tracked by source control.
 4) Generating [Source Link](https://github.com/dotnet/core/blob/master/Documentation/diagnostics/source_link.md) that 
@@ -24,15 +24,15 @@ To generate Source Link having just the source control package is not sufficient
 differ in the way how they expose the content of the hosted repositories. A package specific to the provider is needed. 
 The following Source Link packages are currently available:
 
-- SourceLink.GitHub (depends on Microsoft.Build.Tasks.Git package)
-- SourceLink.VSO.Git (depends on Microsoft.Build.Tasks.Git package)
-- SourceLink.VSO.TFVC (depends on Microsoft.Build.Tasks.TFVC package)
+- Microsoft.SourceLink.GitHub (depends on Microsoft.Build.Tasks.Git package)
+- Microsoft.SourceLink.VSTS.Git (depends on Microsoft.Build.Tasks.Git package)
+- Microsoft.SourceLink.VSTS.TFVC (depends on Microsoft.Build.Tasks.TFVC package)
 
 Each SourceLink package depends on the corresponding source control package. Referencing a SourceLink package makes the dependent source control package also referenced, 
 thus providing the other source control features to the project.
 
 Note that it is possible and supported to reference multiple SourceLink packages in a single project provided they depend on the same source control package.
-This is necessary when the project sources are stored in mutliple submodules hosted by different providers (e.g. VSO repository containing a GitHub submodule).
+This is necessary when the project sources are stored in mutliple submodules hosted by different providers (e.g. VSTS repository containing a GitHub submodule).
 
 ## Basic Settings
 
@@ -75,7 +75,7 @@ Has no effect if ```EmbedAllSources``` is true.
 
 ## Example
 
-The following project settings result in a fully deterministic build output when built on a CI server that supports Standard CI specification, repository url and commit hash automatically detected and included in NuSpec, commit hash included in ```AssemblyInformationalVersionAttribute```, all source files available on GitHub linked via Source Link (including those in submodules) and source files not available on GitHub embedded in the PDB.
+The following project settings result in repository url and commit hash automatically detected and included in NuSpec, commit hash included in ```AssemblyInformationalVersionAttribute```, all source files available on GitHub linked via Source Link (including those in submodules) and source files not available on GitHub embedded in the PDB.
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -85,7 +85,7 @@ The following project settings result in a fully deterministic build output when
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="SourceLink.GitHub" Version="3.0.0" PrivateAssets="All"/>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
   </ItemGroup>
 </Project>
 ```
@@ -94,12 +94,12 @@ The following project settings result in a fully deterministic build output when
 
 ### IncludeSourceRevisionInInformationalVersion
 
-When true and a source control package is present the Source Revision id is included in the ```AssemblyInformationalVersionAttribute```. 
+When true and a source control package is present the Source Revision id is included in the `AssemblyInformationalVersionAttribute`. 
 True by default, set to false to suppress publishing Source Revision id to the attribute.
 
 ### SourceRevisionId
 
-Set by target ```SetSourceRevisionId``` and consumed by NuGet ```Pack``` target and ```GenerateAssemblyInfo``` target. 
+Set by target `SetSourceRevisionId` and consumed by NuGet `Pack` target and `GenerateAssemblyInfo` target. 
 May be used by custom targets that need this information.
 
 ### EnableSourceLink
@@ -117,7 +117,7 @@ Source root metadata:
 
 All source control roots have the following metadata:
 
-- _SourceControl_: the name of source control system, if the directory is a source source control root (e.g. ```Git```, ```TFVC```, etc.)
+- _SourceControl_: the name of source control system, if the directory is a source source control root (e.g. `git`, `tfvc`, etc.)
 - _RevisionId_: revision id (e.g. git commit hash)
 
 Additional soruce-control specific metadata may be defined (depends on the source control system). 
