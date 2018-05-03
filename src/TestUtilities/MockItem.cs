@@ -16,7 +16,7 @@ namespace Microsoft.Build.Tasks.SourceControl.UnitTests
         public static string AdjustSeparators(string path)
             => Path.DirectorySeparatorChar == '/' ? path.Replace('\\', '/') : path;
 
-        public MockItem(string spec, params (string, string)[] metadata)
+        public MockItem(string spec, params KeyValuePair<string, string>[] metadata)
         {
             // msbuild normalizes paths on non-Windows like so:
             ItemSpec = AdjustSeparators(spec);

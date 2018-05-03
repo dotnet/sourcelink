@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using Xunit;
+using static Microsoft.Build.Tasks.SourceControl.UnitTests.KeyValuePairUtils;
 
 namespace Microsoft.Build.Tasks.SourceControl.UnitTests
 {
@@ -33,13 +34,12 @@ namespace Microsoft.Build.Tasks.SourceControl.UnitTests
         public void Escape()
         {
             var engine = new MockEngine();
-
             var task = new GenerateSourceLinkFile()
             {
                 BuildEngine = engine,
                 SourceRoots = new[]
                 {
-                    new MockItem(@"/_""_/", ("SourceLinkUrl", "https://raw.githubusercontent.com/repo/*"), ("SourceControl", "git")),
+                    new MockItem(@"/_""_/", KVP("SourceLinkUrl", "https://raw.githubusercontent.com/repo/*"), KVP("SourceControl", "git")),
                 },
             };
 
@@ -59,9 +59,9 @@ namespace Microsoft.Build.Tasks.SourceControl.UnitTests
                 BuildEngine = engine,
                 SourceRoots = new[]
                 {
-                    new MockItem(@"C:\src\", ("SourceLinkUrl", "https://raw.githubusercontent.com/repo1/*"), ("SourceControl", "git")),
-                    new MockItem(@"C:\x\a\", ("SourceLinkUrl", "https://raw.githubusercontent.com/repo2/*"), ("SourceControl", "git")),
-                    new MockItem(@"C:\x\b\", ("SourceLinkUrl", "https://raw.githubusercontent.com/repo3/*"), ("SourceControl", "git")),
+                    new MockItem(@"C:\src\", KVP("SourceLinkUrl", "https://raw.githubusercontent.com/repo1/*"), KVP("SourceControl", "git")),
+                    new MockItem(@"C:\x\a\", KVP("SourceLinkUrl", "https://raw.githubusercontent.com/repo2/*"), KVP("SourceControl", "git")),
+                    new MockItem(@"C:\x\b\", KVP("SourceLinkUrl", "https://raw.githubusercontent.com/repo3/*"), KVP("SourceControl", "git")),
                 },
             };
 
@@ -85,9 +85,9 @@ namespace Microsoft.Build.Tasks.SourceControl.UnitTests
                 BuildEngine = engine,
                 SourceRoots = new[] 
                 {
-                    new MockItem(@"C:\src\", ("MappedPath", "/_/"), ("SourceLinkUrl", "https://raw.githubusercontent.com/repo1/*"), ("SourceControl", "git")),
-                    new MockItem(@"C:\x\a\", ("MappedPath", "/_/1/"), ("SourceLinkUrl", "https://raw.githubusercontent.com/repo2/*"), ("SourceControl", "git")),
-                    new MockItem(@"C:\x\b\", ("MappedPath", "/_/2/"), ("SourceLinkUrl", "https://raw.githubusercontent.com/repo3/*"), ("SourceControl", "git")),
+                    new MockItem(@"C:\src\", KVP("MappedPath", "/_/"), KVP("SourceLinkUrl", "https://raw.githubusercontent.com/repo1/*"), KVP("SourceControl", "git")),
+                    new MockItem(@"C:\x\a\", KVP("MappedPath", "/_/1/"), KVP("SourceLinkUrl", "https://raw.githubusercontent.com/repo2/*"), KVP("SourceControl", "git")),
+                    new MockItem(@"C:\x\b\", KVP("MappedPath", "/_/2/"), KVP("SourceLinkUrl", "https://raw.githubusercontent.com/repo3/*"), KVP("SourceControl", "git")),
                 },
             };
 
@@ -112,7 +112,7 @@ namespace Microsoft.Build.Tasks.SourceControl.UnitTests
                 SourceRoots = new[]
                 {
                     // error: missing SourceLinkUrl in source-controlled root:
-                    new MockItem(@"C:\src\", ("SourceControl", "git")),
+                    new MockItem(@"C:\src\", KVP("SourceControl", "git")),
 
                     // skipped: missing SourceLinkUrl in non-source-controlled root
                     new MockItem(@"C:\x\a\"),
@@ -124,7 +124,7 @@ namespace Microsoft.Build.Tasks.SourceControl.UnitTests
                     new MockItem(@"C:\x\c"),
 
                     // error: multiple *'s in url
-                    new MockItem(@"C:\x\d\", ("SourceLinkUrl", "http://a/**")),
+                    new MockItem(@"C:\x\d\", KVP("SourceLinkUrl", "http://a/**")),
                 },
             };
 
