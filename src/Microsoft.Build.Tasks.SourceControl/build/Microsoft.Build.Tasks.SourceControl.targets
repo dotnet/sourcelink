@@ -12,12 +12,15 @@
   <UsingTask TaskName="Microsoft.Build.Tasks.SourceControl.GetExternalFiles" AssemblyFile="$(_SourceControlAssemblyFile)"/>
   <UsingTask TaskName="Microsoft.Build.Tasks.SourceControl.GenerateSourceLinkFile" AssemblyFile="$(_SourceControlAssemblyFile)"/>
 
-  <!-- A single SourceControlBuildTasks is expected to be found, error is reported otherwise. -->
-  <UsingTask TaskName="@(SourceControlBuildTasks->'%(Namespace)').LocateRepository" AssemblyFile="@(SourceControlBuildTasks->'%(AssemblyFile)')"/>
-  <UsingTask TaskName="@(SourceControlBuildTasks->'%(Namespace)').GetSourceRoots" AssemblyFile="@(SourceControlBuildTasks->'%(AssemblyFile)')"/>
-  <UsingTask TaskName="@(SourceControlBuildTasks->'%(Namespace)').GetRepositoryUrl" AssemblyFile="@(SourceControlBuildTasks->'%(AssemblyFile)')"/>
-  <UsingTask TaskName="@(SourceControlBuildTasks->'%(Namespace)').GetSourceRevisionId" AssemblyFile="@(SourceControlBuildTasks->'%(AssemblyFile)')" />
-  <UsingTask TaskName="@(SourceControlBuildTasks->'%(Namespace)').GetUntrackedFiles" AssemblyFile="@(SourceControlBuildTasks->'%(AssemblyFile)')"/>
+  <!--
+    A single SourceControlBuildTasks is expected to be found, error is reported otherwise before the tasks are called.
+    Since the assembly loading is lazy bad value in AssemblyFile doesn't cause failure until the tasks are called.
+  -->
+  <UsingTask TaskName="SourceControlBuildTasks.LocateRepository" AssemblyFile="@(SourceControlBuildTasks->'%(AssemblyFile)')"/>
+  <UsingTask TaskName="SourceControlBuildTasks.GetSourceRoots" AssemblyFile="@(SourceControlBuildTasks->'%(AssemblyFile)')"/>
+  <UsingTask TaskName="SourceControlBuildTasks.GetRepositoryUrl" AssemblyFile="@(SourceControlBuildTasks->'%(AssemblyFile)')"/>
+  <UsingTask TaskName="SourceControlBuildTasks.GetSourceRevisionId" AssemblyFile="@(SourceControlBuildTasks->'%(AssemblyFile)')" />
+  <UsingTask TaskName="SourceControlBuildTasks.GetUntrackedFiles" AssemblyFile="@(SourceControlBuildTasks->'%(AssemblyFile)')"/>
 
   <Target Name="_InitializeSourceControlInformationFromSCM"
           BeforeTargets="InitializeSourceControlInformation">
@@ -31,25 +34,25 @@
       
       Reports and error if the given project doesn't belong to a repository under source control.
     -->
-    <LocateRepository Directory="$(MSBuildProjectDirectory)" >
+    <SourceControlBuildTasks.LocateRepository Directory="$(MSBuildProjectDirectory)" >
       <Output TaskParameter="Id" PropertyName="_SourceControlLocalRepositoryId" />
-    </LocateRepository>
+    </SourceControlBuildTasks.LocateRepository>
 
     <PropertyGroup>
       <RepositoryType Condition="'$(RepositoryType)' == ''">@(SourceControlBuildTasks)</RepositoryType>
     </PropertyGroup>
-    
-    <GetRepositoryUrl LocalRepositoryId="$(_SourceControlLocalRepositoryId)" Condition="'$(PrivateRepositoryUrl)' == ''">
+
+    <SourceControlBuildTasks.GetRepositoryUrl LocalRepositoryId="$(_SourceControlLocalRepositoryId)" Condition="'$(PrivateRepositoryUrl)' == ''">
       <Output TaskParameter="Url" PropertyName="PrivateRepositoryUrl" />
-    </GetRepositoryUrl>
+    </SourceControlBuildTasks.GetRepositoryUrl>
 
-    <GetSourceRevisionId LocalRepositoryId="$(_SourceControlLocalRepositoryId)" Condition="'$(SourceRevisionId)' == ''">
+    <SourceControlBuildTasks.GetSourceRevisionId LocalRepositoryId="$(_SourceControlLocalRepositoryId)" Condition="'$(SourceRevisionId)' == ''">
       <Output TaskParameter="RevisionId" PropertyName="SourceRevisionId" />
-    </GetSourceRevisionId>
+    </SourceControlBuildTasks.GetSourceRevisionId>
 
-    <GetSourceRoots LocalRepositoryId="$(_SourceControlLocalRepositoryId)">
+    <SourceControlBuildTasks.GetSourceRoots LocalRepositoryId="$(_SourceControlLocalRepositoryId)">
       <Output TaskParameter="Roots" ItemName="SourceRoot" />
-    </GetSourceRoots>
+    </SourceControlBuildTasks.GetSourceRoots>
   </Target>
 
   <!--
@@ -61,9 +64,9 @@
           BeforeTargets="CoreCompile"
           Condition="'$(EmbedUntrackedSources)' == 'true' and '$(EmbedAllSources)' != 'true' and '$(DebugType)' != 'none'">
 
-    <GetUntrackedFiles LocalRepositoryId="$(_SourceControlLocalRepositoryId)" ProjectDirectory="$(MSBuildProjectDirectory)" Files="@(Compile)">
+    <SourceControlBuildTasks.GetUntrackedFiles LocalRepositoryId="$(_SourceControlLocalRepositoryId)" ProjectDirectory="$(MSBuildProjectDirectory)" Files="@(Compile)">
       <Output TaskParameter="UntrackedFiles" ItemName="EmbeddedFiles" />
-    </GetUntrackedFiles>
+    </SourceControlBuildTasks.GetUntrackedFiles>
   </Target>
 
   <!--
@@ -77,23 +80,25 @@
   </PropertyGroup>
 
   <!-- 
-    Fills in SourceLinkUrl metadata on SourceRoot items that don't have it yet.
-    
-    InitializeSourceRootMappedPaths target defined by compiler targets ensures that SourceRoot items were populated by the source control targets 
-    and that MappedPath metadata have been initialized on these items.
-    
-    A source control provider package shall add its SourceLinkUrl initialization target to InitializeSourceRootSourceLinkUrlDependsOn.
-    This target shall initialize SourceLinkUrl of all items that don't have it initialized yet and belong to the source control provider.
+    If defined populates SourceRoot items and other source control information.
   -->
-  <Target Name="_InitializeSourceRootSourceLinkUrl"
-          DependsOnTargets="InitializeSourceRootMappedPaths;$(InitializeSourceRootSourceLinkUrlDependsOn)">
-  </Target>
+  <Target Name="_InitializeSourceControlInformationOpt"
+          DependsOnTargets="InitializeSourceControlInformation"
+          Condition="'$(SourceControlInformationFeatureSupported)' == 'true'" />
+
+  <!-- 
+    If defined populates MappedPath metadata of SourceRoot items. 
+  -->
+  <Target Name="_InitializeSourceRootMappedPathsOpt"
+          DependsOnTargets="InitializeSourceRootMappedPaths"
+          Condition="'$(SourceRootMappedPathsFeatureSupported)' == 'true'"/>
 
   <!--
-    Generates source link file.
+    Each source control provider package adds its SourceLinkUrl initialization target to SourceLinkUrlInitializerTargets.
+    This target shall initialize SourceLinkUrl of all items that don't have it initialized yet and belong to the source control provider.
   -->
   <Target Name="_GenerateSourceLinkFile"
-          DependsOnTargets="_InitializeSourceRootSourceLinkUrl"
+          DependsOnTargets="_InitializeSourceControlInformationOpt;_InitializeSourceRootMappedPathsOpt;$(SourceLinkUrlInitializerTargets)"
           BeforeTargets="CoreCompile"
           Outputs="$(SourceLink)"
           Condition="'$(SourceLink)' != ''">

@@ -2,12 +2,13 @@
 
 using System.Collections.Generic;
 using Microsoft.Build.Framework;
+using Microsoft.Build.Tasks.Tfvc;
 using Microsoft.Build.Utilities;
 using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.Common;
 using Microsoft.TeamFoundation.VersionControl.Client;
 
-namespace Microsoft.Build.Tasks.Tfvc
+namespace SourceControlBuildTasks
 {
     public sealed class GetUntrackedSourceFiles : RepositoryTask
     {

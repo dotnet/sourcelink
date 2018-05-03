@@ -2,9 +2,10 @@
 
 using LibGit2Sharp;
 using Microsoft.Build.Framework;
+using Microsoft.Build.Tasks.Git;
 using System.IO;
 
-namespace Microsoft.Build.Tasks.Git
+namespace SourceControlBuildTasks
 {
     public sealed class GetSourceRoots : RepositoryTask
     {

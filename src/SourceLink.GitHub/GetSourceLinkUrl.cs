@@ -9,7 +9,7 @@ using Microsoft.Build.Utilities;
 
 namespace Microsoft.SourceLink.GitHub
 {
-    public sealed class GetGitHubSourceLinkUrl : Task
+    public sealed class GetSourceLinkUrl : Task
     {
         private static readonly Uri s_rawGitHub = new Uri("https://raw.githubusercontent.com");
         private const string SourceControlName = "git";

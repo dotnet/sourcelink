@@ -8,7 +8,7 @@ using Microsoft.Build.Utilities;
 
 namespace Microsoft.SourceLink.VSTS.TFVC
 {
-    public sealed class GetVstsTfvcSourceLinkUrl : Task
+    public sealed class GetSourceLinkUrl : Task
     {
         [Required]
         public ITaskItem SourceRoot { get; set; }
