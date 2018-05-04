@@ -8,11 +8,11 @@ using Microsoft.Build.Framework;
 using Microsoft.Build.Tasks.SourceControl;
 using Microsoft.Build.Utilities;
 
-namespace Microsoft.SourceLink.VSTS.Git
+namespace Microsoft.SourceLink.Vsts.Git
 {
     public sealed class GetSourceLinkUrl : Task
     {
-        private const string UrlMapEnvironmentVariableName = "STANDARD_CI_REPOSITORY_URL_MAP";
+        private const string UrlMapEnvironmentVariableName = "BUILD_REPOSITORY_URL_MAP";
         private const string DefaultDomain = "visualstudio.com";
         private const string SourceControlName = "git";
         private const string NotApplicableValue = "N/A";

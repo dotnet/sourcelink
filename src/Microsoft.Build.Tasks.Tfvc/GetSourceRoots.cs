@@ -17,7 +17,7 @@ namespace SourceControlBuildTasks
         /// Returns items describing source roots:
         /// 
         /// Metadata
-        ///   SourceControl: "TFVC"
+        ///   SourceControl: "tfvc"
         ///   Identity: Directory.
         ///   CollectionUrl: Collection URL.
         ///   ProjectId: Project GUID.
@@ -51,10 +51,10 @@ namespace SourceControlBuildTasks
                         // Extract GUID from ArtifactUri "vstfs:///Classification/TeamProject/{Guid}":
                         var projectId = Path.GetFileName(project.ArtifactUri.LocalPath);
 
-                        // SourceLink.VSTS will map each source root to:
+                        // SourceLink.Vsts will map each source root to:
                         // {RepositoryUrl}/_versionControl?path={ServerPath}&version={RevisionId}
                         var item = new TaskItem(folder.LocalItem);
-                        item.SetMetadata("SourceControl", "TFVC");
+                        item.SetMetadata("SourceControl", "tfvc");
                         item.SetMetadata("CollectionUrl", collectionUrl);
                         item.SetMetadata("ProjectId", projectId);
                         item.SetMetadata("ServerPath", folder.ServerItem);

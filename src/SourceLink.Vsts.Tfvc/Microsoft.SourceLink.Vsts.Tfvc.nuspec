@@ -14,7 +14,7 @@
     <serviceable>$Serviceable$</serviceable>
     <repository type="$RepositoryType$" url="$RepositoryUrl$" commit="$RepositoryCommit$" />
     <dependencies>
-      <dependency id="Microsoft.Build.Tasks.TFVC" version="$Version$" />
+      <dependency id="Microsoft.Build.Tasks.Tfvc" version="$Version$" />
     </dependencies>
   </metadata>
   <files>
