@@ -14,7 +14,7 @@
     <serviceable>$Serviceable$</serviceable>
   </metadata>
   <files>
-    <file src="net46\Microsoft.Build.Tasks.TFVC.*" target="tools\net46" />
+    <file src="net46\Microsoft.Build.Tasks.Tfvc.*" target="tools\net46" />
     <file src="net46\Microsoft.TeamFoundation.Client.dll" target="tools\net46" />
     <file src="net46\Microsoft.TeamFoundation.Common.dll" target="tools\net46" />
     <file src="net46\Microsoft.TeamFoundation.Core.WebApi.dll" target="tools\net46" />

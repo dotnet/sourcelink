@@ -6,7 +6,7 @@ using System.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
-namespace Microsoft.SourceLink.Vsts.TFVC
+namespace Microsoft.SourceLink.Vsts.Tfvc
 {
     public sealed class GetSourceLinkUrl : Task
     {
