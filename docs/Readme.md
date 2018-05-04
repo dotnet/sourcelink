@@ -4,7 +4,7 @@ MSBuild has no built-in knowledge of any source control system or provider. In o
 a package reference to the appropriate source control package. Microsoft provides source control packages for Git and TFVC managers:
 
  - Microsoft.Build.Tasks.Git
- - Microsoft.Build.Tasks.TFVC
+ - Microsoft.Build.Tasks.Tfvc
   
 These packages implement a protocol defined by MSBuild that allows extraction of necessary information from the source control system during build.
 This protocol can be implemented by third party packages in order to support other source control systems.
@@ -25,8 +25,8 @@ differ in the way how they expose the content of the hosted repositories. A pack
 The following Source Link packages are currently available:
 
 - Microsoft.SourceLink.GitHub (depends on Microsoft.Build.Tasks.Git package)
-- Microsoft.SourceLink.VSTS.Git (depends on Microsoft.Build.Tasks.Git package)
-- Microsoft.SourceLink.VSTS.TFVC (depends on Microsoft.Build.Tasks.TFVC package)
+- Microsoft.SourceLink.Vsts.Git (depends on Microsoft.Build.Tasks.Git package)
+- Microsoft.SourceLink.Vsts.Tfvc (depends on Microsoft.Build.Tasks.Tfvc package)
 
 Each SourceLink package depends on the corresponding source control package. Referencing a SourceLink package makes the dependent source control package also referenced, 
 thus providing the other source control features to the project.
