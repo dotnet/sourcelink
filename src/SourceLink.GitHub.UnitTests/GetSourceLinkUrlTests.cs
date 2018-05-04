@@ -60,7 +60,6 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
 
         [Theory]
         [InlineData("a/b")]
-        [InlineData("/a/b")]
         [InlineData("")]
         [InlineData("http://")]
         public void GetSourceLinkUrl_RepositoryUrl_Errors(string url)
