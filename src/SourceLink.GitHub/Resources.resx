@@ -117,10 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ValueOfOWithIdentityIsInvalid" xml:space="preserve">
+  <data name="ValueOfWithIdentityIsInvalid" xml:space="preserve">
     <value>The value of {0} with identity '{1}' is invalid: '{2}'"</value>
   </data>
   <data name="ValueOfWithIdentityIsNotValidCommitHash" xml:space="preserve">
     <value>The value of {0} with identity '{1}' is not a valid commit hash: '{2}'"</value>
+  </data>
+  <data name="ValuePassedToTaskParameterNotValidHostUri" xml:space="preserve">
+    <value>The value passed to task parameter {0} is not a valid host URI: '{1}'</value>
+  </data>
+  <data name="ValuePassedToTaskParameterNotValidDomainName" xml:space="preserve">
+    <value>The value passed to task parameter {0} is not a valid domain name: '{1}'</value>
   </data>
 </root>

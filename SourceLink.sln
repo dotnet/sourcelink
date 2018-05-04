@@ -23,7 +23,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.VSTS.T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestUtilities", "src\TestUtilities\TestUtilities.csproj", "{D6ED6730-02A8-4B21-8D62-C7B2009F53A5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SourceLink.Git.IntegrationTests", "src\SourceLink.Git.IntegrationTests\SourceLink.Git.IntegrationTests.csproj", "{A273E201-8CF8-4E18-BE21-423B7CFE9B31}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.Git.IntegrationTests", "src\SourceLink.Git.IntegrationTests\Microsoft.SourceLink.Git.IntegrationTests.csproj", "{A273E201-8CF8-4E18-BE21-423B7CFE9B31}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.GitHub.UnitTests", "src\SourceLink.GitHub.UnitTests\Microsoft.SourceLink.GitHub.UnitTests.csproj", "{15CD9412-587A-457A-94BD-89D69DA7F4B3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,6 +77,10 @@ Global
 		{A273E201-8CF8-4E18-BE21-423B7CFE9B31}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A273E201-8CF8-4E18-BE21-423B7CFE9B31}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A273E201-8CF8-4E18-BE21-423B7CFE9B31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15CD9412-587A-457A-94BD-89D69DA7F4B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15CD9412-587A-457A-94BD-89D69DA7F4B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15CD9412-587A-457A-94BD-89D69DA7F4B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15CD9412-587A-457A-94BD-89D69DA7F4B3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
