@@ -1,7 +1,7 @@
 ## Source Control and Source Link Packages
 
 MSBuild has no built-in knowledge of any source control system or provider. In order to retrieve information from the source control the project needs to include 
-a package reference to the appropriate source control package. Microsoft provides source control packages for Git and TFVC managers:
+a package reference to the appropriate source control package. Microsoft provides source control packages for Git and TFVC managers (currently as pre-release packages):
 
  - Microsoft.Build.Tasks.Git
  - Microsoft.Build.Tasks.Tfvc
@@ -22,14 +22,15 @@ Having this information available enables the following features:
 
 To generate Source Link having just the source control package is not sufficient, since various source control providers (hosts) 
 differ in the way how they expose the content of the hosted repositories. A package specific to the provider is needed. 
-The following Source Link packages are currently available:
+The following Source Link pre-release packages are currently available:
 
 - Microsoft.SourceLink.GitHub (depends on Microsoft.Build.Tasks.Git package)
 - Microsoft.SourceLink.Vsts.Git (depends on Microsoft.Build.Tasks.Git package)
 - Microsoft.SourceLink.Vsts.Tfvc (depends on Microsoft.Build.Tasks.Tfvc package)
 
-Each SourceLink package depends on the corresponding source control package. Referencing a SourceLink package makes the dependent source control package also referenced, 
-thus providing the other source control features to the project.
+The system is extensible and custom packages that handle other source control providers can be developed and used. See [Custom SourceLink packages](#CustomSourceLinkPackages) for details.
+
+Each SourceLink package depends on the corresponding source control package. Referencing a SourceLink package makes the dependent source control package also referenced, thus providing the other source control features to the project.
 
 Note that it is possible and supported to reference multiple SourceLink packages in a single project provided they depend on the same source control package.
 This is necessary when the project sources are stored in mutliple submodules hosted by different providers (e.g. VSTS repository containing a GitHub submodule).
@@ -117,7 +118,7 @@ All source control roots have the following metadata:
 - _SourceControl_: the name of source control system, if the directory is a source source control root (e.g. `git`, `tfvc`, etc.)
 - _RevisionId_: revision id (e.g. git commit hash)
 
-Additional soruce-control specific metadata may be defined (depends on the source control system). 
+Additional source-control specific metadata may be defined (depends on the source control system). 
 
 For example, for Git:
 
@@ -136,3 +137,34 @@ Nested source control roots have the following metadata (e.g. submodules):
 
 Source roots not under source control:
 - _SourceLinkUrl_: URL to use in source link mapping, including `*` wildcard (e.g. `https://raw.githubusercontent.com/dotnet/roslyn/42abf2e6642db97d2314c017eb179075d5042028/src/Dependencies/CodeAnalysis.Debugging/*`)
+
+## <a name="CustomSourceLinkPackages"></a> Creating Custom SourceLink Packages
+
+Each SourceLink package is expected to provide mapping of repository URLs to corresponding URLs that provide source file content.
+
+The content URL must identify an end-point that responds to HTTP GET request with content of the source file identified in the query. The end-point may require authentication. 
+
+The package shall depend on an appropriate source-control package (Microsoft.Build.Tasks.Git, Microsoft.Build.Tasks.Tfvc, etc.).
+
+The package shall include `build\{PackageName}.props` and `build\{PackageName}.targets` files that get automatically included into the project that references the package. 
+
+`build\{PackageName}.props` file shall set `EnableSourceLink` property to `true` if it hasn't been set already, like so:
+
+```xml
+<PropertyGroup>
+  <EnableSourceLink Condition="'$(EnableSourceLink)' == ''">true</EnableSourceLink>
+</PropertyGroup> 
+```
+
+`build\{PackageName}.targets` file shall add a uniquelay named initialization target to `SourceLinkUrlInitializerTargets`, e.g. `_InitializeXyzSourceLinkUrl` for source control provider called `Xyz`.
+
+```xml
+<PropertyGroup>
+  <SourceLinkUrlInitializerTargets>$(SourceLinkUrlInitializerTargets);_InitializeXyzSourceLinkUrl</SourceLinkUrlInitializerTargets>
+</PropertyGroup>
+```
+
+The initialization target shall update each item of the `SourceRoot` item group that belongs to the Xyz provider with `SourceLinkUrl` metadata that contains the final URL that will be stored in the SourceLink for this source root. It shall ignore any `SourceRoot` items whose `SourceControl` and `RepositoryUrl` metadata it does not recognize.
+
+See [https://github.com/dotnet/sourcelink/blob/master/src/SourceLink.GitHub/build/Microsoft.SourceLink.GitHub.targets](the implementation of GitHub SourceLink package) for an example.
+
