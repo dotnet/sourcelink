@@ -166,5 +166,5 @@ The package shall include `build\{PackageName}.props` and `build\{PackageName}.t
 
 The initialization target shall update each item of the `SourceRoot` item group that belongs to the Xyz provider with `SourceLinkUrl` metadata that contains the final URL for this source root that will be stored in the SourceLink file. It shall ignore any `SourceRoot` items whose `SourceControl` and `RepositoryUrl` metadata it does not recognize.
 
-See [https://github.com/dotnet/sourcelink/blob/master/src/SourceLink.GitHub/build/Microsoft.SourceLink.GitHub.targets](the implementation of GitHub SourceLink package) for an example.
+See [the implementation of GitHub SourceLink package](https://github.com/dotnet/sourcelink/blob/master/src/SourceLink.GitHub/build/Microsoft.SourceLink.GitHub.targets) for an example.
 
