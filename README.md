@@ -16,7 +16,11 @@ You can enable SourceLink in your own project by following this [example](https:
 <Project Sdk="Microsoft.NET.Sdk">
  <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+ 
+    <!-- Optional: Declare that the Repository URL can be published to NuSpec -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
+ 
+    <!-- Optional: Embed source files that are not tracked by the source control manager to the PDB -->
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
   <ItemGroup>
