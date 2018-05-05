@@ -146,9 +146,9 @@ The content URL shall identify an end-point that responds to HTTP GET request wi
 
 The package shall depend on an appropriate source-control package (Microsoft.Build.Tasks.Git, Microsoft.Build.Tasks.Tfvc, etc.).
 
-The package shall include `build\{PackageName}.props` and `build\{PackageName}.targets` files that get automatically included by NuGet into the project that references the package. 
+The package shall include `build/{PackageName}.props` and `build/{PackageName}.targets` files that get automatically included by NuGet into the project that references the package. 
 
-`build\{PackageName}.props` file shall set `EnableSourceLink` property to `true` if it hasn't been set already, like so:
+`build/{PackageName}.props` file shall set `EnableSourceLink` property to `true` if it hasn't been set already, like so:
 
 ```xml
 <PropertyGroup>
@@ -156,7 +156,7 @@ The package shall include `build\{PackageName}.props` and `build\{PackageName}.t
 </PropertyGroup> 
 ```
 
-`build\{PackageName}.targets` file shall add a uniquely named SourceLink initialization target to `SourceLinkUrlInitializerTargets` property, e.g. `_InitializeXyzSourceLinkUrl` for source control provider called `Xyz`.
+`build/{PackageName}.targets` file shall add a uniquely named SourceLink initialization target to `SourceLinkUrlInitializerTargets` property, e.g. `_InitializeXyzSourceLinkUrl` for source control provider called `Xyz`.
 
 ```xml
 <PropertyGroup>
