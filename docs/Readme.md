@@ -36,51 +36,49 @@ This is necessary when the project sources are stored in mutliple submodules hos
 
 ## Basic Settings
 
-### ContinuousIntegrationBuild
+### <a name="PublishRepositoryUrl"></a> PublishRepositoryUrl
 
-Boolean that indicates that the build executes on a build/CI server. 
+The URL of the repository supplied by the CI server or retrieved from source control manager is stored in `PrivateRepositoryUrl` variable.
 
-By default, the property is set to true on build servers that comply with
-[Standard CI](https://github.com/dotnet/designs/blob/86f4ed0e39fc1b1ab5c4128990b17c4aead4420f/proposed/standard-ci-env-variables.md)
-specification and set ```STANDARD_CI_REPOSITORY_URL``` variable.
-
-```ContinuousIntegrationBuild``` variable is used within the build system to enable settings that only apply to official builds, as opposed to local builds on developer machine.
-
-### PublishRepositoryUrl
-
-The URL of the repository supplied by the CI server or retrieved from source control manager is stored in ```PrivateRepositoryUrl``` variable.
 This value is not directly embedded in build outputs to avoid inadvertently publishing links to private repositories.
-Instead, ```PublishRepositoryUrl``` needs to be set by the project in order to publish the URL into ```RepositoryUrl``` property,
+Instead, `PublishRepositoryUrl` needs to be set by the project in order to publish the URL into `RepositoryUrl` property,
 which is used e.g. in the nuspec file generated for NuGet package produced by the project.
 
-### DeterministicSourcePaths
+### <a name="EmbedAllSources"></a> EmbedAllSources
 
-By setting ```DeterministicSourcePaths``` to true the project opts into mapping all source paths included in the project outputs to deterministic values, 
-i.e. values that do not depend on the exact location of the project sources on disk. 
+Set `EmbedAllSources` to `true` to instruct the build system to embed all project source files into the generated PDB.
 
-Only set ```DeterministicSourcePaths``` to true on a build/CI server, never for for local builds.
+### <a name="EmbedUntrackedSources"></a> EmbedUntrackedSources
+
+Set `EmbedUntrackedSources` to `true` to instruct the build system to embed project source files that are not tracked by the source control or imported from a source package to the generated PDB.
+
+Has no effect if `EmbedAllSources` is true.
+
+### ContinuousIntegrationBuild
+
+Set `ContinuousIntegrationBuild` to `true` to indicate that the build executes on a build/CI server. 
+
+`ContinuousIntegrationBuild` variable is used within the build system to enable settings that only apply to official builds, as opposed to local builds on developer machine. An example of such setting is [DeterministicSourcePaths](#DeterministicSourcePaths).
+
+### <a name="DeterministicSourcePaths"></a> DeterministicSourcePaths
+
+By setting `DeterministicSourcePaths` to true the project opts into mapping all source paths included in the project outputs to deterministic values, i.e. values that do not depend on the exact location of the project sources on disk, or the operating system on which the project is being built. 
+
+Only set `DeterministicSourcePaths` to true on a build/CI server, never for for local builds.
 In order for the debugger to find source files when debugging a locally built binary the PDB must contain original, unmapped local paths.
 
-By default, ```DeterministicSourcePaths``` is set to true if both ```Deterministic``` and ```ContinuousIntegrationBuild``` are true.
-
-### EmbedAllSources
-
-Set ```EmbedAllSources``` to true to instruct the build system to embed all project source files into the generated PDB.
-
-### EmbedUntrackedSources
-
-Set ```EmbedUntrackedSources``` to true to instruct the build system to embed project source files that are not tracked by the source control or imported from a source package to the generated PDB.
-
-Has no effect if ```EmbedAllSources``` is true.
+Starting with .NET SDK 2.1 a fully deterministic build is [turned on](https://github.com/dotnet/roslyn/blob/dev15.7.x/src/Compilers/Core/MSBuildTask/Microsoft.Managed.Core.targets#L45-L55) when both `Deterministic` and `ContinuousIntegrationBuild` properties are set to `true`. 
 
 ## Example
 
-The following project settings result in repository url and commit hash automatically detected and included in NuSpec, commit hash included in ```AssemblyInformationalVersionAttribute```, all source files available on GitHub linked via Source Link (including those in submodules) and source files not available on GitHub embedded in the PDB.
+The following project settings result in repository URL and commit hash automatically detected and included in NuSpec, commit hash included in `AssemblyInformationalVersionAttribute`, all source files available on GitHub linked via [SourceLink](https://github.com/dotnet/designs/blob/master/accepted/diagnostics/source-link.md) (including those in submodules) and source files not available on GitHub embedded in the PDB.
+
+Note that .NET SDK 2.1 is required.
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
  <PropertyGroup>
-    <TargetFramework>netcoreapp1.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
@@ -90,24 +88,23 @@ The following project settings result in repository url and commit hash automati
 </Project>
 ```
 
-## Advanced Settings
+## Advanced Settings and Concepts
 
-### IncludeSourceRevisionInInformationalVersion
+### <a name="IncludeSourceRevisionInInformationalVersion"></a> IncludeSourceRevisionInInformationalVersion
 
-When true and a source control package is present the Source Revision id is included in the `AssemblyInformationalVersionAttribute`. 
-True by default, set to false to suppress publishing Source Revision id to the attribute.
+When `true` and a source control package is present the `SourceRevisionId` is included in the `AssemblyInformationalVersionAttribute`. 
+The default value is `true`. Set to `false` to suppress publishing `SourceRevisionId` to the attribute.
 
-### SourceRevisionId
+### <a name="SourceRevisionId"></a> SourceRevisionId
 
 Set by target `SetSourceRevisionId` and consumed by NuGet `Pack` target and `GenerateAssemblyInfo` target. 
 May be used by custom targets that need this information.
 
-### EnableSourceLink
+### <a name="EnableSourceLink"></a> EnableSourceLink
 
-This property is implicitly set to true by a SourceLink package, unless it's explicitly set by the project to false.
-Including a SourceLink package thus enables Source Link generation unless disabled by the project.
+This property is implicitly set to `true` by a SourceLink package. Including a SourceLink package thus enables SourceLink generation unless explicitly disabled by the project by setting this property to `false`.
 
-### SourceRoot
+### <a name="SourceRoot"></a> SourceRoot
 
 Item group that lists all source roots that the project source files reside under and their mapping to source control server URLs. This includes both source files under source control as well as source files in source packages.
 
@@ -124,7 +121,7 @@ Additional soruce-control specific metadata may be defined (depends on the sourc
 
 For example, for Git:
 
-- _RepositoryUrl_: e.g. ```http://github.com/dotnet/corefx```
+- _RepositoryUrl_: e.g. `http://github.com/dotnet/corefx`
 
 For TFVC:
 
@@ -134,8 +131,8 @@ For TFVC:
 
 Nested source control roots have the following metadata (e.g. submodules):
 
-- _NestedRoot_: URL to the source root relative to the containing source root (e.g. ```src/submodules/mysubmodule```)
+- _NestedRoot_: URL to the source root relative to the containing source root (e.g. `src/submodules/mysubmodule`)
 - _ContainingRoot_: the identity if the containing source root
 
 Source roots not under source control:
-- _SourceLinkUrl_: URL to use in source link mapping, including ```*``` wildcard (e.g. ```https://raw.githubusercontent.com/dotnet/roslyn/42abf2e6642db97d2314c017eb179075d5042028/src/Dependencies/CodeAnalysis.Debugging/*```)
+- _SourceLinkUrl_: URL to use in source link mapping, including `*` wildcard (e.g. `https://raw.githubusercontent.com/dotnet/roslyn/42abf2e6642db97d2314c017eb179075d5042028/src/Dependencies/CodeAnalysis.Debugging/*`)
