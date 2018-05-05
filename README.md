@@ -50,6 +50,6 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 ## Experience in Visual Studio
 
-The following screenshot is an example of debugging the source of a NuGet package referenced by an application in Visual Studio 2017.
+The following screenshot demonstrates debugging a NuGet package referenced by an application, with source automatically downloaded from GitHub and used by Visual Studio 2017.
 
 ![sourcelink-example](https://user-images.githubusercontent.com/2608468/39667937-10d7dabe-5076-11e8-815e-935724b3a783.PNG)
