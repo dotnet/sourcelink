@@ -28,7 +28,7 @@ The following Source Link pre-release packages are currently available:
 - Microsoft.SourceLink.Vsts.Git (depends on Microsoft.Build.Tasks.Git package)
 - Microsoft.SourceLink.Vsts.Tfvc (depends on Microsoft.Build.Tasks.Tfvc package)
 
-The system is extensible and custom packages that handle other source control providers can be developed and used. See [Custom SourceLink packages](#CustomSourceLinkPackages) for details.
+The system is extensible and custom packages that handle other source control providers can be developed and used. See [Custom SourceLink packages](#-creating-custom-sourcelink-packages) for details.
 
 Each SourceLink package depends on the corresponding source control package. Referencing a SourceLink package makes the dependent source control package also referenced, thus providing the other source control features to the project.
 
@@ -37,7 +37,7 @@ This is necessary when the project sources are stored in mutliple submodules hos
 
 ## Basic Settings
 
-### <a name="PublishRepositoryUrl"></a> PublishRepositoryUrl
+### PublishRepositoryUrl
 
 The URL of the repository supplied by the CI server or retrieved from source control manager is stored in `PrivateRepositoryUrl` variable.
 
@@ -45,11 +45,11 @@ This value is not directly embedded in build outputs to avoid inadvertently publ
 Instead, `PublishRepositoryUrl` needs to be set by the project in order to publish the URL into `RepositoryUrl` property,
 which is used e.g. in the nuspec file generated for NuGet package produced by the project.
 
-### <a name="EmbedAllSources"></a> EmbedAllSources
+### EmbedAllSources
 
 Set `EmbedAllSources` to `true` to instruct the build system to embed all project source files into the generated PDB.
 
-### <a name="EmbedUntrackedSources"></a> EmbedUntrackedSources
+### EmbedUntrackedSources
 
 Set `EmbedUntrackedSources` to `true` to instruct the build system to embed project source files that are not tracked by the source control or imported from a source package to the generated PDB.
 
@@ -59,9 +59,9 @@ Has no effect if `EmbedAllSources` is true.
 
 Set `ContinuousIntegrationBuild` to `true` to indicate that the build executes on a build/CI server. 
 
-`ContinuousIntegrationBuild` variable is used within the build system to enable settings that only apply to official builds, as opposed to local builds on developer machine. An example of such setting is [DeterministicSourcePaths](#DeterministicSourcePaths).
+`ContinuousIntegrationBuild` variable is used within the build system to enable settings that only apply to official builds, as opposed to local builds on developer machine. An example of such setting is [DeterministicSourcePaths](#-deterministicsourcepaths).
 
-### <a name="DeterministicSourcePaths"></a> DeterministicSourcePaths
+### DeterministicSourcePaths
 
 By setting `DeterministicSourcePaths` to true the project opts into mapping all source paths included in the project outputs to deterministic values, i.e. values that do not depend on the exact location of the project sources on disk, or the operating system on which the project is being built. 
 
@@ -91,21 +91,21 @@ Note that .NET SDK 2.1 is required.
 
 ## Advanced Settings and Concepts
 
-### <a name="IncludeSourceRevisionInInformationalVersion"></a> IncludeSourceRevisionInInformationalVersion
+### IncludeSourceRevisionInInformationalVersion
 
 When `true` and a source control package is present the `SourceRevisionId` is included in the `AssemblyInformationalVersionAttribute`. 
 The default value is `true`. Set to `false` to suppress publishing `SourceRevisionId` to the attribute.
 
-### <a name="SourceRevisionId"></a> SourceRevisionId
+### SourceRevisionId
 
 Set by target `SetSourceRevisionId` and consumed by NuGet `Pack` target and `GenerateAssemblyInfo` target. 
 May be used by custom targets that need this information.
 
-### <a name="EnableSourceLink"></a> EnableSourceLink
+### EnableSourceLink
 
 This property is implicitly set to `true` by a SourceLink package. Including a SourceLink package thus enables SourceLink generation unless explicitly disabled by the project by setting this property to `false`.
 
-### <a name="SourceRoot"></a> SourceRoot
+### SourceRoot
 
 Item group that lists all source roots that the project source files reside under and their mapping to source control server URLs. This includes both source files under source control as well as source files in source packages.
 
@@ -138,7 +138,7 @@ Nested source control roots have the following metadata (e.g. submodules):
 Source roots not under source control:
 - _SourceLinkUrl_: URL to use in source link mapping, including `*` wildcard (e.g. `https://raw.githubusercontent.com/dotnet/roslyn/42abf2e6642db97d2314c017eb179075d5042028/src/Dependencies/CodeAnalysis.Debugging/*`)
 
-## <a name="CustomSourceLinkPackages"></a> Creating Custom SourceLink Packages
+## Creating Custom SourceLink Packages
 
 Each SourceLink package is expected to provide mapping of _repository URLs_ to corresponding _content URLs_ that provide source file content.
 
