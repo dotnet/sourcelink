@@ -28,7 +28,7 @@ The following Source Link pre-release packages are currently available:
 - Microsoft.SourceLink.Vsts.Git (depends on Microsoft.Build.Tasks.Git package)
 - Microsoft.SourceLink.Vsts.Tfvc (depends on Microsoft.Build.Tasks.Tfvc package)
 
-The system is extensible and custom packages that handle other source control providers can be developed and used. See [Custom SourceLink packages](#-creating-custom-sourcelink-packages) for details.
+The system is extensible and custom packages that handle other source control providers can be developed and used. See [Custom SourceLink packages](#creating-custom-sourcelink-packages) for details.
 
 Each SourceLink package depends on the corresponding source control package. Referencing a SourceLink package makes the dependent source control package also referenced, thus providing the other source control features to the project.
 
@@ -59,7 +59,7 @@ Has no effect if `EmbedAllSources` is true.
 
 Set `ContinuousIntegrationBuild` to `true` to indicate that the build executes on a build/CI server. 
 
-`ContinuousIntegrationBuild` variable is used within the build system to enable settings that only apply to official builds, as opposed to local builds on developer machine. An example of such setting is [DeterministicSourcePaths](#-deterministicsourcepaths).
+`ContinuousIntegrationBuild` variable is used within the build system to enable settings that only apply to official builds, as opposed to local builds on developer machine. An example of such setting is [DeterministicSourcePaths](#deterministicsourcepaths).
 
 ### DeterministicSourcePaths
 
