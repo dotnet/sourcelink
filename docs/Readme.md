@@ -140,13 +140,13 @@ Source roots not under source control:
 
 ## <a name="CustomSourceLinkPackages"></a> Creating Custom SourceLink Packages
 
-Each SourceLink package is expected to provide mapping of repository URLs to corresponding URLs that provide source file content.
+Each SourceLink package is expected to provide mapping of _repository URLs_ to corresponding _content URLs_ that provide source file content.
 
-The content URL must identify an end-point that responds to HTTP GET request with content of the source file identified in the query. The end-point may require authentication. 
+The content URL shall identify an end-point that responds to HTTP GET request with content of the source file identified in the query. The end-point may require authentication. 
 
 The package shall depend on an appropriate source-control package (Microsoft.Build.Tasks.Git, Microsoft.Build.Tasks.Tfvc, etc.).
 
-The package shall include `build\{PackageName}.props` and `build\{PackageName}.targets` files that get automatically included into the project that references the package. 
+The package shall include `build\{PackageName}.props` and `build\{PackageName}.targets` files that get automatically included by NuGet into the project that references the package. 
 
 `build\{PackageName}.props` file shall set `EnableSourceLink` property to `true` if it hasn't been set already, like so:
 
@@ -156,7 +156,7 @@ The package shall include `build\{PackageName}.props` and `build\{PackageName}.t
 </PropertyGroup> 
 ```
 
-`build\{PackageName}.targets` file shall add a uniquelay named initialization target to `SourceLinkUrlInitializerTargets`, e.g. `_InitializeXyzSourceLinkUrl` for source control provider called `Xyz`.
+`build\{PackageName}.targets` file shall add a uniquely named SourceLink initialization target to `SourceLinkUrlInitializerTargets` property, e.g. `_InitializeXyzSourceLinkUrl` for source control provider called `Xyz`.
 
 ```xml
 <PropertyGroup>
@@ -164,7 +164,7 @@ The package shall include `build\{PackageName}.props` and `build\{PackageName}.t
 </PropertyGroup>
 ```
 
-The initialization target shall update each item of the `SourceRoot` item group that belongs to the Xyz provider with `SourceLinkUrl` metadata that contains the final URL that will be stored in the SourceLink for this source root. It shall ignore any `SourceRoot` items whose `SourceControl` and `RepositoryUrl` metadata it does not recognize.
+The initialization target shall update each item of the `SourceRoot` item group that belongs to the Xyz provider with `SourceLinkUrl` metadata that contains the final URL for this source root that will be stored in the SourceLink file. It shall ignore any `SourceRoot` items whose `SourceControl` and `RepositoryUrl` metadata it does not recognize.
 
 See [https://github.com/dotnet/sourcelink/blob/master/src/SourceLink.GitHub/build/Microsoft.SourceLink.GitHub.targets](the implementation of GitHub SourceLink package) for an example.
 
