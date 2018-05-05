@@ -17,7 +17,7 @@ Having this information available enables the following features:
 1) Including source revision id in `AssemblyInformationalVersionAttribute` and in NuSpec of the package produced by the project.
 2) Automatic detection and publishing of the repository URL.
 3) Embedding sources to the PDB that are not tracked by source control.
-4) Generating [Source Link](https://github.com/dotnet/core/blob/master/Documentation/diagnostics/source_link.md) that 
+4) Generating [SourceLink](https://github.com/dotnet/designs/blob/master/accepted/diagnostics/source-link.md) that 
    enables debuggers to find sources when stepping through the DLL/EXE produced by the project.
 
 To generate Source Link having just the source control package is not sufficient, since various source control providers (hosts) 
