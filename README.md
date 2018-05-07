@@ -1,6 +1,6 @@
 # SourceLink
 
-SourceLink is a language- and source-control agnostic system for providing first-class source debugging experiences for binaries. The primary goal of the project is to enable anyone building NuGet libraries to provide source debugging for their users with almost no effort. Microsoft libraries, such as .NET Core and Roslyn have enabled SourceLink. SourceLink is supported by Microsoft.
+SourceLink is a language- and source-control agnostic system for providing first-class source debugging experiences for binaries. The goal of the project is to enable anyone building [NuGet libraries to provide source debugging](https://github.com/dotnet/designs/blob/master/accepted/diagnostics/debugging-with-symbols-and-sources.md) for their users with almost no effort. Microsoft libraries, such as .NET Core and Roslyn have enabled SourceLink. SourceLink is supported by Microsoft.
 
 SourceLink is a [set of packages](https://dotnet.myget.org/Gallery/sourcelink) and a [specification](https://github.com/dotnet/designs/blob/master/accepted/diagnostics/source-link.md#source-link-file-specification) for describing source control metadata that can be embedded in symbols, binaries and packages.
 
@@ -22,6 +22,10 @@ You can enable SourceLink in your own project hosted on [GitHub](http://github.c
  
     <!-- Optional: Embed source files that are not tracked by the source control manager to the PDB -->
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+    <!-- Optional: Embed PDB in built binary (.dll or .exe) -->
+    <!-- Required if you don't use a symbol server -->
+    <DebugType>Embedded</DebugType>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-62905-03" PrivateAssets="All"/>
@@ -55,3 +59,9 @@ Pre-release builds are available on MyGet gallery: https://dotnet.myget.org/Gall
 [//]: # (End current test results)
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
+## Experience in Visual Studio
+
+The following screenshot demonstrates debugging a NuGet package referenced by an application, with source automatically downloaded from GitHub and used by Visual Studio 2017.
+
+![sourcelink-example](https://user-images.githubusercontent.com/2608468/39667937-10d7dabe-5076-11e8-815e-935724b3a783.PNG)
