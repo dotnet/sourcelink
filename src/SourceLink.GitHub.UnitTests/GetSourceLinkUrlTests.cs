@@ -182,18 +182,42 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mygithub.com/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mygithub.com:1234/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
                     new MockItem("abc.com", KVP("ContentUrl", "https://abc.com")),
-                    new MockItem("mygithub.com", KVP("ContentUrl", "https://subdomain.rawmygithub1.com")),
+                    new MockItem("mygithub.com", KVP("ContentUrl", "https://subdomain.rawmygithub1.com:777")),
                     new MockItem("mygithub.com", KVP("ContentUrl", "https://subdomain.rawmygithub2.com"))
                 }
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("https://subdomain.rawmygithub1.com/a/b/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://subdomain.rawmygithub1.com:777/a/b/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
+            Assert.True(result);
+        }
+
+        /// <summary>
+        /// The hosts currently map domains, not ports.
+        /// </summary>
+        [Fact]
+        public void GetSourceLinkUrl_CustomHosts_WithPort()
+        {
+            var engine = new MockEngine();
+
+            var task = new GetSourceLinkUrl()
+            {
+                BuildEngine = engine,
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mygithub.com:1234/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                Hosts = new[]
+                {
+                    new MockItem("mygithub.com:1234", KVP("ContentUrl", "https://subdomain.rawmygithub1.com:777")),
+                }
+            };
+
+            bool result = task.Execute();
+            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            AssertEx.AreEqual("N/A", task.SourceLinkUrl);
             Assert.True(result);
         }
 
