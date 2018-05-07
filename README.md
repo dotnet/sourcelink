@@ -10,7 +10,7 @@ The [original SourceLink implementation](https://github.com/ctaggart/SourceLink)
 
 ## Using SourceLink
 
-You can enable SourceLink in your own project hosted on GitHub by following this [example](https://github.com/dotnet/sourcelink/blob/master/docs/Readme.md#example):
+You can enable SourceLink in your own project hosted on [GitHub](http://github.com) by following this [example](https://github.com/dotnet/sourcelink/blob/master/docs/Readme.md#example):
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
