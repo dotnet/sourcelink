@@ -2,7 +2,7 @@
 
 SourceLink is a language- and source-control agnostic system for providing first-class source debugging experiences for binaries. The goal of the project is to enable anyone building [NuGet libraries to provide source debugging](https://github.com/dotnet/designs/blob/master/accepted/diagnostics/debugging-with-symbols-and-sources.md) for their users with almost no effort. Microsoft libraries, such as .NET Core and Roslyn have enabled SourceLink. SourceLink is supported by Microsoft.
 
-SourceLink is a [set of packages](https://dotnet.myget.org/Gallery/sourcelink) and a [specification](https://github.com/dotnet/designs/blob/master/accepted/diagnostics/source-link.md#source-link-file-specification) for describing source control metadata that can be embedded in symbols, binaries and packages.
+SourceLink is a [set of packages](https://www.nuget.org/packages?q=Microsoft.SourceLink) and a [specification](https://github.com/dotnet/designs/blob/master/accepted/diagnostics/source-link.md#source-link-file-specification) for describing source control metadata that can be embedded in symbols, binaries and packages.
 
 Visual Studio 15.3+ supports reading SourceLink information from symbols while debugging. It downloads and displays the appropriate commit-specific source for users, such as from [raw.githubusercontent](https://raw.githubusercontent.com/dotnet/roslyn/681cbc414542ffb9fb13ded613d26a88ea73a44b/src/VisualStudio/Core/Def/Implementation/ProjectSystem/AbstractProject.cs), enabling breakpoints and all other sources debugging experience on arbitrary NuGet dependencies. Visual Studio 15.7+ supports downloading source files from private GitHub and VSTS repositories that require authentication.
 
@@ -32,13 +32,13 @@ You can enable SourceLink in your own project hosted on [GitHub](http://github.c
 </Project>
 ```
 
-For projects hosted by [Visual Studio Team Services](https://www.visualstudio.com/team-services) in git repositories reference Microsoft.SourceLink.Vsts.Git package like so: 
+For projects hosted by [Visual Studio Team Services](https://www.visualstudio.com/team-services) in git repositories reference [Microsoft.SourceLink.Vsts.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Vsts.Git/1.0.0-beta-62905-03) package like so: 
 
 ```xml
 <PackageReference Include="Microsoft.SourceLink.Vsts.Git" Version="1.0.0-beta-62905-03" PrivateAssets="All"/>
 ```
 
-If your repository contains submodules hosted by other git providers reference packages of all these providers. For example, projects in a repository hosted by VSTS that links a GitHub repository via a submodule should reference both Microsoft.SourceLink.Vsts.Git and Microsoft.SourceLink.GitHub packages.
+If your repository contains submodules hosted by other git providers reference packages of all these providers. For example, projects in a repository hosted by VSTS that links a GitHub repository via a submodule should reference both [Microsoft.SourceLink.Vsts.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Vsts.Git/1.0.0-beta-62905-03) and [Microsoft.SourceLink.GitHub](https://www.nuget.org/packages/Microsoft.SourceLink.GitHub/1.0.0-beta-62905-03) packages.
 
 SourceLink packages are currently available from `https://dotnet.myget.org/F/sourcelink/api/v3/index.json` feed, so don't forget to add it to your nuget.config file.
 
