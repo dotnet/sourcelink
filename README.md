@@ -35,7 +35,7 @@ For projects hosted by [Visual Studio Team Services](https://www.visualstudio.co
 <PackageReference Include="Microsoft.SourceLink.Vsts.Git" Version="1.0.0-beta-62905-03" PrivateAssets="All"/>
 ```
 
-These packages are currently available from https://dotnet.myget.org/F/sourcelink/api/v3/index.json feed, so don't forget to add it to your nuget.config file.
+These packages are currently available from `https://dotnet.myget.org/F/sourcelink/api/v3/index.json` feed, so don't forget to add it to your nuget.config file.
 
 Note that [.NET SDK 2.1 RC](https://www.microsoft.com/net/download/dotnet-core/sdk-2.1.300-rc) is required for SourceLink to work.
 
