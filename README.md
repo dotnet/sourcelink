@@ -35,7 +35,7 @@ For projects hosted by [Visual Studio Team Services](https://www.visualstudio.co
 <PackageReference Include="Microsoft.SourceLink.Vsts.Git" Version="1.0.0-beta-62905-03" PrivateAssets="All"/>
 ```
 
-If your repository contains submodules hosted by other git providers references packages of all these providers (for example, a repository hosted on VSTS that links GitHub repository via a submodule should reference both Microsoft.SourceLink.Vsts.Git and Microsoft.SourceLink.GitHub packages).
+If your repository contains submodules hosted by other git providers references packages of all these providers (for example, projects in a repository hosted by VSTS that links a GitHub repository via a submodule should reference both Microsoft.SourceLink.Vsts.Git and Microsoft.SourceLink.GitHub packages).
 
 These packages are currently available from `https://dotnet.myget.org/F/sourcelink/api/v3/index.json` feed, so don't forget to add it to your nuget.config file.
 
