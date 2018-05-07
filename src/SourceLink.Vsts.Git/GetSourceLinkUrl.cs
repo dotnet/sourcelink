@@ -60,7 +60,7 @@ namespace Microsoft.SourceLink.Vsts.Git
                 return false;
             }
 
-            SourceLinkUrl = $"{repoUri.Scheme}://{repoUri.Host}/{projectName}/_apis/git/repositories/{repositoryName}/items?" + query;
+            SourceLinkUrl = $"{repoUri.Scheme}://{repoUri.Authority}/{projectName}/_apis/git/repositories/{repositoryName}/items?" + query;
             return true;
         }
 
