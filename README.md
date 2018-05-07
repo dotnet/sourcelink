@@ -40,8 +40,6 @@ For projects hosted by [Visual Studio Team Services](https://www.visualstudio.co
 
 If your repository contains submodules hosted by other git providers reference packages of all these providers. For example, projects in a repository hosted by VSTS that links a GitHub repository via a submodule should reference both [Microsoft.SourceLink.Vsts.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Vsts.Git/1.0.0-beta-62905-03) and [Microsoft.SourceLink.GitHub](https://www.nuget.org/packages/Microsoft.SourceLink.GitHub/1.0.0-beta-62905-03) packages.
 
-SourceLink packages are currently available from `https://dotnet.myget.org/F/sourcelink/api/v3/index.json` feed, so don't forget to add it to your nuget.config file.
-
 Note that [.NET SDK 2.1 RC](https://www.microsoft.com/net/download/dotnet-core/sdk-2.1.300-rc) is required for SourceLink to work.
 
 ## Builds
