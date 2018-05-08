@@ -9,7 +9,6 @@
     <_SourceControlAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\netcoreapp2.0\Microsoft.Build.Tasks.SourceControl.dll</_SourceControlAssemblyFile>
   </PropertyGroup>
   
-  <UsingTask TaskName="Microsoft.Build.Tasks.SourceControl.GetExternalFiles" AssemblyFile="$(_SourceControlAssemblyFile)"/>
   <UsingTask TaskName="Microsoft.Build.Tasks.SourceControl.GenerateSourceLinkFile" AssemblyFile="$(_SourceControlAssemblyFile)"/>
 
   <!--
@@ -22,7 +21,7 @@
   <UsingTask TaskName="SourceControlBuildTasks.GetSourceRevisionId" AssemblyFile="@(SourceControlBuildTasks->'%(AssemblyFile)')" />
   <UsingTask TaskName="SourceControlBuildTasks.GetUntrackedFiles" AssemblyFile="@(SourceControlBuildTasks->'%(AssemblyFile)')"/>
 
-  <Target Name="_InitializeSourceControlInformationFromSCM"
+  <Target Name="_InitializeSourceControlInformationFromScm"
           BeforeTargets="InitializeSourceControlInformation">
     
     <Error Text="A single source control package required, found multiple: @(SourceControlBuildTasks, ', ')"
@@ -59,8 +58,8 @@
     Embed files to the PDB that either do not belong to any of the SourceRoot directories
     or belong to the source repository, but are explicitly ignored (excluded) from source control.
   -->
-  <Target Name="_SetEmbeddedFilesFromSCMUntrackedFiles"
-          DependsOnTargets="_InitializeSourceControlInformationFromSCM"
+  <Target Name="_SetEmbeddedFilesFromScmUntrackedFiles"
+          DependsOnTargets="_InitializeSourceControlInformationFromScm"
           BeforeTargets="CoreCompile"
           Condition="'$(EmbedUntrackedSources)' == 'true' and '$(EmbedAllSources)' != 'true' and '$(DebugType)' != 'none'">
 
