@@ -20,7 +20,7 @@
   </metadata>
   <files>
     <file src="netcoreapp2.0\*.*" target="tools\netcoreapp2.0" />
-    <file src="net461\SourceLink.*" target="tools\net461" />
+    <file src="net461\Microsoft.SourceLink.*" target="tools\net461" />
 
     <file src="$projectDirectory$\build\*.*" target="build" />
   </files>
