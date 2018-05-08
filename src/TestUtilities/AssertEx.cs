@@ -11,7 +11,7 @@ using System.Text;
 using Microsoft.CodeAnalysis.Test.Utilities;
 using Xunit;
 
-namespace Microsoft.Build.Tasks.SourceControl.UnitTests
+namespace Microsoft.SourceLink.Common.UnitTests
 {
     /// <summary>
     /// Assert style type to deal with the lack of features in xUnit's Assert type

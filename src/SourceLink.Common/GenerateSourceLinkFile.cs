@@ -5,9 +5,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.Build.Framework;
+using Microsoft.Build.Tasks.SourceControl;
 using Microsoft.Build.Utilities;
 
-namespace Microsoft.Build.Tasks.SourceControl
+namespace Microsoft.SourceLink.Common
 {
     public sealed class GenerateSourceLinkFile : Task
     {

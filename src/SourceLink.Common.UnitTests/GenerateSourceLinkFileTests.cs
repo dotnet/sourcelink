@@ -2,9 +2,9 @@
 using System;
 using System.IO;
 using Xunit;
-using static Microsoft.Build.Tasks.SourceControl.UnitTests.KeyValuePairUtils;
+using static Microsoft.SourceLink.Common.UnitTests.KeyValuePairUtils;
 
-namespace Microsoft.Build.Tasks.SourceControl.UnitTests
+namespace Microsoft.SourceLink.Common.UnitTests
 {
     public class GenerateSourceLinkFileTests
     {

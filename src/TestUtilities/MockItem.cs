@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.Build.Framework;
 
-namespace Microsoft.Build.Tasks.SourceControl.UnitTests
+namespace Microsoft.SourceLink.Common.UnitTests
 {
     public sealed class MockItem : ITaskItem
     {

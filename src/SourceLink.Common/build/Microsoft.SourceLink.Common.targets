@@ -5,11 +5,11 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <_SourceControlAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)..\tools\net461\Microsoft.Build.Tasks.SourceControl.dll</_SourceControlAssemblyFile>
-    <_SourceControlAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\netcoreapp2.0\Microsoft.Build.Tasks.SourceControl.dll</_SourceControlAssemblyFile>
+    <_MicrosoftSourceLinkCommonAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)..\tools\net461\Microsoft.SourceLink.Common.dll</_MicrosoftSourceLinkCommonAssemblyFile>
+    <_MicrosoftSourceLinkCommonAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\netcoreapp2.0\Microsoft.SourceLink.Common.dll</_MicrosoftSourceLinkCommonAssemblyFile>
   </PropertyGroup>
   
-  <UsingTask TaskName="Microsoft.Build.Tasks.SourceControl.GenerateSourceLinkFile" AssemblyFile="$(_SourceControlAssemblyFile)"/>
+  <UsingTask TaskName="Microsoft.SourceLink.Common.GenerateSourceLinkFile" AssemblyFile="$(_MicrosoftSourceLinkCommonAssemblyFile)"/>
 
   <!--
     A single SourceControlBuildTasks is expected to be found, error is reported otherwise before the tasks are called.
@@ -27,7 +27,7 @@
     <Error Text="A single source control package required, found multiple: @(SourceControlBuildTasks, ', ')"
            Condition="@(SourceControlBuildTasks->Count()) != 1"/>
 
-    <!-- 
+    <!--
       Determines id of the repository the project belongs to. Tasks use this id to identify repository without 
       repeatedly traversing the directory structure.
       
@@ -102,7 +102,7 @@
           Outputs="$(SourceLink)"
           Condition="'$(SourceLink)' != ''">
 
-    <Microsoft.Build.Tasks.SourceControl.GenerateSourceLinkFile SourceRoots="@(SourceRoot)" OutputFile="$(SourceLink)" />
+    <Microsoft.SourceLink.Common.GenerateSourceLinkFile SourceRoots="@(SourceRoot)" OutputFile="$(SourceLink)" />
 
     <ItemGroup>
       <FileWrites Include="$(SourceLink)" />
