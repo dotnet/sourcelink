@@ -27,18 +27,18 @@ You can enable SourceLink in your own project hosted on [GitHub](http://github.c
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-62905-03" PrivateAssets="All"/>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-62908-01" PrivateAssets="All"/>
   </ItemGroup>
 </Project>
 ```
 
-For projects hosted by [Visual Studio Team Services](https://www.visualstudio.com/team-services) in git repositories reference [Microsoft.SourceLink.Vsts.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Vsts.Git/1.0.0-beta-62905-03) package like so: 
+For projects hosted by [Visual Studio Team Services](https://www.visualstudio.com/team-services) in git repositories reference [Microsoft.SourceLink.Vsts.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Vsts.Git) package like so: 
 
 ```xml
-<PackageReference Include="Microsoft.SourceLink.Vsts.Git" Version="1.0.0-beta-62905-03" PrivateAssets="All"/>
+<PackageReference Include="Microsoft.SourceLink.Vsts.Git" Version="1.0.0-beta-62908-01" PrivateAssets="All"/>
 ```
 
-If your repository contains submodules hosted by other git providers reference packages of all these providers. For example, projects in a repository hosted by VSTS that links a GitHub repository via a submodule should reference both [Microsoft.SourceLink.Vsts.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Vsts.Git/1.0.0-beta-62905-03) and [Microsoft.SourceLink.GitHub](https://www.nuget.org/packages/Microsoft.SourceLink.GitHub/1.0.0-beta-62905-03) packages.
+If your repository contains submodules hosted by other git providers reference packages of all these providers. For example, projects in a repository hosted by VSTS that links a GitHub repository via a submodule should reference both [Microsoft.SourceLink.Vsts.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Vsts.Git) and [Microsoft.SourceLink.GitHub](https://www.nuget.org/packages/Microsoft.SourceLink.GitHub) packages.
 
 Note that [.NET SDK 2.1 RC1](https://www.microsoft.com/net/download/dotnet-core/sdk-2.1.300-rc1) is required for SourceLink to work.
 
