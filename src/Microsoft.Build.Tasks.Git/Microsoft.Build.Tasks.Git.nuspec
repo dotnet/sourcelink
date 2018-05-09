@@ -33,5 +33,6 @@
     <file src="net461\lib\**\*.dylib" target="tools\net461\lib" />
 
     <file src="$ProjectDirectory$\build\*.*" target="build" />
+    <file src="$ProjectDirectory$\build\*.*" target="buildCrossTargeting" />
   </files>
 </package>

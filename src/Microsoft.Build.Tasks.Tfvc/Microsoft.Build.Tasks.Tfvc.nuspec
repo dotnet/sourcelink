@@ -25,5 +25,6 @@
     <file src="net46\Microsoft.VisualStudio.Services.WebApi.dll" target="tools\net46" />
 
     <file src="$ProjectDirectory$\build\*.*" target="build" />
+    <file src="$ProjectDirectory$\build\*.*" target="buildCrossTargeting" />
   </files>
 </package>
