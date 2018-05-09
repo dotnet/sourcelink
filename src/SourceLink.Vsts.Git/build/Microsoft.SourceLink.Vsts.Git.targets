@@ -16,8 +16,8 @@
   </PropertyGroup>
 
   <Target Name="_InitializeVstsGitSourceLinkUrl" Inputs="@(SourceRoot)" Outputs="|%(Identity)|">
-    <Microsoft.SourceLink.Vsts.Git.GetSourceLinkUrl SourceRoot="@(SourceRoot)">
-      <Output TaskParameter="SourceLinkUrl" PropertyName="_SourceLinkUrlToUpdate" Domain="$(SourceLinkVstsGitDomain)"/>
+    <Microsoft.SourceLink.Vsts.Git.GetSourceLinkUrl SourceRoot="@(SourceRoot)" Domain="$(SourceLinkVstsGitDomain)">
+      <Output TaskParameter="SourceLinkUrl" PropertyName="_SourceLinkUrlToUpdate"/>
     </Microsoft.SourceLink.Vsts.Git.GetSourceLinkUrl>
 
     <ItemGroup>
