@@ -4,9 +4,7 @@
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
   </PropertyGroup>
 
-  <ItemGroup>
-    <SourceControlBuildTasks Include="tfvc">
-      <AssemblyFile>$(MSBuildThisFileDirectory)..\tools\net461\Microsoft.Build.Tasks.Tfvc.dll</AssemblyFile>
-    </SourceControlBuildTasks>
-  </ItemGroup>
+  <PropertyGroup>
+    <MicrosoftBuildTasksTfvcAssemblyFile>$(MSBuildThisFileDirectory)..\tools\net461\Microsoft.Build.Tasks.Tfvc.dll</MicrosoftBuildTasksTfvcAssemblyFile>
+  </PropertyGroup>
 </Project>

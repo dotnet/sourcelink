@@ -4,7 +4,7 @@ using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using Microsoft.TeamFoundation.VersionControl.Client;
 
-namespace SourceControlBuildTasks
+namespace Microsoft.Build.Tasks.Tfvc
 {
     public class LocateRepository : Task
     {

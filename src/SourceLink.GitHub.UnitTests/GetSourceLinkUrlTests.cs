@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
-using Microsoft.Build.Tasks.SourceControl.UnitTests;
+using Microsoft.SourceLink.Common.UnitTests;
 using Xunit;
-using static Microsoft.Build.Tasks.SourceControl.UnitTests.KeyValuePairUtils;
+using static Microsoft.SourceLink.Common.UnitTests.KeyValuePairUtils;
 
 namespace Microsoft.SourceLink.GitHub.UnitTests
 {

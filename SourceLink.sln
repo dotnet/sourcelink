@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Build.Tasks.Git",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Build.Tasks.Tfvc", "src\Microsoft.Build.Tasks.Tfvc\Microsoft.Build.Tasks.Tfvc.csproj", "{13E94F49-DE63-4F6A-8771-D6AE9B7E043D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Build.Tasks.SourceControl", "src\Microsoft.Build.Tasks.SourceControl\Microsoft.Build.Tasks.SourceControl.csproj", "{1FAB9031-3148-476B-B9BB-AB89B8CD2C17}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.Common", "src\SourceLink.Common\Microsoft.SourceLink.Common.csproj", "{1FAB9031-3148-476B-B9BB-AB89B8CD2C17}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Build.Tasks.SourceControl.UnitTests", "src\Microsoft.Build.Tasks.SourceControl.UnitTests\Microsoft.Build.Tasks.SourceControl.UnitTests.csproj", "{9C090D12-1C88-4CB0-849E-3B1668CE0159}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.Common.UnitTests", "src\SourceLink.Common.UnitTests\Microsoft.SourceLink.Common.UnitTests.csproj", "{9C090D12-1C88-4CB0-849E-3B1668CE0159}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Build.StandardCI", "src\Microsoft.Build.StandardCI\Microsoft.Build.StandardCI.csproj", "{F537399A-8B15-4AA0-B5E5-A32E0FAF750B}"
 EndProject

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+  </PropertyGroup>
+
+  <UsingTask TaskName="Microsoft.Build.Tasks.Git.LocateRepository" AssemblyFile="$(MicrosoftBuildTasksGitAssemblyFile)"/>
+  <UsingTask TaskName="Microsoft.Build.Tasks.Git.GetSourceRoots" AssemblyFile="$(MicrosoftBuildTasksGitAssemblyFile)"/>
+  <UsingTask TaskName="Microsoft.Build.Tasks.Git.GetRepositoryUrl" AssemblyFile="$(MicrosoftBuildTasksGitAssemblyFile)"/>
+  <UsingTask TaskName="Microsoft.Build.Tasks.Git.GetSourceRevisionId" AssemblyFile="$(MicrosoftBuildTasksGitAssemblyFile)" />
+  <UsingTask TaskName="Microsoft.Build.Tasks.Git.GetUntrackedFiles" AssemblyFile="$(MicrosoftBuildTasksGitAssemblyFile)"/>
+
+  <Target Name="InitializeSourceControlInformationFromSourceControlManager">
+    <!--
+      Determines id of the repository the project belongs to. Tasks use this id to identify repository without 
+      repeatedly traversing the directory structure.
+      
+      Reports and error if the given project doesn't belong to a repository under source control.
+    -->
+    <Microsoft.Build.Tasks.Git.LocateRepository Directory="$(MSBuildProjectDirectory)" >
+      <Output TaskParameter="Id" PropertyName="_SourceControlLocalRepositoryId" />
+    </Microsoft.Build.Tasks.Git.LocateRepository>
+
+    <PropertyGroup>
+      <RepositoryType Condition="'$(RepositoryType)' == ''">git</RepositoryType>
+    </PropertyGroup>
+
+    <Microsoft.Build.Tasks.Git.GetRepositoryUrl LocalRepositoryId="$(_SourceControlLocalRepositoryId)" Condition="'$(PrivateRepositoryUrl)' == ''">
+      <Output TaskParameter="Url" PropertyName="PrivateRepositoryUrl" />
+    </Microsoft.Build.Tasks.Git.GetRepositoryUrl>
+
+    <Microsoft.Build.Tasks.Git.GetSourceRevisionId LocalRepositoryId="$(_SourceControlLocalRepositoryId)" Condition="'$(SourceRevisionId)' == ''">
+      <Output TaskParameter="RevisionId" PropertyName="SourceRevisionId" />
+    </Microsoft.Build.Tasks.Git.GetSourceRevisionId>
+
+    <Microsoft.Build.Tasks.Git.GetSourceRoots LocalRepositoryId="$(_SourceControlLocalRepositoryId)">
+      <Output TaskParameter="Roots" ItemName="SourceRoot" />
+    </Microsoft.Build.Tasks.Git.GetSourceRoots>
+  </Target>
+  
+  <!--
+    Embed files to the PDB that either do not belong to any of the SourceRoot directories
+    or belong to the source repository, but are explicitly ignored (excluded) from source control.
+  -->
+  <Target Name="SetEmbeddedFilesFromSourceControlManagerUntrackedFiles"
+          DependsOnTargets="InitializeSourceControlInformationFromSourceControlManager">
+
+    <Microsoft.Build.Tasks.Git.GetUntrackedFiles LocalRepositoryId="$(_SourceControlLocalRepositoryId)" ProjectDirectory="$(MSBuildProjectDirectory)" Files="@(Compile)">
+      <Output TaskParameter="UntrackedFiles" ItemName="EmbeddedFiles" />
+    </Microsoft.Build.Tasks.Git.GetUntrackedFiles>
+  </Target>
+
+</Project>

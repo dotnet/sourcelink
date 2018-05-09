@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace Microsoft.Build.Tasks.SourceControl.UnitTests
+namespace Microsoft.SourceLink.Common.UnitTests
 {
     public static class KeyValuePairUtils
     {

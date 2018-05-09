@@ -15,7 +15,7 @@
   </metadata>
   <files>
     <file src="netcoreapp2.0\*.*" target="tools\netcoreapp2.0" />    
-    <file src="net461\Microsoft.Build.Tasks.SourceControl.*" target="tools\net461" />
+    <file src="net461\Microsoft.SourceLink.Common.*" target="tools\net461" />
     <file src="$ProjectDirectory$\build\*.*" target="build" />
   </files>
 </package>
