@@ -8,19 +8,19 @@
         "bin/Microsoft.Build.Tasks.Git/net461/*/Microsoft.Build.Tasks.Git.resources.dll",
         "bin/Microsoft.Build.Tasks.Git/netcoreapp2.0/Microsoft.Build.Tasks.Git.dll",
         "bin/Microsoft.Build.Tasks.Git/netcoreapp2.0/*/Microsoft.Build.Tasks.Git.resources.dll",
-        "bin/Microsoft.Build.Tasks.SourceControl/net461/Microsoft.Build.Tasks.SourceControl.dll",
-        "bin/Microsoft.Build.Tasks.SourceControl/net461/*/Microsoft.Build.Tasks.SourceControl.resources.dll",
-        "bin/Microsoft.Build.Tasks.SourceControl/netcoreapp2.0/Microsoft.Build.Tasks.SourceControl.dll",
-        "bin/Microsoft.Build.Tasks.SourceControl/netcoreapp2.0/*/Microsoft.Build.Tasks.SourceControl.resources.dll",
-        "bin/Microsoft.Build.Tasks.TFVC/net46/Microsoft.Build.Tasks.TFVC.dll",
+        "bin/Microsoft.Build.Tasks.Tfvc/net46/Microsoft.Build.Tasks.Tfvc.dll",
+        "bin/Microsoft.SourceLink.Common/net461/Microsoft.SourceLink.Common.dll",
+        "bin/Microsoft.SourceLink.Common/net461/*/Microsoft.SourceLink.Common.resources.dll",
+        "bin/Microsoft.SourceLink.Common/netcoreapp2.0/Microsoft.SourceLink.Common.dll",
+        "bin/Microsoft.SourceLink.Common/netcoreapp2.0/*/Microsoft.SourceLink.Common.resources.dll",
         "bin/Microsoft.SourceLink.GitHub/net461/Microsoft.SourceLink.GitHub.dll",
         "bin/Microsoft.SourceLink.GitHub/net461/*/Microsoft.SourceLink.GitHub.resources.dll",
         "bin/Microsoft.SourceLink.GitHub/netcoreapp2.0/Microsoft.SourceLink.GitHub.dll",
         "bin/Microsoft.SourceLink.GitHub/netcoreapp2.0/*/Microsoft.SourceLink.GitHub.resources.dll",
-        "bin/Microsoft.SourceLink.VSTS.Git/net461/Microsoft.SourceLink.VSTS.Git.dll",
-        "bin/Microsoft.SourceLink.VSTS.Git/netcoreapp2.0/Microsoft.SourceLink.VSTS.Git.dll",
-        "bin/Microsoft.SourceLink.VSTS.TFVC/net461/Microsoft.SourceLink.VSTS.TFVC.dll",
-        "bin/Microsoft.SourceLink.VSTS.TFVC/netcoreapp2.0/Microsoft.SourceLink.VSTS.TFVC.dll"
+        "bin/Microsoft.SourceLink.Vsts.Git/net461/Microsoft.SourceLink.Vsts.Git.dll",
+        "bin/Microsoft.SourceLink.Vsts.Git/netcoreapp2.0/Microsoft.SourceLink.Vsts.Git.dll",
+        "bin/Microsoft.SourceLink.Vsts.Tfvc/net461/Microsoft.SourceLink.Vsts.Tfvc.dll",
+        "bin/Microsoft.SourceLink.Vsts.Tfvc/netcoreapp2.0/Microsoft.SourceLink.Vsts.Tfvc.dll"
       ]
     },
     {
