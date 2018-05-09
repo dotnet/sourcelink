@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!--
+      Do not query source control manager for any information when building in the IDE or for Live Unit Testing.
+      Features that need this information will be disabled if false.
+    -->
+    <EnableSourceControlManagerQueries Condition="'$(EnableSourceControlManagerQueries)' == '' and '$(DesignTimeBuild)' != 'true' and '$(BuildingForLiveUnitTesting)' != 'true'">true</EnableSourceControlManagerQueries>
+    
+    <!--
+      Do not generate SourceLink when building in the IDE or for Live Unit Testing.
+    -->
+    <EnableSourceLink Condition="'$(EnableSourceLink)' == '' and '$(DesignTimeBuild)' != 'true' and '$(BuildingForLiveUnitTesting)' != 'true'">true</EnableSourceLink>
+  </PropertyGroup>  
+</Project>
