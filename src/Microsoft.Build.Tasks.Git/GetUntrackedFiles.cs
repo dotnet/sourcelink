@@ -2,9 +2,8 @@
 
 using LibGit2Sharp;
 using Microsoft.Build.Framework;
-using Microsoft.Build.Tasks.Git;
 
-namespace SourceControlBuildTasks
+namespace Microsoft.Build.Tasks.Git
 {
     /// <summary>
     /// Selects files that are under the repository root but ignored.

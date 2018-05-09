@@ -2,10 +2,9 @@
 
 using System;
 using Microsoft.Build.Framework;
-using Microsoft.Build.Tasks.Git;
 using Microsoft.Build.Utilities;
 
-namespace SourceControlBuildTasks
+namespace Microsoft.Build.Tasks.Git
 {
     public class LocateRepository : Task
     {
