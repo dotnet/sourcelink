@@ -4,32 +4,32 @@
     <body>
       <trans-unit id="InvalidSubmodulePath_SourceLink">
         <source>The path of submodule '{0}' is invalid: '{1}', the source code won't be available via source link.</source>
-        <target state="new">The path of submodule '{0}' is invalid: '{1}', the source code won't be available via source link.</target>
+        <target state="translated">サブモジュール '{0}' のパスが無効です: '{1}'。ソース リンクを使用してソース コードを使用することはできません。</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidSubmoduleUrl_SourceLink">
         <source>The URL of submodule '{0}' is invalid: '{1}', the source code won't be available via source link.</source>
-        <target state="new">The URL of submodule '{0}' is invalid: '{1}', the source code won't be available via source link.</target>
+        <target state="translated">サブモジュール '{0}' の URL が無効です: '{1}'。ソース リンクを使用してソース コードを使用することはできません。</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryWithoutCommit_SourceLink">
         <source>Repository doesn't have any commit, the source code won't be available via source link.</source>
-        <target state="new">Repository doesn't have any commit, the source code won't be available via source link.</target>
+        <target state="translated">リポジトリにコミットがありません。ソース リンクを使用してソース コードを使用することはできません。</target>
         <note />
       </trans-unit>
       <trans-unit id="SubmoduleWithoutCommit_SourceLink">
         <source>Submodule '{0}' doesn't have any commit, the source code won't be available via source link.</source>
-        <target state="new">Submodule '{0}' doesn't have any commit, the source code won't be available via source link.</target>
+        <target state="translated">サブモジュール '{0}' にコミットがありません。ソース リンクを使用してソース コードを使用することはできません。</target>
         <note />
       </trans-unit>
       <trans-unit id="UnableToLocateRepository">
         <source>Unable to locate repository containing directory '{0}'.</source>
-        <target state="new">Unable to locate repository containing directory '{0}'.</target>
+        <target state="translated">ディレクトリ '{0}' が入っているリポジトリが見つかりません。</target>
         <note />
       </trans-unit>
       <trans-unit id="BareRepositoriesNotSupported">
         <source>Bare repositories are not supported: '{0}'.</source>
-        <target state="new">Bare repositories are not supported: '{0}'.</target>
+        <target state="translated">ベア リポジトリはサポートされていません: '{0}'。</target>
         <note />
       </trans-unit>
     </body>

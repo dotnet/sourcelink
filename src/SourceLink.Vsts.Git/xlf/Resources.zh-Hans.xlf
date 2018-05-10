@@ -4,17 +4,17 @@
     <body>
       <trans-unit id="EnvironmentVariableIsNotAlistOfUrlPairs">
         <source>The value of environment variable {0} is not a well-formed list of URL pairs: '{1}'"</source>
-        <target state="new">The value of environment variable {0} is not a well-formed list of URL pairs: '{1}'"</target>
+        <target state="translated">环境变量 {0} 的值不是形式正确的 URL 对列表: '{1}'"</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsInvalid">
         <source>The value of {0} with identity '{1}' is invalid: '{2}'"</source>
-        <target state="new">The value of {0} with identity '{1}' is invalid: '{2}'"</target>
+        <target state="translated">带有 '{1}' 标识的 {0} 的值无效: '{2}'"</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsNotValidCommitHash">
         <source>The value of {0} with identity '{1}' is not a valid commit hash: '{2}'"</source>
-        <target state="new">The value of {0} with identity '{1}' is not a valid commit hash: '{2}'"</target>
+        <target state="translated">带有 '{1}' 标识的 {0} 的值不是有效的提交哈希: '{2}'"</target>
         <note />
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidDomainName">

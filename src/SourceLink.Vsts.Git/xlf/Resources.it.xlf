@@ -4,17 +4,17 @@
     <body>
       <trans-unit id="EnvironmentVariableIsNotAlistOfUrlPairs">
         <source>The value of environment variable {0} is not a well-formed list of URL pairs: '{1}'"</source>
-        <target state="new">The value of environment variable {0} is not a well-formed list of URL pairs: '{1}'"</target>
+        <target state="translated">Il valore della variabile di ambiente {0} non è un elenco ben formato di coppie di URL: '{1}'"</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsInvalid">
         <source>The value of {0} with identity '{1}' is invalid: '{2}'"</source>
-        <target state="new">The value of {0} with identity '{1}' is invalid: '{2}'"</target>
+        <target state="translated">Il valore di {0} con identità '{1}' non è valido: '{2}'"</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsNotValidCommitHash">
         <source>The value of {0} with identity '{1}' is not a valid commit hash: '{2}'"</source>
-        <target state="new">The value of {0} with identity '{1}' is not a valid commit hash: '{2}'"</target>
+        <target state="translated">Il valore di {0} con identità '{1}' non è un hash commit valido: '{2}'"</target>
         <note />
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidDomainName">

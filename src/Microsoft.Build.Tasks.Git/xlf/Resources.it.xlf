@@ -4,32 +4,32 @@
     <body>
       <trans-unit id="InvalidSubmodulePath_SourceLink">
         <source>The path of submodule '{0}' is invalid: '{1}', the source code won't be available via source link.</source>
-        <target state="new">The path of submodule '{0}' is invalid: '{1}', the source code won't be available via source link.</target>
+        <target state="translated">Il percorso del modulo secondario '{0}' non è valido: '{1}'. Il codice sorgente non sarà disponibile tramite il collegamento all'origine.</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidSubmoduleUrl_SourceLink">
         <source>The URL of submodule '{0}' is invalid: '{1}', the source code won't be available via source link.</source>
-        <target state="new">The URL of submodule '{0}' is invalid: '{1}', the source code won't be available via source link.</target>
+        <target state="translated">L'URL del modulo secondario '{0}' non è valido: '{1}'. Il codice sorgente non sarà disponibile tramite il collegamento all'origine.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryWithoutCommit_SourceLink">
         <source>Repository doesn't have any commit, the source code won't be available via source link.</source>
-        <target state="new">Repository doesn't have any commit, the source code won't be available via source link.</target>
+        <target state="translated">Non esiste alcun commit per il repository. Il codice sorgente non sarà disponibile tramite il collegamento all'origine.</target>
         <note />
       </trans-unit>
       <trans-unit id="SubmoduleWithoutCommit_SourceLink">
         <source>Submodule '{0}' doesn't have any commit, the source code won't be available via source link.</source>
-        <target state="new">Submodule '{0}' doesn't have any commit, the source code won't be available via source link.</target>
+        <target state="translated">Non esiste alcun commit per il modulo secondario '{0}'. Il codice sorgente non sarà disponibile tramite il collegamento all'origine.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnableToLocateRepository">
         <source>Unable to locate repository containing directory '{0}'.</source>
-        <target state="new">Unable to locate repository containing directory '{0}'.</target>
+        <target state="translated">Non è stato individuato alcun repository contenente la directory '{0}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="BareRepositoriesNotSupported">
         <source>Bare repositories are not supported: '{0}'.</source>
-        <target state="new">Bare repositories are not supported: '{0}'.</target>
+        <target state="translated">I repository bare non sono supportati: '{0}'.</target>
         <note />
       </trans-unit>
     </body>
