@@ -129,6 +129,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
         [InlineData("http://x.visualstudio.com/a/_git")]
         [InlineData("http://x.visualstudio.com/a/_git/")]
         [InlineData("http://x.visualstudio.com//_git/b")]
+        [InlineData("http://x.visualstudio.com/a/_git/b//")]
         [InlineData("http://x.visualstudio.com/a/b/_git/")]
         [InlineData("http://x.visualstudio.com//b/_git/c")]
         public void TryParseRepositoryUrl_Error(string url)
@@ -138,7 +139,9 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
 
         [Theory]
         [InlineData("http://account.visualstudio.com/project/_git/repo", "visualstudio.com", "project", "repo", null)]
+        [InlineData("http://account.visualstudio.com/project/_git/repo/", "visualstudio.com", "project", "repo", null)]
         [InlineData("http://account.visualstudio.com/collection/project/_git/repo", "visualstudio.com", "project", "repo", "collection")]
+        [InlineData("http://account.visualstudio.com/collection/project/_git/repo/", "visualstudio.com", "project", "repo", "collection")]
         [InlineData("http://visualstudio.com/collection/project/_git/repo", "visualstudio.com", "project", "repo", "collection")]
         [InlineData("http://d.tfs/collection/project/_git/repo", "d.tfs", "project", "repo", "collection")]
         [InlineData("http://d.tfs/collection/project/_git/repo", "tfs", "project", "repo", "collection")]

@@ -174,7 +174,16 @@ namespace Microsoft.SourceLink.Vsts.Git
                 return false;
             }
 
-            var parts = repoUri.LocalPath.Trim('/').Split('/');
+            string localPath = repoUri.LocalPath;
+            if (localPath.Length <= 1 || localPath[0] != '/')
+            {
+                return false;
+            }
+
+            // trim leading and optional trailing slash:
+            localPath = localPath.Substring(1, (localPath[localPath.Length - 1] == '/') ? localPath.Length - 2 : localPath.Length - 1);
+
+            var parts = localPath.Split('/');
             if (parts.Length < 3 || parts.Length > 4)
             {
                 return false;
