@@ -1,7 +1,7 @@
 [CmdletBinding(PositionalBinding=$false)]
 Param(
   [string] $configuration = "Debug",
-  [string] $solution = "",
+  [string] $projects = "",
   [string] $verbosity = "minimal",
   [switch] $restore,
   [switch] $deployDeps,
@@ -42,7 +42,7 @@ function Print-Usage() {
     Write-Host ""
 
     Write-Host "Advanced settings:"
-    Write-Host "  -solution <value>       Path to solution to build"
+    Write-Host "  -projects <value>       Semi-colon delimited list of sln/proj's to build. Globbing is supported (*.sln)"
     Write-Host "  -ci                     Set when running on CI server"
     Write-Host "  -prepareMachine         Prepare machine for CI run"
     Write-Host ""
@@ -70,7 +70,7 @@ function InitializeDotNetCli {
 
   # Source Build uses DotNetCoreSdkDir variable
   if ($env:DotNetCoreSdkDir -ne $null) {
-    $env:DOTNET_INSTALL_DIR = $env:DotNetCoreSdkDir    
+    $env:DOTNET_INSTALL_DIR = $env:DotNetCoreSdkDir
   }
 
   # Use dotnet installation specified in DOTNET_INSTALL_DIR if it contains the required SDK version, 
@@ -82,7 +82,7 @@ function InitializeDotNetCli {
     $env:DOTNET_INSTALL_DIR = $dotnetRoot
     
     if ($restore) {
-      InstallDotNetCli $dotnetRoot
+      InstallDotNetSdk $dotnetRoot $GlobalJson.sdk.version
     }
   }
 
@@ -90,14 +90,20 @@ function InitializeDotNetCli {
   $global:BuildArgs = "msbuild"
 }
 
-function InstallDotNetCli([string] $dotnetRoot) {
+function GetDotNetInstallScript([string] $dotnetRoot) {
   $installScript = "$dotnetRoot\dotnet-install.ps1"
   if (!(Test-Path $installScript)) { 
     Create-Directory $dotnetRoot
     Invoke-WebRequest "https://dot.net/v1/dotnet-install.ps1" -OutFile $installScript
   }
+
+  return $installScript
+}
+
+function InstallDotNetSdk([string] $dotnetRoot, [string] $version) {
+  $installScript = GetDotNetInstallScript $dotnetRoot
   
-  & $installScript -Version $GlobalJson.sdk.version -InstallDir $dotnetRoot
+  & $installScript -Version $version -InstallDir $dotnetRoot
   if ($lastExitCode -ne 0) {
     Write-Host "Failed to install dotnet cli (exit code '$lastExitCode')." -ForegroundColor Red
     exit $lastExitCode
@@ -148,7 +154,7 @@ function InitializeToolset {
   $toolsetLocationFile = Join-Path $ToolsetDir "$toolsetVersion.txt"
 
   if (Test-Path $toolsetLocationFile) {
-    $path = Get-Content $toolsetLocationFile
+    $path = Get-Content $toolsetLocationFile -TotalCount 1
     if (Test-Path $path) {
       $global:ToolsetBuildProj = $path
       return
@@ -171,11 +177,28 @@ function InitializeToolset {
     exit $lastExitCode
   }
 
- $global:ToolsetBuildProj = Get-Content $toolsetLocationFile
+  $path = Get-Content $toolsetLocationFile -TotalCount 1
+  if (!(Test-Path $path)) {
+    throw "Invalid toolset path: $path"
+  }
+
+  $global:ToolsetBuildProj = $path
+}
+
+function InitializeCustomToolset {
+  if (-not $restore) {
+    return
+  }
+
+  $script = Join-Path $EngRoot "RestoreToolset.ps1"
+
+  if (Test-Path $script) {
+    . $script
+  }
 }
 
 function Build {
-  & $BuildDriver $BuildArgs $ToolsetBuildProj /m /nologo /clp:Summary /warnaserror /v:$verbosity /bl:$Log /p:Configuration=$configuration /p:Projects=$solution /p:RepoRoot=$RepoRoot /p:Restore=$restore /p:DeployDeps=$deployDeps /p:Build=$build /p:Rebuild=$rebuild /p:Deploy=$deploy /p:Test=$test /p:IntegrationTest=$integrationTest /p:Sign=$sign /p:Pack=$pack /p:CIBuild=$ci $properties
+  & $BuildDriver $BuildArgs $ToolsetBuildProj /m /nologo /clp:Summary /warnaserror /v:$verbosity /bl:$BuildLog /p:Configuration=$configuration /p:Projects=$projects /p:RepoRoot=$RepoRoot /p:Restore=$restore /p:DeployDeps=$deployDeps /p:Build=$build /p:Rebuild=$rebuild /p:Deploy=$deploy /p:Test=$test /p:IntegrationTest=$integrationTest /p:Sign=$sign /p:Pack=$pack /p:CIBuild=$ci $properties
   if ($lastExitCode -ne 0) {
     Write-Host "Build log: $Log" -ForegroundColor DarkGray
     exit $lastExitCode
@@ -191,16 +214,17 @@ function Stop-Processes() {
 
 try {
   $RepoRoot = Join-Path $PSScriptRoot "..\.."
+  $EngRoot = Join-Path $PSScriptRoot ".."
   $ArtifactsDir = Join-Path $RepoRoot "artifacts"
   $ToolsetDir = Join-Path $ArtifactsDir "toolset"
   $LogDir = Join-Path (Join-Path $ArtifactsDir $configuration) "log"
-  $Log = Join-Path $LogDir "Build.binlog"
+  $BuildLog = Join-Path $LogDir "Build.binlog"
   $ToolsetRestoreLog = Join-Path $LogDir "ToolsetRestore.binlog"
   $TempDir = Join-Path (Join-Path $ArtifactsDir $configuration) "tmp"
-  $GlobalJson = Get-Content(Join-Path $RepoRoot "global.json") | ConvertFrom-Json
+  $GlobalJson = Get-Content -Raw -Path (Join-Path $RepoRoot "global.json") | ConvertFrom-Json
   
-  if ($solution -eq "") {
-    $solution = Join-Path $RepoRoot "*.sln"
+  if ($projects -eq "") {
+    $projects = Join-Path $RepoRoot "*.sln"
   }
 
   if ($env:NUGET_PACKAGES -eq $null) {
@@ -218,7 +242,7 @@ try {
     $env:TEMP = $TempDir
     $env:TMP = $TempDir
   }
-    
+
   # Presence of vswhere.version indicates the repo needs to build using VS msbuild
   if ((Get-Member -InputObject $GlobalJson -Name "vswhere") -ne $null) {    
     InitializeVisualStudioBuild
@@ -234,6 +258,7 @@ try {
   }
 
   InitializeToolset
+  InitializeCustomToolset
 
   Build
 }
