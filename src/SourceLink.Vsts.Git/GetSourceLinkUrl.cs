@@ -27,18 +27,25 @@ namespace Microsoft.SourceLink.Vsts.Git
 
         public override bool Execute()
         {
+            ExecuteImpl();
+            return !Log.HasLoggedErrors;
+        }
+
+        private void ExecuteImpl()
+        {
+            // skip SourceRoot that already has SourceLinkUrl set, or its SourceControl is not "git":
             if (!string.IsNullOrEmpty(SourceRoot.GetMetadata(Names.SourceRoot.SourceLinkUrl)) ||
                 !string.Equals(SourceRoot.GetMetadata(Names.SourceRoot.SourceControl), SourceControlName, StringComparison.OrdinalIgnoreCase))
             {
                 SourceLinkUrl = NotApplicableValue;
-                return true;
+                return;
             }
 
             var repoUrl = SourceRoot.GetMetadata(Names.SourceRoot.RepositoryUrl);
             if (!Uri.TryCreate(repoUrl, UriKind.Absolute, out var repoUri))
             {
-                Log.LogError(Resources.ValueOfOWithIdentityIsInvalid, Names.SourceRoot.RepositoryUrlFullName, SourceRoot.ItemSpec, repoUrl);
-                return false;
+                Log.LogError(Resources.ValueOfWithIdentityIsInvalid, Names.SourceRoot.RepositoryUrlFullName, SourceRoot.ItemSpec, repoUrl);
+                return;
             }
 
             var map = TryGetStandardUriMap();
@@ -47,23 +54,43 @@ namespace Microsoft.SourceLink.Vsts.Git
                 repoUri = mappedUri;
             }
 
-            string domain = string.IsNullOrEmpty(Domain) ? DefaultDomain : Domain;
-            if (!TryParseRepositoryUrl(repoUri, domain, out var projectName, out var repositoryName))
+            string domain;
+            if (string.IsNullOrEmpty(Domain))
+            {
+                domain = DefaultDomain;
+            }
+            else
+            {
+                bool isHostUri(Uri uri) => uri.PathAndQuery == "/" && uri.UserInfo == "";
+
+                domain = Domain;
+                if (!Uri.TryCreate("http://" + domain, UriKind.Absolute, out var domainUri) || !isHostUri(domainUri))
+                {
+                    Log.LogError(Resources.ValuePassedToTaskParameterNotValidDomainName, nameof(Domain), domain);
+                    return;
+                }
+            }
+
+            if (!TryParseRepositoryUrl(repoUri, domain, out var projectName, out var repositoryName, out var collectionName))
             {
                 SourceLinkUrl = NotApplicableValue;
-                return true;
+                return;
             }
 
             var query = GetSourceLinkQuery();
             if (query == null)
             {
-                return false;
+                return;
             }
 
-            SourceLinkUrl = $"{repoUri.Scheme}://{repoUri.Authority}/{projectName}/_apis/git/repositories/{repositoryName}/items?" + query;
-            return true;
+            // Although VSTS does not have non-default collections, TFS does. 
+            // This package can be used for both VSTS and TFS.
+            string collectionPath = (collectionName == null || StringComparer.OrdinalIgnoreCase.Equals(collectionName, "DefaultCollection")) ? "" : "/" + collectionName;
+
+            SourceLinkUrl = $"{repoUri.Scheme}://{repoUri.Authority}{collectionPath}/{projectName}/_apis/git/repositories/{repositoryName}/items?" + query;
         }
 
+        // TODO: confirm design and test https://github.com/dotnet/sourcelink/issues/2
         private Dictionary<Uri, Uri> TryGetStandardUriMap()
         {
             var urlSeparators = new[] { Path.PathSeparator };
@@ -132,13 +159,14 @@ namespace Microsoft.SourceLink.Vsts.Git
             return map;
         }
 
-        private static bool TryParseRepositoryUrl(Uri repoUri, string domain, out string projectName, out string repositoryName)
+        internal static bool TryParseRepositoryUrl(Uri repoUri, string domain, out string projectName, out string repositoryName, out string collectionName)
         {
             // URL format pattern:
-            // https://{account}.{domain}/[DefaultCollection/]?{project}/_git/{repository-name}
+            // https://{domain}/[DefaultCollection/]?{project}/_git/{repository-name}[.git]
 
             projectName = null;
             repositoryName = null;
+            collectionName = null;
 
             if (!repoUri.Host.EndsWith("." + domain, StringComparison.OrdinalIgnoreCase) && 
                 !repoUri.Host.Equals(domain, StringComparison.OrdinalIgnoreCase))
@@ -152,9 +180,13 @@ namespace Microsoft.SourceLink.Vsts.Git
                 return false;
             }
 
-            if (parts.Length == 4 && !parts[0].Equals("DefaultCollection", StringComparison.OrdinalIgnoreCase))
+            if (parts.Length == 4)
             {
-                return false;
+                collectionName = parts[0];
+                if (collectionName.Length == 0)
+                {
+                    return false;
+                }
             }
 
             if (!parts[parts.Length - 2].Equals("_git", StringComparison.OrdinalIgnoreCase))
@@ -164,6 +196,12 @@ namespace Microsoft.SourceLink.Vsts.Git
 
             repositoryName = parts[parts.Length - 1];
             projectName = parts[parts.Length - 3];
+
+            if (repositoryName.Length == 0 || projectName.Length == 0)
+            {
+                return false;
+            }
+
             return true;
         }
 

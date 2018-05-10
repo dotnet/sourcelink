@@ -237,5 +237,22 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
             AssertEx.AreEqual("https://raw.githubusercontent.com/a/b/0000000000000000000000000000000000000000/*", task.SourceLinkUrl);
             Assert.True(result);
         }
+
+        [Fact]
+        public void GetSourceLinkUrl_TrimmingGitIsCaseSensitive()
+        {
+            var engine = new MockEngine();
+
+            var task = new GetSourceLinkUrl()
+            {
+                BuildEngine = engine,
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://github.com/a/b.GIT"), KVP("SourceControl", "git"), KVP("RevisionId", "0000000000000000000000000000000000000000")),
+            };
+
+            bool result = task.Execute();
+            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            AssertEx.AreEqual("https://raw.githubusercontent.com/a/b.GIT/0000000000000000000000000000000000000000/*", task.SourceLinkUrl);
+            Assert.True(result);
+        }
     }
 }

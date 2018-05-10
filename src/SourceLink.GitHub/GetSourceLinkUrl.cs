@@ -78,9 +78,9 @@ namespace Microsoft.SourceLink.GitHub
 
             var relativeUrl = repoUri.LocalPath.TrimEnd('/');
 
-            // The URL may or may not end with '.git', but raw.githubusercontent.com does not accept '.git' suffix:
+            // The URL may or may not end with '.git' (case-sensitive), but raw.githubusercontent.com does not accept '.git' suffix:
             const string gitUrlSuffix = ".git";
-            if (relativeUrl.EndsWith(gitUrlSuffix))
+            if (relativeUrl.EndsWith(gitUrlSuffix, StringComparison.Ordinal))
             {
                 relativeUrl = relativeUrl.Substring(0, relativeUrl.Length - gitUrlSuffix.Length);
             }
