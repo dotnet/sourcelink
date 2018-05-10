@@ -21,17 +21,18 @@ prepare_machine=false
 rebuild=false
 restore=false
 sign=false
-solution=''
+projects=''
 test=false
 verbosity='minimal'
 properties=''
 
 repo_root="$scriptroot/../.."
+eng_root="$scriptroot/.."
 artifacts_dir="$repo_root/artifacts"
 artifacts_configuration_dir="$artifacts_dir/$configuration"
 toolset_dir="$artifacts_dir/toolset"
 log_dir="$artifacts_configuration_dir/log"
-log="$log_dir/Build.binlog"
+build_log="$log_dir/Build.binlog"
 toolset_restore_log="$log_dir/ToolsetRestore.binlog"
 temp_dir="$artifacts_configuration_dir/tmp"
 
@@ -161,36 +162,45 @@ function InitializeDotNetCli {
     export DOTNET_INSTALL_DIR="$dotnet_root"
 
     if [[ "$restore" == true ]]; then
-      InstallDotNetCli $dotnet_root $dotnet_sdk_version
+      InstallDotNetSdk $dotnet_root $dotnet_sdk_version
     fi
   fi
 
   build_driver="$dotnet_root/dotnet"
 }
 
-function InstallDotNetCli {
-  local dotnet_root=$1
-  local dotnet_sdk_version=$2
-  local dotnet_install_script="$dotnet_root/dotnet-install.sh"
+function InstallDotNetSdk {
+  local root=$1
+  local version=$2
 
-  if [[ ! -a "$dotnet_install_script" ]]; then
-    mkdir -p "$dotnet_root"
+  local install_script=`GetDotNetInstallScript $root`
 
-    # Use curl if available, otherwise use wget
-    if command -v curl > /dev/null; then
-      curl "https://dot.net/v1/dotnet-install.sh" -sSL --retry 10 --create-dirs -o "$dotnet_install_script"
-    else
-      wget -q -O "$dotnet_install_script" "https://dot.net/v1/dotnet-install.sh"
-    fi
-  fi
-
-  bash "$dotnet_install_script" --version $dotnet_sdk_version --install-dir $dotnet_root
+  bash "$install_script" --version $version --install-dir $root
   local lastexitcode=$?
 
   if [[ $lastexitcode != 0 ]]; then
-    echo "Failed to install dotnet cli (exit code '$lastexitcode')."
+    echo "Failed to install dotnet SDK (exit code '$lastexitcode')."
     ExitWithExitCode $lastexitcode
   fi
+}
+
+function GetDotNetInstallScript {
+  local root=$1
+  local install_script="$root/dotnet-install.sh"
+
+  if [[ ! -a "$install_script" ]]; then
+    mkdir -p "$root"
+
+    # Use curl if available, otherwise use wget
+    if command -v curl > /dev/null; then
+      curl "https://dot.net/v1/dotnet-install.sh" -sSL --retry 10 --create-dirs -o "$install_script"
+    else
+      wget -q -O "$install_script" "https://dot.net/v1/dotnet-install.sh"
+    fi
+  fi
+
+  # return value
+  echo "$install_script"
 }
 
 function InitializeToolset {
@@ -223,11 +233,24 @@ function InitializeToolset {
   fi
 
   toolset_build_proj=`cat $toolset_location_file`
+
+  if [[ ! -a "$toolset_build_proj" ]]; then
+    echo "Invalid toolset path: $toolset_build_proj"
+    ExitWithExitCode 3
+  fi
+}
+
+function InitializeCustomToolset {
+  local script="$eng_root/RestoreToolset.sh"
+
+  if [[ -a "$script" ]]; then
+    . "$script"
+  fi
 }
 
 function Build {
   "$build_driver" msbuild $toolset_build_proj /m /nologo /clp:Summary /warnaserror \
-    /v:$verbosity /bl:$log /p:Configuration=$configuration /p:Projects=$solution /p:RepoRoot="$repo_root" \
+    /v:$verbosity /bl:$build_log /p:Configuration=$configuration /p:Projects=$projects /p:RepoRoot="$repo_root" \
     /p:Restore=$restore /p:Build=$build /p:Rebuild=$rebuild /p:Deploy=$deploy /p:Test=$test /p:Sign=$sign /p:Pack=$pack /p:CIBuild=$ci \
     $properties
   local lastexitcode=$?
@@ -258,8 +281,8 @@ function Main {
     mkdir -p "$HOME"
   fi
 
-  if [[ -z $solution ]]; then
-    solution="$repo_root/*.sln"
+  if [[ -z $projects ]]; then
+    projects="$repo_root/*.sln"
   fi
 
   if [[ -z $NUGET_PACKAGES ]]; then
@@ -281,6 +304,7 @@ function Main {
 
   InitializeDotNetCli
   InitializeToolset
+  InitializeCustomToolset
 
   Build
   ExitWithExitCode $?
