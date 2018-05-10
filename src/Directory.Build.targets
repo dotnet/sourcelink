@@ -3,4 +3,27 @@
   <ItemGroup>
     <EmbeddedResource Update="*.resx" GenerateSource="true" />
   </ItemGroup>
+
+  <!-- 
+    Workaround for https://github.com/dotnet/sdk/issues/2232: GenerateDepsFile throws ArgumentException.
+  -->
+  <PropertyGroup Condition="'$(IsTestProject)' != 'true'">
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+  </PropertyGroup>
+
+  <!-- 
+    Workaround for https://github.com/NuGet/Home/issues/6754: cyclic dependency.
+  -->
+  <PropertyGroup>
+    <_ProjectDefinedPackageId>$(PackageId)</_ProjectDefinedPackageId>
+    <PackageId>*fake_packageid_for_project_$(MSBuildProjectName)*</PackageId>
+  </PropertyGroup>
+
+  <Target Name="_UpdatePackageId" BeforeTargets="$(PackDependsOn)" >
+    <PropertyGroup>
+      <PackageId>$(_ProjectDefinedPackageId)</PackageId>
+      <PackageId Condition="'$(PackageId)' == ''">$(AssemblyName)</PackageId>
+      <PackageId Condition="'$(PackageId)' == ''">$(MSBuildProjectName)</PackageId>
+    </PropertyGroup>
+  </Target>
 </Project>
