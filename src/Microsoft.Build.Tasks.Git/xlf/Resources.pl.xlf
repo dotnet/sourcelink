@@ -4,32 +4,32 @@
     <body>
       <trans-unit id="InvalidSubmodulePath_SourceLink">
         <source>The path of submodule '{0}' is invalid: '{1}', the source code won't be available via source link.</source>
-        <target state="new">The path of submodule '{0}' is invalid: '{1}', the source code won't be available via source link.</target>
+        <target state="translated">Ścieżka modułu podrzędnego „{0}” jest nieprawidłowa: „{1}”. Kod źródłowy nie będzie dostępny za pośrednictwem linku do źródła.</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidSubmoduleUrl_SourceLink">
         <source>The URL of submodule '{0}' is invalid: '{1}', the source code won't be available via source link.</source>
-        <target state="new">The URL of submodule '{0}' is invalid: '{1}', the source code won't be available via source link.</target>
+        <target state="translated">Adres URL modułu podrzędnego „{0}” jest nieprawidłowy: „{1}”. Kod źródłowy nie będzie dostępny za pośrednictwem linku do źródła.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryWithoutCommit_SourceLink">
         <source>Repository doesn't have any commit, the source code won't be available via source link.</source>
-        <target state="new">Repository doesn't have any commit, the source code won't be available via source link.</target>
+        <target state="translated">Repozytorium nie zawiera żadnego zatwierdzenia. Kod źródłowy nie będzie dostępny za pośrednictwem linku do źródła.</target>
         <note />
       </trans-unit>
       <trans-unit id="SubmoduleWithoutCommit_SourceLink">
         <source>Submodule '{0}' doesn't have any commit, the source code won't be available via source link.</source>
-        <target state="new">Submodule '{0}' doesn't have any commit, the source code won't be available via source link.</target>
+        <target state="translated">Moduł podrzędny „{0}” nie zawiera żadnego zatwierdzenia. Kod źródłowy nie będzie dostępny za pośrednictwem linku do źródła.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnableToLocateRepository">
         <source>Unable to locate repository containing directory '{0}'.</source>
-        <target state="new">Unable to locate repository containing directory '{0}'.</target>
+        <target state="translated">Nie można zlokalizować repozytorium zawierającego katalog „{0}”.</target>
         <note />
       </trans-unit>
       <trans-unit id="BareRepositoriesNotSupported">
         <source>Bare repositories are not supported: '{0}'.</source>
-        <target state="new">Bare repositories are not supported: '{0}'.</target>
+        <target state="translated">Repozytoria surowe są nieobsługiwane: „{0}”.</target>
         <note />
       </trans-unit>
     </body>

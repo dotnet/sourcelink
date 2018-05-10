@@ -4,22 +4,22 @@
     <body>
       <trans-unit id="ValueOfWithIdentityIsInvalid">
         <source>The value of {0} with identity '{1}' is invalid: '{2}'"</source>
-        <target state="new">The value of {0} with identity '{1}' is invalid: '{2}'"</target>
+        <target state="translated">Wartość elementu {0} z tożsamością „{1}” jest nieprawidłowa: „{2}”"</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsNotValidCommitHash">
         <source>The value of {0} with identity '{1}' is not a valid commit hash: '{2}'"</source>
-        <target state="new">The value of {0} with identity '{1}' is not a valid commit hash: '{2}'"</target>
+        <target state="translated">Wartość elementu {0} z tożsamością „{1}” nie jest prawidłowym skrótem zatwierdzenia: „{2}”"</target>
         <note />
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidDomainName">
         <source>The value passed to task parameter {0} is not a valid domain name: '{1}'</source>
-        <target state="new">The value passed to task parameter {0} is not a valid domain name: '{1}'</target>
+        <target state="translated">Wartość przekazana do parametru zadania {0} nie jest prawidłową nazwą domeny: „{1}”</target>
         <note />
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidHostUri">
         <source>The value passed to task parameter {0} is not a valid host URI: '{1}'</source>
-        <target state="new">The value passed to task parameter {0} is not a valid host URI: '{1}'</target>
+        <target state="translated">Wartość przekazana do parametru zadania {0} nie jest prawidłowym identyfikatorem URI hosta: „{1}”</target>
         <note />
       </trans-unit>
     </body>

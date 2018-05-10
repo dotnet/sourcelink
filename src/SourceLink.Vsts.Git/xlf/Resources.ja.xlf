@@ -4,17 +4,17 @@
     <body>
       <trans-unit id="EnvironmentVariableIsNotAlistOfUrlPairs">
         <source>The value of environment variable {0} is not a well-formed list of URL pairs: '{1}'"</source>
-        <target state="new">The value of environment variable {0} is not a well-formed list of URL pairs: '{1}'"</target>
+        <target state="translated">環境変数 {0} の値は正しい形式の URL のペアの一覧ではありません: '{1}'"</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfOWithIdentityIsInvalid">
         <source>The value of {0} with identity '{1}' is invalid: '{2}'"</source>
-        <target state="new">The value of {0} with identity '{1}' is invalid: '{2}'"</target>
+        <target state="translated">ID '{1}' の {0} の値は無効です: '{2}'"</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsNotValidCommitHash">
         <source>The value of {0} with identity '{1}' is not a valid commit hash: '{2}'"</source>
-        <target state="new">The value of {0} with identity '{1}' is not a valid commit hash: '{2}'"</target>
+        <target state="translated">ID '{1}' の {0} の値は有効なコミット ハッシュではありません: '{2}'"</target>
         <note />
       </trans-unit>
     </body>
