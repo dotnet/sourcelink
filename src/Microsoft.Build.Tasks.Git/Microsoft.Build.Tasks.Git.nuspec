@@ -22,6 +22,13 @@
     <file src="netcoreapp2.0\publish\runtimes\osx\native\*.dylib" target="tools\netcoreapp2.0\runtimes\osx\native" />
     <file src="netcoreapp2.0\publish\runtimes\win7-x86\native\*.dll" target="tools\netcoreapp2.0\runtimes\win7-x86\native" />
     <file src="netcoreapp2.0\publish\runtimes\win7-x64\native\*.dll" target="tools\netcoreapp2.0\runtimes\win7-x64\native" />
+
+    <!-- 
+      Workaround for Core CLR loader bug on Linux/MacOS: DllImport doesn't seem to be able to find libraries that are already 
+      loaded explicitly from a path. They must be next to the dll. This is gonna break once we have support for more Linux flavors.
+    -->
+    <file src="netcoreapp2.0\publish\runtimes\linux-x64\native\*.so" target="tools\netcoreapp2.0" />
+    <file src="netcoreapp2.0\publish\runtimes\osx\native\*.dylib" target="tools\netcoreapp2.0" />
     
     <file src="netcoreapp2.0\publish\LibGit2Sharp.dll" target="tools\netcoreapp2.0" />
     <file src="netcoreapp2.0\publish\Microsoft.Build.Tasks.Git.*" target="tools\netcoreapp2.0" />
