@@ -14,5 +14,7 @@
     <MicrosoftBuildVersion>15.6.82</MicrosoftBuildVersion>
     <MicrosoftBuildTasksCore>15.6.82</MicrosoftBuildTasksCore>
     <MicrosoftTeamFoundationServerExtendedClientVersion>15.112.1</MicrosoftTeamFoundationServerExtendedClientVersion>
+
+    <MicrosoftSourceLinkVersion>1.0.0-beta-62911-01</MicrosoftSourceLinkVersion>
   </PropertyGroup>
 </Project>
