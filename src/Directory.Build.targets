@@ -5,13 +5,6 @@
   </ItemGroup>
 
   <!-- 
-    Workaround for https://github.com/dotnet/sdk/issues/2232: GenerateDepsFile throws ArgumentException.
-  -->
-  <PropertyGroup Condition="'$(IsTestProject)' != 'true'">
-    <GenerateDependencyFile>false</GenerateDependencyFile>
-  </PropertyGroup>
-
-  <!-- 
     Workaround for https://github.com/NuGet/Home/issues/6754: cyclic dependency.
   -->
   <PropertyGroup>

@@ -3,4 +3,11 @@
   <PropertyGroup>
     <LangVersion>Latest</LangVersion>
   </PropertyGroup>
+
+  <!-- 
+    Workaround for https://github.com/dotnet/sdk/issues/2232: GenerateDepsFile throws ArgumentException.
+  -->
+  <PropertyGroup Condition="'$(IsTestProject)' != 'true'">
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+  </PropertyGroup>
 </Project>
