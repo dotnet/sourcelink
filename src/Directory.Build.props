@@ -1,8 +1,13 @@
 <!-- Copyright (c)  Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information. -->
 <Project>
   <PropertyGroup>
-    <RepositoryUrl>https://github.com/dotnet/sourcelink</RepositoryUrl>
-    <PackageProjectUrl>$(RepositoryUrl)</PackageProjectUrl> 
     <LangVersion>Latest</LangVersion>
+  </PropertyGroup>
+
+  <!-- 
+    Workaround for https://github.com/dotnet/sdk/issues/2232: GenerateDepsFile throws ArgumentException.
+  -->
+  <PropertyGroup Condition="'$(IsTestProject)' != 'true'">
+    <GenerateDependencyFile>false</GenerateDependencyFile>
   </PropertyGroup>
 </Project>
