@@ -24,7 +24,7 @@ namespace Microsoft.Build.Tasks.Git
 
         protected override void Execute(Repository repo)
         {
-            Roots = repo.GetSourceRoots(Log.LogWarning, File.Exists);
+            Roots = GitOperations.GetSourceRoots(repo, Log.LogWarning, File.Exists);
         }
     }
 }

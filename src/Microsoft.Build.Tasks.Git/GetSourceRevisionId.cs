@@ -12,7 +12,7 @@ namespace Microsoft.Build.Tasks.Git
 
         protected override void Execute(Repository repo)
         {
-            RevisionId = repo.GetRevisionId();
+            RevisionId = GitOperations.GetRevisionId(repo);
         }
     }
 }

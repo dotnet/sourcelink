@@ -21,7 +21,7 @@ namespace Microsoft.Build.Tasks.Git
 
         protected override void Execute(Repository repo)
         {
-            UntrackedFiles = repo.GetUntrackedFiles(Files, ProjectDirectory, dir => new Repository(dir));
+            UntrackedFiles = GitOperations.GetUntrackedFiles(repo, Files, ProjectDirectory, dir => new Repository(dir));
         }
     }
 }

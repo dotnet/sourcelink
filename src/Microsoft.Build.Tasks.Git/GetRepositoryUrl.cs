@@ -14,7 +14,7 @@ namespace Microsoft.Build.Tasks.Git
 
         protected override void Execute(Repository repo)
         {
-            Url = repo.GetRepositoryUrl(RemoteName);
+            Url = GitOperations.GetRepositoryUrl(repo, RemoteName);
         }
     }
 }
