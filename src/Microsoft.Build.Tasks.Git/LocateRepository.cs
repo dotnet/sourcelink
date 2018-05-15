@@ -14,16 +14,6 @@ namespace Microsoft.Build.Tasks.Git
         [Output]
         public string Id { get; set; }
 
-        public override bool Execute()
-        {
-            Id = GitOperations.LocateRepository(Directory);
-
-            if (Id == null)
-            {
-                Log.LogError(Resources.UnableToLocateRepository, Directory);
-            }
-
-            return !Log.HasLoggedErrors;
-        }
+        public override bool Execute() => TaskImplementation.LocateRepository(this);
     }
 }

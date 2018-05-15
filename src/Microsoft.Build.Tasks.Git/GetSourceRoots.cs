@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
-using LibGit2Sharp;
 using Microsoft.Build.Framework;
-using System.IO;
 
 namespace Microsoft.Build.Tasks.Git
 {
@@ -20,11 +18,8 @@ namespace Microsoft.Build.Tasks.Git
         ///   NestedRoot: For a submodule root, a path of the submodule root relative to the repository root. Ends with a slash.
         /// </summary>
         [Output]
-        public ITaskItem[] Roots { get; private set; }
+        public ITaskItem[] Roots { get; internal set; }
 
-        protected override void Execute(Repository repo)
-        {
-            Roots = GitOperations.GetSourceRoots(repo, Log.LogWarning, File.Exists);
-        }
+        public override bool Execute() => TaskImplementation.GetSourceRoots(this);
     }
 }

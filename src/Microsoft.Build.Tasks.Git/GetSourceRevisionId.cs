@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
-using LibGit2Sharp;
 using Microsoft.Build.Framework;
 
 namespace Microsoft.Build.Tasks.Git
@@ -8,11 +7,8 @@ namespace Microsoft.Build.Tasks.Git
     public sealed class GetSourceRevisionId : RepositoryTask
     {
         [Output]
-        public string RevisionId { get; private set; }
+        public string RevisionId { get; internal set; }
 
-        protected override void Execute(Repository repo)
-        {
-            RevisionId = GitOperations.GetRevisionId(repo);
-        }
+        public override bool Execute() => TaskImplementation.GetSourceRevisionId(this);
     }
 }
