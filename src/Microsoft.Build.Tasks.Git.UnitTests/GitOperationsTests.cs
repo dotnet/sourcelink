@@ -477,7 +477,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 { subRoot2, new TestRepository(subRoot2, commitSha: null, ignoredPaths: new[] { gitRoot + @"/sub/2/obj/b.cs" }) },
             };
 
-            var actual = repo.GetUntrackedFiles(
+            var actual = GitOperations.GetUntrackedFiles(repo,
                 new[]
                 {
                     new MockItem(@"c.cs"),                         // not ignored
@@ -523,7 +523,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 { subRoot2, new TestRepository(subRoot2, commitSha: null, ignoredPaths: new[] { gitRoot + "/sub/2/obj/b.cs" }) },
             };
 
-            var actual = repo.GetUntrackedFiles(
+            var actual = GitOperations.GetUntrackedFiles(repo,
                 new[]
                 {
                     new MockItem(@"c.cs"),           // not ignored

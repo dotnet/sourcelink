@@ -1,15 +1,6 @@
 ﻿<Project Sdk="RoslynTools.RepoToolset">
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
-
-    <!-- Using an explicit nuspec file since NuGet Pack target currently doesn't support including dependencies in tools packages -->
-    <IsPackable>true</IsPackable>
-    <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
-    <NuspecBasePath>$(OutputPath)</NuspecBasePath>
-
-    <Description>MSBuild tasks providing git repository information.</Description>
-    <PackageTags>MSBuild Tasks source control git</PackageTags>
-    <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\Common\Names.cs" Link="Common\Names.cs" />
@@ -17,11 +8,11 @@
     <Compile Include="..\Common\SequenceComparer.cs" Link="Common\SequenceComparer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="LibGit2Sharp" Version="$(LibGit2SharpVersion)" />
     <PackageReference Include="Microsoft.Build" Version="$(MicrosoftBuildVersion)" />
     <PackageReference Include="Microsoft.Build.Tasks.Core" Version="$(MicrosoftBuildTasksCore)" />
   </ItemGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="Microsoft.Build.Tasks.Git.Operations" />
     <InternalsVisibleTo Include="Microsoft.Build.Tasks.Git.UnitTests" />
   </ItemGroup>
 </Project>

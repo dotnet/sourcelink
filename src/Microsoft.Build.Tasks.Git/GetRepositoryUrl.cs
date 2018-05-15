@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
-using LibGit2Sharp;
 using Microsoft.Build.Framework;
 
 namespace Microsoft.Build.Tasks.Git
@@ -10,11 +9,8 @@ namespace Microsoft.Build.Tasks.Git
         public string RemoteName { get; set; }
 
         [Output]
-        public string Url { get; private set; }
+        public string Url { get; internal set; }
 
-        protected override void Execute(Repository repo)
-        {
-            Url = repo.GetRepositoryUrl(RemoteName);
-        }
+        public override bool Execute() => TaskImplementation.GetRepositoryUrl(this);
     }
 }

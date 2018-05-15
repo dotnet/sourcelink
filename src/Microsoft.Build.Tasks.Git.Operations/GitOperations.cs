@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using LibGit2Sharp;
 using Microsoft.Build.Framework;
@@ -17,50 +19,6 @@ namespace Microsoft.Build.Tasks.Git
     {
         private const string SourceControlName = "git";
 
-        static GitOperations()
-        {
-            // .NET Core apps that depend on native libraries load them directly from paths specified
-            // in .deps.json file of that app and the native library loader just works.
-            // However, .NET Core currently doesn't support .deps.json for plugins such as msbuild tasks.
-            if (IsRunningOnNetCore())
-            {
-                var dir = Path.GetDirectoryName(typeof(GitOperations).Assembly.Location);
-                GlobalSettings.NativeLibraryPath = Path.Combine(dir, "runtimes", GetNativeLibraryRuntimeId(), "native");
-            }
-        }
-
-        /// <summary>
-        /// Returns true if the runtime is .NET Core.
-        /// </summary>
-        private static bool IsRunningOnNetCore()
-            => typeof(object).Assembly.GetName().Name != "mscorlib";
-
-        /// <summary>
-        /// Determines the RID to use when loading libgit2 native library.
-        /// This method only supports RIDs that are currently used by LibGit2Sharp.NativeBinaries.
-        /// </summary>
-        private static string GetNativeLibraryRuntimeId()
-        {
-            var processorArchitecture = IntPtr.Size == 8 ? "x64" : "x86";
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                return "win7-" + processorArchitecture;
-            }
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
-                return "osx";
-            }
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
-                return "linux-" + processorArchitecture;
-            }
-
-            throw new PlatformNotSupportedException();
-        }
-
         public static string LocateRepository(string directory)
         {
             // Repository.Discover returns the path to .git directory for repositories with a working directory.
@@ -69,7 +27,7 @@ namespace Microsoft.Build.Tasks.Git
             return Repository.Discover(directory);
         }
 
-        public static string GetRepositoryUrl(this IRepository repository, string remoteName = null)
+        public static string GetRepositoryUrl(IRepository repository, string remoteName = null)
         {
             var remotes = repository.Network.Remotes;
             var remote = string.IsNullOrEmpty(remoteName) ? (remotes["origin"] ?? remotes.FirstOrDefault()) : remotes[remoteName];
@@ -153,7 +111,7 @@ namespace Microsoft.Build.Tasks.Git
             return Uri.TryCreate(url, UriKind.Absolute, out uri);
         }
 
-        public static string GetRevisionId(this IRepository repository)
+        public static string GetRevisionId(IRepository repository)
         {
             // An empty repository doesn't have a tip commit:
             return repository.Head.Tip?.Sha;
@@ -178,7 +136,7 @@ namespace Microsoft.Build.Tasks.Git
             return true;
         }
 
-        public static ITaskItem[] GetSourceRoots(this IRepository repository, Action<string, object[]> logWarning, Func<string, bool> fileExists)
+        public static ITaskItem[] GetSourceRoots(IRepository repository, Action<string, object[]> logWarning, Func<string, bool> fileExists)
         {
             var result = new List<TaskItem>();
             var repoRoot = GetRepositoryRoot(repository);
@@ -249,14 +207,14 @@ namespace Microsoft.Build.Tasks.Git
             return result.ToArray();
         }
 
-        private static string GetRepositoryRoot(this IRepository repository)
+        private static string GetRepositoryRoot(IRepository repository)
         {
             Debug.Assert(!repository.Info.IsBare);
             return Path.GetFullPath(repository.Info.WorkingDirectory).EndWithSeparator();
         }
 
         public static ITaskItem[] GetUntrackedFiles(
-            this IRepository repository,
+            IRepository repository,
             ITaskItem[] files, 
             string projectDirectory,
             Func<string, IRepository> repositoryFactory)
