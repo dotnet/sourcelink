@@ -8,6 +8,8 @@
         "bin/Microsoft.Build.Tasks.Git/net461/*/Microsoft.Build.Tasks.Git.resources.dll",
         "bin/Microsoft.Build.Tasks.Git/netcoreapp2.0/Microsoft.Build.Tasks.Git.dll",
         "bin/Microsoft.Build.Tasks.Git/netcoreapp2.0/*/Microsoft.Build.Tasks.Git.resources.dll",
+        "bin/Microsoft.Build.Tasks.Git.Operations/net461/Microsoft.Build.Tasks.Git.Operations.dll",
+        "bin/Microsoft.Build.Tasks.Git.Operations/netcoreapp2.0/Microsoft.Build.Tasks.Git.Operations.dll",
         "bin/Microsoft.Build.Tasks.Tfvc/net46/Microsoft.Build.Tasks.Tfvc.dll",
         "bin/Microsoft.SourceLink.Common/net461/Microsoft.SourceLink.Common.dll",
         "bin/Microsoft.SourceLink.Common/net461/*/Microsoft.SourceLink.Common.resources.dll",
