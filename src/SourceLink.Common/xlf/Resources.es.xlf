@@ -4,32 +4,32 @@
     <body>
       <trans-unit id="MustEndWithDirectorySeparator">
         <source>{0} must end with a directory separator: '{1}'</source>
-        <target state="new">{0} must end with a directory separator: '{1}'</target>
+        <target state="translated">{0} debe terminar con un separador de directorios: "{1}"</target>
         <note />
       </trans-unit>
       <trans-unit id="MustNotContainWildcard">
         <source>{0} must not contain wildcard '*': '{1}'</source>
-        <target state="new">{0} must not contain wildcard '*': '{1}'</target>
+        <target state="translated">{0} no debe contener ningún comodín "*": "{1}"</target>
         <note />
       </trans-unit>
       <trans-unit id="MustContainSingleWildcard">
         <source>{0} must contain a single wildcard '*': '{1}'"</source>
-        <target state="new">{0} must contain a single wildcard '*': '{1}'"</target>
+        <target state="translated">{0} debe contener un solo comodín '*': '{1}'"</target>
         <note />
       </trans-unit>
       <trans-unit id="NoItemsSpecifiedSourceLinkEmpty">
         <source>No {0} items specified - the generated source link is empty.</source>
-        <target state="new">No {0} items specified - the generated source link is empty.</target>
+        <target state="translated">No se han especificado {0} elementos: el vínculo de origen generado está vacío.</target>
         <note />
       </trans-unit>
       <trans-unit id="IsEmpty">
         <source>{0} is empty: '{1}'</source>
-        <target state="new">{0} is empty: '{1}'</target>
+        <target state="translated">{0} está vacío: "{1}"</target>
         <note />
       </trans-unit>
       <trans-unit id="ErrorWritingToSourceLinkFile">
         <source>Error writing to source link file '{0}': {1}"</source>
-        <target state="new">Error writing to source link file '{0}': {1}"</target>
+        <target state="translated">Error al escribir en el archivo del vínculo de origen: '{0}': {1}"</target>
         <note />
       </trans-unit>
     </body>

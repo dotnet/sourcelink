@@ -4,32 +4,32 @@
     <body>
       <trans-unit id="MustEndWithDirectorySeparator">
         <source>{0} must end with a directory separator: '{1}'</source>
-        <target state="new">{0} must end with a directory separator: '{1}'</target>
+        <target state="translated">{0} 的結尾必須是目錄分隔字元: '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="MustNotContainWildcard">
         <source>{0} must not contain wildcard '*': '{1}'</source>
-        <target state="new">{0} must not contain wildcard '*': '{1}'</target>
+        <target state="translated">{0} 不得包含萬用字元 '*': '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="MustContainSingleWildcard">
         <source>{0} must contain a single wildcard '*': '{1}'"</source>
-        <target state="new">{0} must contain a single wildcard '*': '{1}'"</target>
+        <target state="translated">{0} 必須包含一個萬用字元 '*': '{1}'"</target>
         <note />
       </trans-unit>
       <trans-unit id="NoItemsSpecifiedSourceLinkEmpty">
         <source>No {0} items specified - the generated source link is empty.</source>
-        <target state="new">No {0} items specified - the generated source link is empty.</target>
+        <target state="translated">未指定任何 {0} 項目 - 產生的來源連結是空的。</target>
         <note />
       </trans-unit>
       <trans-unit id="IsEmpty">
         <source>{0} is empty: '{1}'</source>
-        <target state="new">{0} is empty: '{1}'</target>
+        <target state="translated">{0} 是空的: '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="ErrorWritingToSourceLinkFile">
         <source>Error writing to source link file '{0}': {1}"</source>
-        <target state="new">Error writing to source link file '{0}': {1}"</target>
+        <target state="translated">寫入來源連結檔案 '{0}' 時發生錯誤: {1}"</target>
         <note />
       </trans-unit>
     </body>
