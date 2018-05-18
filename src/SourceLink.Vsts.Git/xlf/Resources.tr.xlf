@@ -19,7 +19,7 @@
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidDomainName">
         <source>The value passed to task parameter {0} is not a valid domain name: '{1}'</source>
-        <target state="new">The value passed to task parameter {0} is not a valid domain name: '{1}'</target>
+        <target state="translated">{0} görev parametresine geçirilen değer geçerli bir etki alanı adı değil: '{1}'</target>
         <note />
       </trans-unit>
     </body>
