@@ -11,7 +11,7 @@
   
   <UsingTask TaskName="Microsoft.SourceLink.Common.GenerateSourceLinkFile" AssemblyFile="$(_MicrosoftSourceLinkCommonAssemblyFile)"/>
 
-  <PropertyGroup Condition="'$(EnableSourceLink)' == 'true'">
+  <PropertyGroup Condition="'$(EnableSourceLink)' == 'true' and '$(DebugType)' != 'none'">
     <SourceLink>$(IntermediateOutputPath)$(MSBuildProjectName).sourcelink.json</SourceLink>
   </PropertyGroup>
   
