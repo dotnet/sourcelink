@@ -12,6 +12,7 @@
     <developmentDependency>$DevelopmentDependency$</developmentDependency>
     <tags>$PackageTags$</tags>
     <serviceable>$Serviceable$</serviceable>
+    <repository type="$RepositoryType$" url="$RepositoryUrl$" commit="$RepositoryCommit$" />
   </metadata>
   <files>
     <file src="netcoreapp2.0\publish\**\Microsoft.SourceLink.Common.*" target="tools\netcoreapp2.0" />
