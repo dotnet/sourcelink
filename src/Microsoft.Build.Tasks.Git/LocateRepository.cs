@@ -29,8 +29,7 @@ namespace Microsoft.Build.Tasks.Git
                     Log.LogMessage(message);
                 }
 #endif
-                Log.LogErrorFromException(e);
-                return false;
+                throw;
             }
         }
     }
