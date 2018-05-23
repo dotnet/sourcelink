@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
@@ -16,12 +17,14 @@ namespace Microsoft.Build.Tasks.Git
 
         private static readonly string s_taskDirectory;
         private const string GitOperationsAssemblyName = "Microsoft.Build.Tasks.Git.Operations";
-        private static Version s_nullVersion = new Version(0, 0, 0, 0);
 
         static TaskImplementation()
         {
             s_taskDirectory = Path.GetDirectoryName(typeof(TaskImplementation).Assembly.Location);
 #if NET461
+            s_nullVersion = new Version(0, 0, 0, 0);
+            s_loaderLog = new List<string>();
+
             AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve;
 
             var assemblyName = typeof(TaskImplementation).Assembly.GetName();
@@ -41,23 +44,51 @@ namespace Microsoft.Build.Tasks.Git
         }
 
 #if NET461
+        private static readonly Version s_nullVersion;
+        private static readonly List<string> s_loaderLog;
+
+        private static void Log(ResolveEventArgs args, string outcome)
+        {
+            lock (s_loaderLog)
+            {
+                s_loaderLog.Add($"Loading '{args.Name}' referennced by '{args.RequestingAssembly}': {outcome}.");
+            }
+        }
+
+        internal static string[] GetLog()
+        {
+            lock (s_loaderLog)
+            {
+                return s_loaderLog.ToArray();
+            }
+        }
+
         private static Assembly AssemblyResolve(object sender, ResolveEventArgs args)
         {
             // only resolve dependencies of netstandard library:
-            if (!StringComparer.OrdinalIgnoreCase.Equals(args.RequestingAssembly.FullName, "netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51"))
+            if (args.RequestingAssembly == null ||
+                !StringComparer.OrdinalIgnoreCase.Equals(args.RequestingAssembly.FullName, "netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51"))
             {
+                Log(args, "not netstandard");
                 return null;
             }
 
-            var referenceName = new AssemblyName(AppDomain.CurrentDomain.ApplyPolicy(args.Name));
+            var referenceName = new AssemblyName(args.Name);
             if (referenceName.Version != s_nullVersion)
             {
+                Log(args, "not null version");
                 return null;
             }
 
-            // resolve dependencies in the task's directory:
-            var referencePath = Path.Combine(s_taskDirectory, referenceName.Name + ".dll");
-            return File.Exists(referencePath) ? Assembly.Load(referencePath) : null;
+            var referencePath = Path.Combine(s_taskDirectory, referenceName + ".dll");
+            if (!File.Exists(referencePath))
+            {
+                Log(args, $"file '{referencePath}' not found");
+                return null;
+            }
+
+            Log(args, $"loading from '{referencePath}'");
+            return Assembly.Load(referencePath);
         }
 #endif
     }
