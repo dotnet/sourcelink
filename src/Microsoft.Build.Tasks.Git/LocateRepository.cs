@@ -21,7 +21,7 @@ namespace Microsoft.Build.Tasks.Git
             {
                 return TaskImplementation.LocateRepository(this);
             }
-            catch (FileLoadException) 
+            catch (Exception e) 
             {
 #if NET461
                 foreach (var message in TaskImplementation.GetLog())
@@ -29,7 +29,8 @@ namespace Microsoft.Build.Tasks.Git
                     Log.LogMessage(message);
                 }
 #endif
-                throw;
+                Log.LogErrorFromException(e);
+                return false;
             }
         }
     }
