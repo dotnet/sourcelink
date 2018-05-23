@@ -17,14 +17,13 @@ namespace Microsoft.Build.Tasks.Git
 
         private static readonly string s_taskDirectory;
         private const string GitOperationsAssemblyName = "Microsoft.Build.Tasks.Git.Operations";
-        private static Version s_nullVersion = new Version(0, 0, 0, 0);
 
         static TaskImplementation()
         {
             s_taskDirectory = Path.GetDirectoryName(typeof(TaskImplementation).Assembly.Location);
 #if NET461
             s_nullVersion = new Version(0, 0, 0, 0);
-            s_loaderLog = = new List<string>();
+            s_loaderLog = new List<string>();
 
             AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve;
 
@@ -81,6 +80,7 @@ namespace Microsoft.Build.Tasks.Git
                 return null;
             }
 
+            var referencePath = Path.Combine(s_taskDirectory, referenceName + ".dll");
             if (!File.Exists(referencePath))
             {
                 Log(args, $"file '{referencePath}' not found");
@@ -90,5 +90,6 @@ namespace Microsoft.Build.Tasks.Git
             Log(args, $"loading from '{referencePath}'");
             return Assembly.Load(referencePath);
         }
+#endif
     }
 }
