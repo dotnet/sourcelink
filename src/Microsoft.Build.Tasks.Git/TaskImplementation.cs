@@ -51,7 +51,7 @@ namespace Microsoft.Build.Tasks.Git
         {
             lock (s_loaderLog)
             {
-                s_loaderLog.Add($"Loading '{args.Name}' referennced by '{args.RequestingAssembly}': {outcome}.");
+                s_loaderLog.Add($"Loading '{args.Name}' referenced by '{args.RequestingAssembly}': {outcome}.");
             }
         }
 
@@ -81,7 +81,7 @@ namespace Microsoft.Build.Tasks.Git
                 return null;
             }
 
-            var referencePath = Path.Combine(s_taskDirectory, referenceName + ".dll");
+            var referencePath = Path.Combine(s_taskDirectory, referenceName.Name + ".dll");
             if (!File.Exists(referencePath))
             {
                 Log(args, $"file '{referencePath}' not found");
