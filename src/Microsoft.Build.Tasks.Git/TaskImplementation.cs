@@ -65,15 +65,16 @@ namespace Microsoft.Build.Tasks.Git
 
         private static Assembly AssemblyResolve(object sender, ResolveEventArgs args)
         {
-            // only resolve dependencies of netstandard library:
-            if (args.RequestingAssembly == null ||
-                !StringComparer.OrdinalIgnoreCase.Equals(args.RequestingAssembly.FullName, "netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51"))
+            // Limit resolution scope to minimum to affect the rest of msbuild as little as possible.
+            // Only resolve System.* assemblies from the task directory that are referenced with 0.0.0.0 version (from netstandard.dll).
+
+            var referenceName = new AssemblyName(args.Name);
+            if (!referenceName.Name.StartsWith("System.", StringComparison.OrdinalIgnoreCase))
             {
-                Log(args, "not netstandard");
+                Log(args, "not System");
                 return null;
             }
 
-            var referenceName = new AssemblyName(args.Name);
             if (referenceName.Version != s_nullVersion)
             {
                 Log(args, "not null version");
