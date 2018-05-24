@@ -21,7 +21,7 @@ namespace Microsoft.Build.Tasks.Git
             {
                 return TaskImplementation.LocateRepository(this);
             }
-            catch (Exception e) 
+            catch
             {
 #if NET461
                 foreach (var message in TaskImplementation.GetLog())
