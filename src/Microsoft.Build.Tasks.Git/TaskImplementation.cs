@@ -89,7 +89,7 @@ namespace Microsoft.Build.Tasks.Git
             }
 
             Log(args, $"loading from '{referencePath}'");
-            return Assembly.Load(referencePath);
+            return Assembly.Load(AssemblyName.GetAssemblyName(referencePath));
         }
 #endif
     }
