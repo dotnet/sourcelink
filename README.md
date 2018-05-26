@@ -27,7 +27,7 @@ You can enable SourceLink in your own project hosted on [GitHub](http://github.c
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-62909-01" PrivateAssets="All"/>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-62925-02" PrivateAssets="All"/>
   </ItemGroup>
 </Project>
 ```
@@ -35,7 +35,7 @@ You can enable SourceLink in your own project hosted on [GitHub](http://github.c
 For projects hosted by [Visual Studio Team Services](https://www.visualstudio.com/team-services) in git repositories reference [Microsoft.SourceLink.Vsts.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Vsts.Git) package like so: 
 
 ```xml
-<PackageReference Include="Microsoft.SourceLink.Vsts.Git" Version="1.0.0-beta-62909-01" PrivateAssets="All"/>
+<PackageReference Include="Microsoft.SourceLink.Vsts.Git" Version="1.0.0-beta-62925-02" PrivateAssets="All"/>
 ```
 
 If your repository contains submodules hosted by other git providers reference packages of all these providers. For example, projects in a repository hosted by VSTS that links a GitHub repository via a submodule should reference both [Microsoft.SourceLink.Vsts.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Vsts.Git) and [Microsoft.SourceLink.GitHub](https://www.nuget.org/packages/Microsoft.SourceLink.GitHub) packages.
