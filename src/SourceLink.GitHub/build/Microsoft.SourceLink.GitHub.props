@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <SourceLinkGitHubHosts Include="github.com" ContentUrl="https://raw.githubusercontent.com"/>
+  </ItemGroup>
+</Project>

@@ -3,7 +3,7 @@
 using System;
 using Microsoft.Build.Tasks.SourceControl;
 
-namespace Microsoft.SourceLink.GitHub
+namespace Microsoft.SourceLink.GitLab
 {
     /// <summary>
     /// The task calculates SourceLink URL for a given SourceRoot.
@@ -12,13 +12,13 @@ namespace Microsoft.SourceLink.GitHub
     /// </summary>
     public sealed class GetSourceLinkUrl : GetSourceLinkUrlGitTask
     {
-        protected override string HostsItemGroupName => "SourceLinkGitHubHosts";
-        protected override string ProviderDisplayName => "GitHub";
+        protected override string HostsItemGroupName => "SourceLinkGitLabHosts";
+        protected override string ProviderDisplayName => "GitLab";
 
         protected override Uri GetDefaultContentUri(Uri uri)
-            => new Uri(uri, "raw");
+            => uri;
 
         protected override string BuildSourceLinkUrl(string contentUrl, string relativeUrl, string revisionId)
-            => CombineAbsoluteAndRelativeUrl(CombineAbsoluteAndRelativeUrl(contentUrl, relativeUrl), revisionId + "/*");
+            => CombineAbsoluteAndRelativeUrl(CombineAbsoluteAndRelativeUrl(contentUrl, relativeUrl), "raw/" + revisionId + "/*");
     }
 }

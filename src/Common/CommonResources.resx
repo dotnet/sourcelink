@@ -129,4 +129,7 @@
   <data name="ValuePassedToTaskParameterNotValidDomainName" xml:space="preserve">
     <value>The value passed to task parameter {0} is not a valid domain name: '{1}'</value>
   </data>
+  <data name="AtLeastOneRepositoryHostIsRequired" xml:space="preserve">
+    <value>{0} item group is empty. At least one {1} repository host is required in order to generate SourceLink.</value>
+  </data>
 </root>

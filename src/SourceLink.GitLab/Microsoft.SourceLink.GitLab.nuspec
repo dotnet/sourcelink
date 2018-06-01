@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>$PackageId$</id>
+    <description>$Description$</description>
+    <version>$Version$</version>
+    <authors>$Authors$</authors>
+    <requireLicenseAcceptance>$RequireLicenseAcceptance$</requireLicenseAcceptance>
+    <licenseUrl>$PackageLicenseUrl$</licenseUrl>
+    <projectUrl>$PackageProjectUrl$</projectUrl>
+    <copyright>$Copyright$</copyright>
+    <developmentDependency>$DevelopmentDependency$</developmentDependency>
+    <tags>$PackageTags$</tags>
+    <serviceable>$Serviceable$</serviceable>
+    <repository type="$RepositoryType$" url="$RepositoryUrl$" commit="$RepositoryCommit$" />
+    <dependencies>
+      <dependency id="Microsoft.SourceLink.Common" version="$Version$" />
+      <dependency id="Microsoft.Build.Tasks.Git" version="$Version$" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="netcoreapp2.0\publish\**\Microsoft.SourceLink.*" target="tools\netcoreapp2.0" />
+    <file src="net461\**\Microsoft.SourceLink.*" target="tools\net461" />
+
+    <file src="$projectDirectory$\build\*.*" target="build" />
+  </files>
+</package>

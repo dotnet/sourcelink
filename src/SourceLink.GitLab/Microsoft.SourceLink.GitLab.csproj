@@ -7,8 +7,8 @@
     <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
     <NuspecBasePath>$(OutputPath)</NuspecBasePath>
 
-    <Description>Generates source link for GitHub repositories.</Description>
-    <PackageTags>MSBuild Tasks GitHub source link</PackageTags>
+    <Description>Generates source link for GitLab repositories.</Description>
+    <PackageTags>MSBuild Tasks GitLab source link</PackageTags>
     <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>
   <ItemGroup>
@@ -24,6 +24,6 @@
     <PackageReference Include="Microsoft.Build.Tasks.Core" Version="$(MicrosoftBuildTasksCore)" />
   </ItemGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="Microsoft.SourceLink.GitHub.UnitTests" />
+    <InternalsVisibleTo Include="Microsoft.SourceLink.GitLab.UnitTests" />
   </ItemGroup>
 </Project>
