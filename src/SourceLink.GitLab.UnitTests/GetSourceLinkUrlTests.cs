@@ -4,7 +4,7 @@ using Microsoft.SourceLink.Common.UnitTests;
 using Xunit;
 using static Microsoft.SourceLink.Common.UnitTests.KeyValuePairUtils;
 
-namespace Microsoft.SourceLink.GitHub.UnitTests
+namespace Microsoft.SourceLink.GitLab.UnitTests
 {
     public class GetSourceLinkUrlTests
     {
@@ -22,18 +22,18 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
             bool result = task.Execute();
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
-                "ERROR : " + string.Format(CommonResources.AtLeastOneRepositoryHostIsRequired, "SourceLinkGitHubHosts", "GitHub"), engine.Log);
+                "ERROR : " + string.Format(CommonResources.AtLeastOneRepositoryHostIsRequired, "SourceLinkGitLabHosts", "GitLab"), engine.Log);
 
             Assert.False(result);
         }
 
         [Theory]
-        [InlineData("mygithub*.com")]
-        [InlineData("mygithub.com/a")]
-        [InlineData("mygithub.com/a?x=2")]
-        [InlineData("http://mygithub.com")]
-        [InlineData("http://a@mygithub.com")]
-        [InlineData("a@mygithub.com")]
+        [InlineData("mygitlab*.com")]
+        [InlineData("mygitlab.com/a")]
+        [InlineData("mygitlab.com/a?x=2")]
+        [InlineData("http://mygitlab.com")]
+        [InlineData("http://a@mygitlab.com")]
+        [InlineData("a@mygitlab.com")]
         public void GetSourceLinkUrl_HostsDomain_Errors(string domain)
         {
             var engine = new MockEngine();
@@ -54,11 +54,11 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
         }
 
         [Theory]
-        [InlineData("myrawgithub.com")]
-        [InlineData("myrawgithub.com/a")]
-        [InlineData("myrawgithub.com/a?x=2")]
-        [InlineData("http://a@myrawgithub.com")]
-        [InlineData("a@myrawgithub.com")]
+        [InlineData("mygitlab.com")]
+        [InlineData("mygitlab.com/a")]
+        [InlineData("mygitlab.com/a?x=2")]
+        [InlineData("http://a@mygitlab.com")]
+        [InlineData("a@mygitlab.com")]
         public void GetSourceLinkUrl_HostsContentUrl_Errors(string url)
         {
             var engine = new MockEngine();
@@ -114,8 +114,8 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://github.com/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", revisionId)),
-                Hosts = new[] { new MockItem("github.com", KVP("ContentUrl", "https://raw.githubusercontent.com")) }
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://gitlab.com/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", revisionId)),
+                Hosts = new[] { new MockItem("gitlab.com") }
             };
 
             bool result = task.Execute();
@@ -134,8 +134,8 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://github.com/a/b"), KVP("SourceControl", "tfvc"), KVP("RevisionId", "12345")),
-                Hosts = new[] { new MockItem("github.com", KVP("ContentUrl", "https://raw.githubusercontent.com")) }
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://gitlab.com/a/b"), KVP("SourceControl", "tfvc"), KVP("RevisionId", "12345")),
+                Hosts = new[] { new MockItem("gitlab.com") }
             };
 
             bool result = task.Execute();
@@ -152,8 +152,8 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://github.com/a/b"), KVP("SourceControl", "git"), KVP("SourceLinkUrl", "x"), KVP("RevisionId", "12345")),
-                Hosts = new[] { new MockItem("github.com", KVP("ContentUrl", "https://raw.githubusercontent.com")) }
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://gitlab.com/a/b"), KVP("SourceControl", "git"), KVP("SourceLinkUrl", "x"), KVP("RevisionId", "12345")),
+                Hosts = new[] { new MockItem("gitlab.com") }
             };
 
             bool result = task.Execute();
@@ -170,8 +170,8 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://mygithub.com/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "12345")),
-                Hosts = new[] { new MockItem("github.com", KVP("ContentUrl", "https://raw.githubusercontent.com")) }
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://mygitlab.com/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "12345")),
+                Hosts = new[] { new MockItem("gitlab.com") }
             };
 
             bool result = task.Execute();
@@ -189,10 +189,9 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
             {
                 BuildEngine = engine,
                 SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://abc.com/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "12345")),
-                Hosts = new[] 
+                Hosts = new[]
                 {
-                    new MockItem("github.com", KVP("ContentUrl", "https://raw.githubusercontent.com")),
-                    new MockItem("mygithub.com", KVP("ContentUrl", "http://mycontent.com"))
+                    new MockItem("mygitlab.com", KVP("ContentUrl", "http://mycontent.com"))
                 }
             };
 
@@ -210,16 +209,16 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mygithub.com:1234/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mygitlab.com:1234/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
-                    new MockItem("mygithub.com"),
+                    new MockItem("mygitlab.com"),
                 }
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("https://mygithub.com:1234/raw/a/b/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://mygitlab.com:1234/a/b/raw/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -231,16 +230,16 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mygithub.com:1234/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mygitlab.com:1234/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
-                    new MockItem("mygithub.com", KVP("ContentUrl", "https://mygithub.com")),
+                    new MockItem("mygitlab.com", KVP("ContentUrl", "https://mygitlab.com")),
                 }
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("https://mygithub.com/a/b/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://mygitlab.com/a/b/raw/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -252,19 +251,18 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mygithub.com:1234/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mygitlab.com:1234/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
-                    new MockItem("github.com", KVP("ContentUrl", "https://raw.githubusercontent.com")),
                     new MockItem("abc.com", KVP("ContentUrl", "https://abc.com")),
-                    new MockItem("mygithub.com", KVP("ContentUrl", "https://subdomain.rawmygithub1.com:777")),
-                    new MockItem("mygithub.com", KVP("ContentUrl", "https://subdomain.rawmygithub2.com"))
+                    new MockItem("mygitlab.com", KVP("ContentUrl", "https://subdomain.rawmygitlab1.com:777")),
+                    new MockItem("mygitlab.com", KVP("ContentUrl", "https://subdomain.rawmygitlab2.com"))
                 }
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("https://subdomain.rawmygithub1.com:777/a/b/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://subdomain.rawmygitlab1.com:777/a/b/raw/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -276,21 +274,21 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mygithub.com:123/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mygitlab.com:123/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
-                    new MockItem("mygithub.com", KVP("ContentUrl", "https://domain.com:1")),
-                    new MockItem("mygithub.com:123", KVP("ContentUrl", "https://domain.com:2")),
-                    new MockItem("mygithub.com:123", KVP("ContentUrl", "https://domain.com:3")),
-                    new MockItem("subdomain.mygithub.com", KVP("ContentUrl", "https://domain.com:4")),
-                    new MockItem("subdomain.mygithub.com:123", KVP("ContentUrl", "https://domain.com:5")),
-                    new MockItem("subdomain.mygithub.com:123", KVP("ContentUrl", "https://domain.com:6")),
+                    new MockItem("mygitlab.com", KVP("ContentUrl", "https://domain.com:1")),
+                    new MockItem("mygitlab.com:123", KVP("ContentUrl", "https://domain.com:2")),
+                    new MockItem("mygitlab.com:123", KVP("ContentUrl", "https://domain.com:3")),
+                    new MockItem("subdomain.mygitlab.com", KVP("ContentUrl", "https://domain.com:4")),
+                    new MockItem("subdomain.mygitlab.com:123", KVP("ContentUrl", "https://domain.com:5")),
+                    new MockItem("subdomain.mygitlab.com:123", KVP("ContentUrl", "https://domain.com:6")),
                 }
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("https://domain.com:5/a/b/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://domain.com:5/a/b/raw/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -302,21 +300,21 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mygithub.com:100/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mygitlab.com:100/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
-                    new MockItem("mygithub.com", KVP("ContentUrl", "https://domain.com:1")),
-                    new MockItem("mygithub.com:123", KVP("ContentUrl", "https://domain.com:2")),
-                    new MockItem("mygithub.com:123", KVP("ContentUrl", "https://domain.com:3")),
-                    new MockItem("subdomain.mygithub.com", KVP("ContentUrl", "https://domain.com:4")),
-                    new MockItem("subdomain.mygithub.com:123", KVP("ContentUrl", "https://domain.com:5")),
-                    new MockItem("subdomain.mygithub.com:123", KVP("ContentUrl", "https://domain.com:6")),
+                    new MockItem("mygitlab.com", KVP("ContentUrl", "https://domain.com:1")),
+                    new MockItem("mygitlab.com:123", KVP("ContentUrl", "https://domain.com:2")),
+                    new MockItem("mygitlab.com:123", KVP("ContentUrl", "https://domain.com:3")),
+                    new MockItem("subdomain.mygitlab.com", KVP("ContentUrl", "https://domain.com:4")),
+                    new MockItem("subdomain.mygitlab.com:123", KVP("ContentUrl", "https://domain.com:5")),
+                    new MockItem("subdomain.mygitlab.com:123", KVP("ContentUrl", "https://domain.com:6")),
                 }
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("https://domain.com:4/a/b/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://domain.com:4/a/b/raw/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -328,21 +326,21 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mygithub.com:123/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mygitlab.com:123/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
-                    new MockItem("mygithub.com", KVP("ContentUrl", "https://domain.com:1")),
-                    new MockItem("mygithub.com:123", KVP("ContentUrl", "https://domain.com:2")),
-                    new MockItem("mygithub.com:123", KVP("ContentUrl", "https://domain.com:3")),
-                    new MockItem("z.mygithub.com", KVP("ContentUrl", "https://domain.com:4")),
-                    new MockItem("z.mygithub.com:123", KVP("ContentUrl", "https://domain.com:5")),
-                    new MockItem("z.mygithub.com:123", KVP("ContentUrl", "https://domain.com:6")),
+                    new MockItem("mygitlab.com", KVP("ContentUrl", "https://domain.com:1")),
+                    new MockItem("mygitlab.com:123", KVP("ContentUrl", "https://domain.com:2")),
+                    new MockItem("mygitlab.com:123", KVP("ContentUrl", "https://domain.com:3")),
+                    new MockItem("z.mygitlab.com", KVP("ContentUrl", "https://domain.com:4")),
+                    new MockItem("z.mygitlab.com:123", KVP("ContentUrl", "https://domain.com:5")),
+                    new MockItem("z.mygitlab.com:123", KVP("ContentUrl", "https://domain.com:6")),
                 }
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("https://domain.com:2/a/b/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://domain.com:2/a/b/raw/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -354,21 +352,21 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mygithub.com:100/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mygitlab.com:100/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
-                    new MockItem("mygithub.com", KVP("ContentUrl", "https://domain.com:1")),
-                    new MockItem("mygithub.com:123", KVP("ContentUrl", "https://domain.com:2")),
-                    new MockItem("mygithub.com:123", KVP("ContentUrl", "https://domain.com:3")),
-                    new MockItem("z.mygithub.com", KVP("ContentUrl", "https://domain.com:4")),
-                    new MockItem("z.mygithub.com:123", KVP("ContentUrl", "https://domain.com:5")),
-                    new MockItem("z.mygithub.com:123", KVP("ContentUrl", "https://domain.com:6")),
+                    new MockItem("mygitlab.com", KVP("ContentUrl", "https://domain.com:1")),
+                    new MockItem("mygitlab.com:123", KVP("ContentUrl", "https://domain.com:2")),
+                    new MockItem("mygitlab.com:123", KVP("ContentUrl", "https://domain.com:3")),
+                    new MockItem("z.mygitlab.com", KVP("ContentUrl", "https://domain.com:4")),
+                    new MockItem("z.mygitlab.com:123", KVP("ContentUrl", "https://domain.com:5")),
+                    new MockItem("z.mygitlab.com:123", KVP("ContentUrl", "https://domain.com:6")),
                 }
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("https://domain.com:1/a/b/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://domain.com:1/a/b/raw/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -384,16 +382,16 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mygithub.com:100/a/b" + s1), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mygitlab.com:100/a/b" + s1), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
-                    new MockItem("mygithub.com", KVP("ContentUrl", "https://domain.com/x/y" + s2)),
+                    new MockItem("mygitlab.com", KVP("ContentUrl", "https://domain.com/x/y" + s2)),
                 }
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("https://domain.com/x/y/a/b/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://domain.com/x/y/a/b/raw/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -405,18 +403,18 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mygithub.com/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mygitlab.com/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
-                    new MockItem("mygithub.com:80", KVP("ContentUrl", "https://domain.com:1")),
-                    new MockItem("mygithub.com:443", KVP("ContentUrl", "https://domain.com:2")),
-                    new MockItem("mygithub.com:1234", KVP("ContentUrl", "https://domain.com:3")),
+                    new MockItem("mygitlab.com:80", KVP("ContentUrl", "https://domain.com:1")),
+                    new MockItem("mygitlab.com:443", KVP("ContentUrl", "https://domain.com:2")),
+                    new MockItem("mygitlab.com:1234", KVP("ContentUrl", "https://domain.com:3")),
                 }
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("https://domain.com:1/a/b/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://domain.com:1/a/b/raw/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -428,18 +426,18 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "https://subdomain.mygithub.com/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "https://subdomain.mygitlab.com/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
-                    new MockItem("mygithub.com:80", KVP("ContentUrl", "https://domain.com:1")),
-                    new MockItem("mygithub.com:443", KVP("ContentUrl", "https://domain.com:2")),
-                    new MockItem("mygithub.com:1234", KVP("ContentUrl", "https://domain.com:3")),
+                    new MockItem("mygitlab.com:80", KVP("ContentUrl", "https://domain.com:1")),
+                    new MockItem("mygitlab.com:443", KVP("ContentUrl", "https://domain.com:2")),
+                    new MockItem("mygitlab.com:1234", KVP("ContentUrl", "https://domain.com:3")),
                 }
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("https://domain.com:2/a/b/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://domain.com:2/a/b/raw/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -451,13 +449,13 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://github.com/a/b.git"), KVP("SourceControl", "git"), KVP("RevisionId", "0000000000000000000000000000000000000000")),
-                Hosts = new[] { new MockItem("github.com", KVP("ContentUrl", "https://raw.githubusercontent.com")) }
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://gitlab.com/a/b.git"), KVP("SourceControl", "git"), KVP("RevisionId", "0000000000000000000000000000000000000000")),
+                Hosts = new[] { new MockItem("gitlab.com") }
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("https://raw.githubusercontent.com/a/b/0000000000000000000000000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://gitlab.com/a/b/raw/0000000000000000000000000000000000000000/*", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -469,13 +467,13 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://github.com/a/b.GIT"), KVP("SourceControl", "git"), KVP("RevisionId", "0000000000000000000000000000000000000000")),
-                Hosts = new[] { new MockItem("github.com", KVP("ContentUrl", "https://raw.githubusercontent.com")) }
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://gitlab.com/a/b.GIT"), KVP("SourceControl", "git"), KVP("RevisionId", "0000000000000000000000000000000000000000")),
+                Hosts = new[] { new MockItem("gitlab.com") }
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("https://raw.githubusercontent.com/a/b.GIT/0000000000000000000000000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://gitlab.com/a/b.GIT/raw/0000000000000000000000000000000000000000/*", task.SourceLinkUrl);
             Assert.True(result);
         }
     }

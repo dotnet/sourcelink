@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <_SourceLinkGitLabAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)..\tools\net461\Microsoft.SourceLink.GitLab.dll</_SourceLinkGitLabAssemblyFile>
+    <_SourceLinkGitLabAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\netcoreapp2.0\Microsoft.SourceLink.GitLab.dll</_SourceLinkGitLabAssemblyFile>
+  </PropertyGroup>
+
+  <UsingTask TaskName="Microsoft.SourceLink.GitLab.GetSourceLinkUrl" AssemblyFile="$(_SourceLinkGitLabAssemblyFile)"/>
+
+  <PropertyGroup>
+    <SourceLinkUrlInitializerTargets>$(SourceLinkUrlInitializerTargets);_InitializeGitLabSourceLinkUrl</SourceLinkUrlInitializerTargets>
+  </PropertyGroup>
+
+  <Target Name="_InitializeGitLabSourceLinkUrl" Inputs="@(SourceRoot)" Outputs="|%(Identity)|">
+    <!--
+      The task calculates SourceLink URL for a given SourceRoot.
+      
+      If the SourceRoot is associated with a git repository with a recognized domain the <see cref="SourceLinkUrl"/>
+      output property is set to the content URL corresponding to the domain, otherwise it is set to string "N/A".
+      
+      Recognized domains are specified via Hosts parameter (initialized from SourceLinkGitLabHosts item group).
+      
+      Example of SourceLinkGitLabHosts items:
+
+      <ItemGroup>
+        <SourceLinkGitHubHosts Include="mygitlab1.com" ContentUrl="http://mygitlab1.com"/>
+        <SourceLinkGitLabHosts Include="mygitlab2.com" />           ContentUrl defaults to https://mygitlab2.com
+        <SourceLinkGitLabHosts Include="mygitlab3.com:8080" />      ContentUrl defaults to https://mygitlab3.com:8080
+      </ItemGroup>
+
+      ContentUrl is optional. If not specified it defaults to "https://{domain}".
+    -->
+    <Microsoft.SourceLink.GitLab.GetSourceLinkUrl SourceRoot="@(SourceRoot)" Hosts="@(SourceLinkGitLabHosts)">
+      <Output TaskParameter="SourceLinkUrl" PropertyName="_SourceLinkUrlToUpdate"/>
+    </Microsoft.SourceLink.GitLab.GetSourceLinkUrl>
+
+    <ItemGroup>
+      <!-- Only update the SourceLinkUrl metadata if the SourceRoot belongs to this source control -->
+      <SourceRoot Update="%(Identity)" SourceLinkUrl="$(_SourceLinkUrlToUpdate)" Condition="'$(_SourceLinkUrlToUpdate)' != 'N/A'"/>
+    </ItemGroup>
+  </Target>
+
+</Project>
