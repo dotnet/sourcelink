@@ -4,27 +4,27 @@
     <body>
       <trans-unit id="AtLeastOneRepositoryHostIsRequired">
         <source>{0} item group is empty. At least one {1} repository host is required in order to generate SourceLink.</source>
-        <target state="new">{0} item group is empty. At least one {1} repository host is required in order to generate SourceLink.</target>
+        <target state="translated">O grupo de itens {0} está vazio. Pelo menos um host de repositório {1} é necessário para gerar o SourceLink.</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsInvalid">
         <source>The value of {0} with identity '{1}' is invalid: '{2}'"</source>
-        <target state="new">The value of {0} with identity '{1}' is invalid: '{2}'"</target>
+        <target state="translated">O valor de {0} com a identidade '{1}' é inválido: '{2}'"</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsNotValidCommitHash">
         <source>The value of {0} with identity '{1}' is not a valid commit hash: '{2}'"</source>
-        <target state="new">The value of {0} with identity '{1}' is not a valid commit hash: '{2}'"</target>
+        <target state="translated">O valor de {0} com a identidade '{1}' não é um hash de confirmação válido: '{2}'"</target>
         <note />
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidDomainName">
         <source>The value passed to task parameter {0} is not a valid domain name: '{1}'</source>
-        <target state="new">The value passed to task parameter {0} is not a valid domain name: '{1}'</target>
+        <target state="translated">O valor passado para o parâmetro de tarefa {0} não é um nome de domínio válido: '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidHostUri">
         <source>The value passed to task parameter {0} is not a valid host URI: '{1}'</source>
-        <target state="new">The value passed to task parameter {0} is not a valid host URI: '{1}'</target>
+        <target state="translated">O valor passado para o parâmetro de tarefa {0} não é um URI de host válido: '{1}'</target>
         <note />
       </trans-unit>
     </body>
