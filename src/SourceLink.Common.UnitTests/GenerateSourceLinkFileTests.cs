@@ -2,7 +2,8 @@
 using System;
 using System.IO;
 using Xunit;
-using static Microsoft.SourceLink.Common.UnitTests.KeyValuePairUtils;
+using TestUtilities;
+using static TestUtilities.KeyValuePairUtils;
 
 namespace Microsoft.SourceLink.Common.UnitTests
 {
