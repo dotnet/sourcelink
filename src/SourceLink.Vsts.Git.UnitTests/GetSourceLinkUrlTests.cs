@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 using System;
-using Microsoft.SourceLink.Common.UnitTests;
+using TestUtilities;
 using Xunit;
-using static Microsoft.SourceLink.Common.UnitTests.KeyValuePairUtils;
+using static TestUtilities.KeyValuePairUtils;
 
 namespace Microsoft.SourceLink.Vsts.Git.UnitTests
 {

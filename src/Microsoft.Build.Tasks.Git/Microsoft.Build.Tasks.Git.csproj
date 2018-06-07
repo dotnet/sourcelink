@@ -14,5 +14,6 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Microsoft.Build.Tasks.Git.Operations" />
     <InternalsVisibleTo Include="Microsoft.Build.Tasks.Git.UnitTests" />
+    <InternalsVisibleTo Include="Microsoft.SourceLink.Git.IntegrationTests" />
   </ItemGroup>
 </Project>
