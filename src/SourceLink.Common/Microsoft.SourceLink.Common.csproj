@@ -21,5 +21,6 @@
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Microsoft.SourceLink.Common.UnitTests" />
+    <InternalsVisibleTo Include="Microsoft.SourceLink.Git.IntegrationTests" />
   </ItemGroup>
 </Project>

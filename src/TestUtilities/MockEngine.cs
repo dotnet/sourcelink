@@ -6,7 +6,7 @@ using System.Collections;
 using System.Text;
 using Microsoft.Build.Framework;
 
-namespace Microsoft.SourceLink.Common.UnitTests
+namespace TestUtilities
 {
     public sealed class MockEngine : IBuildEngine
     {

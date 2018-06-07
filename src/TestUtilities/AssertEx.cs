@@ -8,10 +8,9 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
-using Microsoft.CodeAnalysis.Test.Utilities;
 using Xunit;
 
-namespace Microsoft.SourceLink.Common.UnitTests
+namespace TestUtilities
 {
     /// <summary>
     /// Assert style type to deal with the lack of features in xUnit's Assert type

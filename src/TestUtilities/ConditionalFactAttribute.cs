@@ -4,7 +4,7 @@ using System;
 using System.IO;
 using Xunit;
 
-namespace Microsoft.Build.Tasks.Git.UnitTests
+namespace TestUtilities
 {
     public class ConditionalFactAttribute : FactAttribute
     {
