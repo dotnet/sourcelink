@@ -35,6 +35,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.GitLab
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.GitLab.UnitTests", "src\SourceLink.GitLab.UnitTests\Microsoft.SourceLink.GitLab.UnitTests.csproj", "{46C6BD7C-ABB7-4444-B095-C63868FACC41}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{7621150D-714B-4C87-8834-199A0495B92F}"
+	ProjectSection(SolutionItems) = preProject
+		src\Common\CommonResources.resx = src\Common\CommonResources.resx
+		src\Common\GetSourceLinkUrlGitTask.cs = src\Common\GetSourceLinkUrlGitTask.cs
+		src\Common\Names.cs = src\Common\Names.cs
+		src\Common\PathUtilities.cs = src\Common\PathUtilities.cs
+		src\Common\SequenceComparer.cs = src\Common\SequenceComparer.cs
+		src\Common\UriUtilities.cs = src\Common\UriUtilities.cs
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
