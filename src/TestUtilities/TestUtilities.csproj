@@ -19,6 +19,7 @@
       <_Attribute Include="TestUtilities.BuildInfoAttribute">
         <_Parameter1>$(NETCoreSdkVersion)</_Parameter1>
         <_Parameter2>$(PackageOutputPath)</_Parameter2>
+        <_Parameter3>$(ArtifactsLogDir)</_Parameter3>
       </_Attribute>
     </ItemGroup>
 
