@@ -34,12 +34,14 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expressions: new[]
                 {
-                    "@(SourceRoot->'%(Identity): %(SourceLinkUrl)')",
+                    "@(SourceRoot)",
+                    "@(SourceRoot->'%(SourceLinkUrl)')",
                     "$(SourceLink)"
                 },
                 expectedResults: new[]
                 {
-                    $@"{ProjectSourceRoot}: https://mygitlab.com/test-org/test-repo/raw/{commitSha}/*",
+                    ProjectSourceRoot,
+                    $"https://mygitlab.com/test-org/test-repo/raw/{commitSha}/*",
                     s_relativeSourceLinkJsonPath
                 });
 

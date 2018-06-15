@@ -31,12 +31,14 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expressions: new[]
                 {
-                    "@(SourceRoot->'%(Identity): %(SourceLinkUrl)')",
+                    "@(SourceRoot)",
+                    "@(SourceRoot->'%(SourceLinkUrl)')",
                     "$(SourceLink)"
                 },
                 expectedResults: new[]
                 {
-                    $@"{ProjectSourceRoot}: https://test.visualstudio.com/test-org/_apis/git/repositories/test-repo/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*",
+                    ProjectSourceRoot,
+                    $"https://test.visualstudio.com/test-org/_apis/git/repositories/test-repo/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*",
                     s_relativeSourceLinkJsonPath
                 });
 

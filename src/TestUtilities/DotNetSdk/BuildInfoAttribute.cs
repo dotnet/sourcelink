@@ -11,11 +11,13 @@ namespace TestUtilities
     {
         public string SdkVersion { get; }
         public string PackagesDirectory { get; }
+        public string LogDirectory { get; }
 
-        public BuildInfoAttribute(string sdkVersion, string packagesDirectory)
+        public BuildInfoAttribute(string sdkVersion, string packagesDirectory, string logDirectory)
         {
             SdkVersion = sdkVersion;
             PackagesDirectory = packagesDirectory;
+            LogDirectory = logDirectory;
         }
     }
 }

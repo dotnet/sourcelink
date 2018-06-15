@@ -127,11 +127,12 @@ $@"<Project>
             File.WriteAllText(Path.Combine(objDirectory, projectFileName + ".TestHelpers.g.targets"),
 $@"<Project>      
   <Target Name=""Test_EvaluateExpressions"">
+    <Message Text=""@(SourceRoot->'%(SourceLinkUrl)')"" />
     <PropertyGroup>
-      {string.Join(Environment.NewLine + "      ", expressions.SelectWithIndex((e, i) => $@"<_Value{i}>{e}</_Value{i}><_Value{i} Condition=""'$(_Value{i})' == ''"">{EmptyValueMarker}</_Value{i}>"))}
+{string.Join(Environment.NewLine, expressions.SelectWithIndex((e, i) => $@"      <_Value{i}>{e}</_Value{i}><_Value{i} Condition=""'$(_Value{i})' == ''"">{EmptyValueMarker}</_Value{i}>"))}
     </PropertyGroup>
     <ItemGroup>
-      <LinesToWrite Include=""{string.Join(";", expressions.SelectWithIndex((e, i) => $"$(_Value{i})"))}""/>
+{string.Join(Environment.NewLine, expressions.SelectWithIndex((e, i) => $@"      <LinesToWrite Include=""$(_Value{i})""/>"))}
     </ItemGroup>
     <MakeDir Directories=""{Path.GetDirectoryName(outputFile)}"" />
     <WriteLinesToFile File=""{outputFile}""
@@ -206,46 +207,58 @@ $@"<Project>
             var targetsArg = string.Join(";", targets.Concat(new[] { "Test_EvaluateExpressions" }));
             var testBinDirectory = Path.GetDirectoryName(typeof(DotNetSdkTestBase).Assembly.Location);
             var buildLog = Path.Combine(ProjectDir.Path, $"build{_logIndex++}.binlog");
-            var restoreLog = Path.Combine(ProjectDir.Path, $"restore{_logIndex++}.binlog");
 
-            var buildResult = ProcessUtilities.Run(DotNetPath, $@"msbuild ""{Project.Path}"" /t:{targetsArg} /p:Configuration={Configuration} /bl:""{buildLog}""",
-                additionalEnvironmentVars: EnvironmentVariables);
-
-            string[] getDiagnostics(string[] lines, bool error)
-                => (from line in lines
-                    let match = Regex.Match(line, $@"^.*\([0-9]+,[0-9]+\): {(error ? "error" : "warning")} : (.*) \[.*\]$")
-                    where match.Success
-                    select match.Groups[1].Value).ToArray();
-
-            bool diagnosticsEqual(string expected, string actual)
+            bool success = false;
+            try
             {
-                string ellipsis = "...";
-                int index = expected.IndexOf(ellipsis);
-                return (index == -1) ? expected == actual :
-                    actual.Length > expected.Length - ellipsis.Length &&
-                    expected.Substring(0, index) == actual.Substring(0, index) && 
-                    expected.Substring(index + ellipsis.Length) == actual.Substring(actual.Length - (expected.Length - index - ellipsis.Length));
+                var buildResult = ProcessUtilities.Run(DotNetPath, $@"msbuild ""{Project.Path}"" /t:{targetsArg} /p:Configuration={Configuration} /bl:""{buildLog}""",
+                    additionalEnvironmentVars: EnvironmentVariables);
+
+                string[] getDiagnostics(string[] lines, bool error)
+                    => (from line in lines
+                        let match = Regex.Match(line, $@"^.*\([0-9]+,[0-9]+\): {(error ? "error" : "warning")} : (.*) \[.*\]$")
+                        where match.Success
+                        select match.Groups[1].Value).ToArray();
+
+                bool diagnosticsEqual(string expected, string actual)
+                {
+                    string ellipsis = "...";
+                    int index = expected.IndexOf(ellipsis);
+                    return (index == -1) ? expected == actual :
+                        actual.Length > expected.Length - ellipsis.Length &&
+                        expected.Substring(0, index) == actual.Substring(0, index) &&
+                        expected.Substring(index + ellipsis.Length) == actual.Substring(actual.Length - (expected.Length - index - ellipsis.Length));
+                }
+
+                var outputLines = buildResult.Output.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
+                if (expectedErrors == null)
+                {
+                    Assert.True(buildResult.ExitCode == 0, $"Build failed with exit code {buildResult.ExitCode}: {buildResult.Output}");
+
+                    var evaluationResult = File.ReadAllLines(evaluationResultsFile).Select(l => (l != EmptyValueMarker) ? l : "");
+                    AssertEx.Equal(expectedResults, evaluationResult);
+                }
+                else
+                {
+                    Assert.True(buildResult.ExitCode != 0, $"Build succeeded but should have failed: {buildResult.Output}");
+
+                    var actualErrors = getDiagnostics(outputLines, error: true);
+                    AssertEx.Equal(expectedErrors, actualErrors, diagnosticsEqual);
+                }
+
+                var actualWarnings = getDiagnostics(outputLines, error: false);
+                AssertEx.Equal(expectedWarnings ?? Array.Empty<string>(), actualWarnings, diagnosticsEqual);
+
+                success = true;
             }
-
-            var outputLines = buildResult.Output.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-
-            if (expectedErrors == null)
+            finally
             {
-                Assert.True(buildResult.ExitCode == 0, $"Build failed with exit code {buildResult.ExitCode}: {buildResult.Output}");
-
-                var evaluationResult = File.ReadAllLines(evaluationResultsFile).Select(l => (l != EmptyValueMarker) ? l : "");
-                AssertEx.Equal(expectedResults, evaluationResult);
+                if (!success)
+                {
+                    try { File.Copy(buildLog, Path.Combine(s_buildInfo.LogDirectory, "test_build_" + Path.GetFileName(ProjectDir.Path) + ".binlog"), overwrite: true); } catch { }
+                }
             }
-            else
-            {
-                Assert.True(buildResult.ExitCode != 0, $"Build succeeded but should have failed: {buildResult.Output}");
-
-                var actualErrors = getDiagnostics(outputLines, error: true);
-                AssertEx.Equal(expectedErrors, actualErrors, diagnosticsEqual);
-            }
-
-            var actualWarnings = getDiagnostics(outputLines, error: false);
-            AssertEx.Equal(expectedWarnings ?? Array.Empty<string>(), actualWarnings, diagnosticsEqual);
         }
     }
 }
