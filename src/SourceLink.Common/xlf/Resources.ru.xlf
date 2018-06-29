@@ -28,8 +28,13 @@
         <note />
       </trans-unit>
       <trans-unit id="ErrorWritingToSourceLinkFile">
-        <source>Error writing to source link file '{0}': {1}"</source>
-        <target state="translated">Ошибка записи в файл ссылки на источник "{0}": "{1}"</target>
+        <source>Error writing to source link file '{0}': {1}</source>
+        <target state="needs-review-translation">Ошибка записи в файл ссылки на источник "{0}": "{1}"</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="NoSourceLinkPackagesReferenced">
+        <source>Unable to generate SourceLink -- the project doesn't reference any SourceLink packages.</source>
+        <target state="new">Unable to generate SourceLink -- the project doesn't reference any SourceLink packages.</target>
         <note />
       </trans-unit>
     </body>

@@ -25,6 +25,8 @@ namespace Microsoft.Build.Tasks.SourceControl
         /// </summary>
         public ITaskItem[] Hosts { get; set; }
 
+        public string ImplicitHost { get; set; }
+
         [Output]
         public string SourceLinkUrl { get; set; }
 
@@ -126,35 +128,52 @@ namespace Microsoft.Build.Tasks.SourceControl
             bool isValidContentUri(Uri uri)
                 => uri.Query == "" && uri.UserInfo == "";
 
-            if (Hosts == null)
+            bool tryParseAuthority(string value, out Uri uri)
+                => Uri.TryCreate("unknown://" + value, UriKind.Absolute, out uri) && IsAuthorityUri(uri);
+
+            Uri getDefaultUri(string authority)
+                => GetDefaultContentUri(new Uri("https://" + authority, UriKind.Absolute));
+
+            if (Hosts != null)
             {
-                yield break;
+                foreach (var item in Hosts)
+                {
+                    string authority = item.ItemSpec;
+
+                    if (!tryParseAuthority(authority, out var authorityUri))
+                    {
+                        Log.LogError(CommonResources.ValuePassedToTaskParameterNotValidDomainName, nameof(Hosts), item.ItemSpec);
+                        continue;
+                    }
+
+                    Uri contentUri;
+                    string contentUrl = item.GetMetadata(ContentUrlMetadataName);
+                    bool hasDefaultContentUri = string.IsNullOrEmpty(contentUrl);
+                    if (hasDefaultContentUri)
+                    {
+                        contentUri = getDefaultUri(authority);
+                    }
+                    else if (!Uri.TryCreate(contentUrl, UriKind.Absolute, out contentUri) || !isValidContentUri(contentUri))
+                    {
+                        Log.LogError(CommonResources.ValuePassedToTaskParameterNotValidHostUri, nameof(Hosts), contentUrl);
+                        continue;
+                    }
+
+                    yield return new UrlMapping(authorityUri, contentUri, hasDefaultContentUri);
+                }
             }
 
-            foreach (var item in Hosts)
+            // Add implicit host last, so that matching prefers explicitly listed hosts over the implicit one.
+            if (!string.IsNullOrEmpty(ImplicitHost))
             {
-                string authority = item.ItemSpec;
-
-                if (!Uri.TryCreate("unknown://" + authority, UriKind.Absolute, out var authorityUri) || !IsAuthorityUri(authorityUri))
+                if (tryParseAuthority(ImplicitHost, out var authorityUri))
                 {
-                    Log.LogError(CommonResources.ValuePassedToTaskParameterNotValidDomainName, nameof(Hosts), item.ItemSpec);
-                    continue;
+                    yield return new UrlMapping(authorityUri, getDefaultUri(ImplicitHost), hasDefaultContentUri: true);
                 }
-
-                Uri contentUri;
-                string contentUrl = item.GetMetadata(ContentUrlMetadataName);
-                bool hasDefaultContentUri = string.IsNullOrEmpty(contentUrl);
-                if (hasDefaultContentUri)
+                else
                 {
-                    contentUri = GetDefaultContentUri(new Uri("https://" + authority, UriKind.Absolute));
+                    Log.LogError(CommonResources.ValuePassedToTaskParameterNotValidDomainName, nameof(ImplicitHost), ImplicitHost);
                 }
-                else if (!Uri.TryCreate(contentUrl, UriKind.Absolute, out contentUri) || !isValidContentUri(contentUri))
-                {
-                    Log.LogError(CommonResources.ValuePassedToTaskParameterNotValidHostUri, nameof(Hosts), contentUrl);
-                    continue;
-                }
-
-                yield return new UrlMapping(authorityUri, contentUri, hasDefaultContentUri);
             }
         }
 

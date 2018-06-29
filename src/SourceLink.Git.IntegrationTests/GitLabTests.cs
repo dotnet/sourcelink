@@ -59,5 +59,32 @@ namespace Microsoft.SourceLink.IntegrationTests
                 commit: commitSha,
                 url: "http://mygitlab.com/test-org/test-repo");
         }
+
+        [ConditionalFact(typeof(DotNetSdkAvailable))]
+        public void ImplicitHost()
+        {
+            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, "http://mygitlab.com/test-org/test-repo");
+            var commitSha = repo.Head.Tip.Sha;
+
+            VerifyValues(
+                customProps: @"
+<PropertyGroup>
+  <PublishRepositoryUrl>true</PublishRepositoryUrl>
+</PropertyGroup>
+",
+                customTargets: "",
+                targets: new[]
+                {
+                    "Build", "Pack"
+                },
+                expressions: new[]
+                {
+                    "@(SourceRoot->'%(SourceLinkUrl)')"
+                },
+                expectedResults: new[]
+                {
+                    $"https://mygitlab.com/test-org/test-repo/raw/{commitSha}/*",
+                });
+        }
     }
 }

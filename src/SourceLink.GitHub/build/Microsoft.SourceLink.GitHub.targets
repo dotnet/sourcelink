@@ -18,12 +18,13 @@
   <Target Name="_InitializeGitHubSourceLinkUrl" Inputs="@(SourceRoot)" Outputs="|%(Identity)|">
     <!--
       The task calculates SourceLink URL for a given SourceRoot.
-      
+
       If the SourceRoot is associated with a git repository with a recognized domain the <see cref="SourceLinkUrl"/>
       output property is set to the content URL corresponding to the domain, otherwise it is set to string "N/A".
-      
-      Recognized domains are specified via Hosts parameter (initialized from SourceLinkGitHubHosts item group).
-      
+
+      Recognized domains are specified via Hosts (initialized from SourceLinkGitHubHosts item group) and ImplicitHost parameters.
+      ImplicitHost is set based on PrivateRepositoryUrl by Microsoft.SourceLink.Common.targets if this package is the only SourceLink package in the project.
+
       Example of SourceLinkGitHubHosts items:
 
       <ItemGroup>
@@ -34,7 +35,7 @@
 
       ContentUrl is optional. If not specified it defaults to "https://{domain}/raw".
     -->
-    <Microsoft.SourceLink.GitHub.GetSourceLinkUrl SourceRoot="@(SourceRoot)" Hosts="@(SourceLinkGitHubHosts)">
+    <Microsoft.SourceLink.GitHub.GetSourceLinkUrl SourceRoot="@(SourceRoot)" Hosts="@(SourceLinkGitHubHosts)" ImplicitHost="$(SourceLinkImplicitRepositoryHost)">
       <Output TaskParameter="SourceLinkUrl" PropertyName="_SourceLinkUrlToUpdate"/>
     </Microsoft.SourceLink.GitHub.GetSourceLinkUrl>
 
