@@ -5,6 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <SourceLinkGitHubHosts Include="github.com" ContentUrl="https://raw.githubusercontent.com"/>
+    <SourceLinkGitHubHost Include="github.com" ContentUrl="https://raw.githubusercontent.com"/>
   </ItemGroup>
 </Project>

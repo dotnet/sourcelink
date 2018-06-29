@@ -22,7 +22,7 @@ namespace Microsoft.SourceLink.GitLab.UnitTests
             bool result = task.Execute();
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
-                "ERROR : " + string.Format(CommonResources.AtLeastOneRepositoryHostIsRequired, "SourceLinkGitLabHosts", "GitLab"), engine.Log);
+                "ERROR : " + string.Format(CommonResources.AtLeastOneRepositoryHostIsRequired, "SourceLinkGitLabHost", "GitLab"), engine.Log);
 
             Assert.False(result);
         }
