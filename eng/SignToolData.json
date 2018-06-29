@@ -40,7 +40,7 @@
     }
   ],
   "exclude": [
-    "git2-6311e88.dll",
+    "git2-b0d9952.dll",
     "LibGit2Sharp.dll",
     "Microsoft.TeamFoundation.Client.dll",
     "Microsoft.TeamFoundation.Common.dll",

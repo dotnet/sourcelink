@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Build" Version="$(MicrosoftBuildVersion)" />
     <PackageReference Include="Microsoft.Build.Tasks.Core" Version="$(MicrosoftBuildTasksCore)" />
+    <PackageReference Include="Microsoft.DotNet.PlatformAbstractions" Version="$(MicrosoftDotNetPlatformAbstractionsVersion)" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Microsoft.Build.Tasks.Git.Operations" />

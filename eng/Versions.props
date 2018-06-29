@@ -14,10 +14,11 @@
     -->
     
     <!-- Libs -->
-    <LibGit2SharpVersion>0.26.0-preview-0017</LibGit2SharpVersion>
+    <LibGit2SharpVersion>0.26.0-preview-0027</LibGit2SharpVersion>
     <MicrosoftBuildVersion>15.6.82</MicrosoftBuildVersion>
     <MicrosoftBuildTasksCore>15.6.82</MicrosoftBuildTasksCore>
     <MicrosoftTeamFoundationServerExtendedClientVersion>15.112.1</MicrosoftTeamFoundationServerExtendedClientVersion>
+    <MicrosoftDotNetPlatformAbstractionsVersion>2.1.0</MicrosoftDotNetPlatformAbstractionsVersion>
 
     <MicrosoftSourceLinkVersion>1.0.0-beta-63001-01</MicrosoftSourceLinkVersion>
   </PropertyGroup>
