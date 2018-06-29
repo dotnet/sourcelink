@@ -24,7 +24,7 @@ namespace Microsoft.SourceLink.IntegrationTests
   <PublishRepositoryUrl>true</PublishRepositoryUrl>
 </PropertyGroup>
 <ItemGroup>
-  <SourceLinkGitLabHosts Include='mygitlab.com'/>
+  <SourceLinkGitLabHost Include='mygitlab.com'/>
 </ItemGroup>
 ",
                 customTargets: "",

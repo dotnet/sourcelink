@@ -12,7 +12,7 @@ namespace Microsoft.SourceLink.GitLab
     /// </summary>
     public sealed class GetSourceLinkUrl : GetSourceLinkUrlGitTask
     {
-        protected override string HostsItemGroupName => "SourceLinkGitLabHosts";
+        protected override string HostsItemGroupName => "SourceLinkGitLabHost";
         protected override string ProviderDisplayName => "GitLab";
 
         protected override Uri GetDefaultContentUri(Uri uri)

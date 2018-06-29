@@ -22,7 +22,7 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
             bool result = task.Execute();
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
-                "ERROR : " + string.Format(CommonResources.AtLeastOneRepositoryHostIsRequired, "SourceLinkGitHubHosts", "GitHub"), engine.Log);
+                "ERROR : " + string.Format(CommonResources.AtLeastOneRepositoryHostIsRequired, "SourceLinkGitHubHost", "GitHub"), engine.Log);
 
             Assert.False(result);
         }
