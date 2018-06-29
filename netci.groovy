@@ -56,7 +56,6 @@ def platforms = [
 ]
 
 [true, false].each { isPR ->
-{
   platforms.each { platform ->
     def (os, configName) = platform.tokenize(':')
        
