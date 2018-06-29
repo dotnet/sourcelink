@@ -133,6 +133,9 @@
     <value>{0} is empty: '{1}'</value>
   </data>
   <data name="ErrorWritingToSourceLinkFile" xml:space="preserve">
-    <value>Error writing to source link file '{0}': {1}"</value>
+    <value>Error writing to source link file '{0}': {1}</value>
+  </data>
+  <data name="NoSourceLinkPackagesReferenced" xml:space="preserve">
+    <value>Unable to generate SourceLink -- the project doesn't reference any SourceLink packages.</value>
   </data>
 </root>

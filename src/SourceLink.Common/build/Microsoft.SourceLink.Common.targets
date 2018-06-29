@@ -10,7 +10,8 @@
   </PropertyGroup>
   
   <UsingTask TaskName="Microsoft.SourceLink.Common.GenerateSourceLinkFile" AssemblyFile="$(_MicrosoftSourceLinkCommonAssemblyFile)"/>
-
+  <UsingTask TaskName="Microsoft.SourceLink.Common.GetImplicitRepositoryHost" AssemblyFile="$(_MicrosoftSourceLinkCommonAssemblyFile)"/>
+  
   <PropertyGroup Condition="'$(EnableSourceLink)' == 'true' and '$(DebugType)' != 'none'">
     <SourceLink>$(IntermediateOutputPath)$(MSBuildProjectName).sourcelink.json</SourceLink>
   </PropertyGroup>
@@ -34,28 +35,40 @@
           Condition="'$(EmbedUntrackedSources)' == 'true' and '$(EmbedAllSources)' != 'true' and '$(DebugType)' != 'none' and '$(EnableSourceControlManagerQueries)' == 'true'" />
 
   <!-- 
-    If defined populates SourceRoot items and other source control information.
-  -->
-  <Target Name="_InitializeSourceControlInformationOpt"
-          DependsOnTargets="InitializeSourceControlInformation"
-          Condition="'$(SourceControlInformationFeatureSupported)' == 'true'" />
-
-  <!-- 
     If defined populates MappedPath metadata of SourceRoot items. 
   -->
   <Target Name="_InitializeSourceRootMappedPathsOpt"
           DependsOnTargets="InitializeSourceRootMappedPaths"
           Condition="'$(SourceRootMappedPathsFeatureSupported)' == 'true'"/>
 
+  <!-- 
+    Initializes values available to all targets in SourceLinkUrlInitializerTargets.
+  -->
+  <Target Name="_BeforeSourceLinkUrlInitializerTargets"
+          DependsOnTargets="InitializeSourceControlInformation;_InitializeSourceRootMappedPathsOpt"
+          BeforeTargets="$(SourceLinkUrlInitializerTargets)">
+
+    <!--
+      If there is a single SourceLink provider use the Repository URL to infer the repository host.
+      If the project references multiple SourceLink providers the user needs to specify hosts explicitly (ImplicitHost will be empty)
+      as we do not know which providers should be used to produce SourceLink URL for the repository.
+      
+      Reports an error if there is no SourceLinkUrlInitializerTargets is empty (no SourceLink provider is referenced).
+    -->
+    <Microsoft.SourceLink.Common.GetImplicitRepositoryHost ProviderTargets="$(SourceLinkUrlInitializerTargets)" RepositoryUrl="$(PrivateRepositoryUrl)" >
+      <Output TaskParameter="ImplicitHost" PropertyName="SourceLinkImplicitRepositoryHost"/>
+    </Microsoft.SourceLink.Common.GetImplicitRepositoryHost>
+  </Target>
+
   <!--
     Each source control provider package adds its SourceLinkUrl initialization target to SourceLinkUrlInitializerTargets.
     This target shall initialize SourceLinkUrl of all items that don't have it initialized yet and belong to the source control provider.
   -->
-  <Target Name="_GenerateSourceLinkFile"
-          DependsOnTargets="_InitializeSourceControlInformationOpt;_InitializeSourceRootMappedPathsOpt;$(SourceLinkUrlInitializerTargets)"
+  <Target Name="GenerateSourceLinkFile"
+          DependsOnTargets="$(SourceLinkUrlInitializerTargets)"
           BeforeTargets="CoreCompile"
           Outputs="$(SourceLink)"
-          Condition="'$(SourceLink)' != ''">
+          Condition="'$(SourceLink)' != '' and '$(SourceControlInformationFeatureSupported)' == 'true'">
 
     <Microsoft.SourceLink.Common.GenerateSourceLinkFile SourceRoots="@(SourceRoot)" OutputFile="$(SourceLink)" />
 

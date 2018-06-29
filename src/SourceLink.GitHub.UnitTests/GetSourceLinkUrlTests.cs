@@ -54,6 +54,32 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
         }
 
         [Theory]
+        [InlineData("mygithub*.com")]
+        [InlineData("mygithub.com/a")]
+        [InlineData("mygithub.com/a?x=2")]
+        [InlineData("http://mygithub.com")]
+        [InlineData("http://a@mygithub.com")]
+        [InlineData("a@mygithub.com")]
+        public void GetSourceLinkUrl_ImplicitHost_Errors(string domain)
+        {
+            var engine = new MockEngine();
+
+            var task = new GetSourceLinkUrl()
+            {
+                BuildEngine = engine,
+                SourceRoot = new MockItem("x", KVP("RepositoryUrl", "http://abc.com"), KVP("SourceControl", "git")),
+                ImplicitHost = domain
+            };
+
+            bool result = task.Execute();
+
+            AssertEx.AssertEqualToleratingWhitespaceDifferences(
+                "ERROR : " + string.Format(CommonResources.ValuePassedToTaskParameterNotValidDomainName, "ImplicitHost", domain), engine.Log);
+
+            Assert.False(result);
+        }
+
+        [Theory]
         [InlineData("myrawgithub.com")]
         [InlineData("myrawgithub.com/a")]
         [InlineData("myrawgithub.com/a?x=2")]
@@ -224,6 +250,24 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
         }
 
         [Fact]
+        public void GetSourceLinkUrl_ImplicitHost_PortWithDefaultContentUrl()
+        {
+            var engine = new MockEngine();
+
+            var task = new GetSourceLinkUrl()
+            {
+                BuildEngine = engine,
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mygithub.com:1234/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                ImplicitHost = "mygithub.com",
+            };
+
+            bool result = task.Execute();
+            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            AssertEx.AreEqual("https://mygithub.com:1234/raw/a/b/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
+            Assert.True(result);
+        }
+
+        [Fact]
         public void GetSourceLinkUrl_CustomHosts_PortWithNonDefaultContentUrl()
         {
             var engine = new MockEngine();
@@ -253,10 +297,10 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
             {
                 BuildEngine = engine,
                 SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mygithub.com:1234/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                ImplicitHost = "abc.com",
                 Hosts = new[]
                 {
                     new MockItem("github.com", KVP("ContentUrl", "https://raw.githubusercontent.com")),
-                    new MockItem("abc.com", KVP("ContentUrl", "https://abc.com")),
                     new MockItem("mygithub.com", KVP("ContentUrl", "https://subdomain.rawmygithub1.com:777")),
                     new MockItem("mygithub.com", KVP("ContentUrl", "https://subdomain.rawmygithub2.com"))
                 }
@@ -277,6 +321,7 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
             {
                 BuildEngine = engine,
                 SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mygithub.com:123/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                ImplicitHost = "subdomain.mygithub.com:123",
                 Hosts = new[]
                 {
                     new MockItem("mygithub.com", KVP("ContentUrl", "https://domain.com:1")),
@@ -284,12 +329,13 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
                     new MockItem("mygithub.com:123", KVP("ContentUrl", "https://domain.com:3")),
                     new MockItem("subdomain.mygithub.com", KVP("ContentUrl", "https://domain.com:4")),
                     new MockItem("subdomain.mygithub.com:123", KVP("ContentUrl", "https://domain.com:5")),
-                    new MockItem("subdomain.mygithub.com:123", KVP("ContentUrl", "https://domain.com:6")),
                 }
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+
+            // explicit host is preferred over the implicit one 
             AssertEx.AreEqual("https://domain.com:5/a/b/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
             Assert.True(result);
         }
