@@ -20,8 +20,8 @@
     -->
     <file src="netcoreapp2.0\publish\runtimes\**\*.so" target="tools\netcoreapp2.0\runtimes" />
     <file src="netcoreapp2.0\publish\runtimes\**\*.dylib" target="tools\netcoreapp2.0\runtimes" />
-    <file src="netcoreapp2.0\publish\runtimes\win-x86\native\*.dll" target="tools\netcoreapp2.0\runtimes\win7-x86\native" />
-    <file src="netcoreapp2.0\publish\runtimes\win-x64\native\*.dll" target="tools\netcoreapp2.0\runtimes\win7-x64\native" />
+    <file src="netcoreapp2.0\publish\runtimes\win-x86\native\*.dll" target="tools\netcoreapp2.0\runtimes\win-x86\native" />
+    <file src="netcoreapp2.0\publish\runtimes\win-x64\native\*.dll" target="tools\netcoreapp2.0\runtimes\win-x64\native" />
 
     <file src="netcoreapp2.0\publish\LibGit2Sharp.dll" target="tools\netcoreapp2.0" />    
     <file src="netcoreapp2.0\publish\Microsoft.Build.Tasks.Git.*" target="tools\netcoreapp2.0" />
