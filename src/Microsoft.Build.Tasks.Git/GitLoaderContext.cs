@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 #if !NET461
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -53,33 +54,7 @@ namespace Microsoft.Build.Tasks.Git
         internal static string GetNativeLibraryDirectory()
         {
             var dir = Path.GetDirectoryName(typeof(GitLoaderContext).Assembly.Location);
-            return Path.Combine(dir, "runtimes", GetNativeLibraryRuntimeId(), "native");
-        }
-
-        /// <summary>
-        /// Determines the RID to use when loading libgit2 native library.
-        /// This method only supports RIDs that are currently used by LibGit2Sharp.NativeBinaries.
-        /// </summary>
-        private static string GetNativeLibraryRuntimeId()
-        {
-            var processorArchitecture = IntPtr.Size == 8 ? "x64" : "x86";
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                return "win7-" + processorArchitecture;
-            }
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
-                return "osx";
-            }
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
-                return "linux-" + processorArchitecture;
-            }
-
-            throw new PlatformNotSupportedException();
+            return Path.Combine(dir, "runtimes", RuntimeIdMap.GetNativeLibraryDirectoryName(), "native");
         }
 
         private static string GetNativeLibraryExtension()
