@@ -44,37 +44,39 @@ static addBuildSteps(def job, def projectName, def os, def configName, def isPR)
   }
 }
 
-[true, false].each { isPR ->
-  ['Ubuntu16.04', 'Windows_NT'].each { os ->
-    ['Debug', 'Release'].each { configName ->
-      def projectName = GithubProject
+def platforms = [
+  'Windows_NT:Release',
+  'Windows_NT:Debug',
+  'Ubuntu16.04:Release', 
+  'Ubuntu16.04:Debug',
+  'CentOS7.1:Debug',
+  'Debian8.2:Debug',
+  'RHEL7.2:x64:Debug',
+  'OSX10.12:Debug',
+]
 
-      def branchName = GithubBranchName
+def isPR = true
 
-      def filesToArchive = "**/artifacts/${configName}/**"
+platforms.each { platform ->
+  def (os, configName) = platform.tokenize(':')
+       
+  def projectName = GithubProject
 
-      def jobName = getJobName(os, configName)
-      def fullJobName = Utilities.getFullJobName(projectName, jobName, isPR)
-      def myJob = job(fullJobName)
+  def branchName = GithubBranchName
 
-      Utilities.standardJobSetup(myJob, projectName, isPR, "*/${branchName}")
+  def filesToArchive = "**/artifacts/${configName}/**"
 
-      if (isPR) {
-        addGithubPRTriggerForBranch(myJob, branchName, jobName)
-      } else {
-        Utilities.addGithubPushTrigger(myJob)
-      }
-      
-      addArchival(myJob, filesToArchive, "")
-      addXUnitDotNETResults(myJob, configName)
+  def jobName = getJobName(os, configName)
+  def fullJobName = Utilities.getFullJobName(projectName, jobName, isPR)
+  def myJob = job(fullJobName)
 
-      if (os == 'Windows_NT') {
-        Utilities.setMachineAffinity(myJob, os, 'latest-dev15-3')  
-      } else {
-        Utilities.setMachineAffinity(myJob, os, 'latest-or-auto')
-      }
+  Utilities.standardJobSetup(myJob, projectName, isPR, "*/${branchName}")
 
-      addBuildSteps(myJob, projectName, os, configName, isPR)
-    }
-  }
+  addGithubPRTriggerForBranch(myJob, branchName, jobName)      
+  addArchival(myJob, filesToArchive, "")
+  addXUnitDotNETResults(myJob, configName)
+  
+  Utilities.setMachineAffinity(myJob, os, 'latest-or-auto')  
+
+  addBuildSteps(myJob, projectName, os, configName, isPR)
 }
