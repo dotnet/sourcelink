@@ -55,28 +55,34 @@ def platforms = [
   'OSX10.12:Debug',
 ]
 
-def isPR = true
-
-platforms.each { platform ->
-  def (os, configName) = platform.tokenize(':')
+[true, false].each { isPR ->
+{
+  platforms.each { platform ->
+    def (os, configName) = platform.tokenize(':')
        
-  def projectName = GithubProject
+    def projectName = GithubProject
 
-  def branchName = GithubBranchName
+    def branchName = GithubBranchName
 
-  def filesToArchive = "**/artifacts/${configName}/**"
+    def filesToArchive = "**/artifacts/${configName}/**"
 
-  def jobName = getJobName(os, configName)
-  def fullJobName = Utilities.getFullJobName(projectName, jobName, isPR)
-  def myJob = job(fullJobName)
+    def jobName = getJobName(os, configName)
+    def fullJobName = Utilities.getFullJobName(projectName, jobName, isPR)
+    def myJob = job(fullJobName)
 
-  Utilities.standardJobSetup(myJob, projectName, isPR, "*/${branchName}")
+    Utilities.standardJobSetup(myJob, projectName, isPR, "*/${branchName}")
 
-  addGithubPRTriggerForBranch(myJob, branchName, jobName)      
-  addArchival(myJob, filesToArchive, "")
-  addXUnitDotNETResults(myJob, configName)
+    if (isPR) {
+      addGithubPRTriggerForBranch(myJob, branchName, jobName)
+    } else {
+      Utilities.addGithubPushTrigger(myJob)
+    }
+    
+    addArchival(myJob, filesToArchive, "")
+    addXUnitDotNETResults(myJob, configName)
   
-  Utilities.setMachineAffinity(myJob, os, 'latest-or-auto')  
+    Utilities.setMachineAffinity(myJob, os, 'latest-or-auto')  
 
-  addBuildSteps(myJob, projectName, os, configName, isPR)
+    addBuildSteps(myJob, projectName, os, configName, isPR)
+  }
 }
