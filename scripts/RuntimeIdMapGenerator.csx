@@ -27,7 +27,7 @@ var runtimeJsonPath = Path.Combine(GetScriptDir(), "runtime.json");
 
 var runtimes = BuildRuntimeGraph();
 
-var map = new Dictionary<string, string>();
+var map = new Dictionary<string, string>(StringComparer.Ordinal);
 
 foreach (var entry in runtimes)
 {
@@ -46,7 +46,7 @@ foreach (var entry in runtimes)
     }
 }
 
-var orderedMap = map.OrderBy(e => e.Key);
+var orderedMap = map.OrderBy(e => e.Key, StringComparer.Ordinal);
 
 Console.WriteLine("private static readonly string[] s_rids = new[]");
 Console.WriteLine("{");
@@ -56,7 +56,7 @@ foreach (var entry in orderedMap)
     Console.WriteLine($"    \"{entry.Key}\",");
 }
 
-Console.WriteLine("}");
+Console.WriteLine("};");
 Console.WriteLine();
 Console.WriteLine("private static readonly string[] s_directories = new[]");
 Console.WriteLine("{");
@@ -66,7 +66,7 @@ foreach (var entry in orderedMap)
     Console.WriteLine($"    \"{entry.Value}\",");
 }
 
-Console.WriteLine("}");
+Console.WriteLine("};");
 
 string GetScriptDir([CallerFilePath] string path = null) => Path.GetDirectoryName(path);
 
