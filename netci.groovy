@@ -51,7 +51,7 @@ def platforms = [
   'Ubuntu16.04:Debug',
   'CentOS7.1:Debug',
   'Debian8.2:Debug',
-  'RHEL7.2:x64:Debug',
+  'RHEL7.2:Debug',
   'OSX10.12:Debug',
 ]
 
