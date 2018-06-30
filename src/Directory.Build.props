@@ -8,6 +8,7 @@
 
   <PropertyGroup>
     <LangVersion>Latest</LangVersion>
+    <EnableSourceLink>false</EnableSourceLink>
   </PropertyGroup>
 
   <!-- 
