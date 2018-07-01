@@ -10,6 +10,7 @@
     <LangVersion>Latest</LangVersion>
     <EnableSourceLink>false</EnableSourceLink>
     <EnableSourceControlManagerQueries>false</EnableSourceControlManagerQueries>
+    <DeterministicSourcePaths>false</DeterministicSourcePaths>
   </PropertyGroup>
 
   <!-- 
