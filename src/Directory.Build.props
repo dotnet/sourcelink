@@ -8,6 +8,10 @@
 
   <PropertyGroup>
     <LangVersion>Latest</LangVersion>
+    <EnableSourceLink>false</EnableSourceLink>
+    <EnableSourceControlManagerQueries>false</EnableSourceControlManagerQueries>
+    <DeterministicSourcePaths>false</DeterministicSourcePaths>
+    <PackageProjectUrl>http://github.com/sourcelink</PackageProjectUrl>
   </PropertyGroup>
 
   <!-- 
