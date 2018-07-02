@@ -4,6 +4,7 @@ using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace TestUtilities
 {
@@ -15,8 +16,18 @@ namespace TestUtilities
 
         static TempRoot()
         {
-            Root = Path.Combine(Path.GetTempPath(), "RoslynTests");
-            Directory.CreateDirectory(Root);
+            var root = Path.Combine(Path.GetTempPath(), "SourceLinkTests");
+
+            Directory.CreateDirectory(root);
+
+            // On OSX /tmp is a symlink to /private/tmp and libgit2 expands the symlink.
+            // Path.GetFullPath doesn't expand symlinks. See also https://github.com/dotnet/corefx/issues/26310.
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && Directory.Exists("/private" + root))
+            {
+                root = "/private" + root;
+            }
+
+            Root = root;
         }
 
         public void Dispose()
