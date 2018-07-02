@@ -54,7 +54,7 @@ Pre-release builds are available on MyGet gallery: https://dotnet.myget.org/Gall
 |**Ubuntu 16.04**|[![Build Status](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/Ubuntu16.04_Debug/badge/icon)](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/Ubuntu16.04_Debug/)|[![Build Status](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/Ubuntu16.04_Release/badge/icon)](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/Ubuntu16.04_Release/)|
 |**CentOS7.1**|[![Build Status](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/CentOS7.1_Debug/badge/icon)](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/CentOS7.1_Debug/)|N/A|
 |**Debian8.2**|[![Build Status](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/Debian8.2_Debug/badge/icon)](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/Debian8.2_Debug/)|N/A|
-|**Debian8.2**|[![Build Status](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/Debian8.2_Debug/badge/icon)](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/Debian8.2_Debug/)|N/A|
+|**RHEL7.2**|[![Build Status](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/RHEL7.2_Debug/badge/icon)](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/RHEL7.2_Debug/)|N/A|
 |**OSX10.12**|[![Build Status](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/OSX10.12_Debug/badge/icon)](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/OSX10.12_Debug/)|N/A|
 
 [//]: # (End current test results)
