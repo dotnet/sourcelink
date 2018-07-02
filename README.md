@@ -27,7 +27,7 @@ You can enable SourceLink in your own project hosted on [GitHub](http://github.c
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-62925-02" PrivateAssets="All"/>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63102-01" PrivateAssets="All"/>
   </ItemGroup>
 </Project>
 ```
@@ -35,12 +35,18 @@ You can enable SourceLink in your own project hosted on [GitHub](http://github.c
 For projects hosted by [Visual Studio Team Services](https://www.visualstudio.com/team-services) in git repositories reference [Microsoft.SourceLink.Vsts.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Vsts.Git) package like so: 
 
 ```xml
-<PackageReference Include="Microsoft.SourceLink.Vsts.Git" Version="1.0.0-beta-62925-02" PrivateAssets="All"/>
+<PackageReference Include="Microsoft.SourceLink.Vsts.Git" Version="1.0.0-beta-63102-01" PrivateAssets="All"/>
 ```
 
-If your repository contains submodules hosted by other git providers reference packages of all these providers. For example, projects in a repository hosted by VSTS that links a GitHub repository via a submodule should reference both [Microsoft.SourceLink.Vsts.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Vsts.Git) and [Microsoft.SourceLink.GitHub](https://www.nuget.org/packages/Microsoft.SourceLink.GitHub) packages.
+For projects hosted by [GitLab](https://gitlab.com) reference [Microsoft.SourceLink.GitLab](https://www.nuget.org/packages/Microsoft.SourceLink.GitLab) package like so: 
 
-Note that [.NET SDK 2.1 RC1](https://www.microsoft.com/net/download/dotnet-core/sdk-2.1.300-rc1) is required for SourceLink to work. If building via desktop msbuild (as opposed to `dotnet build`) you'll need version 15.7.
+```xml
+<PackageReference Include="Microsoft.SourceLink.GitLab" Version="1.0.0-beta-63102-01" PrivateAssets="All"/>
+```
+
+If your repository contains submodules hosted by other git providers reference packages of all these providers. For example, projects in a repository hosted by VSTS that links a GitHub repository via a submodule should reference both [Microsoft.SourceLink.Vsts.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Vsts.Git) and [Microsoft.SourceLink.GitHub](https://www.nuget.org/packages/Microsoft.SourceLink.GitHub) packages. [Additional configuration](https://github.com/dotnet/sourcelink/blob/master/docs/README.md#configuring-projects-with-multiple-sourcelink-providers) might be needed if multiple SourceLink packages are used in the project.
+
+Note that [.NET SDK 2.1](https://www.microsoft.com/net/download/dotnet-core/sdk-2.1.300) or newer is required for SourceLink to work. If building via desktop msbuild (as opposed to `dotnet build`) you'll need version 15.7.
 
 ## Builds
 
