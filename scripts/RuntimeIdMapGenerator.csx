@@ -31,18 +31,11 @@ var map = new Dictionary<string, string>(StringComparer.Ordinal);
 
 foreach (var entry in runtimes)
 {
-    var rid = entry.Key;
-    var compatibleRids = GetCompatibleRuntimeIdentifiers(runtimes, rid);
-    foreach (var availableRid in availableRids)
+    // Compatible rids are sorted from most specific to least specific, find the most specific that's available:
+    var rid = GetCompatibleRuntimeIdentifiers(runtimes, entry.Key).FirstOrDefault(compatibleRid => availableRids.Contains(compatibleRid));
+    if (rid != null)
     {
-        if (compatibleRids.Contains(availableRid))
-        {
-            // use the first rid, it is the most specific:
-            if (!map.TryGetValue(rid, out var existing))
-            {
-                map.Add(rid, availableRid);
-            }
-        }
+        map.Add(entry.Key, rid);
     }
 }
 
