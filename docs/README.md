@@ -25,6 +25,7 @@ differ in the way how they expose the content of the hosted repositories. A pack
 The following Source Link pre-release packages are currently available:
 
 - Microsoft.SourceLink.GitHub (depends on Microsoft.Build.Tasks.Git package)
+- Microsoft.SourceLink.GitLab (depends on Microsoft.Build.Tasks.Git package)
 - Microsoft.SourceLink.Vsts.Git (depends on Microsoft.Build.Tasks.Git package)
 - Microsoft.SourceLink.Vsts.Tfvc (depends on Microsoft.Build.Tasks.Tfvc package)
 
@@ -32,8 +33,7 @@ The system is extensible and custom packages that handle other source control pr
 
 Each SourceLink package depends on the corresponding source control package. Referencing a SourceLink package makes the dependent source control package also referenced, thus providing the other source control features to the project.
 
-Note that it is possible and supported to reference multiple SourceLink packages in a single project provided they depend on the same source control package.
-This is necessary when the project sources are stored in mutliple submodules hosted by different providers (e.g. VSTS repository containing a GitHub submodule).
+Note that it is possible and supported to reference multiple SourceLink packages in a single project provided they depend on the same source control package. This is necessary when the project sources are stored in mutliple submodules hosted by different providers (e.g. VSTS repository containing a GitHub submodule). See [Configuring Projects with Multiple SourceLink Providers](#configuring-projects-with-multiple-sourcelink-providers) for details.
 
 ## Basic Settings
 
@@ -87,6 +87,35 @@ Note that .NET SDK 2.1 is required.
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
   </ItemGroup>
 </Project>
+```
+
+## Configuring Projects with Multiple SourceLink Providers
+
+An additional configuration might be required when a project references multiple SourceLink packages and the source control is hosted on a custom domain. By default a SourceLink package infers the domain of the source control host from the `origin` remote URL. For example, when a GitLab repository is cloned from `http://git.contoso.com` and a project only references Microsoft.SourceLink.GitLab package the package infers that `git.contoso.com` must be a hosting GitLab service. However, when multiple packages are used in the project it's not clear which service is `git.contoso.com` domain hosting.
+
+### Custom Host Domains
+
+Each package defines an msbuild item group named `SourceLink{provider}Host`, where `{provider}` is the source control provider the package is built for (e.g. `SourceLinkGitHubHost`, `SourceLinkGitLabHost`, etc.). The item group allows the project to specify domain(s) that correspond to the source control provider of the package. For example, the following setting assigns `git.contoso.com` domain to GitHub package:
+
+```xml
+<SourceLinkGitHubHost Include="git.contoso.com"/>
+```
+
+### Custom Content URLs
+
+*Content URL* is the URL where the raw source files can be downloaded from. Items of `SourceLink*Host` item group allow to specify the content URL if necessary. The content URL doesn't need to be specified in most cases as it is infered from the domain.
+
+The default content URLs for each package is listed below:
+
+|          | content URL        |
+|:--------:|:------------------:|
+|**GitLab**|https://{domain}    |
+|**GitHub**|https://{domain}/raw|
+
+To override the above defaults specify `ContentUrl` metadata on the item. For example, GitHub.com server provides content on a CDN domain `raw.githubusercontent.com`:
+ 
+```xml
+<SourceLinkGitHubHost Include="github.com" ContentUrl="https://raw.githubusercontent.com"/>
 ```
 
 ## Advanced Settings and Concepts
