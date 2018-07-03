@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <PublishOutputToSymStore>false</PublishOutputToSymStore>
+    <IsShipping>false</IsShipping>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Build" Version="$(MicrosoftBuildVersion)" />
@@ -18,7 +18,7 @@
     <ItemGroup>
       <_Attribute Include="TestUtilities.BuildInfoAttribute">
         <_Parameter1>$(NETCoreSdkVersion)</_Parameter1>
-        <_Parameter2>$(PackageOutputPath)</_Parameter2>
+        <_Parameter2>$(ArtifactsShippingPackagesDir)</_Parameter2>
         <_Parameter3>$(ArtifactsLogDir)</_Parameter3>
       </_Attribute>
     </ItemGroup>

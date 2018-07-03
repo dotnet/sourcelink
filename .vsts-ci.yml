@@ -35,7 +35,7 @@ steps:
 - task: NuGetPublisher@0
   displayName: Publish NuGet Packages to MyGet
   inputs:
-    searchPattern: 'artifacts\$(BuildConfiguration)\packages\*.nupkg'
+    searchPattern: 'artifacts\$(BuildConfiguration)\packages\Shipping\*.nupkg'
     connectedServiceName: 'SourceLink NuGet feed'
     nuGetVersion: 4.0.0.2283
   condition: and(succeeded(), not(contains(variables['PB_PublishType'], 'blob')))
