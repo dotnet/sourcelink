@@ -46,7 +46,7 @@ For projects hosted by [GitLab](https://gitlab.com) reference [Microsoft.SourceL
 
 If your repository contains submodules hosted by other git providers reference packages of all these providers. For example, projects in a repository hosted by VSTS that links a GitHub repository via a submodule should reference both [Microsoft.SourceLink.Vsts.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Vsts.Git) and [Microsoft.SourceLink.GitHub](https://www.nuget.org/packages/Microsoft.SourceLink.GitHub) packages. [Additional configuration](https://github.com/dotnet/sourcelink/blob/master/docs/README.md#configuring-projects-with-multiple-sourcelink-providers) might be needed if multiple SourceLink packages are used in the project.
 
-Note that [.NET SDK 2.1](https://www.microsoft.com/net/download/dotnet-core/sdk-2.1.300) or newer is required for SourceLink to work. If building via desktop msbuild (as opposed to `dotnet build`) you'll need version 15.7.
+Note that [.NET Core SDK 2.1.300](https://www.microsoft.com/net/download/dotnet-core/sdk-2.1.300) or newer is required for SourceLink to work. If building via desktop msbuild (as opposed to `dotnet build`) you'll need version 15.7.
 
 ## Builds
 
