@@ -3,13 +3,17 @@
 
 using System;
 using System.Diagnostics;
-using RuntimeEnvironment = Microsoft.DotNet.PlatformAbstractions.RuntimeEnvironment;
 
 namespace Microsoft.Build.Tasks.Git
 {
-    internal sealed class RuntimeIdMap
+    internal static class RuntimeIdMap
     {
-        public static string GetNativeLibraryDirectoryName()
+        // This functionality needs to be provided as .NET Core API.
+        // Releated issues:
+        // https://github.com/dotnet/core-setup/issues/1846
+        // https://github.com/NuGet/Home/issues/5862
+
+        public static string GetNativeLibraryDirectoryName(string runtimeIdentifier)
         {
 #if DEBUG
             Debug.Assert(s_directories.Length == s_rids.Length);
@@ -19,14 +23,132 @@ namespace Microsoft.Build.Tasks.Git
                 Debug.Assert(StringComparer.Ordinal.Compare(s_rids[i - 1], s_rids[i]) < 0);
             }
 #endif
-            var runtimeIdentifier = RuntimeEnvironment.GetRuntimeIdentifier();
             int index = Array.BinarySearch(s_rids, runtimeIdentifier, StringComparer.Ordinal);
             if (index < 0)
             {
-                throw new PlatformNotSupportedException(runtimeIdentifier);
+                // Take the runtime id with highest version of matching OS.
+                // The runtimes in the table are currently sorted so that this works.
+
+                ParseRuntimeId(runtimeIdentifier, out var runtimeOS, out var runtimeVersion, out var runtimeQualifiers);
+
+                // find version-less rid:
+                int bestMatchIndex = -1;
+                string[] bestVersion = null;
+
+                void FindBestCandidate(int startIndex, int increment)
+                {
+                    int i = startIndex;
+                    while (i >= 0 && i < s_rids.Length)
+                    {
+                        string candidate = s_rids[i];
+                        ParseRuntimeId(candidate, out var candidateOS, out var candidateVersion, out var candidateQualifiers);
+                        if (candidateOS != runtimeOS)
+                        {
+                            break;
+                        }
+
+                        // Find the highest available version that is lower than or equal to the runtime version
+                        // among candidates that have the same qualifiers.
+                        if (candidateQualifiers == runtimeQualifiers && 
+                            CompareVersions(candidateVersion, runtimeVersion) <= 0 && 
+                            (bestVersion == null || CompareVersions(candidateVersion, bestVersion) > 0))
+                        {
+                            bestMatchIndex = i;
+                            bestVersion = candidateVersion;
+                        }
+                        
+                        i += increment;
+                    }
+                }
+
+                FindBestCandidate(~index - 1, -1);
+                FindBestCandidate(~index, +1);
+
+                if (bestMatchIndex < 0)
+                {
+                    throw new PlatformNotSupportedException(runtimeIdentifier);
+                }
+
+                index = bestMatchIndex;
             }
 
             return s_directories[index];
+        }
+
+        internal static int CompareVersions(string[] left, string[] right)
+        {
+            for (int i = 0; i < Math.Max(left.Length, right.Length); i++)
+            {
+                // pad with zeros (consider "1.2" == "1.2.0")
+                var leftPart = (i < left.Length) ? left[i] : "0";
+                var rightPart = (i < right.Length) ? right[i] : "0";
+
+                int result;
+                if (!int.TryParse(leftPart, out var leftNumber) || !int.TryParse(rightPart, out var rightNumber))
+                {
+                    // alphabetical order:
+                    result = StringComparer.Ordinal.Compare(leftPart, rightPart);
+                }
+                else
+                {
+                    // numerical order:
+                    result = leftNumber.CompareTo(rightNumber);
+                }
+
+                if (result != 0)
+                {
+                    return result;
+                }
+            }
+
+            return 0;
+        }
+
+        internal static void ParseRuntimeId(string runtimeId, out string osName, out string[] version, out string qualifiers)
+        {
+            // We use the following convention in all newly-defined RIDs. Some RIDs (win7-x64, win8-x64) predate this convention and don't follow it, but all new RIDs should follow it. 
+            // [os name].[version]-[architecture]-[additional qualifiers]
+            // See https://github.com/dotnet/corefx/blob/master/pkg/Microsoft.NETCore.Platforms/readme.md#naming-convention
+
+            int versionSeparator = runtimeId.IndexOf('.');
+            if (versionSeparator >= 0)
+            {
+                osName = runtimeId.Substring(0, versionSeparator);
+            }
+            else
+            {
+                osName = null;
+            }
+
+            int architectureSeparator = runtimeId.IndexOf('-', versionSeparator + 1);
+            if (architectureSeparator >= 0)
+            {
+                if (versionSeparator >= 0)
+                {
+                    version = runtimeId.Substring(versionSeparator + 1, architectureSeparator - versionSeparator - 1).Split('.');
+                }
+                else
+                {
+                    osName = runtimeId.Substring(0, architectureSeparator);
+                    version = Array.Empty<string>();
+                }
+
+                qualifiers = runtimeId.Substring(architectureSeparator + 1);
+            }
+            else
+            {
+                if (versionSeparator >= 0)
+                {
+                    version = runtimeId.Substring(versionSeparator + 1).Split('.');
+                }
+                else
+                {
+                    osName = runtimeId;
+                    version = Array.Empty<string>();
+                }
+
+                qualifiers = string.Empty;
+            }
         }
 
         // The following tables were generated by scripts/RuntimeIdMapGenerator.csx.
