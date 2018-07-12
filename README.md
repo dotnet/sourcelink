@@ -32,7 +32,7 @@ You can enable SourceLink in your own project hosted on [GitHub](http://github.c
 </Project>
 ```
 
-For projects hosted by [Visual Studio Team Services](https://www.visualstudio.com/team-services) in git repositories reference [Microsoft.SourceLink.Vsts.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Vsts.Git) package like so: 
+For projects hosted by [Visual Studio Team Services](https://www.visualstudio.com/team-services) or [Team Foundation Server](https://visualstudio.microsoft.com/tfs) in git repositories reference [Microsoft.SourceLink.Vsts.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Vsts.Git) package like so: 
 
 ```xml
 <PackageReference Include="Microsoft.SourceLink.Vsts.Git" Version="1.0.0-beta-63102-01" PrivateAssets="All"/>
