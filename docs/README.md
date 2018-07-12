@@ -109,10 +109,11 @@ Each package defines an msbuild item group named `SourceLink{provider}Host`, whe
 
 The default content URLs for each package is listed below:
 
-|          | content URL        |
-|:--------:|:------------------:|
-|**GitLab**|https://{domain}    |
-|**GitHub**|https://{domain}/raw|
+|            | content URL        |
+|:----------:|:------------------:|
+|**GitLab**  |https://{domain}    |
+|**GitHub**  |https://{domain}/raw|
+|**Vsts.Git**|https://{domain}    |
 
 To override the above defaults specify `ContentUrl` metadata on the item. For example, GitHub.com server provides content on a CDN domain `raw.githubusercontent.com`:
  
