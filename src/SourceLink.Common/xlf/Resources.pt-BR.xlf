@@ -13,7 +13,7 @@
         <note />
       </trans-unit>
       <trans-unit id="MustContainSingleWildcard">
-        <source>{0} must contain a single wildcard '*': '{1}'"</source>
+        <source>{0} must contain a single wildcard '*': '{1}'</source>
         <target state="translated">{0} precisa conter um único curinga '*': '{1}'</target>
         <note />
       </trans-unit>
@@ -29,7 +29,7 @@
       </trans-unit>
       <trans-unit id="ErrorWritingToSourceLinkFile">
         <source>Error writing to source link file '{0}': {1}</source>
-        <target state="needs-review-translation">Erro ao gravar no arquivo do link de origem '{0}': {1}"</target>
+        <target state="needs-review-translation">Erro ao gravar no arquivo do link de origem '{0}': {1}</target>
         <note />
       </trans-unit>
       <trans-unit id="NoSourceLinkPackagesReferenced">

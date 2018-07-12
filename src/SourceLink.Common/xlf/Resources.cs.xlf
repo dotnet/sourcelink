@@ -4,17 +4,17 @@
     <body>
       <trans-unit id="MustEndWithDirectorySeparator">
         <source>{0} must end with a directory separator: '{1}'</source>
-        <target state="translated">{0} musí končit oddělovačem adresářů: {1}</target>
+        <target state="translated">{0} musí končit oddělovačem adresářů: '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="MustNotContainWildcard">
         <source>{0} must not contain wildcard '*': '{1}'</source>
-        <target state="translated">{0} nesmí obsahovat zástupný znak *: {1}</target>
+        <target state="translated">{0} nesmí obsahovat zástupný znak '*': '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="MustContainSingleWildcard">
-        <source>{0} must contain a single wildcard '*': '{1}'"</source>
-        <target state="translated">{0} musí obsahovat jeden zástupný znak *: {1}"</target>
+        <source>{0} must contain a single wildcard '*': '{1}'</source>
+        <target state="translated">{0} musí obsahovat jeden zástupný znak '*': '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="NoItemsSpecifiedSourceLinkEmpty">
@@ -24,12 +24,12 @@
       </trans-unit>
       <trans-unit id="IsEmpty">
         <source>{0} is empty: '{1}'</source>
-        <target state="translated">{0} je prázdný: {1}</target>
+        <target state="translated">{0} je prázdný: '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="ErrorWritingToSourceLinkFile">
         <source>Error writing to source link file '{0}': {1}</source>
-        <target state="needs-review-translation">Chyba při zápisu do souboru zdrojového odkazu {0}: {1}"</target>
+        <target state="needs-review-translation">Chyba při zápisu do souboru zdrojového odkazu '{0}': {1}</target>
         <note />
       </trans-unit>
       <trans-unit id="NoSourceLinkPackagesReferenced">

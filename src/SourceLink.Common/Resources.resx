@@ -124,7 +124,7 @@
     <value>{0} must not contain wildcard '*': '{1}'</value>
   </data>
   <data name="MustContainSingleWildcard" xml:space="preserve">
-    <value>{0} must contain a single wildcard '*': '{1}'"</value>
+    <value>{0} must contain a single wildcard '*': '{1}'</value>
   </data>
   <data name="NoItemsSpecifiedSourceLinkEmpty" xml:space="preserve">
     <value>No {0} items specified - the generated source link is empty.</value>
