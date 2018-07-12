@@ -13,6 +13,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\Common\Names.cs" Link="Common\Names.cs" />
+    <Compile Include="..\Common\GetSourceLinkUrlGitTask.cs" Link="Common\GetSourceLinkUrlGitTask.cs" />
+    <EmbeddedResource Include="..\Common\CommonResources.resx" Link="Common\CommonResources.resx">
+      <Namespace>Microsoft.Build.Tasks.SourceControl</Namespace>
+      <GenerateSource>true</GenerateSource>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Build" Version="$(MicrosoftBuildVersion)" />

@@ -4,90 +4,34 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.Build.Framework;
 using Microsoft.Build.Tasks.SourceControl;
-using Microsoft.Build.Utilities;
 
 namespace Microsoft.SourceLink.Vsts.Git
 {
-    public sealed class GetSourceLinkUrl : Task
+    public sealed class GetSourceLinkUrl : GetSourceLinkUrlGitTask
     {
         private const string UrlMapEnvironmentVariableName = "BUILD_REPOSITORY_URL_MAP";
-        private const string DefaultDomain = "visualstudio.com";
-        private const string SourceControlName = "git";
-        private const string NotApplicableValue = "N/A";
 
-        [Required]
-        public ITaskItem SourceRoot { get; set; }
+        protected override string HostsItemGroupName => "SourceLinkVstsGitHost";
+        protected override string ProviderDisplayName => "Vsts.Git";
 
-        public string Domain { get; set; }
+        protected override Uri GetDefaultContentUri(Uri uri)
+            => uri;
 
-        [Output]
-        public string SourceLinkUrl { get; set; }
-
-        public override bool Execute()
+        protected override string BuildSourceLinkUrl(string contentUrl, string relativeUrl, string revisionId)
         {
-            ExecuteImpl();
-            return !Log.HasLoggedErrors;
-        }
-
-        private void ExecuteImpl()
-        {
-            // skip SourceRoot that already has SourceLinkUrl set, or its SourceControl is not "git":
-            if (!string.IsNullOrEmpty(SourceRoot.GetMetadata(Names.SourceRoot.SourceLinkUrl)) ||
-                !string.Equals(SourceRoot.GetMetadata(Names.SourceRoot.SourceControl), SourceControlName, StringComparison.OrdinalIgnoreCase))
+            if (!TryParseRelativeRepositoryUrl(relativeUrl, out var projectName, out var repositoryName, out var collectionName))
             {
-                SourceLinkUrl = NotApplicableValue;
-                return;
-            }
-
-            var repoUrl = SourceRoot.GetMetadata(Names.SourceRoot.RepositoryUrl);
-            if (!Uri.TryCreate(repoUrl, UriKind.Absolute, out var repoUri))
-            {
-                Log.LogError(Resources.ValueOfWithIdentityIsInvalid, Names.SourceRoot.RepositoryUrlFullName, SourceRoot.ItemSpec, repoUrl);
-                return;
-            }
-
-            var map = TryGetStandardUriMap();
-            if (map != null && map.TryGetValue(repoUri, out var mappedUri))
-            {
-                repoUri = mappedUri;
-            }
-
-            string domain;
-            if (string.IsNullOrEmpty(Domain))
-            {
-                domain = DefaultDomain;
-            }
-            else
-            {
-                bool isHostUri(Uri uri) => uri.PathAndQuery == "/" && uri.UserInfo == "";
-
-                domain = Domain;
-                if (!Uri.TryCreate("http://" + domain, UriKind.Absolute, out var domainUri) || !isHostUri(domainUri))
-                {
-                    Log.LogError(Resources.ValuePassedToTaskParameterNotValidDomainName, nameof(Domain), domain);
-                    return;
-                }
-            }
-
-            if (!TryParseRepositoryUrl(repoUri, domain, out var projectName, out var repositoryName, out var collectionName))
-            {
-                SourceLinkUrl = NotApplicableValue;
-                return;
-            }
-
-            var query = GetSourceLinkQuery();
-            if (query == null)
-            {
-                return;
+                // TODO: Log.LogError(CommonResources.ValueOfWithIdentityIsInvalid, Names.SourceRoot.RepositoryUrlFullName, SourceRoot.ItemSpec, repoUrl);
+                return null;
             }
 
             // Although VSTS does not have non-default collections, TFS does. 
             // This package can be used for both VSTS and TFS.
-            string collectionPath = (collectionName == null || StringComparer.OrdinalIgnoreCase.Equals(collectionName, "DefaultCollection")) ? "" : "/" + collectionName;
+            string collectionPath = (collectionName == null || StringComparer.OrdinalIgnoreCase.Equals(collectionName, "DefaultCollection")) ? "" : collectionName;
 
-            SourceLinkUrl = $"{repoUri.Scheme}://{repoUri.Authority}{collectionPath}/{projectName}/_apis/git/repositories/{repositoryName}/items?" + query;
+            return CombineAbsoluteAndRelativeUrl(contentUrl, $"{collectionPath}/{projectName}/_apis/git/repositories/{repositoryName}/items") +
+                   $"?api-version=1.0&versionType=commit&version={revisionId}&path=/*";
         }
 
         // TODO: confirm design and test https://github.com/dotnet/sourcelink/issues/2
@@ -159,31 +103,24 @@ namespace Microsoft.SourceLink.Vsts.Git
             return map;
         }
 
-        internal static bool TryParseRepositoryUrl(Uri repoUri, string domain, out string projectName, out string repositoryName, out string collectionName)
+        internal static bool TryParseRelativeRepositoryUrl(string relativeUrl, out string projectName, out string repositoryName, out string collectionName)
         {
-            // URL format pattern:
-            // https://{domain}/[DefaultCollection/]?{project}/_git/{repository-name}[.git]
+            // Relative URL pattern:
+            // /[{collection}/]?{project}/_git/{repository-name}
 
             projectName = null;
             repositoryName = null;
             collectionName = null;
 
-            if (!repoUri.Host.EndsWith("." + domain, StringComparison.OrdinalIgnoreCase) && 
-                !repoUri.Host.Equals(domain, StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
-
-            string localPath = repoUri.LocalPath;
-            if (localPath.Length <= 1 || localPath[0] != '/')
+            if (relativeUrl.Length <= 1 || relativeUrl[0] != '/')
             {
                 return false;
             }
 
             // trim leading and optional trailing slash:
-            localPath = localPath.Substring(1, (localPath[localPath.Length - 1] == '/') ? localPath.Length - 2 : localPath.Length - 1);
+            relativeUrl = relativeUrl.Substring(1, (relativeUrl[relativeUrl.Length - 1] == '/') ? relativeUrl.Length - 2 : relativeUrl.Length - 1);
 
-            var parts = localPath.Split('/');
+            var parts = relativeUrl.Split('/');
             if (parts.Length < 3 || parts.Length > 4)
             {
                 return false;
@@ -212,21 +149,6 @@ namespace Microsoft.SourceLink.Vsts.Git
             }
 
             return true;
-        }
-
-        private string GetSourceLinkQuery()
-        {
-            bool IsHexDigit(char c)
-                => c >= '0' && c <= '9' || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F';
-
-            string revisionId = SourceRoot.GetMetadata(Names.SourceRoot.RevisionId);
-            if (revisionId == null || revisionId.Length != 40 || !revisionId.All(IsHexDigit))
-            {
-                Log.LogError(Resources.ValueOfWithIdentityIsNotValidCommitHash, Names.SourceRoot.RevisionIdFullName, SourceRoot.ItemSpec, revisionId);
-                return null;
-            }
-
-            return $"api-version=1.0&versionType=commit&version={revisionId}&path=/*";
         }
     }
 }

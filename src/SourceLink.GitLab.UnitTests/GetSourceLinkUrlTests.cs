@@ -189,25 +189,7 @@ namespace Microsoft.SourceLink.GitLab.UnitTests
         }
 
         [Fact]
-        public void GetSourceLinkUrl_SourceRootNotApplicable_RepositoryUrlNotDomain_Default()
-        {
-            var engine = new MockEngine();
-
-            var task = new GetSourceLinkUrl()
-            {
-                BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://mygitlab.com/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "12345")),
-                Hosts = new[] { new MockItem("gitlab.com") }
-            };
-
-            bool result = task.Execute();
-            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            Assert.Equal("N/A", task.SourceLinkUrl);
-            Assert.True(result);
-        }
-
-        [Fact]
-        public void GetSourceLinkUrl_SourceRootNotApplicable_RepositoryUrlNotDomain_Custom()
+        public void GetSourceLinkUrl_SourceRootNotApplicable_RepositoryUrlNotMatchingHost()
         {
             var engine = new MockEngine();
 
@@ -217,7 +199,8 @@ namespace Microsoft.SourceLink.GitLab.UnitTests
                 SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://abc.com/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "12345")),
                 Hosts = new[]
                 {
-                    new MockItem("mygitlab.com", KVP("ContentUrl", "http://mycontent.com"))
+                    new MockItem("gitlab.com", KVP("ContentUrl", "http://mycontent1.com")),
+                    new MockItem("mygitlab.com", KVP("ContentUrl", "http://mycontent2.com"))
                 }
             };
 
