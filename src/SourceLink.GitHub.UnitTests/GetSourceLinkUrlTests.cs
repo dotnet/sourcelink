@@ -189,25 +189,7 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
         }
 
         [Fact]
-        public void GetSourceLinkUrl_SourceRootNotApplicable_RepositoryUrlNotDomain_Default()
-        {
-            var engine = new MockEngine();
-
-            var task = new GetSourceLinkUrl()
-            {
-                BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://mygithub.com/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "12345")),
-                Hosts = new[] { new MockItem("github.com", KVP("ContentUrl", "https://raw.githubusercontent.com")) }
-            };
-
-            bool result = task.Execute();
-            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            Assert.Equal("N/A", task.SourceLinkUrl);
-            Assert.True(result);
-        }
-
-        [Fact]
-        public void GetSourceLinkUrl_SourceRootNotApplicable_RepositoryUrlNotDomain_Custom()
+        public void GetSourceLinkUrl_SourceRootNotApplicable_RepositoryUrlNotMatchingHost()
         {
             var engine = new MockEngine();
 

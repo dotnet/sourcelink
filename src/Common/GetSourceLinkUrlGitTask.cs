@@ -12,7 +12,7 @@ namespace Microsoft.Build.Tasks.SourceControl
     public abstract class GetSourceLinkUrlGitTask : Task
     {
         private const string SourceControlName = "git";
-        private const string NotApplicableValue = "N/A";
+        protected const string NotApplicableValue = "N/A";
         private const string ContentUrlMetadataName = "ContentUrl";
 
         [Required]
