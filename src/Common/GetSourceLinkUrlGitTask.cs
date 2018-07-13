@@ -25,7 +25,9 @@ namespace Microsoft.Build.Tasks.SourceControl
         /// </summary>
         public ITaskItem[] Hosts { get; set; }
 
-        public string ImplicitHost { get; set; }
+        public string RepositoryUrl { get; set; }
+
+        public bool IsSingleProvider { get; set; }
 
         [Output]
         public string SourceLinkUrl { get; set; }
@@ -101,23 +103,17 @@ namespace Microsoft.Build.Tasks.SourceControl
             SourceLinkUrl = BuildSourceLinkUrl(contentUri.ToString(), relativeUrl, revisionId);
         }
 
-        internal static string CombineAbsoluteAndRelativeUrl(string baseUrl, string relativeUrl)
-            => baseUrl.EndsWith("/")
-                ? relativeUrl.StartsWith("/") ? baseUrl + relativeUrl.Substring(1) : baseUrl + relativeUrl
-                : relativeUrl.StartsWith("/") ? baseUrl + relativeUrl : baseUrl + "/" + relativeUrl;
-
-        private static bool IsAuthorityUri(Uri uri)
-            => uri.PathAndQuery == "/" && uri.UserInfo == "";
-
         private struct UrlMapping
         {
-            public readonly Uri Host;
+            public readonly string Host;
+            public readonly int Port;
             public readonly Uri ContentUri;
             public readonly bool HasDefaultContentUri;
 
-            public UrlMapping(Uri host, Uri contentUri, bool hasDefaultContentUri)
+            public UrlMapping(string host, int port, Uri contentUri, bool hasDefaultContentUri)
             {
                 Host = host;
+                Port = port;
                 ContentUri = contentUri;
                 HasDefaultContentUri = hasDefaultContentUri;
             }
@@ -128,9 +124,6 @@ namespace Microsoft.Build.Tasks.SourceControl
             bool isValidContentUri(Uri uri)
                 => uri.Query == "" && uri.UserInfo == "";
 
-            bool tryParseAuthority(string value, out Uri uri)
-                => Uri.TryCreate("unknown://" + value, UriKind.Absolute, out uri) && IsAuthorityUri(uri);
-
             Uri getDefaultUri(string authority)
                 => GetDefaultContentUri(new Uri("https://" + authority, UriKind.Absolute));
 
@@ -140,7 +133,7 @@ namespace Microsoft.Build.Tasks.SourceControl
                 {
                     string authority = item.ItemSpec;
 
-                    if (!tryParseAuthority(authority, out var authorityUri))
+                    if (!UriUtilities.TryParseAuthority(authority, out var authorityUri))
                     {
                         Log.LogError(CommonResources.ValuePassedToTaskParameterNotValidDomainName, nameof(Hosts), item.ItemSpec);
                         continue;
@@ -159,20 +152,20 @@ namespace Microsoft.Build.Tasks.SourceControl
                         continue;
                     }
 
-                    yield return new UrlMapping(authorityUri, contentUri, hasDefaultContentUri);
+                    yield return new UrlMapping(authorityUri.Host, authorityUri.Port, contentUri, hasDefaultContentUri);
                 }
             }
 
             // Add implicit host last, so that matching prefers explicitly listed hosts over the implicit one.
-            if (!string.IsNullOrEmpty(ImplicitHost))
+            if (IsSingleProvider)
             {
-                if (tryParseAuthority(ImplicitHost, out var authorityUri))
+                if (Uri.TryCreate(RepositoryUrl, UriKind.Absolute, out var uri))
                 {
-                    yield return new UrlMapping(authorityUri, getDefaultUri(ImplicitHost), hasDefaultContentUri: true);
+                    yield return new UrlMapping(uri.Host, uri.GetExplicitPort(), getDefaultUri(uri.Authority), hasDefaultContentUri: true);
                 }
                 else
                 {
-                    Log.LogError(CommonResources.ValuePassedToTaskParameterNotValidDomainName, nameof(ImplicitHost), ImplicitHost);
+                    Log.LogError(CommonResources.ValuePassedToTaskParameterNotValidUri, nameof(RepositoryUrl), RepositoryUrl);
                 }
             }
         }
@@ -185,21 +178,19 @@ namespace Microsoft.Build.Tasks.SourceControl
 
                 foreach (var mapping in mappings)
                 {
-                    var host = mapping.Host.Host;
-                    var port = mapping.Host.Port;
                     var contentUri = mapping.ContentUri;
 
-                    if (exactHost && repoUri.Host.Equals(host, StringComparison.OrdinalIgnoreCase) ||
-                        !exactHost && repoUri.Host.EndsWith("." + host, StringComparison.OrdinalIgnoreCase))
+                    if (exactHost && repoUri.Host.Equals(mapping.Host, StringComparison.OrdinalIgnoreCase) ||
+                        !exactHost && repoUri.Host.EndsWith("." + mapping.Host, StringComparison.OrdinalIgnoreCase))
                     {
                         // Port matches exactly:
-                        if (repoUri.Port == port)
+                        if (repoUri.Port == mapping.Port)
                         {
                             return mapping;
                         }
 
                         // Port not specified:
-                        if (candidate == null && port == -1)
+                        if (candidate == null && mapping.Port == -1)
                         {
                             candidate = mapping;
                         }
@@ -219,7 +210,7 @@ namespace Microsoft.Build.Tasks.SourceControl
 
             // If the mapping did not specify ContentUrl and did not specify port,
             // use the port from the RepositoryUrl, if a non-default is specified.
-            if (value.HasDefaultContentUri && value.Host.Port == -1 && !repoUri.IsDefaultPort && value.ContentUri.Port != repoUri.Port)
+            if (value.HasDefaultContentUri && value.Port == -1 && !repoUri.IsDefaultPort && value.ContentUri.Port != repoUri.Port)
             {
                 return new Uri($"{value.ContentUri.Scheme}://{value.ContentUri.Host}:{repoUri.Port}{value.ContentUri.PathAndQuery}");
             }

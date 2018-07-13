@@ -19,6 +19,6 @@ namespace Microsoft.SourceLink.GitHub
             => new Uri(uri, "raw");
 
         protected override string BuildSourceLinkUrl(string contentUrl, string relativeUrl, string revisionId)
-            => CombineAbsoluteAndRelativeUrl(CombineAbsoluteAndRelativeUrl(contentUrl, relativeUrl), revisionId + "/*");
+            => UriUtilities.CombineAbsoluteAndRelativeUrl(UriUtilities.CombineAbsoluteAndRelativeUrl(contentUrl, relativeUrl), revisionId + "/*");
     }
 }

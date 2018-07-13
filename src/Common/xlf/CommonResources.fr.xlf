@@ -27,6 +27,11 @@
         <target state="translated">La valeur passée au paramètre de tâche {0} n'est pas un URI d'hôte valide : '{1}'</target>
         <note />
       </trans-unit>
+      <trans-unit id="ValuePassedToTaskParameterNotValidUri">
+        <source>The value passed to task parameter {0} is not a valid URI: '{1}'</source>
+        <target state="new">The value passed to task parameter {0} is not a valid URI: '{1}'</target>
+        <note />
+      </trans-unit>
     </body>
   </file>
 </xliff>

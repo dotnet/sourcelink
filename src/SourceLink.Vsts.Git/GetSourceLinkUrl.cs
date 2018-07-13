@@ -20,7 +20,7 @@ namespace Microsoft.SourceLink.Vsts.Git
 
         protected override string BuildSourceLinkUrl(string contentUrl, string relativeUrl, string revisionId)
         {
-            if (!TryParseRelativeRepositoryUrl(relativeUrl, out var projectName, out var repositoryName, out var collectionName))
+            if (!UrlParser.TryParseRelativeRepositoryUrl(relativeUrl, "_git", out var collectionName, out var projectName, out var repositoryName))
             {
                 // TODO: Log.LogError(CommonResources.ValueOfWithIdentityIsInvalid, Names.SourceRoot.RepositoryUrlFullName, SourceRoot.ItemSpec, repoUrl);
                 return null;
@@ -28,14 +28,17 @@ namespace Microsoft.SourceLink.Vsts.Git
 
             // Although VSTS does not have non-default collections, TFS does. 
             // This package can be used for both VSTS and TFS.
-            string collectionPath = (collectionName == null || StringComparer.OrdinalIgnoreCase.Equals(collectionName, "DefaultCollection")) ? "" : collectionName;
+            if (StringComparer.OrdinalIgnoreCase.Equals(collectionName, "DefaultCollection"))
+            {
+                collectionName = null;
+            }
 
-            return CombineAbsoluteAndRelativeUrl(contentUrl, $"{collectionPath}/{projectName}/_apis/git/repositories/{repositoryName}/items") +
+            return UriUtilities.CombineAbsoluteAndRelativeUrl(contentUrl, $"{collectionName}/{projectName}/_apis/git/repositories/{repositoryName}/items") +
                    $"?api-version=1.0&versionType=commit&version={revisionId}&path=/*";
         }
 
         // TODO: confirm design and test https://github.com/dotnet/sourcelink/issues/2
-        private Dictionary<Uri, Uri> TryGetStandardUriMap()
+        private Dictionary<Uri, Uri> TryGetEnvironmentUriMap()
         {
             var urlSeparators = new[] { Path.PathSeparator };
             Dictionary<Uri, Uri> map = null;
@@ -101,54 +104,6 @@ namespace Microsoft.SourceLink.Vsts.Git
             }
 
             return map;
-        }
-
-        internal static bool TryParseRelativeRepositoryUrl(string relativeUrl, out string projectName, out string repositoryName, out string collectionName)
-        {
-            // Relative URL pattern:
-            // /[{collection}/]?{project}/_git/{repository-name}
-
-            projectName = null;
-            repositoryName = null;
-            collectionName = null;
-
-            if (relativeUrl.Length <= 1 || relativeUrl[0] != '/')
-            {
-                return false;
-            }
-
-            // trim leading and optional trailing slash:
-            relativeUrl = relativeUrl.Substring(1, (relativeUrl[relativeUrl.Length - 1] == '/') ? relativeUrl.Length - 2 : relativeUrl.Length - 1);
-
-            var parts = relativeUrl.Split('/');
-            if (parts.Length < 3 || parts.Length > 4)
-            {
-                return false;
-            }
-
-            if (parts.Length == 4)
-            {
-                collectionName = parts[0];
-                if (collectionName.Length == 0)
-                {
-                    return false;
-                }
-            }
-
-            if (!parts[parts.Length - 2].Equals("_git", StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
-
-            repositoryName = parts[parts.Length - 1];
-            projectName = parts[parts.Length - 3];
-
-            if (repositoryName.Length == 0 || projectName.Length == 0)
-            {
-                return false;
-            }
-
-            return true;
         }
     }
 }

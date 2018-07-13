@@ -9,16 +9,16 @@ namespace Microsoft.Build.Tasks.Tfvc
     public abstract class RepositoryTask : Task
     {
         [Required]
-        public string LocalRepositoryId { get; set; }
+        public string WorkspaceDirectory { get; set; }
 
         protected abstract bool Execute(WorkspaceInfo workspaceInfo);
 
         public sealed override bool Execute()
         {
-            var workspaceInfo = Workstation.Current.GetLocalWorkspaceInfo(LocalRepositoryId);
+            var workspaceInfo = Workstation.Current.GetLocalWorkspaceInfo(WorkspaceDirectory);
             if (workspaceInfo == null)
             {
-                Log.LogError($"Invalid repository id: {LocalRepositoryId}");
+                Log.LogError($"Invalid repository id: {WorkspaceDirectory}");
                 return false;
             }
 

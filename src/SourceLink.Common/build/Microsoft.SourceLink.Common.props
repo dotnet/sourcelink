@@ -5,6 +5,11 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <_MicrosoftSourceLinkCommonAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)..\tools\net461\Microsoft.SourceLink.Common.dll</_MicrosoftSourceLinkCommonAssemblyFile>
+    <_MicrosoftSourceLinkCommonAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\netcoreapp2.0\Microsoft.SourceLink.Common.dll</_MicrosoftSourceLinkCommonAssemblyFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <!--
       Do not query source control manager for any information when building in the IDE or for Live Unit Testing.
       Features that need this information will be disabled if false.

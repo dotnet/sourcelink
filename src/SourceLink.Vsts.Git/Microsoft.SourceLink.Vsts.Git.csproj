@@ -12,8 +12,13 @@
     <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="w3ahtyju.vw2~" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="..\Common\Names.cs" Link="Common\Names.cs" />
     <Compile Include="..\Common\GetSourceLinkUrlGitTask.cs" Link="Common\GetSourceLinkUrlGitTask.cs" />
+    <Compile Include="..\Common\TranslateRepositoryUrlGitTask.cs" Link="Common\TranslateRepositoryUrlGitTask.cs" />
+    <Compile Include="..\Common\UriUtilities.cs" Link="Common\UriUtilities.cs" />
     <EmbeddedResource Include="..\Common\CommonResources.resx" Link="Common\CommonResources.resx">
       <Namespace>Microsoft.Build.Tasks.SourceControl</Namespace>
       <GenerateSource>true</GenerateSource>

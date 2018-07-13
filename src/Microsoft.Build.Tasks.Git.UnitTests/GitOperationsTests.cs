@@ -22,7 +22,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var revisionId = sourceRoot.GetMetadata("RevisionId");
             var nestedRoot = sourceRoot.GetMetadata("NestedRoot");
             var containingRoot = sourceRoot.GetMetadata("ContainingRoot");
-            var repositoryUrl = sourceRoot.GetMetadata("RepositoryUrl");
+            var scmRepositoryUrl = sourceRoot.GetMetadata("ScmRepositoryUrl");
             var sourceLinkUrl = sourceRoot.GetMetadata("SourceLinkUrl");
 
             return $"'{sourceRoot.ItemSpec}'" +
@@ -30,7 +30,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
               (string.IsNullOrEmpty(revisionId) ? "" : $" RevisionId='{revisionId}'") +
               (string.IsNullOrEmpty(nestedRoot) ? "" : $" NestedRoot='{nestedRoot}'") +
               (string.IsNullOrEmpty(containingRoot) ? "" : $" ContainingRoot='{containingRoot}'") +
-              (string.IsNullOrEmpty(repositoryUrl) ? "" : $" RepositoryUrl='{repositoryUrl}'") +
+              (string.IsNullOrEmpty(scmRepositoryUrl) ? "" : $" ScmRepositoryUrl='{scmRepositoryUrl}'") +
               (string.IsNullOrEmpty(sourceLinkUrl) ? "" : $" SourceLinkUrl='{sourceLinkUrl}'");
         }
 
@@ -104,9 +104,9 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [InlineData(@"a:/../../relative/path", "file:///a:/relative/path")]
         [InlineData(@"Z:/a/b/../../relative/path", "file:///Z:/relative/path")]
         [InlineData(@"../.://../../relative/path", "file:///C:/src/a/relative/path")]
-        [InlineData(@"../.:./../../relative/path", "file:///C:/src/relative/path")]
-        [InlineData(@".:/../../relative/path", "file:///C:/src/a/relative/path")]
-        [InlineData(@"..:/../../relative/path", "file:///C:/src/a/relative/path")]
+        [InlineData(@"../.:./../../relative/path", "ssh://../relative/path")]
+        [InlineData(@".:/../../relative/path", "ssh://./relative/path")]
+        [InlineData(@"..:/../../relative/path", "ssh://../relative/path")]
         [InlineData(@"@:org/repo", "file:///C:/src/a/b/@:org/repo")]
         public void GetRepositoryUrl_Windows(string originUrl, string expectedUrl)
         {
@@ -117,7 +117,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         }
 
         [ConditionalTheory(typeof(UnixOnly))]
-        [InlineData(@"C:org/repo", @"https://c/org/repo")]
+        [InlineData(@"C:org/repo", @"ssh://c/org/repo")]
         [InlineData(@"/xyz/src", @"file:///xyz/src")]
         [InlineData(@"\path\a\b", @"file:///path/a/b")]
         [InlineData(@"relative/./path", @"file:///usr/src/a/b/relative/path")]
@@ -126,9 +126,9 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [InlineData(@"../relative/path*<>|\0%00", @"file:///usr/src/a/relative/path*<>|\0%00")]
         [InlineData(@"../../../../relative/path", @"file:///relative/path")]
         [InlineData(@"../.://../../relative/path", "file:///usr/src/a/relative/path")]
-        [InlineData(@"../.:./../../relative/path", "file:///usr/src/relative/path")]
-        [InlineData(@".:/../../relative/path", "file:///usr/src/a/relative/path")]
-        [InlineData(@"..:/../../relative/path", "file:///usr/src/a/relative/path")]
+        [InlineData(@"../.:./../../relative/path", "ssh://../relative/path")]
+        [InlineData(@".:/../../relative/path", "ssh://./relative/path")]
+        [InlineData(@"..:/../../relative/path", "ssh://../relative/path")]
         [InlineData(@"@:org/repo", @"file:///usr/src/a/b/@:org/repo")]
         public void GetRepositoryUrl_Unix(string originUrl, string expectedUrl)
         {
@@ -139,12 +139,12 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         }
 
         [Theory]
-        [InlineData("abc:org/repo", "https://abc/org/repo")]
-        [InlineData("ABC:ORG/REPO/X/Y", "https://abc/ORG/REPO/X/Y")]
-        [InlineData("github.com:org/repo", "https://github.com/org/repo")]
-        [InlineData("git@github.com:org/repo", "https://github.com/org/repo")]
-        [InlineData("@github.com:org/repo", "https://github.com/org/repo")]
-        [InlineData("http:x//y", "https://http/x//y")]
+        [InlineData("abc:org/repo", "ssh://abc/org/repo")]
+        [InlineData("ABC:ORG/REPO/X/Y", "ssh://abc/ORG/REPO/X/Y")]
+        [InlineData("github.com:org/repo", "ssh://github.com/org/repo")]
+        [InlineData("git@github.com:org/repo", "ssh://git@github.com/org/repo")]
+        [InlineData("@github.com:org/repo", "ssh://@github.com/org/repo")]
+        [InlineData("http:x//y", "ssh://http/x//y")]
         public void GetRepositoryUrl_ScpSyntax(string originUrl, string expectedUrl)
         {
             var repo = new TestRepository(workingDir: s_root, commitSha: "1111111111111111111111111111111111111111",
@@ -182,8 +182,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             AssertEx.Equal(new[]
             {
-                $@"'{s_root}{s}sub{s}1{s}' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/1/' ContainingRoot='{s_root}{s}' RepositoryUrl='http://1.com/'",
-                $@"'{s_root}{s}sub{s}2{s}' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='{s_root}{s}' RepositoryUrl='http://2.com/'",
+                $@"'{s_root}{s}sub{s}1{s}' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/1/' ContainingRoot='{s_root}{s}' ScmRepositoryUrl='http://1.com/'",
+                $@"'{s_root}{s}sub{s}2{s}' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='{s_root}{s}' ScmRepositoryUrl='http://2.com/'",
             }, items.Select(InspectSourceRoot));
 
             AssertEx.Equal(new[] { Resources.RepositoryWithoutCommit_SourceLink }, warnings.Select(InspectDiagnostic));
@@ -207,7 +207,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             AssertEx.Equal(new[]
             {
                 $@"'{s_root}{s}' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
-                $@"'{s_root}{s}sub{s}2{s}' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='{s_root}{s}' RepositoryUrl='http://2.com/'",
+                $@"'{s_root}{s}sub{s}2{s}' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='{s_root}{s}' ScmRepositoryUrl='http://2.com/'",
             }, items.Select(InspectSourceRoot));
 
             AssertEx.Equal(new[] { string.Format(Resources.SubmoduleWithoutCommit_SourceLink, "1") }, warnings.Select(InspectDiagnostic));
@@ -231,8 +231,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             AssertEx.Equal(new[]
             {
                 $@"'C:\src\' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
-                $@"'C:\src\sub\1\' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/1/' ContainingRoot='C:\src\' RepositoryUrl='file:///C:/src/a/b'",
-                $@"'C:\src\sub\2\' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='C:\src\' RepositoryUrl='file:///C:/a'",
+                $@"'C:\src\sub\1\' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/1/' ContainingRoot='C:\src\' ScmRepositoryUrl='file:///C:/src/a/b'",
+                $@"'C:\src\sub\2\' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='C:\src\' ScmRepositoryUrl='file:///C:/a'",
             }, items.Select(InspectSourceRoot));
 
             Assert.Empty(warnings);
@@ -256,8 +256,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             AssertEx.Equal(new[]
             {
                 $@"'/src/' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
-                $@"'/src/sub/1/' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/1/' ContainingRoot='/src/' RepositoryUrl='file:///src/a/b'",
-                $@"'/src/sub/2/' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='/src/' RepositoryUrl='file:///a'",
+                $@"'/src/sub/1/' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/1/' ContainingRoot='/src/' ScmRepositoryUrl='file:///src/a/b'",
+                $@"'/src/sub/2/' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='/src/' ScmRepositoryUrl='file:///a'",
             }, items.Select(InspectSourceRoot));
 
             Assert.Empty(warnings);
@@ -282,7 +282,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             AssertEx.Equal(new[]
             {
                 $@"'{s_root}{s}' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
-                $@"'{s_root}{s}sub{s}3{s}' SourceControl='git' RevisionId='3333333333333333333333333333333333333333' NestedRoot='sub/3/' ContainingRoot='{s_root}{s}' RepositoryUrl='http://3.com/'",
+                $@"'{s_root}{s}sub{s}3{s}' SourceControl='git' RevisionId='3333333333333333333333333333333333333333' NestedRoot='sub/3/' ContainingRoot='{s_root}{s}' ScmRepositoryUrl='http://3.com/'",
             }, items.Select(InspectSourceRoot));
 
             AssertEx.Equal(new[] 
@@ -340,7 +340,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             AssertEx.Equal(new[]
             {
                 $@"'{s_root}{s}' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
-                $@"'{s_root}{s}sub{s}1{s}' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/1/' ContainingRoot='{s_root}{s}' RepositoryUrl='http://1.com/'",
+                $@"'{s_root}{s}sub{s}1{s}' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/1/' ContainingRoot='{s_root}{s}' ScmRepositoryUrl='http://1.com/'",
             }, items.Select(InspectSourceRoot));
         }
 

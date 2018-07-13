@@ -16,7 +16,7 @@ namespace Microsoft.Build.Tasks.Git
             Repository repo;
             try
             {
-                repo = new Repository(task.LocalRepositoryId);
+                repo = new Repository(task.Root);
             }
             catch (RepositoryNotFoundException e)
             {
@@ -26,7 +26,7 @@ namespace Microsoft.Build.Tasks.Git
 
             if (repo.Info.IsBare)
             {
-                log.LogError(Resources.BareRepositoriesNotSupported, task.LocalRepositoryId);
+                log.LogError(Resources.BareRepositoriesNotSupported, task.Root);
                 return false;
             }
 
