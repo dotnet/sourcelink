@@ -10,6 +10,7 @@ namespace Microsoft.Build.Tasks.SourceControl
 
             public const string SourceControl = nameof(SourceControl);
             public const string RepositoryUrl = nameof(RepositoryUrl);
+            public const string ScmRepositoryUrl = nameof(ScmRepositoryUrl);
             public const string RevisionId = nameof(RevisionId);
             public const string ContainingRoot = nameof(ContainingRoot);
             public const string NestedRoot = nameof(NestedRoot);
@@ -19,6 +20,7 @@ namespace Microsoft.Build.Tasks.SourceControl
             public const string MappedPathFullName = nameof(SourceRoot) + "." + nameof(MappedPath);
             public const string SourceLinkUrlFullName = nameof(SourceRoot) + "." + nameof(SourceLinkUrl);
             public const string RepositoryUrlFullName = nameof(SourceRoot) + "." + nameof(RepositoryUrl);
+            public const string ScmRepositoryUrlFullName = nameof(SourceRoot) + "." + nameof(ScmRepositoryUrl);
             public const string RevisionIdFullName = nameof(SourceRoot) + "." + nameof(RevisionId);
         }
     }

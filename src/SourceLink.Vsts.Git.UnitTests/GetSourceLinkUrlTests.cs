@@ -9,40 +9,6 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
 {
     public class GetSourceLinkUrlTests
     {
-        [Theory]
-        [InlineData("")]
-        [InlineData("/")]
-        [InlineData("/a")]
-        [InlineData("/a/")]
-        [InlineData("/a/b")]
-        [InlineData("/a/b/")]
-        [InlineData("/a/b/c")]
-        [InlineData("/a/b/c/d")]
-        [InlineData("/a//c")]
-        [InlineData("/a/_git")]
-        [InlineData("/a/_git/")]
-        [InlineData("//_git/b")]
-        [InlineData("/a/_git/b//")]
-        [InlineData("/a/b/_git/")]
-        [InlineData("//b/_git/c")]
-        public void TryParseRepositoryUrl_Error(string relativeUrl)
-        {
-            Assert.False(GetSourceLinkUrl.TryParseRelativeRepositoryUrl(relativeUrl, out _, out _, out _));
-        }
-
-        [Theory]
-        [InlineData("/project/_git/repo", "project", "repo", null)]
-        [InlineData("/project/_git/repo/", "project", "repo", null)]
-        [InlineData("/collection/project/_git/repo", "project", "repo", "collection")]
-        [InlineData("/collection/project/_git/repo/", "project", "repo", "collection")]
-        public void TryParseRepositoryUrl_Success(string relativeUrl, string project, string repository, string collection)
-        {
-            Assert.True(GetSourceLinkUrl.TryParseRelativeRepositoryUrl(relativeUrl, out var actualProject, out var actualRepository, out var actualCollection));
-            Assert.Equal(project, actualProject);
-            Assert.Equal(repository, actualRepository);
-            Assert.Equal(collection, actualCollection);
-        }
-
         [Fact]
         public void GetSourceLinkUrl_EmptyHosts()
         {
@@ -89,13 +55,9 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
         }
 
         [Theory]
-        [InlineData("mytfs*.com")]
-        [InlineData("mytfs.com/a")]
-        [InlineData("mytfs.com/a?x=2")]
-        [InlineData("http://mytfs.com")]
-        [InlineData("http://a@mytfs.com")]
-        [InlineData("a@mytfs.com")]
-        public void GetSourceLinkUrl_ImplicitHost_Errors(string domain)
+        [InlineData("http://mytfs*.com")]
+        [InlineData("/a")]
+        public void GetSourceLinkUrl_ImplicitHost_Errors(string repositoryUrl)
         {
             var engine = new MockEngine();
 
@@ -103,13 +65,14 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
             {
                 BuildEngine = engine,
                 SourceRoot = new MockItem("x", KVP("RepositoryUrl", "http://abc.com"), KVP("SourceControl", "git")),
-                ImplicitHost = domain
+                RepositoryUrl = repositoryUrl,
+                IsSingleProvider = true,
             };
 
             bool result = task.Execute();
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
-                "ERROR : " + string.Format(CommonResources.ValuePassedToTaskParameterNotValidDomainName, "ImplicitHost", domain), engine.Log);
+                "ERROR : " + string.Format(CommonResources.ValuePassedToTaskParameterNotValidUri, "RepositoryUrl", repositoryUrl), engine.Log);
 
             Assert.False(result);
         }
@@ -275,7 +238,8 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
             {
                 BuildEngine = engine,
                 SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.tfs.com:1234/collection/project/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
-                ImplicitHost = "tfs.com",
+                RepositoryUrl = "http://tfs.com",
+                IsSingleProvider = true,
             };
 
             bool result = task.Execute();
@@ -314,7 +278,8 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
             {
                 BuildEngine = engine,
                 SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.tfs.com:1234/collection/project/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
-                ImplicitHost = "abc.com",
+                RepositoryUrl = "http://abc.com",
+                IsSingleProvider = true,
                 Hosts = new[]
                 {
                     new MockItem("visualstudio.com", KVP("ContentUrl", "https://visualstudio.com")),
@@ -338,7 +303,8 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
             {
                 BuildEngine = engine,
                 SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.tfs.com:123/collection/project/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
-                ImplicitHost = "subdomain.tfs.com:123",
+                RepositoryUrl = "http://subdomain.tfs.com:123",
+                IsSingleProvider = true,
                 Hosts = new[]
                 {
                     new MockItem("tfs.com", KVP("ContentUrl", "https://domain.com:1")),
@@ -432,6 +398,29 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("https://domain.com:1/collection/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void GetSourceLinkUrl_CustomHosts_Matching6()
+        {
+            var engine = new MockEngine();
+
+            var task = new GetSourceLinkUrl()
+            {
+                BuildEngine = engine,
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.tfs.com/collection/project/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                RepositoryUrl = "https://tfs.com/collection/project/_git/repo",
+                IsSingleProvider = true,
+                Hosts = new[]
+                {
+                    new MockItem("tfs.com", KVP("ContentUrl", "https://zzz.com")),
+                }
+            };
+
+            bool result = task.Execute();
+            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            AssertEx.AreEqual("https://zzz.com/collection/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
         }
 

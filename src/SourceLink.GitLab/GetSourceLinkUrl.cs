@@ -19,6 +19,6 @@ namespace Microsoft.SourceLink.GitLab
             => uri;
 
         protected override string BuildSourceLinkUrl(string contentUrl, string relativeUrl, string revisionId)
-            => CombineAbsoluteAndRelativeUrl(CombineAbsoluteAndRelativeUrl(contentUrl, relativeUrl), "raw/" + revisionId + "/*");
+            => UriUtilities.CombineAbsoluteAndRelativeUrl(UriUtilities.CombineAbsoluteAndRelativeUrl(contentUrl, relativeUrl), "raw/" + revisionId + "/*");
     }
 }

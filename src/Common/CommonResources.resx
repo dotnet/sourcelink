@@ -126,6 +126,9 @@
   <data name="ValuePassedToTaskParameterNotValidHostUri" xml:space="preserve">
     <value>The value passed to task parameter {0} is not a valid host URI: '{1}'</value>
   </data>
+  <data name="ValuePassedToTaskParameterNotValidUri" xml:space="preserve">
+    <value>The value passed to task parameter {0} is not a valid URI: '{1}'</value>
+  </data>
   <data name="ValuePassedToTaskParameterNotValidDomainName" xml:space="preserve">
     <value>The value passed to task parameter {0} is not a valid domain name: '{1}'</value>
   </data>

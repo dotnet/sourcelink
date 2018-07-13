@@ -54,13 +54,9 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
         }
 
         [Theory]
-        [InlineData("mygithub*.com")]
-        [InlineData("mygithub.com/a")]
-        [InlineData("mygithub.com/a?x=2")]
-        [InlineData("http://mygithub.com")]
-        [InlineData("http://a@mygithub.com")]
-        [InlineData("a@mygithub.com")]
-        public void GetSourceLinkUrl_ImplicitHost_Errors(string domain)
+        [InlineData("http://mygithub*.com")]
+        [InlineData("/a")]
+        public void GetSourceLinkUrl_ImplicitHost_Errors(string repositoryUrl)
         {
             var engine = new MockEngine();
 
@@ -68,13 +64,14 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
             {
                 BuildEngine = engine,
                 SourceRoot = new MockItem("x", KVP("RepositoryUrl", "http://abc.com"), KVP("SourceControl", "git")),
-                ImplicitHost = domain
+                RepositoryUrl = repositoryUrl,
+                IsSingleProvider = true
             };
 
             bool result = task.Execute();
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
-                "ERROR : " + string.Format(CommonResources.ValuePassedToTaskParameterNotValidDomainName, "ImplicitHost", domain), engine.Log);
+                "ERROR : " + string.Format(CommonResources.ValuePassedToTaskParameterNotValidUri, "RepositoryUrl", repositoryUrl), engine.Log);
 
             Assert.False(result);
         }
@@ -240,7 +237,8 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
             {
                 BuildEngine = engine,
                 SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mygithub.com:1234/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
-                ImplicitHost = "mygithub.com",
+                RepositoryUrl = "https://mygithub.com",
+                IsSingleProvider = true,
             };
 
             bool result = task.Execute();
@@ -279,7 +277,8 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
             {
                 BuildEngine = engine,
                 SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mygithub.com:1234/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
-                ImplicitHost = "abc.com",
+                RepositoryUrl = "http://abc.com",
+                IsSingleProvider = true,
                 Hosts = new[]
                 {
                     new MockItem("github.com", KVP("ContentUrl", "https://raw.githubusercontent.com")),
@@ -303,7 +302,8 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
             {
                 BuildEngine = engine,
                 SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mygithub.com:123/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
-                ImplicitHost = "subdomain.mygithub.com:123",
+                RepositoryUrl = "http://subdomain.mygithub.com:123",
+                IsSingleProvider = true,
                 Hosts = new[]
                 {
                     new MockItem("mygithub.com", KVP("ContentUrl", "https://domain.com:1")),
@@ -397,6 +397,29 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("https://domain.com:1/a/b/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void GetSourceLinkUrl_CustomHosts_Matching6()
+        {
+            var engine = new MockEngine();
+
+            var task = new GetSourceLinkUrl()
+            {
+                BuildEngine = engine,
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "https://github.com/test-org/test-repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                RepositoryUrl = "https://github.com/test-org/test-repo",
+                IsSingleProvider = true,
+                Hosts = new[]
+                {
+                    new MockItem("github.com", KVP("ContentUrl", "https://raw.githubusercontent.com")),
+                }
+            };
+
+            bool result = task.Execute();
+            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            AssertEx.AreEqual("https://raw.githubusercontent.com/test-org/test-repo/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
             Assert.True(result);
         }
 

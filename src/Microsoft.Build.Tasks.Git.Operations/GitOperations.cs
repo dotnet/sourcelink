@@ -5,9 +5,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using LibGit2Sharp;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Tasks.SourceControl;
@@ -106,8 +103,7 @@ namespace Microsoft.Build.Tasks.Git
             }
 
             // [user@]server:path
-            int start = value.IndexOf('@', 0, colon) + 1;
-            var url = "https://" + value.Substring(start, colon - start) + "/" + value.Substring(colon + 1);
+            var url = "ssh://" + value.Substring(0, colon) + "/" + value.Substring(colon + 1);
             return Uri.TryCreate(url, UriKind.Absolute, out uri);
         }
 
@@ -146,7 +142,7 @@ namespace Microsoft.Build.Tasks.Git
             {
                 var item = new TaskItem(repoRoot);
                 item.SetMetadata(Names.SourceRoot.SourceControl, SourceControlName);
-                item.SetMetadata(Names.SourceRoot.RepositoryUrl, GetRepositoryUrl(repository));
+                item.SetMetadata(Names.SourceRoot.ScmRepositoryUrl, GetRepositoryUrl(repository));
                 item.SetMetadata(Names.SourceRoot.RevisionId, revisionId);
                 result.Add(item);
             }
@@ -196,7 +192,7 @@ namespace Microsoft.Build.Tasks.Git
 
                     var item = new TaskItem(submoduleRoot);
                     item.SetMetadata(Names.SourceRoot.SourceControl, SourceControlName);
-                    item.SetMetadata(Names.SourceRoot.RepositoryUrl, submoduleUrl);
+                    item.SetMetadata(Names.SourceRoot.ScmRepositoryUrl, submoduleUrl);
                     item.SetMetadata(Names.SourceRoot.RevisionId, commitId.Sha);
                     item.SetMetadata(Names.SourceRoot.ContainingRoot, repoRoot);
                     item.SetMetadata(Names.SourceRoot.NestedRoot, submodule.Path.EndWithSeparator('/'));

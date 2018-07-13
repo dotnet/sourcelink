@@ -32,11 +32,6 @@
         <target state="needs-review-translation">写入源链接文件 '{0}' 时出错: {1}"</target>
         <note />
       </trans-unit>
-      <trans-unit id="NoSourceLinkPackagesReferenced">
-        <source>Unable to generate SourceLink -- the project doesn't reference any SourceLink packages.</source>
-        <target state="new">Unable to generate SourceLink -- the project doesn't reference any SourceLink packages.</target>
-        <note />
-      </trans-unit>
     </body>
   </file>
 </xliff>

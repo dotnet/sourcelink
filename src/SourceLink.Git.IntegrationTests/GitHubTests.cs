@@ -49,7 +49,7 @@ namespace Microsoft.SourceLink.IntegrationTests
         }
 
         [ConditionalFact(typeof(DotNetSdkAvailable))]
-        public void FullValidation()
+        public void FullValidation_Https()
         {
             var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, "http://github.com/test-org/test-repo");
             var commitSha = repo.Head.Tip.Sha;
@@ -69,13 +69,17 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
-                    "$(SourceLink)"
+                    "$(SourceLink)",
+                    "$(PrivateRepositoryUrl)",
+                    "$(RepositoryUrl)"
                 },
                 expectedResults: new[]
                 {
                     ProjectSourceRoot,
                     $"https://raw.githubusercontent.com/test-org/test-repo/{commitSha}/*",
-                    s_relativeSourceLinkJsonPath
+                    s_relativeSourceLinkJsonPath,
+                    "http://github.com/test-org/test-repo",
+                    "http://github.com/test-org/test-repo"
                 });
 
             // SourceLink file:
@@ -92,6 +96,56 @@ namespace Microsoft.SourceLink.IntegrationTests
                 type: "git", 
                 commit: commitSha,
                 url: "http://github.com/test-org/test-repo");
+        }
+
+        [ConditionalFact(typeof(DotNetSdkAvailable))]
+        public void FullValidation_Ssh()
+        {
+            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, "ssh://github.com/test-org/test-repo");
+            var commitSha = repo.Head.Tip.Sha;
+
+            VerifyValues(
+                customProps: @"
+<PropertyGroup>
+  <PublishRepositoryUrl>true</PublishRepositoryUrl>
+</PropertyGroup>
+",
+                customTargets: "",
+                targets: new[]
+                {
+                    "Build", "Pack"
+                },
+                expressions: new[]
+                {
+                    "@(SourceRoot)",
+                    "@(SourceRoot->'%(SourceLinkUrl)')",
+                    "$(SourceLink)",
+                    "$(PrivateRepositoryUrl)",
+                    "$(RepositoryUrl)"
+                },
+                expectedResults: new[]
+                {
+                    ProjectSourceRoot,
+                    $"https://raw.githubusercontent.com/test-org/test-repo/{commitSha}/*",
+                    s_relativeSourceLinkJsonPath,
+                    "https://github.com/test-org/test-repo",
+                    "https://github.com/test-org/test-repo"
+                });
+
+            // SourceLink file:
+            AssertEx.AreEqual(
+                $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://raw.githubusercontent.com/test-org/test-repo/{commitSha}/*""}}}}",
+                File.ReadAllText(Path.Combine(ProjectDir.Path, s_relativeSourceLinkJsonPath)));
+
+            TestUtilities.ValidateAssemblyInformationalVersion(
+                Path.Combine(ProjectDir.Path, s_relativeOutputFilePath),
+                "1.0.0+" + commitSha);
+
+            TestUtilities.ValidateNuSpecRepository(
+                Path.Combine(ProjectDir.Path, s_relativePackagePath),
+                type: "git",
+                commit: commitSha,
+                url: "https://github.com/test-org/test-repo");
         }
     }
 }

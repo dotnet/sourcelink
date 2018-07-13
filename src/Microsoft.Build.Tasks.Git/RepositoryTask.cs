@@ -8,6 +8,6 @@ namespace Microsoft.Build.Tasks.Git
     public abstract class RepositoryTask : Task
     {
         [Required]
-        public string LocalRepositoryId { get; set; }
+        public string Root { get; set; }
     }
 }
