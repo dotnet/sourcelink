@@ -29,7 +29,7 @@ namespace Microsoft.SourceLink.IntegrationTests
         AfterTargets=""$(SourceControlManagerUrlTranslationTargets)"">
 
     <PropertyGroup>
-      <_Pattern>https://([^.]+)[.]visualstudio.com/([^.]+)/_git/([^.]+)</_Pattern>
+      <_Pattern>https://([^.]+)[.]visualstudio.com/([^/]+)/_git/([^/]+)</_Pattern>
       <_Replacement>https://github.com/$2/$3</_Replacement>
     </PropertyGroup>
 
