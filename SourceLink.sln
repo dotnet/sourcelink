@@ -47,6 +47,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{762115
 		src\Common\UriUtilities.cs = src\Common\UriUtilities.cs
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.Bitbucket.Git", "src\SourceLink.Bitbucket.Git\Microsoft.SourceLink.Bitbucket.Git.csproj", "{9138BCAB-41BC-4DED-8A3F-7EB4177CDCE1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.Bitbucket.Git.UnitTests", "src\SourceLink.Bitbucket.Git.UnitTests\Microsoft.SourceLink.Bitbucket.Git.UnitTests.csproj", "{97AD20FC-9526-4579-8E95-47890FE12783}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -117,6 +121,14 @@ Global
 		{46C6BD7C-ABB7-4444-B095-C63868FACC41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46C6BD7C-ABB7-4444-B095-C63868FACC41}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{46C6BD7C-ABB7-4444-B095-C63868FACC41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9138BCAB-41BC-4DED-8A3F-7EB4177CDCE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9138BCAB-41BC-4DED-8A3F-7EB4177CDCE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9138BCAB-41BC-4DED-8A3F-7EB4177CDCE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9138BCAB-41BC-4DED-8A3F-7EB4177CDCE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97AD20FC-9526-4579-8E95-47890FE12783}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97AD20FC-9526-4579-8E95-47890FE12783}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97AD20FC-9526-4579-8E95-47890FE12783}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97AD20FC-9526-4579-8E95-47890FE12783}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
