@@ -10,7 +10,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
     public class GetSourceLinkUrlTests
     {
         [Fact]
-        public void GetSourceLinkUrl_EmptyHosts()
+        public void EmptyHosts()
         {
             var engine = new MockEngine();
 
@@ -35,7 +35,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
         [InlineData("http://mytfs.com")]
         [InlineData("http://a@mytfs.com")]
         [InlineData("a@mytfs.com")]
-        public void GetSourceLinkUrl_HostsDomain_Errors(string domain)
+        public void HostsDomain_Errors(string domain)
         {
             var engine = new MockEngine();
 
@@ -57,7 +57,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
         [Theory]
         [InlineData("http://mytfs*.com")]
         // TODO (https://github.com/dotnet/sourcelink/issues/120): fails on Linux [InlineData("/a")]
-        public void GetSourceLinkUrl_ImplicitHost_Errors(string repositoryUrl)
+        public void ImplicitHost_Errors(string repositoryUrl)
         {
             var engine = new MockEngine();
 
@@ -83,7 +83,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
         [InlineData("mytfs.com/a?x=2")]
         [InlineData("http://a@mytfs.com")]
         [InlineData("a@mytfs.com")]
-        public void GetSourceLinkUrl_HostsContentUrl_Errors(string url)
+        public void HostsContentUrl_Errors(string url)
         {
             var engine = new MockEngine();
 
@@ -106,7 +106,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
         [InlineData("a/b")]
         [InlineData("")]
         [InlineData("http://")]
-        public void GetSourceLinkUrl_RepositoryUrl_Errors(string url)
+        public void RepositoryUrl_Errors(string url)
         {
             var engine = new MockEngine();
 
@@ -131,7 +131,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
         [InlineData("000000000000000000000000000000000000000g")]
         [InlineData("00000000000000000000000000000000000000001")]
         [InlineData("")]
-        public void GetSourceLinkUrl_RevisionId_Errors(string revisionId)
+        public void RevisionId_Errors(string revisionId)
         {
             var engine = new MockEngine();
 
@@ -151,7 +151,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
         }
 
         [Fact]
-        public void GetSourceLinkUrl_SourceRootNotApplicable_SourceControlNotGit()
+        public void SourceRootNotApplicable_SourceControlNotGit()
         {
             var engine = new MockEngine();
 
@@ -169,7 +169,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
         }
 
         [Fact]
-        public void GetSourceLinkUrl_SourceRootNotApplicable_SourceLinkUrlSet()
+        public void SourceRootNotApplicable_SourceLinkUrlSet()
         {
             var engine = new MockEngine();
 
@@ -187,7 +187,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
         }
 
         [Fact]
-        public void GetSourceLinkUrl_SourceRootNotApplicable_RepositoryUrlNotMatchingHost()
+        public void SourceRootNotApplicable_RepositoryUrlNotMatchingHost()
         {
             var engine = new MockEngine();
 
@@ -209,7 +209,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
         }
 
         [Fact]
-        public void GetSourceLinkUrl_CustomHosts_PortWithDefaultContentUrl()
+        public void CustomHosts_PortWithDefaultContentUrl()
         {
             var engine = new MockEngine();
 
@@ -230,7 +230,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
         }
 
         [Fact]
-        public void GetSourceLinkUrl_ImplicitHost_PortWithDefaultContentUrl()
+        public void ImplicitHost_PortWithDefaultContentUrl()
         {
             var engine = new MockEngine();
 
@@ -249,7 +249,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
         }
 
         [Fact]
-        public void GetSourceLinkUrl_CustomHosts_PortWithNonDefaultContentUrl()
+        public void CustomHosts_PortWithNonDefaultContentUrl()
         {
             var engine = new MockEngine();
 
@@ -270,7 +270,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
         }
 
         [Fact]
-        public void GetSourceLinkUrl_CustomHosts_Matching1()
+        public void CustomHosts_Matching1()
         {
             var engine = new MockEngine();
 
@@ -295,7 +295,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
         }
 
         [Fact]
-        public void GetSourceLinkUrl_CustomHosts_Matching2()
+        public void CustomHosts_Matching2()
         {
             var engine = new MockEngine();
 
@@ -324,7 +324,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
         }
 
         [Fact]
-        public void GetSourceLinkUrl_CustomHosts_Matching3()
+        public void CustomHosts_Matching3()
         {
             var engine = new MockEngine();
 
@@ -350,7 +350,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
         }
 
         [Fact]
-        public void GetSourceLinkUrl_CustomHosts_Matching4()
+        public void CustomHosts_Matching4()
         {
             var engine = new MockEngine();
 
@@ -376,7 +376,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
         }
 
         [Fact]
-        public void GetSourceLinkUrl_CustomHosts_Matching5()
+        public void CustomHosts_Matching5()
         {
             var engine = new MockEngine();
 
@@ -402,7 +402,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
         }
 
         [Fact]
-        public void GetSourceLinkUrl_CustomHosts_Matching6()
+        public void CustomHosts_Matching6()
         {
             var engine = new MockEngine();
 
@@ -429,7 +429,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
         [InlineData("", "/")]
         [InlineData("/", "")]
         [InlineData("/", "/")]
-        public void GetSourceLinkUrl_CustomHosts_WithPath1(string s1, string s2)
+        public void CustomHosts_WithPath1(string s1, string s2)
         {
             var engine = new MockEngine();
 
@@ -450,7 +450,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
         }
 
         [Fact]
-        public void GetSourceLinkUrl_CustomHosts_DefaultPortHttp()
+        public void CustomHosts_DefaultPortHttp()
         {
             var engine = new MockEngine();
 
@@ -473,7 +473,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
         }
 
         [Fact]
-        public void GetSourceLinkUrl_CustomHosts_DefaultPortHttps()
+        public void CustomHosts_DefaultPortHttps()
         {
             var engine = new MockEngine();
 
@@ -496,7 +496,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
         }
 
         [Fact]
-        public void GetSourceLinkUrl_TrimDotGit()
+        public void TrimDotGit()
         {
             var engine = new MockEngine();
 
@@ -514,7 +514,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
         }
 
         [Fact]
-        public void GetSourceLinkUrl_TrimmingGitIsCaseSensitive()
+        public void TrimmingGitIsCaseSensitive()
         {
             var engine = new MockEngine();
 
