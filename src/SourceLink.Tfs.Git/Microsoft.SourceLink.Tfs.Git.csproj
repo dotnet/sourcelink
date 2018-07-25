@@ -30,6 +30,6 @@
     <PackageReference Include="Microsoft.Build.Tasks.Core" Version="$(MicrosoftBuildTasksCore)" />
   </ItemGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="Microsoft.SourceLink.Vsts.Git.UnitTests" />
+    <InternalsVisibleTo Include="Microsoft.SourceLink.Tfs.Git.UnitTests" />
   </ItemGroup>
 </Project>

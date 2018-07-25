@@ -15,10 +15,10 @@ namespace Microsoft.SourceLink.Bitbucket.Git
         protected override string HostsItemGroupName => "SourceLinkBitbucketGitHost";
         protected override string ProviderDisplayName => "Bitbucket.Git";
 
-        protected override Uri GetDefaultContentUri(Uri uri)
-            => uri;
+        protected override Uri GetDefaultContentUriFromHostUri(Uri hostUri, Uri gitUri)
+            => hostUri;
 
-        protected override string BuildSourceLinkUrl(string contentUrl, string relativeUrl, string revisionId)
-            => UriUtilities.CombineAbsoluteAndRelativeUrl(UriUtilities.CombineAbsoluteAndRelativeUrl(contentUrl, relativeUrl), "raw/" + revisionId + "/*");
+        protected override string BuildSourceLinkUrl(Uri contentUri, string host, string relativeUrl, string revisionId)
+            => UriUtilities.Combine(UriUtilities.Combine(contentUri.ToString(), relativeUrl), "raw/" + revisionId + "/*");
     }
 }

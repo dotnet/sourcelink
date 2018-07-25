@@ -15,26 +15,26 @@ namespace Microsoft.SourceLink.Vsts.Git
         protected override string HostsItemGroupName => "SourceLinkVstsGitHost";
         protected override string ProviderDisplayName => "Vsts.Git";
 
-        protected override Uri GetDefaultContentUri(Uri uri)
-            => uri;
+        protected override Uri GetDefaultContentUriFromHostUri(Uri hostUri, Uri gitUri)
+            => TeamFoundationUrlParser.IsVisualStudioHostedServer(gitUri.Host) ?
+                new Uri($"{hostUri.Scheme}://{gitUri.Host.Substring(0, gitUri.Host.IndexOf('.'))}.{hostUri.Authority}{hostUri.LocalPath}", UriKind.Absolute) :
+                hostUri;
 
-        protected override string BuildSourceLinkUrl(string contentUrl, string relativeUrl, string revisionId)
+        protected override Uri GetDefaultContentUriFromRepositoryUri(Uri repositoryUri)
+           => repositoryUri;
+
+        protected override string BuildSourceLinkUrl(Uri contentUri, string host, string relativeUrl, string revisionId)
         {
-            if (!UrlParser.TryParseRelativeRepositoryUrl(relativeUrl, "_git", out var collectionName, out var projectName, out var repositoryName))
+            if (!TeamFoundationUrlParser.TryParseHostedHttp(host, relativeUrl, out var repositoryPath, out var repositoryName))
             {
                 // TODO: Log.LogError(CommonResources.ValueOfWithIdentityIsInvalid, Names.SourceRoot.RepositoryUrlFullName, SourceRoot.ItemSpec, repoUrl);
                 return null;
             }
 
-            // Although VSTS does not have non-default collections, TFS does. 
-            // This package can be used for both VSTS and TFS.
-            if (StringComparer.OrdinalIgnoreCase.Equals(collectionName, "DefaultCollection"))
-            {
-                collectionName = null;
-            }
-
-            return UriUtilities.CombineAbsoluteAndRelativeUrl(contentUrl, $"{collectionName}/{projectName}/_apis/git/repositories/{repositoryName}/items") +
-                   $"?api-version=1.0&versionType=commit&version={revisionId}&path=/*";
+            return
+                UriUtilities.Combine(
+                UriUtilities.Combine(contentUri.ToString(), repositoryPath), $"_apis/git/repositories/{repositoryName}/items") +
+                $"?api-version=1.0&versionType=commit&version={revisionId}&path=/*";
         }
 
         // TODO: confirm design and test https://github.com/dotnet/sourcelink/issues/2

@@ -15,10 +15,10 @@ namespace Microsoft.SourceLink.GitLab
         protected override string HostsItemGroupName => "SourceLinkGitLabHost";
         protected override string ProviderDisplayName => "GitLab";
 
-        protected override Uri GetDefaultContentUri(Uri uri)
-            => uri;
+        protected override Uri GetDefaultContentUriFromHostUri(Uri hostUri, Uri gitUri)
+            => hostUri;
 
-        protected override string BuildSourceLinkUrl(string contentUrl, string relativeUrl, string revisionId)
-            => UriUtilities.CombineAbsoluteAndRelativeUrl(UriUtilities.CombineAbsoluteAndRelativeUrl(contentUrl, relativeUrl), "raw/" + revisionId + "/*");
+        protected override string BuildSourceLinkUrl(Uri contentUri, string host, string relativeUrl, string revisionId)
+            => UriUtilities.Combine(UriUtilities.Combine(contentUri.ToString(), relativeUrl), "raw/" + revisionId + "/*");
     }
 }

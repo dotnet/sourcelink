@@ -2,23 +2,20 @@
 
 using System.IO;
 using TestUtilities;
-using Xunit;
 
 namespace Microsoft.SourceLink.IntegrationTests
 {
-    public class VstsTests : DotNetSdkTestBase
+    public class TfsTests : DotNetSdkTestBase
     {
-        public VstsTests() 
-            : base("Microsoft.SourceLink.Vsts.Git")
+        public TfsTests() 
+            : base("Microsoft.SourceLink.Tfs.Git")
         {
         }
 
-        [ConditionalTheory(typeof(DotNetSdkAvailable))]
-        [InlineData("visualstudio.com")]
-        [InlineData("vsts.me")]
-        public void FullValidation_Https(string host)
+        [ConditionalFact(typeof(DotNetSdkAvailable))]
+        public void FullValidation_Https()
         {
-            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, $"https://test.{host}/test-org/_git/test-repo");
+            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, "http://tfs.mydomain.local:8080/tfs/DefaultCollection/TEAM/_git/MyProject");
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -43,14 +40,14 @@ namespace Microsoft.SourceLink.IntegrationTests
                 expectedResults: new[]
                 {
                     ProjectSourceRoot,
-                    $"https://test.{host}/test-org/_apis/git/repositories/test-repo/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*",
+                    $"https://tfs.mydomain.local:8080/tfs/DefaultCollection/TEAM/_apis/git/repositories/MyProject/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*",
                     s_relativeSourceLinkJsonPath,
-                    $"https://test.{host}/test-org/_git/test-repo",
-                    $"https://test.{host}/test-org/_git/test-repo",
+                    "http://tfs.mydomain.local:8080/tfs/DefaultCollection/TEAM/_git/MyProject",
+                    "http://tfs.mydomain.local:8080/tfs/DefaultCollection/TEAM/_git/MyProject",
                 });
 
             AssertEx.AreEqual(
-                $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://test.{host}/test-org/_apis/git/repositories/test-repo/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*""}}}}",
+                $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://tfs.mydomain.local:8080/tfs/DefaultCollection/TEAM/_apis/git/repositories/MyProject/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*""}}}}",
                 File.ReadAllText(Path.Combine(ProjectDir.Path, s_relativeSourceLinkJsonPath)));
 
             TestUtilities.ValidateAssemblyInformationalVersion(
@@ -61,15 +58,13 @@ namespace Microsoft.SourceLink.IntegrationTests
                 Path.Combine(ProjectDir.Path, s_relativePackagePath),
                 type: "git", 
                 commit: commitSha,
-                url: $"https://test.{host}/test-org/_git/test-repo");
+                url: "http://tfs.mydomain.local:8080/tfs/DefaultCollection/TEAM/_git/MyProject");
         }
 
-        [ConditionalTheory(typeof(DotNetSdkAvailable))]
-        [InlineData("visualstudio.com")]
-        [InlineData("vsts.me")]
-        public void FullValidation_Ssh(string host)
+        [ConditionalFact(typeof(DotNetSdkAvailable))]
+        public void FullValidation_Ssh()
         {
-            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, $"ssh://test@vs-ssh.{host}:22/test-org/_ssh/test-repo");
+            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, "ssh://tfs.mydomain.local:22/tfs/DefaultCollection/TEAM/_ssh/MyProject");
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -94,14 +89,14 @@ namespace Microsoft.SourceLink.IntegrationTests
                 expectedResults: new[]
                 {
                     ProjectSourceRoot,
-                    $"https://test.{host}/test-org/_apis/git/repositories/test-repo/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*",
+                    $"https://tfs.mydomain.local/tfs/DefaultCollection/TEAM/_apis/git/repositories/MyProject/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*",
                     s_relativeSourceLinkJsonPath,
-                    $"https://test.{host}/test-org/_git/test-repo",
-                    $"https://test.{host}/test-org/_git/test-repo",
+                    "https://tfs.mydomain.local/tfs/DefaultCollection/TEAM/_git/MyProject",
+                    "https://tfs.mydomain.local/tfs/DefaultCollection/TEAM/_git/MyProject",
                 });
 
             AssertEx.AreEqual(
-                $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://test.{host}/test-org/_apis/git/repositories/test-repo/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*""}}}}",
+                $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://tfs.mydomain.local/tfs/DefaultCollection/TEAM/_apis/git/repositories/MyProject/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*""}}}}",
                 File.ReadAllText(Path.Combine(ProjectDir.Path, s_relativeSourceLinkJsonPath)));
 
             TestUtilities.ValidateAssemblyInformationalVersion(
@@ -112,7 +107,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 Path.Combine(ProjectDir.Path, s_relativePackagePath),
                 type: "git",
                 commit: commitSha,
-                url: $"https://test.{host}/test-org/_git/test-repo");
+                url: "https://tfs.mydomain.local/tfs/DefaultCollection/TEAM/_git/MyProject");
         }
     }
 }

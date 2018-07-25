@@ -1,10 +1,11 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+using System;
 using Microsoft.Build.Tasks.SourceControl;
 using TestUtilities;
 using Xunit;
 using static TestUtilities.KeyValuePairUtils;
 
-namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
+namespace Microsoft.SourceLink.Tfs.Git.UnitTests
 {
     public class GetSourceLinkUrlTests
     {
@@ -22,18 +23,18 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
             bool result = task.Execute();
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
-                "ERROR : " + string.Format(CommonResources.AtLeastOneRepositoryHostIsRequired, "SourceLinkBitbucketGitHost", "Bitbucket.Git"), engine.Log);
+                "ERROR : " + string.Format(CommonResources.AtLeastOneRepositoryHostIsRequired, "SourceLinkTfsGitHost", "Tfs.Git"), engine.Log);
 
             Assert.False(result);
         }
 
         [Theory]
-        [InlineData("mybitbucket*.org")]
-        [InlineData("mybitbucket.org/a")]
-        [InlineData("mybitbucket.org/a?x=2")]
-        [InlineData("http://mybitbucket.org")]
-        [InlineData("http://a@mybitbucket.org")]
-        [InlineData("a@mybitbucket.org")]
+        [InlineData("mytfs*.com")]
+        [InlineData("mytfs.com/a")]
+        [InlineData("mytfs.com/a?x=2")]
+        [InlineData("http://mytfs.com")]
+        [InlineData("http://a@mytfs.com")]
+        [InlineData("a@mytfs.com")]
         public void HostsDomain_Errors(string domain)
         {
             var engine = new MockEngine();
@@ -54,7 +55,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
         }
 
         [Theory]
-        [InlineData("mybitbucket*.org")]
+        [InlineData("http://mytfs*.com")]
         // TODO (https://github.com/dotnet/sourcelink/issues/120): fails on Linux [InlineData("/a")]
         public void ImplicitHost_Errors(string repositoryUrl)
         {
@@ -65,7 +66,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
                 BuildEngine = engine,
                 SourceRoot = new MockItem("x", KVP("RepositoryUrl", "http://abc.com"), KVP("SourceControl", "git")),
                 RepositoryUrl = repositoryUrl,
-                IsSingleProvider = true
+                IsSingleProvider = true,
             };
 
             bool result = task.Execute();
@@ -77,11 +78,11 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
         }
 
         [Theory]
-        [InlineData("mybitbucket.org")]
-        [InlineData("mybitbucket.org/a")]
-        [InlineData("mybitbucket.org/a?x=2")]
-        [InlineData("http://a@mybitbucket.org")]
-        [InlineData("a@mybitbucket.org")]
+        [InlineData("mytfs.com")]
+        [InlineData("mytfs.com/a")]
+        [InlineData("mytfs.com/a?x=2")]
+        [InlineData("http://a@mytfs.com")]
+        [InlineData("a@mytfs.com")]
         public void HostsContentUrl_Errors(string url)
         {
             var engine = new MockEngine();
@@ -137,8 +138,8 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://bitbucket.org/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", revisionId)),
-                Hosts = new[] { new MockItem("bitbucket.org") }
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://tfs.com/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", revisionId)),
+                Hosts = new[] { new MockItem("tfs.com", KVP("ContentUrl", "https://tfs.com")) }
             };
 
             bool result = task.Execute();
@@ -157,8 +158,8 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://bitbucket.org/a/b"), KVP("SourceControl", "tfvc"), KVP("RevisionId", "12345")),
-                Hosts = new[] { new MockItem("bitbucket.org") }
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://tfs.com/a/b"), KVP("SourceControl", "tfvc"), KVP("RevisionId", "12345")),
+                Hosts = new[] { new MockItem("tfs.com", KVP("ContentUrl", "https://tfs.com")) }
             };
 
             bool result = task.Execute();
@@ -175,8 +176,8 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://bitbucket.org/a/b"), KVP("SourceControl", "git"), KVP("SourceLinkUrl", "x"), KVP("RevisionId", "12345")),
-                Hosts = new[] { new MockItem("bitbucket.org") }
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://tfs.com/a/b"), KVP("SourceControl", "git"), KVP("SourceLinkUrl", "x"), KVP("RevisionId", "12345")),
+                Hosts = new[] { new MockItem("github.com", KVP("ContentUrl", "https://tfs.com")) }
             };
 
             bool result = task.Execute();
@@ -196,8 +197,8 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
                 SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://abc.com/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "12345")),
                 Hosts = new[]
                 {
-                    new MockItem("bitbucket.org", KVP("ContentUrl", "http://mycontent1.com")),
-                    new MockItem("mybitbucket.org", KVP("ContentUrl", "http://mycontent2.com"))
+                    new MockItem("mytfs1.com", KVP("ContentUrl", "https://mytfs1.com")),
+                    new MockItem("mytfs2.com", KVP("ContentUrl", "http://mytfs2.com"))
                 }
             };
 
@@ -215,16 +216,16 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mybitbucket.org:1234/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.tfs.com:1234/collection/project/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
-                    new MockItem("mybitbucket.org"),
+                    new MockItem("tfs.com"),
                 }
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("https://mybitbucket.org:1234/a/b/raw/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://tfs.com:1234/collection/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -236,14 +237,14 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mybitbucket.org:1234/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
-                RepositoryUrl = "https://mybitbucket.org",
-                IsSingleProvider = true
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.tfs.com:1234/collection/project/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                RepositoryUrl = "http://tfs.com",
+                IsSingleProvider = true,
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("https://mybitbucket.org:1234/a/b/raw/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://tfs.com:1234/collection/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -255,16 +256,16 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mybitbucket.org:1234/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.tfs.com:1234/collection/project/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
-                    new MockItem("mybitbucket.org", KVP("ContentUrl", "https://mybitbucket.org")),
+                    new MockItem("tfs.com", KVP("ContentUrl", "https://othertfs.com")),
                 }
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("https://mybitbucket.org/a/b/raw/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://othertfs.com/collection/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -276,19 +277,20 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mybitbucket.org:1234/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
-                RepositoryUrl = "https://abc.com",
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.tfs.com:1234/collection/project/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                RepositoryUrl = "http://abc.com",
                 IsSingleProvider = true,
                 Hosts = new[]
                 {
-                    new MockItem("mybitbucket.org", KVP("ContentUrl", "https://subdomain.rawmybitbucket1.com:777")),
-                    new MockItem("mybitbucket.org", KVP("ContentUrl", "https://subdomain.rawmybitbucket2.com"))
+                    new MockItem("contoso.com", KVP("ContentUrl", "https://contoso.com")),
+                    new MockItem("tfs.com", KVP("ContentUrl", "https://subdomain.tfs.com1:777")),
+                    new MockItem("tfs.com", KVP("ContentUrl", "https://subdomain.tfs.com2"))
                 }
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("https://subdomain.rawmybitbucket1.com:777/a/b/raw/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://subdomain.tfs.com1:777/collection/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -300,16 +302,16 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mybitbucket.org:123/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
-                RepositoryUrl = "https://subdomain.mybitbucket.org:123",
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.tfs.com:123/collection/project/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                RepositoryUrl = "http://subdomain.tfs.com:123",
                 IsSingleProvider = true,
                 Hosts = new[]
                 {
-                    new MockItem("mybitbucket.org", KVP("ContentUrl", "https://domain.com:1")),
-                    new MockItem("mybitbucket.org:123", KVP("ContentUrl", "https://domain.com:2")),
-                    new MockItem("mybitbucket.org:123", KVP("ContentUrl", "https://domain.com:3")),
-                    new MockItem("subdomain.mybitbucket.org", KVP("ContentUrl", "https://domain.com:4")),
-                    new MockItem("subdomain.mybitbucket.org:123", KVP("ContentUrl", "https://domain.com:5")),
+                    new MockItem("tfs.com", KVP("ContentUrl", "https://domain.com:1")),
+                    new MockItem("tfs.com:123", KVP("ContentUrl", "https://domain.com:2")),
+                    new MockItem("tfs.com:123", KVP("ContentUrl", "https://domain.com:3")),
+                    new MockItem("subdomain.tfs.com", KVP("ContentUrl", "https://domain.com:4")),
+                    new MockItem("subdomain.tfs.com:123", KVP("ContentUrl", "https://domain.com:5")),
                 }
             };
 
@@ -317,7 +319,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
 
             // explicit host is preferred over the implicit one 
-            AssertEx.AreEqual("https://domain.com:5/a/b/raw/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://domain.com:5/collection/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -329,21 +331,21 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mybitbucket.org:100/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.tfs.com:100/collection/project/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
-                    new MockItem("mybitbucket.org", KVP("ContentUrl", "https://domain.com:1")),
-                    new MockItem("mybitbucket.org:123", KVP("ContentUrl", "https://domain.com:2")),
-                    new MockItem("mybitbucket.org:123", KVP("ContentUrl", "https://domain.com:3")),
-                    new MockItem("subdomain.mybitbucket.org", KVP("ContentUrl", "https://domain.com:4")),
-                    new MockItem("subdomain.mybitbucket.org:123", KVP("ContentUrl", "https://domain.com:5")),
-                    new MockItem("subdomain.mybitbucket.org:123", KVP("ContentUrl", "https://domain.com:6")),
+                    new MockItem("tfs.com", KVP("ContentUrl", "https://domain.com:1")),
+                    new MockItem("tfs.com:123", KVP("ContentUrl", "https://domain.com:2")),
+                    new MockItem("tfs.com:123", KVP("ContentUrl", "https://domain.com:3")),
+                    new MockItem("subdomain.tfs.com", KVP("ContentUrl", "https://domain.com:4")),
+                    new MockItem("subdomain.tfs.com:123", KVP("ContentUrl", "https://domain.com:5")),
+                    new MockItem("subdomain.tfs.com:123", KVP("ContentUrl", "https://domain.com:6")),
                 }
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("https://domain.com:4/a/b/raw/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://domain.com:4/collection/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -355,21 +357,21 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mybitbucket.org:123/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.tfs.com:123/collection/project/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
-                    new MockItem("mybitbucket.org", KVP("ContentUrl", "https://domain.com:1")),
-                    new MockItem("mybitbucket.org:123", KVP("ContentUrl", "https://domain.com:2")),
-                    new MockItem("mybitbucket.org:123", KVP("ContentUrl", "https://domain.com:3")),
-                    new MockItem("z.mybitbucket.org", KVP("ContentUrl", "https://domain.com:4")),
-                    new MockItem("z.mybitbucket.org:123", KVP("ContentUrl", "https://domain.com:5")),
-                    new MockItem("z.mybitbucket.org:123", KVP("ContentUrl", "https://domain.com:6")),
+                    new MockItem("tfs.com", KVP("ContentUrl", "https://domain.com:1")),
+                    new MockItem("tfs.com:123", KVP("ContentUrl", "https://domain.com:2")),
+                    new MockItem("tfs.com:123", KVP("ContentUrl", "https://domain.com:3")),
+                    new MockItem("z.tfs.com", KVP("ContentUrl", "https://domain.com:4")),
+                    new MockItem("z.tfs.com:123", KVP("ContentUrl", "https://domain.com:5")),
+                    new MockItem("z.tfs.com:123", KVP("ContentUrl", "https://domain.com:6")),
                 }
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("https://domain.com:2/a/b/raw/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://domain.com:2/collection/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -381,21 +383,21 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mybitbucket.org:100/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.tfs.com:100/collection/project/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
-                    new MockItem("mybitbucket.org", KVP("ContentUrl", "https://domain.com:1")),
-                    new MockItem("mybitbucket.org:123", KVP("ContentUrl", "https://domain.com:2")),
-                    new MockItem("mybitbucket.org:123", KVP("ContentUrl", "https://domain.com:3")),
-                    new MockItem("z.mybitbucket.org", KVP("ContentUrl", "https://domain.com:4")),
-                    new MockItem("z.mybitbucket.org:123", KVP("ContentUrl", "https://domain.com:5")),
-                    new MockItem("z.mybitbucket.org:123", KVP("ContentUrl", "https://domain.com:6")),
+                    new MockItem("tfs.com", KVP("ContentUrl", "https://domain.com:1")),
+                    new MockItem("tfs.com:123", KVP("ContentUrl", "https://domain.com:2")),
+                    new MockItem("tfs.com:123", KVP("ContentUrl", "https://domain.com:3")),
+                    new MockItem("z.tfs.com", KVP("ContentUrl", "https://domain.com:4")),
+                    new MockItem("z.tfs.com:123", KVP("ContentUrl", "https://domain.com:5")),
+                    new MockItem("z.tfs.com:123", KVP("ContentUrl", "https://domain.com:6")),
                 }
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("https://domain.com:1/a/b/raw/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://domain.com:1/collection/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -407,18 +409,18 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "https://bitbucket.org/test-org/test-repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
-                RepositoryUrl = "https://bitbucket.org/test-org/test-repo",
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.tfs.com/collection/project/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                RepositoryUrl = "https://tfs.com/collection/project/_git/repo",
                 IsSingleProvider = true,
                 Hosts = new[]
                 {
-                    new MockItem("bitbucket.org", KVP("ContentUrl", "https://zzz.com")),
+                    new MockItem("tfs.com", KVP("ContentUrl", "https://zzz.com")),
                 }
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("https://zzz.com/test-org/test-repo/raw/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://zzz.com/collection/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -434,16 +436,16 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mybitbucket.org:100/a/b" + s1), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.tfs.com:100/collection/project/_git/repo" + s1), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
-                    new MockItem("mybitbucket.org", KVP("ContentUrl", "https://domain.com/x/y" + s2)),
+                    new MockItem("tfs.com", KVP("ContentUrl", "https://domain.com/x/y" + s2)),
                 }
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("https://domain.com/x/y/a/b/raw/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://domain.com/x/y/collection/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -455,18 +457,18 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mybitbucket.org/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.tfs.com/collection/project/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
-                    new MockItem("mybitbucket.org:80", KVP("ContentUrl", "https://domain.com:1")),
-                    new MockItem("mybitbucket.org:443", KVP("ContentUrl", "https://domain.com:2")),
-                    new MockItem("mybitbucket.org:1234", KVP("ContentUrl", "https://domain.com:3")),
+                    new MockItem("tfs.com:80", KVP("ContentUrl", "https://domain.com:1")),
+                    new MockItem("tfs.com:443", KVP("ContentUrl", "https://domain.com:2")),
+                    new MockItem("tfs.com:1234", KVP("ContentUrl", "https://domain.com:3")),
                 }
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("https://domain.com:1/a/b/raw/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://domain.com:1/collection/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -478,18 +480,18 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "https://subdomain.mybitbucket.org/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "https://subdomain.tfs.com/collection/project/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
-                    new MockItem("mybitbucket.org:80", KVP("ContentUrl", "https://domain.com:1")),
-                    new MockItem("mybitbucket.org:443", KVP("ContentUrl", "https://domain.com:2")),
-                    new MockItem("mybitbucket.org:1234", KVP("ContentUrl", "https://domain.com:3")),
+                    new MockItem("tfs.com:80", KVP("ContentUrl", "https://domain.com:1")),
+                    new MockItem("tfs.com:443", KVP("ContentUrl", "https://domain.com:2")),
+                    new MockItem("tfs.com:1234", KVP("ContentUrl", "https://domain.com:3")),
                 }
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("https://domain.com:2/a/b/raw/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://domain.com:2/collection/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -501,13 +503,13 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://bitbucket.org/a/b.git"), KVP("SourceControl", "git"), KVP("RevisionId", "0000000000000000000000000000000000000000")),
-                Hosts = new[] { new MockItem("bitbucket.org") }
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://mytfs.com/collection/project/_git/repo.git"), KVP("SourceControl", "git"), KVP("RevisionId", "0000000000000000000000000000000000000000")),
+                Hosts = new[] { new MockItem("mytfs.com") }
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("https://bitbucket.org/a/b/raw/0000000000000000000000000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://mytfs.com/collection/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0000000000000000000000000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -519,13 +521,13 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://bitbucket.org/a/b.GIT"), KVP("SourceControl", "git"), KVP("RevisionId", "0000000000000000000000000000000000000000")),
-                Hosts = new[] { new MockItem("bitbucket.org") }
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://mytfs.com/collection/project/_git/repo.GIT"), KVP("SourceControl", "git"), KVP("RevisionId", "0000000000000000000000000000000000000000")),
+                Hosts = new[] { new MockItem("mytfs.com") }
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("https://bitbucket.org/a/b.GIT/raw/0000000000000000000000000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://mytfs.com/collection/project/_apis/git/repositories/repo.GIT/items?api-version=1.0&versionType=commit&version=0000000000000000000000000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -537,13 +539,13 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://bitbucket.org/a/.git"), KVP("SourceControl", "git"), KVP("RevisionId", "0000000000000000000000000000000000000000")),
-                Hosts = new[] { new MockItem("bitbucket.org") }
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://mytfs.com/collection/project/_git/.git"), KVP("SourceControl", "git"), KVP("RevisionId", "0000000000000000000000000000000000000000")),
+                Hosts = new[] { new MockItem("mytfs.com") }
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("https://bitbucket.org/a/.git/raw/0000000000000000000000000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://mytfs.com/collection/project/_apis/git/repositories/.git/items?api-version=1.0&versionType=commit&version=0000000000000000000000000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
         }
     }

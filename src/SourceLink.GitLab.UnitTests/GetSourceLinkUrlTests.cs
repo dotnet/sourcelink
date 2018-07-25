@@ -528,5 +528,23 @@ namespace Microsoft.SourceLink.GitLab.UnitTests
             AssertEx.AreEqual("https://gitlab.com/a/b.GIT/raw/0000000000000000000000000000000000000000/*", task.SourceLinkUrl);
             Assert.True(result);
         }
+
+        [Fact]
+        public void TrimmingGitOnlyWhenSuffix()
+        {
+            var engine = new MockEngine();
+
+            var task = new GetSourceLinkUrl()
+            {
+                BuildEngine = engine,
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://gitlab.com/a/.git"), KVP("SourceControl", "git"), KVP("RevisionId", "0000000000000000000000000000000000000000")),
+                Hosts = new[] { new MockItem("gitlab.com") }
+            };
+
+            bool result = task.Execute();
+            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            AssertEx.AreEqual("https://gitlab.com/a/.git/raw/0000000000000000000000000000000000000000/*", task.SourceLinkUrl);
+            Assert.True(result);
+        }
     }
 }
