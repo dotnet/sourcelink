@@ -31,6 +31,10 @@
         "bin/Microsoft.SourceLink.Vsts.Git/net461/*/Microsoft.SourceLink.Vsts.Git.resources.dll",
         "bin/Microsoft.SourceLink.Vsts.Git/netcoreapp2.0/publish/Microsoft.SourceLink.Vsts.Git.dll",
         "bin/Microsoft.SourceLink.Vsts.Git/netcoreapp2.0/publish/*/Microsoft.SourceLink.Vsts.Git.resources.dll",
+        "bin/Microsoft.SourceLink.Tfs.Git/net461/Microsoft.SourceLink.Tfs.Git.dll",
+        "bin/Microsoft.SourceLink.Tfs.Git/net461/*/Microsoft.SourceLink.Tfs.Git.resources.dll",
+        "bin/Microsoft.SourceLink.Tfs.Git/netcoreapp2.0/publish/Microsoft.SourceLink.Tfs.Git.dll",
+        "bin/Microsoft.SourceLink.Tfs.Git/netcoreapp2.0/publish/*/Microsoft.SourceLink.Tfs.Git.resources.dll",
         "bin/Microsoft.SourceLink.Vsts.Tfvc/net461/Microsoft.SourceLink.Vsts.Tfvc.dll",
         "bin/Microsoft.SourceLink.Vsts.Tfvc/netcoreapp2.0/publish/Microsoft.SourceLink.Vsts.Tfvc.dll"
       ]
@@ -39,7 +43,7 @@
       "certificate": "nuget",
       "strongName": null,
       "values": [
-        "packages/*.nupkg"
+        "packages/Shipping/*.nupkg"
       ]
     }
   ],
