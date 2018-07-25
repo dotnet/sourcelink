@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <_SourceLinkTfsGitAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)..\tools\net461\Microsoft.SourceLink.Tfs.Git.dll</_SourceLinkTfsGitAssemblyFile>
+    <_SourceLinkTfsGitAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\netcoreapp2.0\Microsoft.SourceLink.Tfs.Git.dll</_SourceLinkTfsGitAssemblyFile>
+  </PropertyGroup>
+
+  <UsingTask TaskName="Microsoft.SourceLink.Tfs.Git.GetSourceLinkUrl" AssemblyFile="$(_SourceLinkTfsGitAssemblyFile)"/>
+  <UsingTask TaskName="Microsoft.SourceLink.Tfs.Git.TranslateRepositoryUrls" AssemblyFile="$(_SourceLinkTfsGitAssemblyFile)"/>
+
+  <PropertyGroup>
+    <SourceLinkUrlInitializerTargets>$(SourceLinkUrlInitializerTargets);_InitializeTfsGitSourceLinkUrl</SourceLinkUrlInitializerTargets>
+    <SourceControlManagerUrlTranslationTargets>$(SourceControlManagerUrlTranslationTargets);TranslateTfsGitUrlsInSourceControlInformation</SourceControlManagerUrlTranslationTargets>
+  </PropertyGroup>
+  
+  <Target Name="_InitializeTfsGitSourceLinkUrl" Inputs="@(SourceRoot)" Outputs="|%(Identity)|">
+    <!--
+      The task calculates SourceLink URL for a given SourceRoot.
+
+      If the SourceRoot is associated with a git repository with a recognized domain the <see cref="SourceLinkUrl"/>
+      output property is set to the content URL corresponding to the domain, otherwise it is set to string "N/A".
+
+      Recognized domains are specified via Hosts (initialized from SourceLinkTfsHost item group).
+      In addition SourceLinkHasSingleProvider is true an iplicit host is parsed from RepositoryUrl.
+
+      Example of SourceLinkTfsGitHost items:
+
+      <ItemGroup>
+        <SourceLinkTfsGitHost Include="mytfs1.com" ContentUrl="http://mytfs1.com"/>
+        <SourceLinkTfsGitHost Include="mytfs2.com" />           ContentUrl defaults to https://mytfs2.com
+        <SourceLinkTfsGitHost Include="mytfs3.com:8080" />      ContentUrl defaults to https://mytfs3.com:8080
+      </ItemGroup>
+
+      ContentUrl is optional. If not specified it defaults to "https://{domain}".
+    -->
+    <Microsoft.SourceLink.Tfs.Git.GetSourceLinkUrl RepositoryUrl="$(PrivateRepositoryUrl)" SourceRoot="@(SourceRoot)" Hosts="@(SourceLinkTfsGitHost)" IsSingleProvider="$(SourceLinkHasSingleProvider)">
+      <Output TaskParameter="SourceLinkUrl" PropertyName="_SourceLinkUrlToUpdate"/>
+    </Microsoft.SourceLink.Tfs.Git.GetSourceLinkUrl>
+
+    <ItemGroup>
+      <!-- Only update the SourceLinkUrl metadata if the SourceRoot belongs to this source control -->
+      <SourceRoot Update="%(Identity)" SourceLinkUrl="$(_SourceLinkUrlToUpdate)" Condition="'$(_SourceLinkUrlToUpdate)' != 'N/A'"/>
+    </ItemGroup>
+  </Target>
+
+  <!-- 
+    We need to translate ssh URLs to https.
+  -->
+  <Target Name="TranslateTfsGitUrlsInSourceControlInformation">
+
+    <ItemGroup>
+      <_TranslatedSourceRoot Remove="@(_TranslatedSourceRoot)"/>
+    </ItemGroup>
+
+    <Microsoft.SourceLink.Tfs.Git.TranslateRepositoryUrls RepositoryUrl="$(ScmRepositoryUrl)" SourceRoots="@(SourceRoot)" Hosts="@(SourceLinkTfsGitHost)" IsSingleProvider="$(SourceLinkHasSingleProvider)">
+      <Output TaskParameter="TranslatedRepositoryUrl" PropertyName="ScmRepositoryUrl"/>
+      <Output TaskParameter="TranslatedSourceRoots" ItemName="_TranslatedSourceRoot"/>
+    </Microsoft.SourceLink.Tfs.Git.TranslateRepositoryUrls>
+
+    <ItemGroup>
+      <SourceRoot Remove="@(SourceRoot)"/>
+      <SourceRoot Include="@(_TranslatedSourceRoot)"/>
+    </ItemGroup>
+  </Target>
+</Project>
+ 

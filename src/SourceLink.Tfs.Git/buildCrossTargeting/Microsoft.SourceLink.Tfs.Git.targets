@@ -4,8 +4,5 @@
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
   </PropertyGroup>
 
-  <ItemGroup>
-    <SourceLinkVstsGitHost Include="visualstudio.com" />
-    <SourceLinkVstsGitHost Include="vsts.me" />
-  </ItemGroup>
+  <Import Project="..\build\Microsoft.SourceLink.Tfs.Git.targets"/>
 </Project>

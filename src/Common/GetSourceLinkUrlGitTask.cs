@@ -36,8 +36,13 @@ namespace Microsoft.Build.Tasks.SourceControl
 
         protected abstract string ProviderDisplayName { get; }
         protected abstract string HostsItemGroupName { get; }
-        protected abstract Uri GetDefaultContentUri(Uri uri);
-        protected abstract string BuildSourceLinkUrl(string contentUrl, string relativeUrl, string revisionId);
+
+        protected abstract Uri GetDefaultContentUriFromHostUri(Uri hostUri, Uri gitUri);
+
+        protected virtual Uri GetDefaultContentUriFromRepositoryUri(Uri repositoryUri)
+            => GetDefaultContentUriFromHostUri(repositoryUri, repositoryUri);
+
+        protected abstract string BuildSourceLinkUrl(Uri contentUrl, string host, string relativeUrl, string revisionId);
 
         public override bool Execute()
         {
@@ -55,14 +60,14 @@ namespace Microsoft.Build.Tasks.SourceControl
                 return;
             }
 
-            var repoUrl = SourceRoot.GetMetadata(Names.SourceRoot.RepositoryUrl);
-            if (!Uri.TryCreate(repoUrl, UriKind.Absolute, out var repoUri))
+            var gitUrl = SourceRoot.GetMetadata(Names.SourceRoot.RepositoryUrl);
+            if (!Uri.TryCreate(gitUrl, UriKind.Absolute, out var gitUri))
             {
-                Log.LogError(CommonResources.ValueOfWithIdentityIsInvalid, Names.SourceRoot.RepositoryUrlFullName, SourceRoot.ItemSpec, repoUrl);
+                Log.LogError(CommonResources.ValueOfWithIdentityIsInvalid, Names.SourceRoot.RepositoryUrlFullName, SourceRoot.ItemSpec, gitUrl);
                 return;
             }
 
-            var mappings = GetUrlMappings().ToArray();
+            var mappings = GetUrlMappings(gitUri).ToArray();
             if (Log.HasLoggedErrors)
             {
                 return;
@@ -74,7 +79,7 @@ namespace Microsoft.Build.Tasks.SourceControl
                 return;
             }
 
-            var contentUri = GetMatchingContentUri(mappings, repoUri);
+            var contentUri = GetMatchingContentUri(mappings, gitUri);
             if (contentUri == null)
             {
                 SourceLinkUrl = NotApplicableValue;
@@ -91,16 +96,16 @@ namespace Microsoft.Build.Tasks.SourceControl
                 return;
             }
 
-            var relativeUrl = repoUri.LocalPath.TrimEnd('/');
+            var relativeUrl = gitUri.LocalPath.TrimEnd('/');
 
             // The URL may or may not end with '.git' (case-sensitive), but content URLs do not include '.git' suffix:
             const string gitUrlSuffix = ".git";
-            if (relativeUrl.EndsWith(gitUrlSuffix, StringComparison.Ordinal))
+            if (relativeUrl.EndsWith(gitUrlSuffix, StringComparison.Ordinal) && !relativeUrl.EndsWith("/" + gitUrlSuffix, StringComparison.Ordinal))
             {
                 relativeUrl = relativeUrl.Substring(0, relativeUrl.Length - gitUrlSuffix.Length);
             }
 
-            SourceLinkUrl = BuildSourceLinkUrl(contentUri.ToString(), relativeUrl, revisionId);
+            SourceLinkUrl = BuildSourceLinkUrl(contentUri, gitUri.Host, relativeUrl, revisionId);
         }
 
         private struct UrlMapping
@@ -119,13 +124,13 @@ namespace Microsoft.Build.Tasks.SourceControl
             }
         }
 
-        private IEnumerable<UrlMapping> GetUrlMappings()
+        private IEnumerable<UrlMapping> GetUrlMappings(Uri gitUri)
         {
             bool isValidContentUri(Uri uri)
                 => uri.Query == "" && uri.UserInfo == "";
 
-            Uri getDefaultUri(string authority)
-                => GetDefaultContentUri(new Uri("https://" + authority, UriKind.Absolute));
+            Uri createUri(string authority)
+                => new Uri("https://" + authority, UriKind.Absolute);
 
             if (Hosts != null)
             {
@@ -144,7 +149,7 @@ namespace Microsoft.Build.Tasks.SourceControl
                     bool hasDefaultContentUri = string.IsNullOrEmpty(contentUrl);
                     if (hasDefaultContentUri)
                     {
-                        contentUri = getDefaultUri(authority);
+                        contentUri = GetDefaultContentUriFromHostUri(createUri(authority), gitUri);
                     }
                     else if (!Uri.TryCreate(contentUrl, UriKind.Absolute, out contentUri) || !isValidContentUri(contentUri))
                     {
@@ -161,7 +166,7 @@ namespace Microsoft.Build.Tasks.SourceControl
             {
                 if (Uri.TryCreate(RepositoryUrl, UriKind.Absolute, out var uri))
                 {
-                    yield return new UrlMapping(uri.Host, uri.GetExplicitPort(), getDefaultUri(uri.Authority), hasDefaultContentUri: true);
+                    yield return new UrlMapping(uri.Host, uri.GetExplicitPort(), GetDefaultContentUriFromRepositoryUri(createUri(uri.Authority)), hasDefaultContentUri: true);
                 }
                 else
                 {

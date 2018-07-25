@@ -13,10 +13,11 @@ namespace Microsoft.Build.Tasks.SourceControl
         public static int GetExplicitPort(this Uri uri)
             => new Uri("unknown://" + uri.Authority, UriKind.Absolute).Port;
 
-        public static string CombineAbsoluteAndRelativeUrl(string baseUrl, string relativeUrl)
-            => baseUrl.EndsWith("/")
-                ? relativeUrl.StartsWith("/") ? baseUrl + relativeUrl.Substring(1) : baseUrl + relativeUrl
-                : relativeUrl.StartsWith("/") ? baseUrl + relativeUrl : baseUrl + "/" + relativeUrl;
+        public static string Combine(string baseUrl, string relativeUrl)
+            => string.IsNullOrEmpty(relativeUrl) ? baseUrl : 
+                baseUrl.EndsWith("/")
+                    ? (relativeUrl.StartsWith("/") ? baseUrl + relativeUrl.Substring(1) : baseUrl + relativeUrl)
+                    : (relativeUrl.StartsWith("/") ? baseUrl + relativeUrl : baseUrl + "/" + relativeUrl);
 
         public static bool IsAuthorityUri(Uri uri)
             => uri.PathAndQuery == "/" && uri.UserInfo == "";

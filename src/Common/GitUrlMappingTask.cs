@@ -101,14 +101,6 @@ namespace Microsoft.Build.Tasks.SourceControl
             SourceLinkUrl = BuildSourceLinkUrl(contentUri.ToString(), relativeUrl, revisionId);
         }
 
-        internal static string CombineAbsoluteAndRelativeUrl(string baseUrl, string relativeUrl)
-            => baseUrl.EndsWith("/")
-                ? relativeUrl.StartsWith("/") ? baseUrl + relativeUrl.Substring(1) : baseUrl + relativeUrl
-                : relativeUrl.StartsWith("/") ? baseUrl + relativeUrl : baseUrl + "/" + relativeUrl;
-
-        private static bool IsAuthorityUri(Uri uri)
-            => uri.PathAndQuery == "/" && uri.UserInfo == "";
-
         private struct UrlMapping
         {
             public readonly Uri Host;

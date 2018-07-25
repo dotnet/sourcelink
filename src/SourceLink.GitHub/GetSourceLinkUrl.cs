@@ -15,10 +15,10 @@ namespace Microsoft.SourceLink.GitHub
         protected override string HostsItemGroupName => "SourceLinkGitHubHost";
         protected override string ProviderDisplayName => "GitHub";
 
-        protected override Uri GetDefaultContentUri(Uri uri)
-            => new Uri(uri, "raw");
+        protected override Uri GetDefaultContentUriFromHostUri(Uri hostUri, Uri gitUri)
+            => new Uri(hostUri, "raw");
 
-        protected override string BuildSourceLinkUrl(string contentUrl, string relativeUrl, string revisionId)
-            => UriUtilities.CombineAbsoluteAndRelativeUrl(UriUtilities.CombineAbsoluteAndRelativeUrl(contentUrl, relativeUrl), revisionId + "/*");
+        protected override string BuildSourceLinkUrl(Uri contentUri, string host, string relativeUrl, string revisionId)
+            => UriUtilities.Combine(UriUtilities.Combine(contentUri.ToString(), relativeUrl), revisionId + "/*");
     }
 }
