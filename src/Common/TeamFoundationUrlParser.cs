@@ -9,6 +9,7 @@ namespace Microsoft.SourceLink
 {
     /// <summary>
     /// URL parsing utilities for Team Foundation source control providers (VSTS, TFS, TFVC).
+    /// See https://github.com/dotnet/sourcelink/blob/master/docs/Implementation/TeamFoundationUrlParser.md
     /// </summary>
     internal static class TeamFoundationUrlParser
     {
