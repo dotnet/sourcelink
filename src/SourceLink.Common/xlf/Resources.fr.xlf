@@ -13,8 +13,8 @@
         <note />
       </trans-unit>
       <trans-unit id="MustContainSingleWildcard">
-        <source>{0} must contain a single wildcard '*': '{1}'"</source>
-        <target state="translated">{0} doit contenir un seul caractère générique '*' : '{1}'"</target>
+        <source>{0} must contain a single wildcard '*': '{1}'</source>
+        <target state="translated">{0} doit contenir un seul caractère générique '*' : '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="NoItemsSpecifiedSourceLinkEmpty">
@@ -29,7 +29,7 @@
       </trans-unit>
       <trans-unit id="ErrorWritingToSourceLinkFile">
         <source>Error writing to source link file '{0}': {1}</source>
-        <target state="needs-review-translation">Erreur d'écriture dans le fichier de lien source '{0}' : {1}"</target>
+        <target state="needs-review-translation">Erreur d'écriture dans le fichier de lien source '{0}' : {1}</target>
         <note />
       </trans-unit>
     </body>

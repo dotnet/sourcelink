@@ -13,7 +13,7 @@
         <note />
       </trans-unit>
       <trans-unit id="MustContainSingleWildcard">
-        <source>{0} must contain a single wildcard '*': '{1}'"</source>
+        <source>{0} must contain a single wildcard '*': '{1}'</source>
         <target state="translated">{0} には 1 つのワイルドカード '*' を含める必要があります: '{1}'</target>
         <note />
       </trans-unit>
@@ -29,7 +29,7 @@
       </trans-unit>
       <trans-unit id="ErrorWritingToSourceLinkFile">
         <source>Error writing to source link file '{0}': {1}</source>
-        <target state="needs-review-translation">ソース リンク ファイル '{0}' への書き込みでエラーが発生しました: {1}"</target>
+        <target state="needs-review-translation">ソース リンク ファイル '{0}' への書き込みでエラーが発生しました: {1}</target>
         <note />
       </trans-unit>
     </body>
