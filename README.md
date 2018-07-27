@@ -10,6 +10,8 @@ The [original SourceLink implementation](https://github.com/ctaggart/SourceLink)
 
 ## Using SourceLink
 
+### github.com and GitHub Enterprise
+
 You can enable SourceLink in your own project hosted on [GitHub](http://github.com) by following this [example](https://github.com/dotnet/sourcelink/blob/master/docs/Readme.md#example):
 
 ```xml
@@ -27,21 +29,51 @@ You can enable SourceLink in your own project hosted on [GitHub](http://github.c
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63102-01" PrivateAssets="All"/>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02" PrivateAssets="All"/>
   </ItemGroup>
 </Project>
 ```
 
-For projects hosted by [Visual Studio Team Services](https://www.visualstudio.com/team-services) or [Team Foundation Server](https://visualstudio.microsoft.com/tfs) in git repositories reference [Microsoft.SourceLink.Vsts.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Vsts.Git) package like so: 
+### Visual Studio Team Services
+
+For projects hosted by [Visual Studio Team Services](https://www.visualstudio.com/team-services) in git repositories reference [Microsoft.SourceLink.Vsts.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Vsts.Git) package like so: 
 
 ```xml
-<PackageReference Include="Microsoft.SourceLink.Vsts.Git" Version="1.0.0-beta-63102-01" PrivateAssets="All"/>
+<ItemGroup>
+  <PackageReference Include="Microsoft.SourceLink.Vsts.Git" Version="1.0.0-beta-63127-02" PrivateAssets="All"/>
+<ItemGroup>
 ```
 
-For projects hosted by [GitLab](https://gitlab.com) reference [Microsoft.SourceLink.GitLab](https://www.nuget.org/packages/Microsoft.SourceLink.GitLab) package like so: 
+### Team Foundation Server
+
+For projects hosted by on-prem [Team Foundation Server](https://visualstudio.microsoft.com/tfs) in git repositories reference
+[Microsoft.SourceLink.Vsts.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Vsts.Git) package and add TFS host configuration like so:
 
 ```xml
-<PackageReference Include="Microsoft.SourceLink.GitLab" Version="1.0.0-beta-63102-01" PrivateAssets="All"/>
+<ItemGroup>
+  <PackageReference Include="Microsoft.SourceLink.Tfs.Git" Version="1.0.0-beta-63127-02" PrivateAssets="All"/>
+  <SourceLinkTfsGitHost Include="my.tfs.server" VirtualDirectory="tfs"/>
+</ItemGroup>
+```
+
+### GitLab
+
+For projects hosted by [GitLab](https://gitlab.com) reference [Microsoft.SourceLink.GitLab](https://www.nuget.org/packages/Microsoft.SourceLink.GitLab) package: 
+
+```xml
+<ItemGroup>
+  <PackageReference Include="Microsoft.SourceLink.GitLab" Version="1.0.0-beta-63127-02" PrivateAssets="All"/>
+</ItemGroup>
+```
+
+### Bitbucket.org
+
+For projects hosted on [Bitbucket.org](https://bitbucket.org) reference [Microsoft.SourceLink.Bitbucket.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Bitbucket.Git) package: 
+
+```xml
+<ItemGroup>
+  <PackageReference Include="Microsoft.SourceLink.Bitbucket.Git" Version="1.0.0-beta-63127-02" PrivateAssets="All"/>
+</ItemGroup>
 ```
 
 If your repository contains submodules hosted by other git providers reference packages of all these providers. For example, projects in a repository hosted by VSTS that links a GitHub repository via a submodule should reference both [Microsoft.SourceLink.Vsts.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Vsts.Git) and [Microsoft.SourceLink.GitHub](https://www.nuget.org/packages/Microsoft.SourceLink.GitHub) packages. [Additional configuration](https://github.com/dotnet/sourcelink/blob/master/docs/README.md#configuring-projects-with-multiple-sourcelink-providers) might be needed if multiple SourceLink packages are used in the project.
