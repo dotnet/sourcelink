@@ -39,7 +39,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{762115
 	ProjectSection(SolutionItems) = preProject
 		src\Common\CommonResources.resx = src\Common\CommonResources.resx
 		src\Common\GetSourceLinkUrlGitTask.cs = src\Common\GetSourceLinkUrlGitTask.cs
-		src\Common\GitUrlMappingTask.cs = src\Common\GitUrlMappingTask.cs
 		src\Common\Names.cs = src\Common\Names.cs
 		src\Common\PathUtilities.cs = src\Common\PathUtilities.cs
 		src\Common\SequenceComparer.cs = src\Common\SequenceComparer.cs

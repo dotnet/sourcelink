@@ -21,21 +21,25 @@
     <!--
       The task calculates SourceLink URL for a given SourceRoot.
 
-      If the SourceRoot is associated with a git repository with a recognized domain the <see cref="SourceLinkUrl"/>
+      If the SourceRoot is associated with a git repository with a recognized host the <see cref="SourceLinkUrl"/>
       output property is set to the content URL corresponding to the domain, otherwise it is set to string "N/A".
 
-      Recognized domains are specified via Hosts (initialized from SourceLinkTfsHost item group).
-      In addition SourceLinkHasSingleProvider is true an iplicit host is parsed from RepositoryUrl.
+      Recognized hosts are specified via Hosts parameter (initialized from SourceLinkTfsHost item group).
+      Host specification includes the host domain, a port (optional) and virtual directory (optional).
+
+      Since the virtual directory of a TFS server can't be inferred from the repository URL, at least one TFS host has to be specified.
 
       Example of SourceLinkTfsGitHost items:
 
       <ItemGroup>
-        <SourceLinkTfsGitHost Include="mytfs1.com" ContentUrl="http://mytfs1.com"/>
-        <SourceLinkTfsGitHost Include="mytfs2.com" />           ContentUrl defaults to https://mytfs2.com
-        <SourceLinkTfsGitHost Include="mytfs3.com:8080" />      ContentUrl defaults to https://mytfs3.com:8080
+        <SourceLinkTfsGitHost Include="mytfs1.com/tfs" ContentUrl="http://mytfs1.com"/>
+        <SourceLinkTfsGitHost Include="mytfs2.com/tfs" />           ContentUrl defaults to https://mytfs2.com
+        <SourceLinkTfsGitHost Include="mytfs3.com:8080/tfs" />      ContentUrl defaults to https://mytfs3.com:8080
       </ItemGroup>
 
       ContentUrl is optional. If not specified it defaults to "https://{domain}".
+      In common cases ContentUrl does not include the virtual directory. 
+      The directory is appended to the ContentUrl automatically when the SourceLink URL is constructed.
     -->
     <Microsoft.SourceLink.Tfs.Git.GetSourceLinkUrl RepositoryUrl="$(PrivateRepositoryUrl)" SourceRoot="@(SourceRoot)" Hosts="@(SourceLinkTfsGitHost)" IsSingleProvider="$(SourceLinkHasSingleProvider)">
       <Output TaskParameter="SourceLinkUrl" PropertyName="_SourceLinkUrlToUpdate"/>

@@ -7,14 +7,19 @@
         <target state="translated">{0} 项目组为空。至少需要一个 {1} 存储库主机才能生成 SourceLink。</target>
         <note />
       </trans-unit>
+      <trans-unit id="ItemOfItemGroupMustSpecifyMetadata">
+        <source>Item '{0}' of item group '{1}' must specify metadata '{2}'</source>
+        <target state="new">Item '{0}' of item group '{1}' must specify metadata '{2}'</target>
+        <note />
+      </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsInvalid">
-        <source>The value of {0} with identity '{1}' is invalid: '{2}'"</source>
-        <target state="translated">带有 '{1}' 标识的 {0} 的值无效: '{2}'"</target>
+        <source>The value of {0} with identity '{1}' is invalid: '{2}'</source>
+        <target state="needs-review-translation">带有 '{1}' 标识的 {0} 的值无效: '{2}'"</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsNotValidCommitHash">
-        <source>The value of {0} with identity '{1}' is not a valid commit hash: '{2}'"</source>
-        <target state="translated">带有 '{1}' 标识的 {0} 的值不是有效的提交哈希: '{2}'"</target>
+        <source>The value of {0} with identity '{1}' is not a valid commit hash: '{2}'</source>
+        <target state="needs-review-translation">带有 '{1}' 标识的 {0} 的值不是有效的提交哈希: '{2}'"</target>
         <note />
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidDomainName">

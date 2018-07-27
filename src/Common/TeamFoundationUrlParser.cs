@@ -17,27 +17,29 @@ namespace Microsoft.SourceLink
            => host.EndsWith(".visualstudio.com", StringComparison.OrdinalIgnoreCase) ||
               host.EndsWith(".vsts.me", StringComparison.OrdinalIgnoreCase);
 
-        public static bool TryParseHostedHttp(string host, string relativeUrl, out string repositoryPath, out string repositoryName)
+        public static bool TryParseHostedHttp(string host, string relativeUrl, out string projectPath, out string repositoryName)
         {
-            repositoryPath = repositoryName = null;
+            projectPath = repositoryName = null;
 
-            var parts = SplitRelativeUrl(relativeUrl);
-            if (parts.Length == 0)
+            if (!UriUtilities.TrySplitRelativeUrl(relativeUrl, out var parts) || parts.Length == 0)
             {
                 return false;
             }
 
             int index = 0;
-            string accountPath;
+            string account;
+            bool hasDefaultCollection = false;
+            bool isVisualStudioHost = IsVisualStudioHostedServer(host);
 
-            if (IsVisualStudioHostedServer(host))
+            if (isVisualStudioHost)
             {
                 // account is stored in the domain, not in the path:
-                accountPath = null;
+                account = null;
 
                 // Trim optional "DefaultCollection" from path:
                 if (StringComparer.OrdinalIgnoreCase.Equals(parts[index], "DefaultCollection"))
                 {
+                    hasDefaultCollection = true;
                     index++;
                 }
             }
@@ -50,17 +52,68 @@ namespace Microsoft.SourceLink
                 }
 
                 // Account is first part of path:
-                accountPath = parts[index++];
+                account = parts[index++];
             }
 
-            var result = TryParsePath(parts, index, "_git", out repositoryPath, out repositoryName);
-
-            if (accountPath != null)
+            if (index == parts.Length)
             {
-                repositoryPath = UriUtilities.Combine(accountPath, repositoryPath);
+                return false;
             }
 
-            return result;
+            if (!TryParsePath(parts, index, "_git", out var projectName, out var teamName, out repositoryName))
+            {
+                return false;
+            }
+
+            if (isVisualStudioHost)
+            {
+                if (!hasDefaultCollection && projectName == null)
+                {
+                    return false;
+                }
+
+                projectPath = projectName ?? repositoryName;
+            }
+            else
+            {
+                if (projectName == null || teamName != null)
+                {
+                    return false;
+                }
+
+                projectPath = account + "/" + projectName;
+            }
+
+            return true;
+        }
+
+        public static bool TryParseOnPremHttp(string relativeUrl, string virtualDirectory, out string projectPath, out string repositoryName)
+        {
+            projectPath = repositoryName = null;
+
+            if (!UriUtilities.TrySplitRelativeUrl(relativeUrl, out var parts) ||
+                !UriUtilities.TrySplitRelativeUrl(virtualDirectory, out var virtualDirectoryParts))
+            {
+                return false;
+            }
+
+            // skip virtual directory:
+            if (!parts.Take(virtualDirectoryParts.Length).SequenceEqual(virtualDirectoryParts, StringComparer.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            // collection:
+            int i = virtualDirectoryParts.Length;
+            var collection = parts[i++];
+
+            if (!TryParsePath(parts, i, "_git", out var projectName, out _, out repositoryName))
+            {
+                return false;
+            }
+
+            projectPath = string.Join("/", parts, 0, virtualDirectoryParts.Length) + "/" + collection + "/" + (projectName ?? repositoryName);
+            return true;
         }
 
         public static bool TryParseHostedSsh(Uri uri, out string account, out string repositoryPath, out string repositoryName)
@@ -70,8 +123,7 @@ namespace Microsoft.SourceLink
             account = repositoryPath = repositoryName = null;
 
             // {"DefaultCollection"|""}/{repositoryPath}/"_ssh"/{"_full"|"_optimized"}/{repositoryName}
-            string[] parts = SplitRelativeUrl(uri.LocalPath);
-            if (parts.Length == 0)
+            if (!UriUtilities.TrySplitRelativeUrl(uri.LocalPath, out var parts) || parts.Length == 0)
             {
                 return false;
             }
@@ -113,38 +165,74 @@ namespace Microsoft.SourceLink
             return true;
         }
 
-        public static bool TryParseOnPremHttp(string relativeUrl, out string repositoryPath, out string repositoryName)
-            => TryParsePath(SplitRelativeUrl(relativeUrl), startIndex: 0, "_git", out repositoryPath, out repositoryName);
-
         public static bool TryParseOnPremSsh(Uri uri, out string repositoryPath, out string repositoryName)
-            => TryParsePath(SplitRelativeUrl(uri.LocalPath), startIndex: 0, "_ssh", out repositoryPath, out repositoryName);
-
-        private static string[] SplitRelativeUrl(string relativeUrl)
         {
-            // required leading slash:
-            if (relativeUrl.Length <= 2 || relativeUrl[0] != '/')
+            repositoryPath = repositoryName = null;
+
+            if (!UriUtilities.TrySplitRelativeUrl(uri.LocalPath, out var parts))
             {
-                return Array.Empty<string>();
+                return false;
             }
 
-            // optional trailing slash:
-            int end = relativeUrl.Length - 1;
-            if (relativeUrl[end] == '/')
+            if (!TryParseRepositoryName(parts, out int teamNameIndex, "_ssh", out repositoryName))
             {
-                end--;
+                return false;
             }
 
-            var result = relativeUrl.Substring(1, end).Split(new[] { '/' });
-            return result.Any(part => part.Length == 0) ? Array.Empty<string>() : result;
+            repositoryPath = string.Join("/", parts, 0, teamNameIndex + 1);
+            return true;
+        }
+        
+        private static bool TryParsePath(string[] parts, int startIndex, string type, out string repositoryPath, out string repositoryName)
+        {
+            if (TryParsePath(parts, startIndex, type, out var projectName, out var teamName, out repositoryName))
+            {
+                repositoryPath = (projectName != null && teamName != null) ? projectName + "/" + teamName : (projectName ?? teamName);
+                return true;
+            }
+
+            repositoryPath = null;
+            return false;
         }
 
-        private static bool TryParsePath(string[] parts, int startIndex, string type, out string repositoryPath, out string repositoryName)
+        private static bool TryParsePath(string[] parts, int projectPartIndex, string type, out string projectName, out string teamName, out string repositoryName)
+        {
+            // {projectName?}/{teamName?}/{type}/{"_full"|"_optimized"|""}/{repositoryName}
+
+            projectName = teamName = null;
+
+            if (!TryParseRepositoryName(parts, out int teamNameIndex, type, out repositoryName))
+            {
+                return false;
+            }
+
+            switch (teamNameIndex - projectPartIndex + 1)
+            {
+                case 0:
+                    return true;
+
+                case 1:
+                    projectName = parts[projectPartIndex];
+                    return true;
+
+                case 2:
+                    projectName = parts[projectPartIndex];
+                    teamName = parts[projectPartIndex + 1];
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+
+        private static bool TryParseRepositoryName(string[] parts, out int teamNameIndex, string type, out string repositoryName)
         {
             Debug.Assert(type == "_git" || type == "_ssh" || type == null);
 
-            // {repositoryPath}/{type}/{"_full"|"_optimized"|""}/{repositoryName}
+            // {type}/{"_full"|"_optimized"|""}/{repositoryName}
 
-            repositoryPath = repositoryName = null;
+            repositoryName = null;
+            teamNameIndex = -1;
 
             int i = parts.Length - 1;
 
@@ -186,7 +274,7 @@ namespace Microsoft.SourceLink
                 }
             }
 
-            repositoryPath = string.Join("/", parts, startIndex, i - startIndex + 1);
+            teamNameIndex = i;
             return true;
         }
     }

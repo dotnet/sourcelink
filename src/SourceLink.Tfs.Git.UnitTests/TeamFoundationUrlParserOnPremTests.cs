@@ -6,6 +6,7 @@ namespace Microsoft.SourceLink.Tfs.Git.UnitTests
 {
     public class TeamFoundationUrlParserOnPremTests
     {
+#if F
         [Theory]
         [InlineData("")]
         [InlineData("/")]
@@ -83,5 +84,6 @@ namespace Microsoft.SourceLink.Tfs.Git.UnitTests
             Assert.Equal(repositoryPath, actualRepositoryPath);
             Assert.Equal(repositoryName, actualRepositoryName);
         }
+#endif
     }
 }

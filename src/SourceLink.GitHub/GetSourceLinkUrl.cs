@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
 using System;
+using Microsoft.Build.Framework;
 using Microsoft.Build.Tasks.SourceControl;
 
 namespace Microsoft.SourceLink.GitHub
@@ -15,10 +16,10 @@ namespace Microsoft.SourceLink.GitHub
         protected override string HostsItemGroupName => "SourceLinkGitHubHost";
         protected override string ProviderDisplayName => "GitHub";
 
-        protected override Uri GetDefaultContentUriFromHostUri(Uri hostUri, Uri gitUri)
-            => new Uri(hostUri, "raw");
+        protected override Uri GetDefaultContentUriFromHostUri(string authority, Uri gitUri)
+            => new Uri($"https://{authority}/raw", UriKind.Absolute);
 
-        protected override string BuildSourceLinkUrl(Uri contentUri, string host, string relativeUrl, string revisionId)
+        protected override string BuildSourceLinkUrl(Uri contentUri, Uri gitUri, string relativeUrl, string revisionId, ITaskItem hostItem)
             => UriUtilities.Combine(UriUtilities.Combine(contentUri.ToString(), relativeUrl), revisionId + "/*");
     }
 }

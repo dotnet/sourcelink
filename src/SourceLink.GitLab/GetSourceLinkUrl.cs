@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
 using System;
+using Microsoft.Build.Framework;
 using Microsoft.Build.Tasks.SourceControl;
 
 namespace Microsoft.SourceLink.GitLab
@@ -15,10 +16,7 @@ namespace Microsoft.SourceLink.GitLab
         protected override string HostsItemGroupName => "SourceLinkGitLabHost";
         protected override string ProviderDisplayName => "GitLab";
 
-        protected override Uri GetDefaultContentUriFromHostUri(Uri hostUri, Uri gitUri)
-            => hostUri;
-
-        protected override string BuildSourceLinkUrl(Uri contentUri, string host, string relativeUrl, string revisionId)
+        protected override string BuildSourceLinkUrl(Uri contentUri, Uri gitUri, string relativeUrl, string revisionId, ITaskItem hostItem)
             => UriUtilities.Combine(UriUtilities.Combine(contentUri.ToString(), relativeUrl), "raw/" + revisionId + "/*");
     }
 }

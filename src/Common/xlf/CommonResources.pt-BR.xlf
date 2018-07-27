@@ -7,14 +7,19 @@
         <target state="translated">O grupo de itens {0} está vazio. Pelo menos um host de repositório {1} é necessário para gerar o SourceLink.</target>
         <note />
       </trans-unit>
+      <trans-unit id="ItemOfItemGroupMustSpecifyMetadata">
+        <source>Item '{0}' of item group '{1}' must specify metadata '{2}'</source>
+        <target state="new">Item '{0}' of item group '{1}' must specify metadata '{2}'</target>
+        <note />
+      </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsInvalid">
-        <source>The value of {0} with identity '{1}' is invalid: '{2}'"</source>
-        <target state="translated">O valor de {0} com a identidade '{1}' é inválido: '{2}'"</target>
+        <source>The value of {0} with identity '{1}' is invalid: '{2}'</source>
+        <target state="needs-review-translation">O valor de {0} com a identidade '{1}' é inválido: '{2}'"</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsNotValidCommitHash">
-        <source>The value of {0} with identity '{1}' is not a valid commit hash: '{2}'"</source>
-        <target state="translated">O valor de {0} com a identidade '{1}' não é um hash de confirmação válido: '{2}'"</target>
+        <source>The value of {0} with identity '{1}' is not a valid commit hash: '{2}'</source>
+        <target state="needs-review-translation">O valor de {0} com a identidade '{1}' não é um hash de confirmação válido: '{2}'"</target>
         <note />
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidDomainName">

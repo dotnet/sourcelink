@@ -35,29 +35,19 @@ namespace Microsoft.Build.Tasks.SourceControl
 
         private void ExecuteImpl()
         {
-            var hosts = GetHosts().ToArray();
-            if (hosts.Length == 0)
+            var hostUris = GetHostUris().ToArray();
+            if (hostUris.Length == 0)
             {
                 return;
             }
 
-            bool isMatchingHostUri(Uri uri)
-            {
-                foreach (var host in hosts)
-                {
-                    if (uri.Host.Equals(host, StringComparison.OrdinalIgnoreCase) ||
-                        uri.Host.EndsWith("." + host, StringComparison.OrdinalIgnoreCase))
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
+            bool isMatchingHostUri(Uri hostUri, Uri uri)
+                => uri.Host.Equals(hostUri.Host, StringComparison.OrdinalIgnoreCase) || 
+                   uri.Host.EndsWith("." + hostUri.Host, StringComparison.OrdinalIgnoreCase);
 
             // only need to translate valid ssh URLs that match one of our hosts:
             string translate(string url)
-                => Uri.TryCreate(url, UriKind.Absolute, out var uri) && uri.Scheme == "ssh" && isMatchingHostUri(uri) ? (TranslateSshUrl(uri) ?? url) : url;
+                => Uri.TryCreate(url, UriKind.Absolute, out var uri) && uri.Scheme == "ssh" && hostUris.Any(h => isMatchingHostUri(h, uri)) ? (TranslateSshUrl(uri) ?? url) : url;
 
             TranslatedRepositoryUrl = translate(RepositoryUrl);
             TranslatedSourceRoots = SourceRoots;
@@ -76,23 +66,23 @@ namespace Microsoft.Build.Tasks.SourceControl
             }
         }
 
-        private IEnumerable<string> GetHosts()
+        private IEnumerable<Uri> GetHostUris()
         {
             if (Hosts != null)
             {
                 foreach (var item in Hosts)
                 {
-                    if (UriUtilities.TryParseAuthority(item.ItemSpec, out var authorityUri))
+                    if (UriUtilities.TryParseAuthority(item.ItemSpec, out var hostUri))
                     {
-                        yield return authorityUri.Host;
+                        yield return hostUri;
                     }
                 }
             }
 
             // Add implicit host last, so that matching prefers explicitly listed hosts over the implicit one.
-            if (IsSingleProvider && Uri.TryCreate(RepositoryUrl, UriKind.Absolute, out var uri))
+            if (IsSingleProvider && Uri.TryCreate(RepositoryUrl, UriKind.Absolute, out var repositoryUri))
             {
-                yield return uri.Host;
+                yield return repositoryUri;
             }
         }
     }
