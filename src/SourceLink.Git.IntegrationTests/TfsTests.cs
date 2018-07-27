@@ -15,7 +15,7 @@ namespace Microsoft.SourceLink.IntegrationTests
         [ConditionalFact(typeof(DotNetSdkAvailable))]
         public void FullValidation_Https()
         {
-            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, "http://tfs.mydomain.local:8080/tfs/DefaultCollection/project/_git/MyProject");
+            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, "https://tfs.mydomain.local:8080/tfs/DefaultCollection/project/_git/MyProject");
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -45,8 +45,8 @@ namespace Microsoft.SourceLink.IntegrationTests
                     ProjectSourceRoot,
                     $"https://tfs.mydomain.local:8080/tfs/DefaultCollection/project/_apis/git/repositories/MyProject/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*",
                     s_relativeSourceLinkJsonPath,
-                    "http://tfs.mydomain.local:8080/tfs/DefaultCollection/project/_git/MyProject",
-                    "http://tfs.mydomain.local:8080/tfs/DefaultCollection/project/_git/MyProject",
+                    "https://tfs.mydomain.local:8080/tfs/DefaultCollection/project/_git/MyProject",
+                    "https://tfs.mydomain.local:8080/tfs/DefaultCollection/project/_git/MyProject",
                 });
 
             AssertEx.AreEqual(
@@ -61,7 +61,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 Path.Combine(ProjectDir.Path, s_relativePackagePath),
                 type: "git", 
                 commit: commitSha,
-                url: "http://tfs.mydomain.local:8080/tfs/DefaultCollection/project/_git/MyProject");
+                url: "https://tfs.mydomain.local:8080/tfs/DefaultCollection/project/_git/MyProject");
         }
 
         [ConditionalFact(typeof(DotNetSdkAvailable))]

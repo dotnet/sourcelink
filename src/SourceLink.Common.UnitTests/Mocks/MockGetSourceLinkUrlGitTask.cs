@@ -20,7 +20,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
             => $"ContentUrl='{contentUrl}' GitUrl='{gitUri}' RelativeUrl='{relativeUrl}' RevisionId='{revisionId}'";
 
         protected override Uri GetDefaultContentUriFromHostUri(string authority, Uri gitUri)
-            => new Uri($"https://{authority}/host-default", UriKind.Absolute);
+            => new Uri($"{gitUri.Scheme}://{authority}/host-default", UriKind.Absolute);
 
         protected override Uri GetDefaultContentUriFromRepositoryUri(Uri repositoryUri)
             => new Uri(UriUtilities.Combine(repositoryUri.ToString(), "repo-default"), UriKind.Absolute);

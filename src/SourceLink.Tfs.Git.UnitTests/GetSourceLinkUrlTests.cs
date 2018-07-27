@@ -173,7 +173,7 @@ namespace Microsoft.SourceLink.Tfs.Git.UnitTests
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual($"https://contoso.com{localPath}collection/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
+            AssertEx.AreEqual($"http://contoso.com{localPath}collection/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -185,7 +185,7 @@ namespace Microsoft.SourceLink.Tfs.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://contoso.com:8080/tfs/collection/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "https://contoso.com:8080/tfs/collection/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
                     new MockItem("contoso.com", KVP("VirtualDirectory", "tfs")),
@@ -206,7 +206,7 @@ namespace Microsoft.SourceLink.Tfs.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://contoso.com:8080/tfs/collection/project/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "https://contoso.com:8080/tfs/collection/project/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
                     new MockItem("contoso.com", KVP("VirtualDirectory", "tfs")),
@@ -227,7 +227,7 @@ namespace Microsoft.SourceLink.Tfs.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://contoso.com:8080/tfs/collection/project/team/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "https://contoso.com:8080/tfs/collection/project/team/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
                     new MockItem("contoso.com", KVP("VirtualDirectory", "tfs")),
@@ -248,7 +248,7 @@ namespace Microsoft.SourceLink.Tfs.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://contoso.com:8080/tfs/collection/project/team/_git/_optimized/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "https://contoso.com:8080/tfs/collection/project/team/_git/_optimized/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
                     new MockItem("contoso.com", KVP("VirtualDirectory", "tfs")),

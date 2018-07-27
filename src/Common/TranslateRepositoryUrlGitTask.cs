@@ -8,7 +8,7 @@ using Microsoft.Build.Utilities;
 
 namespace Microsoft.Build.Tasks.SourceControl
 {
-    public abstract class TranslateRepositoryUrlsGitTask : Task
+    public class TranslateRepositoryUrlsGitTask : Task
     {
         private const string SourceControlName = "git";
 
@@ -26,6 +26,12 @@ namespace Microsoft.Build.Tasks.SourceControl
 
         protected virtual string TranslateSshUrl(Uri uri)
             => "https://" + uri.Host + uri.PathAndQuery;
+
+        protected virtual string TranslateGitUrl(Uri uri)
+            => "https://" + uri.Host + uri.PathAndQuery;
+
+        protected virtual string TranslateHttpUrl(Uri uri)
+            => uri.Scheme + "://" + uri.Authority + uri.PathAndQuery;
 
         public override bool Execute()
         {
@@ -47,7 +53,18 @@ namespace Microsoft.Build.Tasks.SourceControl
 
             // only need to translate valid ssh URLs that match one of our hosts:
             string translate(string url)
-                => Uri.TryCreate(url, UriKind.Absolute, out var uri) && uri.Scheme == "ssh" && hostUris.Any(h => isMatchingHostUri(h, uri)) ? (TranslateSshUrl(uri) ?? url) : url;
+            {
+                if (Uri.TryCreate(url, UriKind.Absolute, out var uri) && 
+                    hostUris.Any(h => isMatchingHostUri(h, uri)))
+                {
+                    return (uri.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) ? TranslateHttpUrl(uri) :
+                            uri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase) ? TranslateHttpUrl(uri) :
+                            uri.Scheme.Equals("ssh", StringComparison.OrdinalIgnoreCase) ? TranslateSshUrl(uri) :
+                            uri.Scheme.Equals("git", StringComparison.OrdinalIgnoreCase) ? TranslateGitUrl(uri) : null) ?? url;
+                }
+
+                return url;
+            }
 
             TranslatedRepositoryUrl = translate(RepositoryUrl);
             TranslatedSourceRoots = SourceRoots;

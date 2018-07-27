@@ -112,7 +112,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", $"http://{domainAndAccount}/project/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", $"https://{domainAndAccount}/project/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[] { new MockItem(host) }
             };
 
@@ -132,7 +132,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", $"http://{domainAndAccount}/project/team/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", $"https://{domainAndAccount}/project/team/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[] { new MockItem(host) }
             };
 
@@ -173,7 +173,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", $"http://{domain}/DefaultCollection/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", $"https://{domain}/DefaultCollection/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[] { new MockItem(host) }
             };
 
@@ -194,7 +194,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", $"http://{domain}/DefaultCollection/project/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", $"https://{domain}/DefaultCollection/project/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[] { new MockItem(host) }
             };
 
@@ -214,7 +214,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", $"http://{domain}/DefaultCollection/project/team/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", $"https://{domain}/DefaultCollection/project/team/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[] { new MockItem(host) }
             };
 
@@ -234,9 +234,9 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", $"http://{domain}/DefaultCollection/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", $"https://{domain}/DefaultCollection/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 IsSingleProvider = true,
-                RepositoryUrl = $"http://{domain}/DefaultCollection/project/_git/repo"
+                RepositoryUrl = $"https://{domain}/DefaultCollection/project/_git/repo"
             };
 
             bool result = task.Execute();
@@ -255,9 +255,9 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", $"http://{domain}/DefaultCollection/project/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", $"https://{domain}/DefaultCollection/project/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 IsSingleProvider = true,
-                RepositoryUrl = $"http://{domain}/DefaultCollection/project/_git/repo"
+                RepositoryUrl = $"https://{domain}/DefaultCollection/project/_git/repo"
             };
 
             bool result = task.Execute();
@@ -276,9 +276,9 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", $"http://{domain}/DefaultCollection/project/team/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", $"https://{domain}/DefaultCollection/project/team/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 IsSingleProvider = true,
-                RepositoryUrl = $"http://{domain}/DefaultCollection/project/_git/repo"
+                RepositoryUrl = $"https://{domain}/DefaultCollection/project/_git/repo"
             };
 
             bool result = task.Execute();
