@@ -187,7 +187,7 @@ namespace Microsoft.SourceLink
         {
             if (TryParsePath(parts, startIndex, type, out var projectName, out var teamName, out repositoryName))
             {
-                repositoryPath = (projectName != null && teamName != null) ? projectName + "/" + teamName : (projectName ?? teamName);
+                repositoryPath = (projectName != null && teamName != null) ? projectName + "/" + teamName : (projectName ?? teamName ?? "");
                 return true;
             }
 
