@@ -209,7 +209,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("ContentUrl='https://contoso.com:1234/host-default' GitUrl='http://subdomain.contoso.com:1234/a/b' RelativeUrl='/a/b' RevisionId='0123456789abcdefABCDEF000000000000000000'", task.SourceLinkUrl);
+            AssertEx.AreEqual("ContentUrl='http://contoso.com:1234/host-default' GitUrl='http://subdomain.contoso.com:1234/a/b' RelativeUrl='/a/b' RevisionId='0123456789abcdefABCDEF000000000000000000'", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -468,7 +468,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("ContentUrl='https://contoso.com/host-default' GitUrl='http://contoso.com/a/b.git' RelativeUrl='/a/b' RevisionId='0000000000000000000000000000000000000000'", task.SourceLinkUrl);
+            AssertEx.AreEqual("ContentUrl='http://contoso.com/host-default' GitUrl='http://contoso.com/a/b.git' RelativeUrl='/a/b' RevisionId='0000000000000000000000000000000000000000'", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -486,7 +486,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("ContentUrl='https://contoso.com/host-default' GitUrl='http://contoso.com/a/b.GIT' RelativeUrl='/a/b.GIT' RevisionId='0000000000000000000000000000000000000000'", task.SourceLinkUrl);
+            AssertEx.AreEqual("ContentUrl='http://contoso.com/host-default' GitUrl='http://contoso.com/a/b.GIT' RelativeUrl='/a/b.GIT' RevisionId='0000000000000000000000000000000000000000'", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -504,7 +504,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("ContentUrl='https://contoso.com/host-default' GitUrl='http://contoso.com/a/.git' RelativeUrl='/a/.git' RevisionId='0000000000000000000000000000000000000000'", task.SourceLinkUrl);
+            AssertEx.AreEqual("ContentUrl='http://contoso.com/host-default' GitUrl='http://contoso.com/a/.git' RelativeUrl='/a/.git' RevisionId='0000000000000000000000000000000000000000'", task.SourceLinkUrl);
             Assert.True(result);
         }
     }
