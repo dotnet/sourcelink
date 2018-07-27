@@ -36,7 +36,8 @@ SourceLink packages are currently available for the following source control pro
 
 ### github.com and GitHub Enterprise
 
-You can enable SourceLink in your own project hosted on [GitHub](http://github.com) by following this [example](https://github.com/dotnet/sourcelink/blob/master/docs/Readme.md#example):
+For projects hosted by [GitHub](http://github.com) or [GitHub Enterprise](https://enterprise.github.com/home) reference 
+[Microsoft.SourceLink.GitHub](https://www.nuget.org/packages/Microsoft.SourceLink.GitHub) like so:
 
 ```xml
 <ItemGroup>
@@ -46,7 +47,7 @@ You can enable SourceLink in your own project hosted on [GitHub](http://github.c
 
 ### Visual Studio Team Services
 
-For projects hosted by [Visual Studio Team Services](https://www.visualstudio.com/team-services) in git repositories reference [Microsoft.SourceLink.Vsts.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Vsts.Git) package like so: 
+For projects hosted by [Visual Studio Team Services](https://www.visualstudio.com/team-services) in git repositories reference [Microsoft.SourceLink.Vsts.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Vsts.Git): 
 
 ```xml
 <ItemGroup>
@@ -57,12 +58,12 @@ For projects hosted by [Visual Studio Team Services](https://www.visualstudio.co
 ### Team Foundation Server
 
 For projects hosted by on-prem [Team Foundation Server](https://visualstudio.microsoft.com/tfs) in git repositories reference
-[Microsoft.SourceLink.Vsts.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Vsts.Git) package and add TFS host configuration like so:
+[Microsoft.SourceLink.Tfs.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Tfs.Git) and add TFS host configuration like so:
 
 ```xml
 <ItemGroup>
   <PackageReference Include="Microsoft.SourceLink.Tfs.Git" Version="1.0.0-beta-63127-02" PrivateAssets="All"/>
-  <SourceLinkTfsGitHost Include="my.tfs.server" VirtualDirectory="tfs"/>
+  <SourceLinkTfsGitHost Include="tfs-server-name" VirtualDirectory="tfs"/>
 </ItemGroup>
 ```
 
@@ -78,7 +79,7 @@ For projects hosted by [GitLab](https://gitlab.com) reference [Microsoft.SourceL
 
 ### Bitbucket.org
 
-For projects hosted on [Bitbucket.org](https://bitbucket.org) reference [Microsoft.SourceLink.Bitbucket.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Bitbucket.Git) package: 
+For projects hosted on [Bitbucket.org](https://bitbucket.org) in git repositories reference [Microsoft.SourceLink.Bitbucket.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Bitbucket.Git) package: 
 
 ```xml
 <ItemGroup>
@@ -86,7 +87,11 @@ For projects hosted on [Bitbucket.org](https://bitbucket.org) reference [Microso
 </ItemGroup>
 ```
 
+### Multiple providers, repositories with submodules
+
 If your repository contains submodules hosted by other git providers reference packages of all these providers. For example, projects in a repository hosted by VSTS that links a GitHub repository via a submodule should reference both [Microsoft.SourceLink.Vsts.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Vsts.Git) and [Microsoft.SourceLink.GitHub](https://www.nuget.org/packages/Microsoft.SourceLink.GitHub) packages. [Additional configuration](https://github.com/dotnet/sourcelink/blob/master/docs/README.md#configuring-projects-with-multiple-sourcelink-providers) might be needed if multiple SourceLink packages are used in the project.
+
+## Prerequisites
 
 Note that [.NET Core SDK 2.1.300](https://www.microsoft.com/net/download/dotnet-core/sdk-2.1.300) or newer is required for SourceLink to work. If building via desktop msbuild (as opposed to `dotnet build`) you'll need version 15.7.
 
