@@ -10,9 +10,7 @@ The [original SourceLink implementation](https://github.com/ctaggart/SourceLink)
 
 ## Using SourceLink
 
-### github.com and GitHub Enterprise
-
-You can enable SourceLink in your own project hosted on [GitHub](http://github.com) by following this [example](https://github.com/dotnet/sourcelink/blob/master/docs/Readme.md#example):
+You can enable SourceLink experience in your own project by setting a few properties and adding a PackageReference to a SourceLink package:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -29,9 +27,21 @@ You can enable SourceLink in your own project hosted on [GitHub](http://github.c
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02" PrivateAssets="All"/>
+    <!-- Add PackageReference specific for your source control provider (see below) --> 
   </ItemGroup>
 </Project>
+```
+
+SourceLink packages are currently available for the following source control providers.
+
+### github.com and GitHub Enterprise
+
+You can enable SourceLink in your own project hosted on [GitHub](http://github.com) by following this [example](https://github.com/dotnet/sourcelink/blob/master/docs/Readme.md#example):
+
+```xml
+<ItemGroup>
+  <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02" PrivateAssets="All"/>
+</ItemGroup>
 ```
 
 ### Visual Studio Team Services
