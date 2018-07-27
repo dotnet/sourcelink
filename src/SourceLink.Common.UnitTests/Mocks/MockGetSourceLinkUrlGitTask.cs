@@ -4,6 +4,7 @@ using System.IO;
 using Xunit;
 using TestUtilities;
 using Microsoft.Build.Tasks.SourceControl;
+using Microsoft.Build.Framework;
 
 namespace Microsoft.SourceLink.Common.UnitTests
 {
@@ -15,13 +16,13 @@ namespace Microsoft.SourceLink.Common.UnitTests
         protected override string HostsItemGroupName
             => "SourceLinkMockHost";
 
-        protected override string BuildSourceLinkUrl(Uri contentUrl, string host, string relativeUrl, string revisionId)
-            => $"ContentUrl='{contentUrl}' Host='{host}' RelativeUrl='{relativeUrl}' RevisionId='{revisionId}'";
+        protected override string BuildSourceLinkUrl(Uri contentUrl, Uri gitUri, string relativeUrl, string revisionId, ITaskItem hostItem)
+            => $"ContentUrl='{contentUrl}' GitUrl='{gitUri}' RelativeUrl='{relativeUrl}' RevisionId='{revisionId}'";
 
-        protected override Uri GetDefaultContentUriFromHostUri(Uri hostUri, Uri gitUri)
-            => new Uri(hostUri, "host-default");
+        protected override Uri GetDefaultContentUriFromHostUri(string authority, Uri gitUri)
+            => new Uri($"https://{authority}/host-default", UriKind.Absolute);
 
         protected override Uri GetDefaultContentUriFromRepositoryUri(Uri repositoryUri)
-            => new Uri(repositoryUri, "repo-default");
+            => new Uri(UriUtilities.Combine(repositoryUri.ToString(), "repo-default"), UriKind.Absolute);
     }
 }

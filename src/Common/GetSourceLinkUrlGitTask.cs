@@ -21,7 +21,7 @@ namespace Microsoft.Build.Tasks.SourceControl
         /// <summary>
         /// List of additional repository hosts for which the task produces SourceLink URLs.
         /// Each item maps a domain of a repository host (stored in the item identity) to a URL of the server that provides source file content (stored in <c>ContentUrl</c> metadata).
-        /// <c>ContentUrl</c> is optional. If not specified it defaults to "https://{domain}/raw".
+        /// <c>ContentUrl</c> is optional.
         /// </summary>
         public ITaskItem[] Hosts { get; set; }
 
@@ -36,13 +36,15 @@ namespace Microsoft.Build.Tasks.SourceControl
 
         protected abstract string ProviderDisplayName { get; }
         protected abstract string HostsItemGroupName { get; }
+        protected virtual bool SupportsImplicitHost => true;
 
-        protected abstract Uri GetDefaultContentUriFromHostUri(Uri hostUri, Uri gitUri);
+        protected virtual Uri GetDefaultContentUriFromHostUri(string authority, Uri gitUri)
+            => new Uri($"https://" + authority, UriKind.Absolute);
 
         protected virtual Uri GetDefaultContentUriFromRepositoryUri(Uri repositoryUri)
-            => GetDefaultContentUriFromHostUri(repositoryUri, repositoryUri);
+            => GetDefaultContentUriFromHostUri(repositoryUri.Authority, repositoryUri);
 
-        protected abstract string BuildSourceLinkUrl(Uri contentUrl, string host, string relativeUrl, string revisionId);
+        protected abstract string BuildSourceLinkUrl(Uri contentUrl, Uri gitUri, string relativeUrl, string revisionId, ITaskItem hostItem);
 
         public override bool Execute()
         {
@@ -79,7 +81,7 @@ namespace Microsoft.Build.Tasks.SourceControl
                 return;
             }
 
-            var contentUri = GetMatchingContentUri(mappings, gitUri);
+            var contentUri = GetMatchingContentUri(mappings, gitUri, out var hostItem);
             if (contentUri == null)
             {
                 SourceLinkUrl = NotApplicableValue;
@@ -105,20 +107,26 @@ namespace Microsoft.Build.Tasks.SourceControl
                 relativeUrl = relativeUrl.Substring(0, relativeUrl.Length - gitUrlSuffix.Length);
             }
 
-            SourceLinkUrl = BuildSourceLinkUrl(contentUri, gitUri.Host, relativeUrl, revisionId);
+            SourceLinkUrl = BuildSourceLinkUrl(contentUri, gitUri, relativeUrl, revisionId, hostItem);
         }
 
-        private struct UrlMapping
+        private readonly struct UrlMapping
         {
             public readonly string Host;
+            public readonly ITaskItem HostItem;
             public readonly int Port;
             public readonly Uri ContentUri;
             public readonly bool HasDefaultContentUri;
 
-            public UrlMapping(string host, int port, Uri contentUri, bool hasDefaultContentUri)
+            public UrlMapping(string host, ITaskItem hostItem, int port, Uri contentUri, bool hasDefaultContentUri)
             {
+                Debug.Assert(port >= -1);
+                Debug.Assert(!string.IsNullOrEmpty(host));
+                Debug.Assert(contentUri != null);
+
                 Host = host;
                 Port = port;
+                HostItem = hostItem;
                 ContentUri = contentUri;
                 HasDefaultContentUri = hasDefaultContentUri;
             }
@@ -129,16 +137,13 @@ namespace Microsoft.Build.Tasks.SourceControl
             bool isValidContentUri(Uri uri)
                 => uri.Query == "" && uri.UserInfo == "";
 
-            Uri createUri(string authority)
-                => new Uri("https://" + authority, UriKind.Absolute);
-
             if (Hosts != null)
             {
                 foreach (var item in Hosts)
                 {
-                    string authority = item.ItemSpec;
+                    string hostUrl = item.ItemSpec;
 
-                    if (!UriUtilities.TryParseAuthority(authority, out var authorityUri))
+                    if (!UriUtilities.TryParseAuthority(hostUrl, out var hostUri))
                     {
                         Log.LogError(CommonResources.ValuePassedToTaskParameterNotValidDomainName, nameof(Hosts), item.ItemSpec);
                         continue;
@@ -149,7 +154,7 @@ namespace Microsoft.Build.Tasks.SourceControl
                     bool hasDefaultContentUri = string.IsNullOrEmpty(contentUrl);
                     if (hasDefaultContentUri)
                     {
-                        contentUri = GetDefaultContentUriFromHostUri(createUri(authority), gitUri);
+                        contentUri = GetDefaultContentUriFromHostUri(hostUri.Authority, gitUri);
                     }
                     else if (!Uri.TryCreate(contentUrl, UriKind.Absolute, out contentUri) || !isValidContentUri(contentUri))
                     {
@@ -157,16 +162,16 @@ namespace Microsoft.Build.Tasks.SourceControl
                         continue;
                     }
 
-                    yield return new UrlMapping(authorityUri.Host, authorityUri.Port, contentUri, hasDefaultContentUri);
+                    yield return new UrlMapping(hostUri.Host, item, hostUri.Port, contentUri, hasDefaultContentUri);
                 }
             }
 
             // Add implicit host last, so that matching prefers explicitly listed hosts over the implicit one.
-            if (IsSingleProvider)
+            if (SupportsImplicitHost && IsSingleProvider)
             {
                 if (Uri.TryCreate(RepositoryUrl, UriKind.Absolute, out var uri))
                 {
-                    yield return new UrlMapping(uri.Host, uri.GetExplicitPort(), GetDefaultContentUriFromRepositoryUri(createUri(uri.Authority)), hasDefaultContentUri: true);
+                    yield return new UrlMapping(uri.Host, hostItem: null, uri.GetExplicitPort(), GetDefaultContentUriFromRepositoryUri(uri), hasDefaultContentUri: true);
                 }
                 else
                 {
@@ -175,7 +180,7 @@ namespace Microsoft.Build.Tasks.SourceControl
             }
         }
 
-        private static Uri GetMatchingContentUri(UrlMapping[] mappings, Uri repoUri)
+        private static Uri GetMatchingContentUri(UrlMapping[] mappings, Uri repoUri, out ITaskItem hostItem)
         {
             UrlMapping? findMatch(bool exactHost)
             {
@@ -183,8 +188,6 @@ namespace Microsoft.Build.Tasks.SourceControl
 
                 foreach (var mapping in mappings)
                 {
-                    var contentUri = mapping.ContentUri;
-
                     if (exactHost && repoUri.Host.Equals(mapping.Host, StringComparison.OrdinalIgnoreCase) ||
                         !exactHost && repoUri.Host.EndsWith("." + mapping.Host, StringComparison.OrdinalIgnoreCase))
                     {
@@ -208,19 +211,22 @@ namespace Microsoft.Build.Tasks.SourceControl
             var result = findMatch(exactHost: true) ?? findMatch(exactHost: false);
             if (result == null)
             {
+                hostItem = null;
                 return null;
             }
 
             var value = result.Value;
+            var contentUri = value.ContentUri;
+            hostItem = value.HostItem;
 
             // If the mapping did not specify ContentUrl and did not specify port,
             // use the port from the RepositoryUrl, if a non-default is specified.
-            if (value.HasDefaultContentUri && value.Port == -1 && !repoUri.IsDefaultPort && value.ContentUri.Port != repoUri.Port)
+            if (value.HasDefaultContentUri && value.Port == -1 && !repoUri.IsDefaultPort && contentUri.Port != repoUri.Port)
             {
-                return new Uri($"{value.ContentUri.Scheme}://{value.ContentUri.Host}:{repoUri.Port}{value.ContentUri.PathAndQuery}");
+                contentUri = new Uri($"{contentUri.Scheme}://{contentUri.Host}:{repoUri.Port}{contentUri.PathAndQuery}");
             }
 
-            return value.ContentUri;
+            return contentUri;
         }
     }
 }

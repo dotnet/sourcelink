@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.Build.Framework;
 using Microsoft.Build.Tasks.SourceControl;
 
 namespace Microsoft.SourceLink.Vsts.Git
@@ -15,25 +16,26 @@ namespace Microsoft.SourceLink.Vsts.Git
         protected override string HostsItemGroupName => "SourceLinkVstsGitHost";
         protected override string ProviderDisplayName => "Vsts.Git";
 
-        protected override Uri GetDefaultContentUriFromHostUri(Uri hostUri, Uri gitUri)
+        protected override Uri GetDefaultContentUriFromHostUri(string authority, Uri gitUri)
             => TeamFoundationUrlParser.IsVisualStudioHostedServer(gitUri.Host) ?
-                new Uri($"{hostUri.Scheme}://{gitUri.Host.Substring(0, gitUri.Host.IndexOf('.'))}.{hostUri.Authority}{hostUri.LocalPath}", UriKind.Absolute) :
-                hostUri;
+                new Uri($"https://{gitUri.Host.Substring(0, gitUri.Host.IndexOf('.'))}.{authority}", UriKind.Absolute) :
+                new Uri($"https://{authority}", UriKind.Absolute);
 
+        // Repository URL already contains account in case of VS host. Don't add it like we do when the content URL is inferred from host name.
         protected override Uri GetDefaultContentUriFromRepositoryUri(Uri repositoryUri)
-           => repositoryUri;
+            => new Uri($"https://{repositoryUri.Authority}", UriKind.Absolute);
 
-        protected override string BuildSourceLinkUrl(Uri contentUri, string host, string relativeUrl, string revisionId)
+        protected override string BuildSourceLinkUrl(Uri contentUri, Uri gitUri, string relativeUrl, string revisionId, ITaskItem hostItem)
         {
-            if (!TeamFoundationUrlParser.TryParseHostedHttp(host, relativeUrl, out var repositoryPath, out var repositoryName))
+            if (!TeamFoundationUrlParser.TryParseHostedHttp(gitUri.Host, relativeUrl, out var projectPath, out var repositoryName))
             {
-                // TODO: Log.LogError(CommonResources.ValueOfWithIdentityIsInvalid, Names.SourceRoot.RepositoryUrlFullName, SourceRoot.ItemSpec, repoUrl);
+                Log.LogError(CommonResources.ValueOfWithIdentityIsInvalid, Names.SourceRoot.RepositoryUrlFullName, SourceRoot.ItemSpec, gitUri);
                 return null;
             }
 
             return
                 UriUtilities.Combine(
-                UriUtilities.Combine(contentUri.ToString(), repositoryPath), $"_apis/git/repositories/{repositoryName}/items") +
+                UriUtilities.Combine(contentUri.ToString(), projectPath), $"_apis/git/repositories/{repositoryName}/items") +
                 $"?api-version=1.0&versionType=commit&version={revisionId}&path=/*";
         }
 

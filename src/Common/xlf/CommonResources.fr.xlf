@@ -7,14 +7,19 @@
         <target state="translated">Le groupe d'éléments {0} est vide. Au moins un hôte de dépôt {1} est nécessaire pour générer SourceLink.</target>
         <note />
       </trans-unit>
+      <trans-unit id="ItemOfItemGroupMustSpecifyMetadata">
+        <source>Item '{0}' of item group '{1}' must specify metadata '{2}'</source>
+        <target state="new">Item '{0}' of item group '{1}' must specify metadata '{2}'</target>
+        <note />
+      </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsInvalid">
-        <source>The value of {0} with identity '{1}' is invalid: '{2}'"</source>
-        <target state="translated">La valeur de {0} avec l'identité '{1}' n'est pas valide : '{2}'"</target>
+        <source>The value of {0} with identity '{1}' is invalid: '{2}'</source>
+        <target state="needs-review-translation">La valeur de {0} avec l'identité '{1}' n'est pas valide : '{2}'"</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsNotValidCommitHash">
-        <source>The value of {0} with identity '{1}' is not a valid commit hash: '{2}'"</source>
-        <target state="translated">La valeur de {0} avec l'identité '{1}' n'est pas un hachage de validation valide : '{2}'"</target>
+        <source>The value of {0} with identity '{1}' is not a valid commit hash: '{2}'</source>
+        <target state="needs-review-translation">La valeur de {0} avec l'identité '{1}' n'est pas un hachage de validation valide : '{2}'"</target>
         <note />
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidDomainName">
