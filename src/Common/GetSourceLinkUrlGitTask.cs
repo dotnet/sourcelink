@@ -38,8 +38,16 @@ namespace Microsoft.Build.Tasks.SourceControl
         protected abstract string HostsItemGroupName { get; }
         protected virtual bool SupportsImplicitHost => true;
 
+        /// <summary>
+        /// Get the default content URL for given host and git URL.
+        /// </summary>
+        /// <param name="authority">The host authority.</param>
+        /// <param name="gitUri">Remote or submodule URL translated by <see cref="TranslateRepositoryUrlsGitTask"/>.</param>
+        /// <remarks>
+        /// Use the <paramref name="gitUri"/> scheme. Some servers might not support https, so we can't default to https.
+        /// </remarks>
         protected virtual Uri GetDefaultContentUriFromHostUri(string authority, Uri gitUri)
-            => new Uri($"https://" + authority, UriKind.Absolute);
+            => new Uri($"{gitUri.Scheme}://{authority}", UriKind.Absolute);
 
         protected virtual Uri GetDefaultContentUriFromRepositoryUri(Uri repositoryUri)
             => GetDefaultContentUriFromHostUri(repositoryUri.Authority, repositoryUri);

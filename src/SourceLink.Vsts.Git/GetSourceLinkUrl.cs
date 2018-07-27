@@ -18,12 +18,12 @@ namespace Microsoft.SourceLink.Vsts.Git
 
         protected override Uri GetDefaultContentUriFromHostUri(string authority, Uri gitUri)
             => TeamFoundationUrlParser.IsVisualStudioHostedServer(gitUri.Host) ?
-                new Uri($"https://{gitUri.Host.Substring(0, gitUri.Host.IndexOf('.'))}.{authority}", UriKind.Absolute) :
-                new Uri($"https://{authority}", UriKind.Absolute);
+                new Uri($"{gitUri.Scheme}://{gitUri.Host.Substring(0, gitUri.Host.IndexOf('.'))}.{authority}", UriKind.Absolute) :
+                new Uri($"{gitUri.Scheme}://{authority}", UriKind.Absolute);
 
         // Repository URL already contains account in case of VS host. Don't add it like we do when the content URL is inferred from host name.
         protected override Uri GetDefaultContentUriFromRepositoryUri(Uri repositoryUri)
-            => new Uri($"https://{repositoryUri.Authority}", UriKind.Absolute);
+            => new Uri($"{repositoryUri.Scheme}://{repositoryUri.Authority}", UriKind.Absolute);
 
         protected override string BuildSourceLinkUrl(Uri contentUri, Uri gitUri, string relativeUrl, string revisionId, ITaskItem hostItem)
         {

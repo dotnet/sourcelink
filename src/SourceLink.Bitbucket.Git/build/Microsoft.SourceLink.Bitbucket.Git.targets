@@ -35,7 +35,7 @@
         <SourceLinkBitbucketGitHost Include="bitbucket3.com:8080" />      ContentUrl defaults to https://bitbucket3.com:8080
       </ItemGroup>
 
-      ContentUrl is optional. If not specified it defaults to "https://{domain}".
+      ContentUrl is optional. If not specified it defaults to "https://{domain}" or "http://{domain}", based on the scheme of SourceRoot.RepositoryUrl.
     -->
     <Microsoft.SourceLink.Bitbucket.Git.GetSourceLinkUrl RepositoryUrl="$(PrivateRepositoryUrl)" SourceRoot="@(SourceRoot)" Hosts="@(SourceLinkBitbucketGitHost)" IsSingleProvider="$(SourceLinkHasSingleProvider)">
       <Output TaskParameter="SourceLinkUrl" PropertyName="_SourceLinkUrlToUpdate"/>

@@ -37,7 +37,8 @@
         <SourceLinkTfsGitHost Include="mytfs3.com:8080/tfs" />      ContentUrl defaults to https://mytfs3.com:8080
       </ItemGroup>
 
-      ContentUrl is optional. If not specified it defaults to "https://{domain}".
+      ContentUrl is optional. If not specified it defaults to "https://{domain}" or "http://{domain}", based on the scheme of SourceRoot.RepositoryUrl.
+   
       In common cases ContentUrl does not include the virtual directory. 
       The directory is appended to the ContentUrl automatically when the SourceLink URL is constructed.
     -->

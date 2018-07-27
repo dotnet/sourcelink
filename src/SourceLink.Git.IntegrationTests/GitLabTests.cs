@@ -15,7 +15,7 @@ namespace Microsoft.SourceLink.IntegrationTests
         [ConditionalFact(typeof(DotNetSdkAvailable))]
         public void FullValidation_Https()
         {
-            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, "http://mygitlab.com/test-org/test-repo");
+            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, "https://mygitlab.com/test-org/test-repo");
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -45,8 +45,8 @@ namespace Microsoft.SourceLink.IntegrationTests
                     ProjectSourceRoot,
                     $"https://mygitlab.com/test-org/test-repo/raw/{commitSha}/*",
                     s_relativeSourceLinkJsonPath,
-                    "http://mygitlab.com/test-org/test-repo",
-                    "http://mygitlab.com/test-org/test-repo"
+                    "https://mygitlab.com/test-org/test-repo",
+                    "https://mygitlab.com/test-org/test-repo"
                 });
 
             AssertEx.AreEqual(
@@ -61,7 +61,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 Path.Combine(ProjectDir.Path, s_relativePackagePath),
                 type: "git", 
                 commit: commitSha,
-                url: "http://mygitlab.com/test-org/test-repo");
+                url: "https://mygitlab.com/test-org/test-repo");
         }
 
         [ConditionalFact(typeof(DotNetSdkAvailable))]
@@ -142,7 +142,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expectedResults: new[]
                 {
-                    $"https://mygitlab.com/test-org/test-repo/raw/{commitSha}/*",
+                    $"http://mygitlab.com/test-org/test-repo/raw/{commitSha}/*",
                     "http://mygitlab.com/test-org/test-repo",
                     "http://mygitlab.com/test-org/test-repo"
                 });
