@@ -42,8 +42,8 @@ namespace Microsoft.SourceLink.IntegrationTests
                     ProjectSourceRoot,
                     $"https://bitbucket.org/test-org/test-repo/raw/{commitSha}/*",
                     s_relativeSourceLinkJsonPath,
-                    "https://test-user@bitbucket.org/test-org/test-repo",
-                    "https://test-user@bitbucket.org/test-org/test-repo"
+                    "https://bitbucket.org/test-org/test-repo",
+                    "https://bitbucket.org/test-org/test-repo"
                 });
 
             AssertEx.AreEqual(
@@ -58,7 +58,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 Path.Combine(ProjectDir.Path, s_relativePackagePath),
                 type: "git",
                 commit: commitSha,
-                url: "https://test-user@bitbucket.org/test-org/test-repo");
+                url: "https://bitbucket.org/test-org/test-repo");
         }
 
         [ConditionalFact(typeof(DotNetSdkAvailable))]
