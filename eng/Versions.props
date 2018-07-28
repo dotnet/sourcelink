@@ -20,6 +20,6 @@
     <MicrosoftTeamFoundationServerExtendedClientVersion>15.112.1</MicrosoftTeamFoundationServerExtendedClientVersion>
     <MicrosoftDotNetPlatformAbstractionsVersion>2.1.0</MicrosoftDotNetPlatformAbstractionsVersion>
 
-    <MicrosoftSourceLinkVersion>1.0.0-beta-63125-01</MicrosoftSourceLinkVersion>
+    <MicrosoftSourceLinkVersion>1.0.0-beta-63127-02</MicrosoftSourceLinkVersion>
   </PropertyGroup>
 </Project>
