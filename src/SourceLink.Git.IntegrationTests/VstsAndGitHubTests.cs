@@ -26,7 +26,8 @@ namespace Microsoft.SourceLink.IntegrationTests
 ",
                 customTargets: @"
 <Target Name=""TranslateVstsToGitHub""
-        AfterTargets=""$(SourceControlManagerUrlTranslationTargets)"">
+        DependsOnTargets=""$(SourceControlManagerUrlTranslationTargets)""
+        BeforeTargets=""SourceControlManagerPublishTranslatedUrls"">
 
     <PropertyGroup>
       <_Pattern>https://([^.]+)[.]visualstudio.com/([^/]+)/_git/([^/]+)</_Pattern>

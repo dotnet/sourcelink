@@ -25,10 +25,11 @@
     Notes: No error is reported if InitializeSourceControlInformation is not defined.
   -->
   <Target Name="_InitializeSourceControlInformationFromSourceControlManager"
-          DependsOnTargets="InitializeSourceControlInformationFromSourceControlManager;_SourceLinkHasSingleProvider;$(SourceControlManagerUrlTranslationTargets)"
+          DependsOnTargets="InitializeSourceControlInformationFromSourceControlManager;_SourceLinkHasSingleProvider;$(SourceControlManagerUrlTranslationTargets);SourceControlManagerPublishTranslatedUrls"
           BeforeTargets="InitializeSourceControlInformation"
-          Condition="'$(EnableSourceControlManagerQueries)' == 'true'">
-    
+          Condition="'$(EnableSourceControlManagerQueries)' == 'true'" />
+
+  <Target Name="SourceControlManagerPublishTranslatedUrls">
     <PropertyGroup>
       <!--
         If the project already sets RepositoryUrl use it. Such URL is considered final and translations are not applied.
