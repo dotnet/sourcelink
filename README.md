@@ -52,7 +52,7 @@ For projects hosted by [Visual Studio Team Services](https://www.visualstudio.co
 ```xml
 <ItemGroup>
   <PackageReference Include="Microsoft.SourceLink.Vsts.Git" Version="1.0.0-beta-63127-02" PrivateAssets="All"/>
-<ItemGroup>
+</ItemGroup>
 ```
 
 ### Team Foundation Server
