@@ -67,6 +67,8 @@ For projects hosted by on-prem [Team Foundation Server](https://visualstudio.mic
 </ItemGroup>
 ```
 
+The `SourceLinkTfsGitHost` items specify the domain and optionally a port of the TFS server (e.g. `myserver`, `myserver:8080`, etc.) and IIS virtual directory of the server (e.g. `tfs`).
+
 ### GitLab
 
 For projects hosted by [GitLab](https://gitlab.com) reference [Microsoft.SourceLink.GitLab](https://www.nuget.org/packages/Microsoft.SourceLink.GitLab) package: 
