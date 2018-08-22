@@ -17,13 +17,13 @@ You can enable SourceLink experience in your own project by setting a few proper
  <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
  
-    <!-- Optional: Declare that the Repository URL can be published to NuSpec -->
+    <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
  
-    <!-- Optional: Embed source files that are not tracked by the source control manager to the PDB -->
+    <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
 
-    <!-- Optional: Include PDB in the built .nupkg -->
+    <!-- Optional: Include the PDB in the built .nupkg -->
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
   <ItemGroup>
