@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
   <file datatype="xml" source-language="en" target-language="es" original="../CommonResources.resx">
     <body>
@@ -9,17 +9,17 @@
       </trans-unit>
       <trans-unit id="ItemOfItemGroupMustSpecifyMetadata">
         <source>Item '{0}' of item group '{1}' must specify metadata '{2}'</source>
-        <target state="new">Item '{0}' of item group '{1}' must specify metadata '{2}'</target>
+        <target state="translated">El elemento "{0}" del grupo de elementos "{1}" debe especificar los metadatos "{2}"</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsInvalid">
         <source>The value of {0} with identity '{1}' is invalid: '{2}'</source>
-        <target state="needs-review-translation">El valor de {0} con identidad '{1}' no es válido '{2}'"</target>
+        <target state="translated">El valor de {0} con la identidad "{1}" no es válido: "{2}"</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsNotValidCommitHash">
         <source>The value of {0} with identity '{1}' is not a valid commit hash: '{2}'</source>
-        <target state="needs-review-translation">El valor de {0} con identidad '{1}' no es un hash de confirmación válido '{2}'"</target>
+        <target state="translated">El valor de {0} con la identidad "{1}" no es un hash de confirmación válido: "{2}"</target>
         <note />
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidDomainName">
@@ -34,7 +34,7 @@
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidUri">
         <source>The value passed to task parameter {0} is not a valid URI: '{1}'</source>
-        <target state="new">The value passed to task parameter {0} is not a valid URI: '{1}'</target>
+        <target state="translated">El valor pasado al parámetro de tarea {0} no es un URI válido: "{1}"</target>
         <note />
       </trans-unit>
     </body>

@@ -9,17 +9,17 @@
       </trans-unit>
       <trans-unit id="ItemOfItemGroupMustSpecifyMetadata">
         <source>Item '{0}' of item group '{1}' must specify metadata '{2}'</source>
-        <target state="new">Item '{0}' of item group '{1}' must specify metadata '{2}'</target>
+        <target state="translated">項目グループ '{1}' の項目 '{0}' には、メタデータ '{2}' を指定する必要があります</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsInvalid">
         <source>The value of {0} with identity '{1}' is invalid: '{2}'</source>
-        <target state="needs-review-translation">ID '{1}' の {0} の値は無効です: '{2}'"</target>
+        <target state="translated">ID '{1}' の {0} の値が無効です: '{2}'</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsNotValidCommitHash">
         <source>The value of {0} with identity '{1}' is not a valid commit hash: '{2}'</source>
-        <target state="needs-review-translation">ID '{1}' の {0} の値は有効なコミット ハッシュではありません: '{2}'"</target>
+        <target state="translated">ID '{1}' の {0} の値が有効なコミット ハッシュではありません: '{2}'</target>
         <note />
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidDomainName">
@@ -34,7 +34,7 @@
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidUri">
         <source>The value passed to task parameter {0} is not a valid URI: '{1}'</source>
-        <target state="new">The value passed to task parameter {0} is not a valid URI: '{1}'</target>
+        <target state="translated">タスクのパラメーター {0} に渡された値は、有効な URI ではありません: '{1}'</target>
         <note />
       </trans-unit>
     </body>

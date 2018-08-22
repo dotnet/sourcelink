@@ -29,7 +29,7 @@
       </trans-unit>
       <trans-unit id="ErrorWritingToSourceLinkFile">
         <source>Error writing to source link file '{0}': {1}</source>
-        <target state="needs-review-translation">寫入來源連結檔案 '{0}' 時發生錯誤: {1}"</target>
+        <target state="translated">寫入來源連結檔案 '{0}' 時發生錯誤: {1}</target>
         <note />
       </trans-unit>
     </body>
