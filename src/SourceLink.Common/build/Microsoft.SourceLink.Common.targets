@@ -20,20 +20,33 @@
           BeforeTargets="CoreCompile"
           Condition="'$(EmbedUntrackedSources)' == 'true' and '$(EmbedAllSources)' != 'true' and '$(DebugType)' != 'none' and '$(EnableSourceControlManagerQueries)' == 'true'" />
 
-  <!-- 
-    If defined populates MappedPath metadata of SourceRoot items. 
+  <!--
+    If defined populates MappedPath metadata of SourceRoot items.
   -->
   <Target Name="_InitializeSourceRootMappedPathsOpt"
           DependsOnTargets="InitializeSourceRootMappedPaths"
           Condition="'$(SourceRootMappedPathsFeatureSupported)' == 'true'"/>
+
+  <!-- 
+    Add compiler targets: C++ generates PDB with SourceLink in Link phase.
+  -->
+  <PropertyGroup Condition="'$(Language)' == 'C++'">
+    <_GenerateSourceLinkFileBeforeTargets>Link</_GenerateSourceLinkFileBeforeTargets>
+    <_GenerateSourceLinkFileDependsOnTargets>ComputeLinkSwitches</_GenerateSourceLinkFileDependsOnTargets>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Language)' != 'C++'">
+    <_GenerateSourceLinkFileBeforeTargets>CoreCompile</_GenerateSourceLinkFileBeforeTargets>
+    <_GenerateSourceLinkFileDependsOnTargets/>
+  </PropertyGroup>
 
   <!--
     Each source control provider package adds its SourceLinkUrl initialization target to SourceLinkUrlInitializerTargets.
     This target shall initialize SourceLinkUrl of all items that don't have it initialized yet and belong to the source control provider.
   -->
   <Target Name="GenerateSourceLinkFile"
-          DependsOnTargets="InitializeSourceControlInformation;_InitializeSourceRootMappedPathsOpt;$(SourceLinkUrlInitializerTargets)"
-          BeforeTargets="CoreCompile"
+          DependsOnTargets="InitializeSourceControlInformation;$(_GenerateSourceLinkFileDependsOnTargets);_InitializeSourceRootMappedPathsOpt;$(SourceLinkUrlInitializerTargets)"
+          BeforeTargets="$(_GenerateSourceLinkFileBeforeTargets)"
           Outputs="$(SourceLink)"
           Condition="'$(SourceLink)' != '' and '$(SourceControlInformationFeatureSupported)' == 'true'">
 
@@ -41,6 +54,13 @@
 
     <ItemGroup>
       <FileWrites Include="$(SourceLink)" />
+    </ItemGroup>
+
+    <!-- C++ Link task currently doesn't recognize SourceLink property -->
+    <ItemGroup Condition="'$(Language)' == 'C++'">
+      <Link Update="@(Link)">
+        <AdditionalOptions>%(Link.AdditionalOptions) /sourcelink:"$(SourceLink)"</AdditionalOptions>
+      </Link>
     </ItemGroup>
   </Target>
   
