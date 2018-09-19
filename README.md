@@ -34,6 +34,8 @@ You can enable SourceLink experience in your own project by setting a few proper
 
 SourceLink packages are currently available for the following source control providers.
 
+> The following packages are only required during development build time. It is recomended you set PrivateAssets to all on the properties of these packages. This prevents your consuming projects from installing these development dependencies.
+
 ### github.com and GitHub Enterprise
 
 For projects hosted by [GitHub](http://github.com) or [GitHub Enterprise](https://enterprise.github.com/home) reference 
