@@ -34,7 +34,7 @@ You can enable SourceLink experience in your own project by setting a few proper
 
 SourceLink packages are currently available for the following source control providers.
 
-> The following packages are only required during development build time. It is recomended you set PrivateAssets to all on the properties of these packages. This prevents your consuming projects from installing these development dependencies.
+> SourceLink package is a development dependency, which means it is only used during build. It is therefore recommended to set `PrivateAssets` to `all` on the package reference. This prevents consuming projects of your nuget package from attempting to install SourceLink.
 
 ### github.com and GitHub Enterprise
 
