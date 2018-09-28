@@ -67,11 +67,6 @@ namespace Microsoft.SourceLink
 
             if (isVisualStudioHost)
             {
-                if (!hasDefaultCollection && projectName == null)
-                {
-                    return false;
-                }
-
                 projectPath = projectName ?? repositoryName;
             }
             else
