@@ -80,8 +80,26 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
         [Theory]
         [InlineData("account.visualstudio.com", "visualstudio.com")]
         [InlineData("account.vsts.me", "vsts.me")]
+        public void RepoOnly_VisualStudioHost(string domainAndAccount, string host)
+        {
+            var engine = new MockEngine();
+
+            var task = new GetSourceLinkUrl()
+            {
+                BuildEngine = engine,
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", $"http://{domainAndAccount}/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                Hosts = new[] { new MockItem(host) }
+            };
+
+            bool result = task.Execute();
+            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            AssertEx.AreEqual($"http://{domainAndAccount}/repo/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
+            Assert.True(result);
+        }
+
+        [Theory]
         [InlineData("contoso.com/account", "contoso.com")]
-        public void RepoOnly(string domainAndAccount, string host)
+        public void RepoOnly_NonVisualStudioHost(string domainAndAccount, string host)
         {
             var engine = new MockEngine();
 
