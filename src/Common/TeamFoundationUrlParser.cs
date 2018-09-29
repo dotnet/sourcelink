@@ -28,7 +28,6 @@ namespace Microsoft.SourceLink
 
             int index = 0;
             string account;
-            bool hasDefaultCollection = false;
             bool isVisualStudioHost = IsVisualStudioHostedServer(host);
 
             if (isVisualStudioHost)
@@ -39,7 +38,6 @@ namespace Microsoft.SourceLink
                 // Trim optional "DefaultCollection" from path:
                 if (StringComparer.OrdinalIgnoreCase.Equals(parts[index], "DefaultCollection"))
                 {
-                    hasDefaultCollection = true;
                     index++;
                 }
             }
@@ -67,11 +65,6 @@ namespace Microsoft.SourceLink
 
             if (isVisualStudioHost)
             {
-                if (!hasDefaultCollection && projectName == null)
-                {
-                    return false;
-                }
-
                 projectPath = projectName ?? repositoryName;
             }
             else

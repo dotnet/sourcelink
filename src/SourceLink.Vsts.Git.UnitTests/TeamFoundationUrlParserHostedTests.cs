@@ -24,8 +24,6 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
         [InlineData("account.visualstudio.com", "//b/_git/c")]
         [InlineData("account.visualstudio.com", "/project/_ssh/repo")]
         [InlineData("account.visualstudio.com", "/DefaultCollection/project/_ssh/repo")]
-        [InlineData("account.visualstudio.com", "/_git/repo")]
-        [InlineData("account.vsts.me", "/_git/repo")]
         [InlineData("contoso.com", "/e/_git/repo")]
         [InlineData("contoso.com", "/e/enterprise/_git/repo")]
         [InlineData("contoso.com", "/account/project/team/_git/repo")]
@@ -35,6 +33,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
         }
 
         [Theory]
+        [InlineData("account.visualstudio.com", "/_git/repo", "repo", "repo")]
         [InlineData("account.visualstudio.com", "/project/_git/repo", "project", "repo")]
         [InlineData("account.visualstudio.com", "/project/team/_git/repo", "project", "repo")]
         [InlineData("account.visualstudio.com", "/DefaultCollection/project/_git/repo", "project", "repo")]
@@ -42,6 +41,7 @@ namespace Microsoft.SourceLink.Vsts.Git.UnitTests
         [InlineData("account.visualstudio.com", "/DefaultCollection/project/team/_git/_full/repo", "project", "repo")]
         [InlineData("account.visualstudio.com", "/DefaultCollection/project/team/_git/_optimized/repo", "project", "repo")]
         [InlineData("account.visualstudio.com", "/DefaultCollection/_git/repo", "repo", "repo")]
+        [InlineData("account.vsts.me", "/_git/repo", "repo", "repo")]
         [InlineData("account.vsts.me", "/project/_git/repo", "project", "repo")]
         [InlineData("account.vsts.me", "/project/team/_git/repo", "project", "repo")]
         [InlineData("account.vsts.me", "/DefaultCollection/project/_git/repo", "project", "repo")]
