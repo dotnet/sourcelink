@@ -17,11 +17,6 @@
         <target state="translated">{0} tek bir '*' joker karakterini içermelidir: '{1}'</target>
         <note />
       </trans-unit>
-      <trans-unit id="NoItemsSpecifiedSourceLinkEmpty">
-        <source>No {0} items specified - the generated source link is empty.</source>
-        <target state="translated">{0} öğesi belirtilmedi. Oluşturulan kaynak bağlantısı boş.</target>
-        <note />
-      </trans-unit>
       <trans-unit id="IsEmpty">
         <source>{0} is empty: '{1}'</source>
         <target state="translated">{0} boş: '{1}'</target>
@@ -30,6 +25,11 @@
       <trans-unit id="ErrorWritingToSourceLinkFile">
         <source>Error writing to source link file '{0}': {1}</source>
         <target state="translated">'{0}' kaynak bağlantı dosyasına yazılırken bir hata oluştu: {1}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty">
+        <source>Source control information is not available - the generated source link is empty.</source>
+        <target state="new">Source control information is not available - the generated source link is empty.</target>
         <note />
       </trans-unit>
     </body>

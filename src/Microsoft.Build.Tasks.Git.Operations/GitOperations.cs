@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using LibGit2Sharp;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Tasks.SourceControl;
@@ -16,6 +17,7 @@ namespace Microsoft.Build.Tasks.Git
     {
         private const string SourceControlName = "git";
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static string LocateRepository(string directory)
         {
             // Repository.Discover returns the path to .git directory for repositories with a working directory.
@@ -24,16 +26,23 @@ namespace Microsoft.Build.Tasks.Git
             return Repository.Discover(directory);
         }
 
-        public static string GetRepositoryUrl(IRepository repository, string remoteName = null)
+        public static string GetRepositoryUrl(IRepository repository, Action<string, object[]> logWarning = null, string remoteName = null)
         {
             var remotes = repository.Network.Remotes;
             var remote = string.IsNullOrEmpty(remoteName) ? (remotes["origin"] ?? remotes.FirstOrDefault()) : remotes[remoteName];
             if (remote == null)
             {
+                logWarning?.Invoke(Resources.RepositoryHasNoRemote, Array.Empty<string>());
                 return null;
             }
 
-            return NormalizeUrl(remote.Url, repository.Info.WorkingDirectory);
+            var url = NormalizeUrl(remote.Url, repository.Info.WorkingDirectory);
+            if (url == null)
+            {
+                logWarning?.Invoke(Resources.InvalidRepositoryRemoteUrl, new[] { remote.Name, remote.Url });
+            }
+
+            return url;
         }
 
         internal static string NormalizeUrl(string url, string root)
@@ -140,15 +149,18 @@ namespace Microsoft.Build.Tasks.Git
             var revisionId = GetRevisionId(repository);
             if (revisionId != null)
             {
+                // Don't report a warning since it has already been reported by GetRepositoryUrl task.
+                string repositoryUrl = GetRepositoryUrl(repository);
+
                 var item = new TaskItem(repoRoot);
                 item.SetMetadata(Names.SourceRoot.SourceControl, SourceControlName);
-                item.SetMetadata(Names.SourceRoot.ScmRepositoryUrl, GetRepositoryUrl(repository));
+                item.SetMetadata(Names.SourceRoot.ScmRepositoryUrl, repositoryUrl);
                 item.SetMetadata(Names.SourceRoot.RevisionId, revisionId);
                 result.Add(item);
             }
             else
             {
-                logWarning(Resources.RepositoryWithoutCommit_SourceLink, Array.Empty<object>());
+                logWarning(Resources.RepositoryHasNoCommit, Array.Empty<object>());
             }
 
             if (SubmodulesSupported(repository, fileExists))

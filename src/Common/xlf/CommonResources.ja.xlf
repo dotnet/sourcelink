@@ -12,6 +12,11 @@
         <target state="translated">項目グループ '{1}' の項目 '{0}' には、メタデータ '{2}' を指定する必要があります</target>
         <note />
       </trans-unit>
+      <trans-unit id="UnableToDetermineRepositoryUrl">
+        <source>Unable to determine repository url, the source code won't be available via source link.</source>
+        <target state="new">Unable to determine repository url, the source code won't be available via source link.</target>
+        <note />
+      </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsInvalid">
         <source>The value of {0} with identity '{1}' is invalid: '{2}'</source>
         <target state="translated">ID '{1}' の {0} の値が無効です: '{2}'</target>

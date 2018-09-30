@@ -88,7 +88,6 @@ namespace Microsoft.SourceLink.Common.UnitTests
 
         [Theory]
         [InlineData("a/b")]
-        [InlineData("")]
         [InlineData("http://")]
         public void RepositoryUrl_Errors(string url)
         {
@@ -166,6 +165,26 @@ namespace Microsoft.SourceLink.Common.UnitTests
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            Assert.Equal("N/A", task.SourceLinkUrl);
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void SourceRootNotApplicable_SourceLinkUrlEmpty()
+        {
+            var engine = new MockEngine();
+
+            var task = new MockGetSourceLinkUrlGitTask()
+            {
+                BuildEngine = engine,
+                SourceRoot = new MockItem("x", KVP("RepositoryUrl", ""), KVP("SourceControl", "git")),
+            };
+
+            bool result = task.Execute();
+
+            AssertEx.AssertEqualToleratingWhitespaceDifferences(
+                "WARNING : " + string.Format(CommonResources.UnableToDetermineRepositoryUrl), engine.Log);
+
             Assert.Equal("N/A", task.SourceLinkUrl);
             Assert.True(result);
         }

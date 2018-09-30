@@ -1,4 +1,5 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -55,7 +56,26 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         public void GetRepositoryUrl_NoRemotes()
         {
             var repo = new TestRepository(workingDir: s_root, commitSha: "1111111111111111111111111111111111111111");
-            Assert.Null(GitOperations.GetRepositoryUrl(repo));
+
+            var warnings = new List<KeyValuePair<string, object[]>>();
+            Assert.Null(GitOperations.GetRepositoryUrl(repo, (message, args) => warnings.Add(KVP(message, args))));
+            AssertEx.Equal(new[] { Resources.RepositoryHasNoRemote }, warnings.Select(InspectDiagnostic));
+        }
+
+        private void ValidateGetRepositoryUrl(string workingDir, string actualUrl, string expectedUrl)
+        {
+            var testRemote = new TestRemote("origin", actualUrl);
+
+            var repo = new TestRepository(workingDir, commitSha: "1111111111111111111111111111111111111111",
+                remotes: new[] { testRemote });
+
+            var expectedWarnings = (expectedUrl != null) ?
+                Array.Empty<string>() :
+                new[] { string.Format(Resources.InvalidRepositoryRemoteUrl, testRemote.Name, testRemote.Url) };
+
+            var warnings = new List<KeyValuePair<string, object[]>>();
+            Assert.Equal(expectedUrl, GitOperations.GetRepositoryUrl(repo, (message, args) => warnings.Add(KVP(message, args))));
+            AssertEx.Equal(expectedWarnings, warnings.Select(InspectDiagnostic));
         }
 
         [Theory]
@@ -64,25 +84,20 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [InlineData("http://github.com:102/org/repo")]
         [InlineData("ssh://user@github.com/org/repo")]
         [InlineData("abc://user@github.com/org/repo")]
-        public void GetRepositoryUrl_Agnostic1(string url)
+        public void GetRepositoryUrl_PlatformAgnostic1(string url)
         {
-            var repo = new TestRepository(workingDir: s_root, commitSha: "1111111111111111111111111111111111111111",
-                remotes: new[] { new TestRemote("origin", url) });
-
-            Assert.Equal(url, GitOperations.GetRepositoryUrl(repo));
+            ValidateGetRepositoryUrl(s_root, url, url);
         }
 
         [Theory]
+        [InlineData("http://?", null)]
         [InlineData("https://github.com/org/repo/./.", "https://github.com/org/repo/")]
         [InlineData("ssh://github.com/org/../repo", "ssh://github.com/repo")]
         [InlineData("ssh://github.com/%32/repo", "ssh://github.com/2/repo")]
         [InlineData("ssh://github.com/%3F/repo", "ssh://github.com/%3F/repo")]
-        public void GetRepositoryUrl_Agnostic2(string originUrl, string expectedUrl)
+        public void GetRepositoryUrl_PlatformAgnostic2(string url, string expectedUrl)
         {
-            var repo = new TestRepository(workingDir: s_root, commitSha: "1111111111111111111111111111111111111111",
-                remotes: new[] { new TestRemote("origin", originUrl) });
-
-            Assert.Equal(expectedUrl, GitOperations.GetRepositoryUrl(repo));
+            ValidateGetRepositoryUrl(s_root, url, expectedUrl);
         }
 
         [ConditionalTheory(typeof(WindowsOnly))]
@@ -108,12 +123,9 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [InlineData(@".:/../../relative/path", "ssh://./relative/path")]
         [InlineData(@"..:/../../relative/path", "ssh://../relative/path")]
         [InlineData(@"@:org/repo", "file:///C:/src/a/b/@:org/repo")]
-        public void GetRepositoryUrl_Windows(string originUrl, string expectedUrl)
+        public void GetRepositoryUrl_Windows(string url, string expectedUrl)
         {
-            var repo = new TestRepository(workingDir: @"C:\src\a\b", commitSha: "1111111111111111111111111111111111111111",
-                remotes: new[] { new TestRemote("origin", originUrl) });
-
-            Assert.Equal(expectedUrl, GitOperations.GetRepositoryUrl(repo));
+            ValidateGetRepositoryUrl(@"C:\src\a\b", url, expectedUrl);
         }
 
         [ConditionalTheory(typeof(UnixOnly))]
@@ -130,12 +142,9 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [InlineData(@".:/../../relative/path", "ssh://./relative/path")]
         [InlineData(@"..:/../../relative/path", "ssh://../relative/path")]
         [InlineData(@"@:org/repo", @"file:///usr/src/a/b/@:org/repo")]
-        public void GetRepositoryUrl_Unix(string originUrl, string expectedUrl)
+        public void GetRepositoryUrl_Unix(string url, string expectedUrl)
         {
-            var repo = new TestRepository(workingDir: "/usr/src/a/b", commitSha: "1111111111111111111111111111111111111111",
-                remotes: new[] { new TestRemote("origin", originUrl) });
-
-            Assert.Equal(expectedUrl, GitOperations.GetRepositoryUrl(repo));
+            ValidateGetRepositoryUrl("/usr/src/a/b", url, expectedUrl);
         }
 
         [Theory]
@@ -145,12 +154,9 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [InlineData("git@github.com:org/repo", "ssh://git@github.com/org/repo")]
         [InlineData("@github.com:org/repo", "ssh://@github.com/org/repo")]
         [InlineData("http:x//y", "ssh://http/x//y")]
-        public void GetRepositoryUrl_ScpSyntax(string originUrl, string expectedUrl)
+        public void GetRepositoryUrl_ScpSyntax(string url, string expectedUrl)
         {
-            var repo = new TestRepository(workingDir: s_root, commitSha: "1111111111111111111111111111111111111111",
-                remotes: new[] { new TestRemote("origin", originUrl) });
-
-            Assert.Equal(expectedUrl, GitOperations.GetRepositoryUrl(repo));
+            ValidateGetRepositoryUrl(s_root, url, expectedUrl);
         }
 
         [Fact]
@@ -162,7 +168,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add(KVP(message, args)), fileExists: null);
 
             Assert.Empty(items);
-            AssertEx.Equal(new[] { Resources.RepositoryWithoutCommit_SourceLink }, warnings.Select(InspectDiagnostic));
+            AssertEx.Equal(new[] { Resources.RepositoryHasNoCommit }, warnings.Select(InspectDiagnostic));
         }
 
         [Fact]
@@ -186,7 +192,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 $@"'{s_root}{s}sub{s}2{s}' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='{s_root}{s}' ScmRepositoryUrl='http://2.com/'",
             }, items.Select(InspectSourceRoot));
 
-            AssertEx.Equal(new[] { Resources.RepositoryWithoutCommit_SourceLink }, warnings.Select(InspectDiagnostic));
+            AssertEx.Equal(new[] { Resources.RepositoryHasNoCommit }, warnings.Select(InspectDiagnostic));
         }
 
         [Fact]

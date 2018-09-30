@@ -15,22 +15,6 @@ namespace Microsoft.Build.Tasks.Git
         [Output]
         public string Id { get; set; }
 
-        public override bool Execute()
-        {
-            try
-            {
-                return TaskImplementation.LocateRepository(this);
-            }
-            catch
-            {
-#if NET461
-                foreach (var message in TaskImplementation.GetLog())
-                {
-                    Log.LogMessage(message);
-                }
-#endif
-                throw;
-            }
-        }
+        public override bool Execute() => TaskImplementation.LocateRepository(this);
     }
 }
