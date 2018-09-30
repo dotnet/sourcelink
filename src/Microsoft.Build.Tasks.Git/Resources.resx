@@ -117,9 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="RepositoryWithoutCommit_SourceLink" xml:space="preserve">
-    <value>Repository doesn't have any commit, the source code won't be available via source link.</value>
-  </data>
   <data name="SubmoduleWithoutCommit_SourceLink" xml:space="preserve">
     <value>Submodule '{0}' doesn't have any commit, the source code won't be available via source link.</value>
   </data>
@@ -129,8 +126,11 @@
   <data name="InvalidSubmodulePath_SourceLink" xml:space="preserve">
     <value>The path of submodule '{0}' is invalid: '{1}', the source code won't be available via source link.</value>
   </data>
+  <data name="RepositoryHasNoCommit" xml:space="preserve">
+    <value>Repository has no commit.</value>
+  </data>
   <data name="RepositoryHasNoRemote" xml:space="preserve">
-    <value>Repository '{0}' has no remote.</value>
+    <value>Repository has no remote.</value>
   </data>
   <data name="InvalidRepositoryRemoteUrl" xml:space="preserve">
     <value>The URL of repository remote '{0}' is invalid: '{1}'.</value>

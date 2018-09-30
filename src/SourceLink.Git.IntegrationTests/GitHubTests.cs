@@ -40,8 +40,11 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expectedWarnings: new[]
                 {
-                    // Repository doesn't have any commit, the source code won't be available via source link.
-                    string.Format(Build.Tasks.Git.Resources.RepositoryWithoutCommit_SourceLink),
+                    // Repository has no remote.
+                    string.Format(Build.Tasks.Git.Resources.RepositoryHasNoRemote),
+
+                    // Repository doesn't have any commit.
+                    string.Format(Build.Tasks.Git.Resources.RepositoryHasNoCommit),
 
                     // No SourceRoot items specified - the generated source link is empty.
                     string.Format(Common.Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty),

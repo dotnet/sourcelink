@@ -59,7 +59,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             var warnings = new List<KeyValuePair<string, object[]>>();
             Assert.Null(GitOperations.GetRepositoryUrl(repo, (message, args) => warnings.Add(KVP(message, args))));
-            AssertEx.Equal(new[] { string.Format(Resources.RepositoryHasNoRemote, s_root) }, warnings.Select(InspectDiagnostic));
+            AssertEx.Equal(new[] { Resources.RepositoryHasNoRemote }, warnings.Select(InspectDiagnostic));
         }
 
         private void ValidateGetRepositoryUrl(string workingDir, string actualUrl, string expectedUrl)
@@ -168,7 +168,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add(KVP(message, args)), fileExists: null);
 
             Assert.Empty(items);
-            AssertEx.Equal(new[] { Resources.RepositoryWithoutCommit_SourceLink }, warnings.Select(InspectDiagnostic));
+            AssertEx.Equal(new[] { Resources.RepositoryHasNoCommit }, warnings.Select(InspectDiagnostic));
         }
 
         [Fact]
@@ -192,7 +192,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 $@"'{s_root}{s}sub{s}2{s}' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='{s_root}{s}' ScmRepositoryUrl='http://2.com/'",
             }, items.Select(InspectSourceRoot));
 
-            AssertEx.Equal(new[] { Resources.RepositoryWithoutCommit_SourceLink }, warnings.Select(InspectDiagnostic));
+            AssertEx.Equal(new[] { Resources.RepositoryHasNoCommit }, warnings.Select(InspectDiagnostic));
         }
 
         [Fact]

@@ -32,7 +32,7 @@ namespace Microsoft.Build.Tasks.Git
             var remote = string.IsNullOrEmpty(remoteName) ? (remotes["origin"] ?? remotes.FirstOrDefault()) : remotes[remoteName];
             if (remote == null)
             {
-                logWarning?.Invoke(Resources.RepositoryHasNoRemote, new[] { repository.Info.WorkingDirectory });
+                logWarning?.Invoke(Resources.RepositoryHasNoRemote, Array.Empty<string>());
                 return null;
             }
 
@@ -160,7 +160,7 @@ namespace Microsoft.Build.Tasks.Git
             }
             else
             {
-                logWarning(Resources.RepositoryWithoutCommit_SourceLink, Array.Empty<object>());
+                logWarning(Resources.RepositoryHasNoCommit, Array.Empty<object>());
             }
 
             if (SubmodulesSupported(repository, fileExists))

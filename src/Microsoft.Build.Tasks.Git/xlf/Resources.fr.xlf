@@ -18,13 +18,13 @@
         <note />
       </trans-unit>
       <trans-unit id="RepositoryHasNoRemote">
-        <source>Repository '{0}' has no remote.</source>
-        <target state="new">Repository '{0}' has no remote.</target>
+        <source>Repository has no remote.</source>
+        <target state="new">Repository has no remote.</target>
         <note />
       </trans-unit>
-      <trans-unit id="RepositoryWithoutCommit_SourceLink">
-        <source>Repository doesn't have any commit, the source code won't be available via source link.</source>
-        <target state="translated">Le référentiel ne présente aucune validation, le code source ne sera pas disponible via le lien source.</target>
+      <trans-unit id="RepositoryHasNoCommit">
+        <source>Repository has no commit.</source>
+        <target state="needs-review-translation">Le référentiel ne présente aucune validation, le code source ne sera pas disponible via le lien source.</target>
         <note />
       </trans-unit>
       <trans-unit id="SubmoduleWithoutCommit_SourceLink">
