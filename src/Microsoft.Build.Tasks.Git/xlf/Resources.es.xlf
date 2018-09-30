@@ -2,6 +2,11 @@
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
   <file datatype="xml" source-language="en" target-language="es" original="../Resources.resx">
     <body>
+      <trans-unit id="InvalidRepositoryRemoteUrl">
+        <source>The URL of repository remote '{0}' is invalid: '{1}'.</source>
+        <target state="new">The URL of repository remote '{0}' is invalid: '{1}'.</target>
+        <note />
+      </trans-unit>
       <trans-unit id="InvalidSubmodulePath_SourceLink">
         <source>The path of submodule '{0}' is invalid: '{1}', the source code won't be available via source link.</source>
         <target state="translated">La ruta de acceso del submódulo "{0}" no es válida: "{1}", el código fuente no estará disponible mediante el vínculo de origen.</target>
@@ -10,6 +15,11 @@
       <trans-unit id="InvalidSubmoduleUrl_SourceLink">
         <source>The URL of submodule '{0}' is invalid: '{1}', the source code won't be available via source link.</source>
         <target state="translated">La dirección URL del submódulo "{0}" no es válida: "{1}", el código fuente no estará disponible mediante el vínculo de origen.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RepositoryHasNoRemote">
+        <source>Repository '{0}' has no remote.</source>
+        <target state="new">Repository '{0}' has no remote.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryWithoutCommit_SourceLink">

@@ -12,6 +12,11 @@
         <target state="translated">Položka {0} ve skupině položek {1} musí uvádět metadata {2}.</target>
         <note />
       </trans-unit>
+      <trans-unit id="UnableToDetermineRepositoryUrl">
+        <source>Unable to determine repository url, the source code won't be available via source link.</source>
+        <target state="new">Unable to determine repository url, the source code won't be available via source link.</target>
+        <note />
+      </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsInvalid">
         <source>The value of {0} with identity '{1}' is invalid: '{2}'</source>
         <target state="translated">Hodnota {0} s identitou {1} je neplatná: {2}</target>

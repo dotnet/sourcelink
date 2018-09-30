@@ -17,11 +17,6 @@
         <target state="translated">{0} precisa conter um único curinga '*': '{1}'</target>
         <note />
       </trans-unit>
-      <trans-unit id="NoItemsSpecifiedSourceLinkEmpty">
-        <source>No {0} items specified - the generated source link is empty.</source>
-        <target state="translated">Nenhum item {0} especificado – o link de origem gerado está vazio.</target>
-        <note />
-      </trans-unit>
       <trans-unit id="IsEmpty">
         <source>{0} is empty: '{1}'</source>
         <target state="translated">{0} está vazio: '{1}'</target>
@@ -30,6 +25,11 @@
       <trans-unit id="ErrorWritingToSourceLinkFile">
         <source>Error writing to source link file '{0}': {1}</source>
         <target state="translated">Erro ao gravar para o arquivo do link de origem '{0}': {1}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty">
+        <source>Source control information is not available - the generated source link is empty.</source>
+        <target state="new">Source control information is not available - the generated source link is empty.</target>
         <note />
       </trans-unit>
     </body>

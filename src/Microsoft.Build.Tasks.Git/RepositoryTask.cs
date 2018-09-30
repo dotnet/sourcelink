@@ -7,7 +7,6 @@ namespace Microsoft.Build.Tasks.Git
 {
     public abstract class RepositoryTask : Task
     {
-        [Required]
         public string Root { get; set; }
     }
 }

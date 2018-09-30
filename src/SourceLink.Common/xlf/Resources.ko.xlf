@@ -17,11 +17,6 @@
         <target state="translated">{0}에는 단일 와일드카드 '*'가 포함되어야 합니다. '{1}'"</target>
         <note />
       </trans-unit>
-      <trans-unit id="NoItemsSpecifiedSourceLinkEmpty">
-        <source>No {0} items specified - the generated source link is empty.</source>
-        <target state="translated">{0}개 항목을 지정하지 않았습니다. 생성되는 소스 링크가 비어 있습니다.</target>
-        <note />
-      </trans-unit>
       <trans-unit id="IsEmpty">
         <source>{0} is empty: '{1}'</source>
         <target state="translated">{0}이(가) 비어 있습니다. '{1}'</target>
@@ -30,6 +25,11 @@
       <trans-unit id="ErrorWritingToSourceLinkFile">
         <source>Error writing to source link file '{0}': {1}</source>
         <target state="translated">소스 링크 파일 '{0}'에 쓰는 동안 오류가 발생했습니다. {1}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty">
+        <source>Source control information is not available - the generated source link is empty.</source>
+        <target state="new">Source control information is not available - the generated source link is empty.</target>
         <note />
       </trans-unit>
     </body>

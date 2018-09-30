@@ -17,11 +17,6 @@
         <target state="translated">{0} 必须包含单个通配符 '*': '{1}'</target>
         <note />
       </trans-unit>
-      <trans-unit id="NoItemsSpecifiedSourceLinkEmpty">
-        <source>No {0} items specified - the generated source link is empty.</source>
-        <target state="translated">未指定 {0} 项目 - 生成的源链接为空。</target>
-        <note />
-      </trans-unit>
       <trans-unit id="IsEmpty">
         <source>{0} is empty: '{1}'</source>
         <target state="translated">{0}为空: '{1}'</target>
@@ -30,6 +25,11 @@
       <trans-unit id="ErrorWritingToSourceLinkFile">
         <source>Error writing to source link file '{0}': {1}</source>
         <target state="translated">写入源链接文件 "{0}" 时出错: {1}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty">
+        <source>Source control information is not available - the generated source link is empty.</source>
+        <target state="new">Source control information is not available - the generated source link is empty.</target>
         <note />
       </trans-unit>
     </body>

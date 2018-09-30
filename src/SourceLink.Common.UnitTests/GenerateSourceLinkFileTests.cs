@@ -26,7 +26,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
             var content = task.GenerateSourceLinkContent();
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
-                "WARNING : " + string.Format(Resources.NoItemsSpecifiedSourceLinkEmpty, "SourceRoot"), engine.Log);
+                "WARNING : " + string.Format(Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty), engine.Log);
 
             AssertEx.AreEqual(@"{""documents"":{}}", content);
         }
@@ -112,7 +112,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 BuildEngine = engine,
                 SourceRoots = new[]
                 {
-                    // error: missing SourceLinkUrl in source-controlled root:
+                    // skipped: missing SourceLinkUrl in source-controlled root:
                     new MockItem(@"C:\src\", KVP("SourceControl", "git")),
 
                     // skipped: missing SourceLinkUrl in non-source-controlled root
@@ -131,7 +131,6 @@ namespace Microsoft.SourceLink.Common.UnitTests
 
             var content = task.GenerateSourceLinkContent();
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
-                "ERROR : " + string.Format(Resources.IsEmpty, "SourceRoot.SourceLinkUrl", MockItem.AdjustSeparators(@"C:\src\")) + Environment.NewLine +
                 "ERROR : " + string.Format(Resources.MustNotContainWildcard, "SourceRoot", MockItem.AdjustSeparators(@"C:\x\b\*\")) + Environment.NewLine +
                 "ERROR : " + string.Format(Resources.MustEndWithDirectorySeparator, "SourceRoot", MockItem.AdjustSeparators(@"C:\x\c")) + Environment.NewLine +
                 "ERROR : " + string.Format(Resources.MustContainSingleWildcard, "SourceRoot.SourceLinkUrl", "http://a/**"), engine.Log);

@@ -12,6 +12,11 @@
         <target state="translated">Das Element "{0}" der Elementgruppe "{1}" muss die Metadaten "{2}" angeben.</target>
         <note />
       </trans-unit>
+      <trans-unit id="UnableToDetermineRepositoryUrl">
+        <source>Unable to determine repository url, the source code won't be available via source link.</source>
+        <target state="new">Unable to determine repository url, the source code won't be available via source link.</target>
+        <note />
+      </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsInvalid">
         <source>The value of {0} with identity '{1}' is invalid: '{2}'</source>
         <target state="translated">Der Wert von "{0}" mit der Identität "{1}" ist ungültig: "{2}"</target>

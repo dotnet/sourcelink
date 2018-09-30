@@ -13,6 +13,12 @@ namespace Microsoft.Build.Tasks.Git
         {
             var log = task.Log;
 
+            // Unable to determine repository root, warning has already been reported.
+            if (string.IsNullOrEmpty(task.Root))
+            {
+                return true;
+            }
+
             Repository repo;
             try
             {
@@ -26,8 +32,8 @@ namespace Microsoft.Build.Tasks.Git
 
             if (repo.Info.IsBare)
             {
-                log.LogError(Resources.BareRepositoriesNotSupported, task.Root);
-                return false;
+                log.LogWarning(Resources.BareRepositoriesNotSupported, task.Root);
+                return true;
             }
 
             using (repo)
@@ -47,11 +53,26 @@ namespace Microsoft.Build.Tasks.Git
 
         public static bool LocateRepository(LocateRepository task)
         {
-            task.Id = GitOperations.LocateRepository(task.Directory);
+            try
+            {
+                task.Id = GitOperations.LocateRepository(task.Directory);
+            }
+            catch (Exception e)
+            {
+#if NET461
+                foreach (var message in TaskImplementation.GetLog())
+                {
+                    task.Log.LogMessage(message);
+                }
+#endif
+                task.Log.LogWarningFromException(e, showStackTrace: true);
+
+                return true;
+            }
 
             if (task.Id == null)
             {
-                task.Log.LogError(Resources.UnableToLocateRepository, task.Directory);
+                task.Log.LogWarning(Resources.UnableToLocateRepository, task.Directory);
             }
 
             return !task.Log.HasLoggedErrors;
@@ -60,7 +81,7 @@ namespace Microsoft.Build.Tasks.Git
         public static bool GetRepositoryUrl(GetRepositoryUrl task) => 
             Execute(task, (repo, t) =>
             {
-                t.Url = GitOperations.GetRepositoryUrl(repo, t.RemoteName);
+                t.Url = GitOperations.GetRepositoryUrl(repo, t.Log.LogWarning, t.RemoteName);
             });
 
         public static bool GetSourceRevisionId(GetSourceRevisionId task) =>

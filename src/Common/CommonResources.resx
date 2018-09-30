@@ -138,4 +138,7 @@
   <data name="AtLeastOneRepositoryHostIsRequired" xml:space="preserve">
     <value>{0} item group is empty. At least one {1} repository host is required in order to generate SourceLink.</value>
   </data>
+  <data name="UnableToDetermineRepositoryUrl" xml:space="preserve">
+    <value>Unable to determine repository url, the source code won't be available via source link.</value>
+  </data>
 </root>

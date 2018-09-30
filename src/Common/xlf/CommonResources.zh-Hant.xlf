@@ -12,6 +12,11 @@
         <target state="translated">項目群組 '{1}' 的項目 '{0}' 必須指定中繼資料 '{2}'</target>
         <note />
       </trans-unit>
+      <trans-unit id="UnableToDetermineRepositoryUrl">
+        <source>Unable to determine repository url, the source code won't be available via source link.</source>
+        <target state="new">Unable to determine repository url, the source code won't be available via source link.</target>
+        <note />
+      </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsInvalid">
         <source>The value of {0} with identity '{1}' is invalid: '{2}'</source>
         <target state="translated">識別碼為 '{1}' 的 {0} 值無效: '{2}'</target>

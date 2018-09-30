@@ -62,14 +62,8 @@ namespace Microsoft.SourceLink.Common
                 var url = root.GetMetadata(Names.SourceRoot.SourceLinkUrl);
                 if (string.IsNullOrEmpty(url))
                 {
-                    // Only report an error if the root comes from source control.
-                    // SourceRoots can be specified by the project to make other features like deterministic paths.
-                    if (!string.IsNullOrEmpty(root.GetMetadata(Names.SourceRoot.SourceControl)))
-                    {
-                        Log.LogError(Resources.IsEmpty, Names.SourceRoot.SourceLinkUrlFullName, root.ItemSpec);
-                        success = false;
-                    }
-
+                    // Do not report any diagnostic. If the source root comes from source control a warning has already been reported.
+                    // SourceRoots can be specified by the project to make other features like deterministic paths, and they don't need source link URL.
                     continue;
                 }
 
@@ -108,7 +102,7 @@ namespace Microsoft.SourceLink.Common
 
             if (first)
             {
-                Log.LogWarning(Resources.NoItemsSpecifiedSourceLinkEmpty, Names.SourceRoot.Name);
+                Log.LogWarning(Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty);
             }
 
             return result.ToString();

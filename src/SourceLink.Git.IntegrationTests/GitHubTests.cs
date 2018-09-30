@@ -44,7 +44,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     string.Format(Build.Tasks.Git.Resources.RepositoryWithoutCommit_SourceLink),
 
                     // No SourceRoot items specified - the generated source link is empty.
-                    string.Format(Common.Resources.NoItemsSpecifiedSourceLinkEmpty, "SourceRoot"),
+                    string.Format(Common.Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty),
                 });
         }
 

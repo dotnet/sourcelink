@@ -71,6 +71,13 @@ namespace Microsoft.Build.Tasks.SourceControl
             }
 
             var gitUrl = SourceRoot.GetMetadata(Names.SourceRoot.RepositoryUrl);
+            if (string.IsNullOrEmpty(gitUrl))
+            {
+                SourceLinkUrl = NotApplicableValue;
+                Log.LogWarning(CommonResources.UnableToDetermineRepositoryUrl);
+                return;
+            }
+
             if (!Uri.TryCreate(gitUrl, UriKind.Absolute, out var gitUri))
             {
                 Log.LogError(CommonResources.ValueOfWithIdentityIsInvalid, Names.SourceRoot.RepositoryUrlFullName, SourceRoot.ItemSpec, gitUrl);
