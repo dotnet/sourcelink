@@ -8,7 +8,7 @@
     <NuspecFile>Microsoft.Build.Tasks.Git.nuspec</NuspecFile>
     <NuspecBasePath>$(OutputPath)</NuspecBasePath>
 
-    <Description>MSBuild tasks providing git repository information.</Description>
+    <PackageDescription>MSBuild tasks providing git repository information.</PackageDescription>
     <PackageTags>MSBuild Tasks source control git</PackageTags>
     <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>

@@ -7,7 +7,7 @@
     <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
     <NuspecBasePath>$(OutputPath)</NuspecBasePath>
 
-    <Description>Generates source link for Bitbucket repositories.</Description>
+    <PackageDescription>Generates source link for Bitbucket repositories.</PackageDescription>
     <PackageTags>MSBuild Tasks Bitbucket source link</PackageTags>
     <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>

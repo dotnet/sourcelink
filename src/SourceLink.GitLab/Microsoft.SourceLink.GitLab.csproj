@@ -7,7 +7,7 @@
     <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
     <NuspecBasePath>$(OutputPath)</NuspecBasePath>
 
-    <Description>Generates source link for GitLab repositories.</Description>
+    <PackageDescription>Generates source link for GitLab repositories.</PackageDescription>
     <PackageTags>MSBuild Tasks GitLab source link</PackageTags>
     <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>

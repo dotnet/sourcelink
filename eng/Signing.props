@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FileSignInfo Include="LibGit2Sharp.dll" CertificateName="None"/>
+    <FileSignInfo Include="git2-b0d9952.dll" CertificateName="None"/>
+  </ItemGroup>
+</Project>

@@ -7,7 +7,7 @@
     <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
     <NuspecBasePath>$(OutputPath)</NuspecBasePath>
     
-    <Description>Standard CI targets.</Description>
+    <PackageDescription>Standard CI targets.</PackageDescription>
     <PackageTags>Standard CI msbuild targets</PackageTags>
     <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>

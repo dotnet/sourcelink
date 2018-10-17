@@ -7,7 +7,7 @@
     <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
     <NuspecBasePath>$(OutputPath)</NuspecBasePath>
     
-    <Description>Generates source link for VSTS TFVC repositories.</Description>
+    <PackageDescription>Generates source link for VSTS TFVC repositories.</PackageDescription>
     <PackageTags>MSBuild Tasks VSTS TFVC source link</PackageTags>
     <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>

@@ -7,7 +7,7 @@
     <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
     <NuspecBasePath>$(OutputPath)</NuspecBasePath>
 
-    <Description>MSBuild tasks providing source control information.</Description>
+    <PackageDescription>MSBuild tasks providing source control information.</PackageDescription>
     <PackageTags>MSBuild Tasks source control</PackageTags>
     <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>
