@@ -101,6 +101,13 @@ If your repository contains submodules hosted by other git providers reference p
 
 Note that [.NET Core SDK 2.1.300](https://www.microsoft.com/net/download/dotnet-core/sdk-2.1.300) or newer is required for SourceLink to work. If building via desktop msbuild (as opposed to `dotnet build`) you'll need version 15.7.
 
+## Known Issues
+
+- `EmbedUntrackedSources` does not work in Visual Basic projects that use .NET SDK: https://github.com/dotnet/sourcelink/issues/193
+- Various build issues on Mono : https://github.com/dotnet/sourcelink/issues/155
+- Issues with OpenSSL dependency on some Linux distros: https://github.com/dotnet/sourcelink/issues/192
+- Issues with WPF projects when building with `/p:ContinuousIntegrationBuild=true`: https://github.com/dotnet/sourcelink/issues/91
+
 ## Builds
 
 Pre-release builds are available on MyGet gallery: https://dotnet.myget.org/Gallery/sourcelink.
