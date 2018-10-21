@@ -8,7 +8,7 @@ Visual Studio 15.3+ supports reading SourceLink information from symbols while d
 
 The [original SourceLink implementation](https://github.com/ctaggart/SourceLink) was provided by [@ctaggart](https://github.com/ctaggart). Thanks! The .NET Team and Cameron worked together to make this implementation available in the .NET Foundation.
 
-> If you arrived here from the original sourcelink documentaion - you do not need to use `SourceLink.Create.CommandLine`. You only need to install the packages listed below.
+> If you arrived here from the original sourcelink documentation - you do not need to use `SourceLink.Create.CommandLine`. You only need to install the packages listed below.
 
 ## Using SourceLink
 
