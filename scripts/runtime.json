@@ -150,6 +150,16 @@
         "android-corert"
       ]
     },
+    "arch-x64": {
+      "#import": [
+        "linux-x64"
+      ]
+    },
+    "arch-x64-corert": {
+      "#import": [
+        "linux-x64-corert"
+      ]
+    },
     "any": {
       "#import": [
         "base"
