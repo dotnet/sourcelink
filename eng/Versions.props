@@ -12,11 +12,13 @@
     <!-- TODO: Symbol uploader doesn't support dylib files in packages 
     <UsingToolSymbolUploader>true</UsingToolSymbolUploader> 
     -->
+
+    <MicrosoftNETTestSdkVersion>15.9.0-dev2</MicrosoftNETTestSdkVersion>
     
     <!-- Libs -->
     <LibGit2SharpVersion>0.26.0-preview-0027</LibGit2SharpVersion>
-    <MicrosoftBuildVersion>15.6.82</MicrosoftBuildVersion>
-    <MicrosoftBuildTasksCore>15.6.82</MicrosoftBuildTasksCore>
+    <MicrosoftBuildVersion>15.9.20</MicrosoftBuildVersion>
+    <MicrosoftBuildTasksCore>15.9.20</MicrosoftBuildTasksCore>
     <MicrosoftTeamFoundationServerExtendedClientVersion>15.112.1</MicrosoftTeamFoundationServerExtendedClientVersion>
     <MicrosoftDotNetPlatformAbstractionsVersion>2.1.0</MicrosoftDotNetPlatformAbstractionsVersion>
 
