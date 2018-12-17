@@ -1,0 +1,102 @@
+resources:
+  containers:
+  - container: Ubuntu_14_04
+    image: microsoft/dotnet-buildtools-prereqs:ubuntu-14.04-cross-0cd4667-20170319080304
+  - container: RHEL_7
+    image: microsoft/dotnet-buildtools-prereqs:rhel7_prereqs_2
+  - container: CentOS_6
+    image: microsoft/dotnet-buildtools-prereqs:centos-6-376e1a3-20174311014331
+  - container: Alpine_3_6
+    image: microsoft/dotnet-buildtools-prereqs:alpine-3.6-WithNode-f4d3fe3-20181213005010
+
+jobs:
+- job: Windows
+  pool: dotnet-external-temp
+  variables:
+    _os: Windows
+  strategy:
+    maxParallel: 4
+    matrix:
+      Debug:
+        _configuration: Debug
+      Release:
+        _configuration: Release
+  timeoutInMinutes: 20
+  displayName: '$(_os) $(_configuration)'
+
+  steps:
+    - script: eng/cibuild.cmd -configuration $(_configuration) -prepareMachine
+      displayName: Build and Test
+
+    - task: PublishTestResults@1
+      inputs:
+        testRunner: XUnit
+        testResultsFiles: '$(Build.SourcesDirectory)\artifacts\TestResults\$(_configuration)\*.xml'
+        mergeTestResults: true
+        testRunTitle: '$(_os) $(_configuration)'
+      condition: always()
+    - task: PublishBuildArtifacts@1
+      displayName: Publish Logs
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)\artifacts\log\$(_configuration)'
+        ArtifactName: '$(_os) $(_configuration)'
+      continueOnError: true
+      condition: not(succeeded())
+
+- job: Unix
+  strategy:
+    matrix:
+      Ubuntu_Debug:
+        _configuration: Debug
+        _os: 'Ubuntu 14.4'
+        _container: Ubuntu_14_04
+        _pool: dnceng-linux-external-temp
+      Ubuntu_Release:
+        _configuration: Release
+        _os: 'Ubuntu 14.4'
+        _container: Ubuntu_14_04
+        _pool: dnceng-linux-external-temp
+      RHEL:
+        _configuration: Debug
+        _os: 'RHEL 7'
+        _container: RHEL_7
+        _pool: dnceng-linux-external-temp
+      CentOS:
+        _configuration: Debug
+        _os: 'CentOS 6'
+        _container: CentOS_6
+        _pool: dnceng-linux-external-temp
+      Alpine:
+        _configuration: Debug
+        _os: 'Alpine 3.6'
+        _container: Alpine_3_6
+        _pool: dnceng-linux-external-temp
+      MacOS:
+        _configuration: Debug
+        _os: 'MacOS 10.12'
+        _container: ''
+        _pool: Hosted Mac Internal Sierra
+
+  container: $(_container)
+  pool: $(_pool)
+  displayName: '$(_os) $(_configuration)'
+  timeoutInMinutes: 20
+  steps:
+    - script: ./eng/cibuild.sh --configuration $(_configuration) --prepareMachine
+      displayName: Build and Test
+    - task: PublishTestResults@1
+      inputs:
+        testRunner: XUnit
+        testResultsFiles: '$(Build.SourcesDirectory)/artifacts/TestResults/$(_configuration)/*.xml'
+        mergeTestResults: true
+        testRunTitle: $(_os) $(_configuration)'
+      condition: always()
+    - task: PublishBuildArtifacts@1
+      displayName: Publish Logs
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)/artifacts/log/$(_configuration)'
+        ArtifactName: '$(_os) $(_configuration)'
+      continueOnError: true
+      condition: not(succeeded())
+
+
