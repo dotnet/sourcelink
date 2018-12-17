@@ -112,18 +112,7 @@ Note that [.NET Core SDK 2.1.300](https://www.microsoft.com/net/download/dotnet-
 
 Pre-release builds are available on MyGet gallery: https://dotnet.myget.org/Gallery/sourcelink.
 
-[//]: # (Begin current test results)
-
-|    | x64 Debug|x64 Release|
-|:--:|:--:|:--:|
-|**Windows**|[![Build Status](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/Windows_NT_Debug/badge/icon)](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/Windows_NT_Debug/)|[![Build Status](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/Windows_NT_Release/badge/icon)](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/Windows_NT_Release/)|
-|**Ubuntu 16.04**|[![Build Status](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/Ubuntu16.04_Debug/badge/icon)](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/Ubuntu16.04_Debug/)|[![Build Status](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/Ubuntu16.04_Release/badge/icon)](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/Ubuntu16.04_Release/)|
-|**CentOS7.1**|[![Build Status](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/CentOS7.1_Debug/badge/icon)](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/CentOS7.1_Debug/)|N/A|
-|**Debian8.2**|[![Build Status](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/Debian8.2_Debug/badge/icon)](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/Debian8.2_Debug/)|N/A|
-|**RHEL7.2**|[![Build Status](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/RHEL7.2_Debug/badge/icon)](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/RHEL7.2_Debug/)|N/A|
-|**OSX10.12**|[![Build Status](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/OSX10.12_Debug/badge/icon)](https://ci2.dot.net/job/dotnet_sourcelink/job/master/job/OSX10.12_Debug/)|N/A|
-
-[//]: # (End current test results)
+[![Build Status](https://dnceng.visualstudio.com/public/_apis/build/status/SourceLink%20PR?branchName=master)](https://dnceng.visualstudio.com/public/_build/latest?definitionId=297?branchName=master)
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
