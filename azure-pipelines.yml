@@ -11,7 +11,6 @@ resources:
 
 jobs:
 - job: Windows
-  pool: dotnet-external-temp
   variables:
     _os: Windows
   strategy:
@@ -21,8 +20,9 @@ jobs:
         _configuration: Debug
       Release:
         _configuration: Release
+  displayName: $[variables['_os']] $[variables['_configuration']]
+  pool: dotnet-external-temp
   timeoutInMinutes: 20
-  displayName: '$(_os) $(_configuration)'
 
   steps:
     - script: eng/cibuild.cmd -configuration $(_configuration) -prepareMachine
@@ -76,11 +76,11 @@ jobs:
         _os: 'MacOS 10.12'
         _container: ''
         _pool: Hosted Mac Internal Sierra
-
-  container: $(_container)
-  pool: $(_pool)
-  displayName: '$(_os) $(_configuration)'
+  container: $[variables['_container']]
+  pool: $[variables['_pool']]
+  displayName: $[variables['_os']] $[variables['_configuration']]
   timeoutInMinutes: 20
+
   steps:
     - script: ./eng/cibuild.sh --configuration $(_configuration) --prepareMachine
       displayName: Build and Test
@@ -98,5 +98,3 @@ jobs:
         ArtifactName: '$(_os) $(_configuration)'
       continueOnError: true
       condition: not(succeeded())
-
-
