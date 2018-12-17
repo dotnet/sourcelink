@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
+    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
 
     <!-- Using an explicit nuspec file since NuGet Pack target currently doesn't support including dependencies in tools packages -->
     <IsPackable>true</IsPackable>
     <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
     <NuspecBasePath>$(OutputPath)</NuspecBasePath>
 
-    <Description>Generates source link for GitLab repositories.</Description>
+    <PackageDescription>Generates source link for GitLab repositories.</PackageDescription>
     <PackageTags>MSBuild Tasks GitLab source link</PackageTags>
     <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>

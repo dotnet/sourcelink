@@ -23,7 +23,7 @@ static addGithubPRTriggerForBranch(def job, def branchName, def jobName) {
 }
 
 static addXUnitDotNETResults(def job, def configName) {
-  def resultFilePattern = "**/artifacts/${configName}/TestResults/*.xml"
+  def resultFilePattern = "**/artifacts/TestResults/${configName}/*.xml"
   def skipIfNoTestFiles = false
     
   Utilities.addXUnitDotNETResults(job, resultFilePattern, skipIfNoTestFiles)
@@ -36,9 +36,9 @@ static addBuildSteps(def job, def projectName, def os, def configName, def isPR)
   job.with {
     steps {
       if (os == "Windows_NT") {
-        batchFile(""".\\eng\\CIBuild.cmd -configuration ${configName} -prepareMachine""")
+        batchFile(""".\\eng\\common\\CIBuild.cmd -configuration ${configName} -prepareMachine""")
       } else {
-        shell("./eng/cibuild.sh --configuration ${configName} --prepareMachine")
+        shell("./eng/common/cibuild.sh --configuration ${configName} --prepareMachine")
       }
     }
   }
@@ -58,12 +58,12 @@ def platforms = [
 [true, false].each { isPR ->
   platforms.each { platform ->
     def (os, configName) = platform.tokenize(':')
-       
+
     def projectName = GithubProject
 
     def branchName = GithubBranchName
 
-    def filesToArchive = "**/artifacts/${configName}/**"
+      def filesToArchive = "artifacts/**"
 
     def jobName = getJobName(os, configName)
     def fullJobName = Utilities.getFullJobName(projectName, jobName, isPR)
@@ -76,11 +76,15 @@ def platforms = [
     } else {
       Utilities.addGithubPushTrigger(myJob)
     }
-    
+
     addArchival(myJob, filesToArchive, "")
     addXUnitDotNETResults(myJob, configName)
-  
-    Utilities.setMachineAffinity(myJob, os, 'latest-or-auto')  
+
+    if (os == 'Windows_NT') {
+      Utilities.setMachineAffinity(myJob, 'Windows.10.Amd64.ClientRS3.DevEx.Open')
+    } else {
+      Utilities.setMachineAffinity(myJob, os, 'latest-or-auto')
+    }
 
     addBuildSteps(myJob, projectName, os, configName, isPR)
   }
