@@ -20,7 +20,6 @@ jobs:
         _configuration: Debug
       Release:
         _configuration: Release
-  displayName: $[variables['_os']] $[variables['_configuration']]
   pool: dotnet-external-temp
   timeoutInMinutes: 20
 
@@ -50,35 +49,24 @@ jobs:
         _configuration: Debug
         _os: 'Ubuntu 14.4'
         _container: Ubuntu_14_04
-        _pool: dnceng-linux-external-temp
       Ubuntu_Release:
         _configuration: Release
         _os: 'Ubuntu 14.4'
         _container: Ubuntu_14_04
-        _pool: dnceng-linux-external-temp
       RHEL:
         _configuration: Debug
         _os: 'RHEL 7'
         _container: RHEL_7
-        _pool: dnceng-linux-external-temp
       CentOS:
         _configuration: Debug
         _os: 'CentOS 6'
         _container: CentOS_6
-        _pool: dnceng-linux-external-temp
       Alpine:
         _configuration: Debug
         _os: 'Alpine 3.6'
         _container: Alpine_3_6
-        _pool: dnceng-linux-external-temp
-      MacOS:
-        _configuration: Debug
-        _os: 'MacOS 10.12'
-        _container: ''
-        _pool: Hosted Mac Internal Sierra
   container: $[variables['_container']]
-  pool: $[variables['_pool']]
-  displayName: $[variables['_os']] $[variables['_configuration']]
+  pool: dnceng-linux-external-temp
   timeoutInMinutes: 20
 
   steps:
