@@ -9,8 +9,9 @@
     <SemanticVersioningV1>true</SemanticVersioningV1>
 
     <!-- Opt-in repo features -->
-    <UsingToolNetFrameworkReferenceAssemblies>true</UsingToolNetFrameworkReferenceAssemblies>
-    <UsingToolSymbolUploader>true</UsingToolSymbolUploader> 
+    <UsingToolNetFrameworkReferenceAssemblies>true</UsingToolNetFrameworkReferenceAssemblies>    
+    <!-- Disable do to https://github.com/dotnet/symstore/issues/81
+    <UsingToolSymbolUploader>true</UsingToolSymbolUploader> -->
 
     <MicrosoftNETTestSdkVersion>15.9.0-dev2</MicrosoftNETTestSdkVersion>
     <XUnitVersion>2.4.1</XUnitVersion>
