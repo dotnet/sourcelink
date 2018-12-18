@@ -5,11 +5,8 @@ queue:
   name: VSEng-MicroBuildVS2017
   demands: Cmd
 variables:
-  - name: BuildConfiguration
-    value: Release
-  - name: TeamName
-    value: Roslyn
-  - group: DotNet-Symbol-Publish
+  BuildConfiguration: Release
+  TeamName: Roslyn
 
 steps:
 - task: ms-vseng.MicroBuildTasks.30666190-6959-11e5-9f96-f56098202fef.MicroBuildSigningPlugin@1
