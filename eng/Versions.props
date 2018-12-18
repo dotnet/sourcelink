@@ -16,10 +16,17 @@
     <MicrosoftNETTestSdkVersion>15.9.0-dev2</MicrosoftNETTestSdkVersion>
     <XUnitVersion>2.4.1</XUnitVersion>
 
+    <!-- 
+      MSBuild: Keep the version at 15.7 until we can target net472.
+      Newer packages cause netstandard2.0 dependencies to flow to SourceLink projects 
+      when targeting net461 (due to System.Collections.Immutable), which is causing 
+      build issues. See https://github.com/Microsoft/msbuild/issues/2527.
+    -->
+    <MicrosoftBuildVersion>15.7.179</MicrosoftBuildVersion>
+    <MicrosoftBuildTasksCore>15.7.179</MicrosoftBuildTasksCore>
+
     <!-- Libs -->
     <LibGit2SharpVersion>0.26.0-preview-0070</LibGit2SharpVersion>
-    <MicrosoftBuildVersion>15.9.20</MicrosoftBuildVersion>
-    <MicrosoftBuildTasksCore>15.9.20</MicrosoftBuildTasksCore>
     <MicrosoftTeamFoundationServerExtendedClientVersion>15.112.1</MicrosoftTeamFoundationServerExtendedClientVersion>
     <MicrosoftDotNetPlatformAbstractionsVersion>2.1.0</MicrosoftDotNetPlatformAbstractionsVersion>
 
