@@ -6,6 +6,6 @@
 
   <ItemGroup>
     <FileSignInfo Include="LibGit2Sharp.dll" CertificateName="None"/>
-    <FileSignInfo Include="git2-b0d9952.dll" CertificateName="None"/>
+    <FileSignInfo Include="git2-a904fc6.dll" CertificateName="None"/>
   </ItemGroup>
 </Project>

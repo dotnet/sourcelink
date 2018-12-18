@@ -32,24 +32,6 @@
     <file src="net461\LibGit2Sharp.*" target="tools\net461" />
     <file src="net461\lib\**\*.dll" target="tools\net461\lib" />
 
-    <!-- Include netstandard and its dependencies that were copied by msbuild to the net461 directory -->
-    <file src="net461\netstandard.dll" target="tools\net461" />
-    <file src="net461\System.Data.Common.dll" target="tools\net461" />
-    <file src="net461\System.Diagnostics.StackTrace.dll" target="tools\net461" />
-    <file src="net461\System.Diagnostics.Tracing.dll" target="tools\net461" />
-    <file src="net461\System.Globalization.Extensions.dll" target="tools\net461" />
-    <file src="net461\System.IO.Compression.dll" target="tools\net461" />
-    <file src="net461\System.Net.Http.dll" target="tools\net461" />
-    <file src="net461\System.Net.Sockets.dll" target="tools\net461" />
-    <file src="net461\System.ValueTuple.dll" target="tools\net461" />
-    <file src="net461\System.Runtime.InteropServices.RuntimeInformation.dll" target="tools\net461" />
-    <file src="net461\System.Runtime.Serialization.Xml.dll" target="tools\net461" />
-    <file src="net461\System.Runtime.Serialization.Primitives.dll" target="tools\net461" />
-    <file src="net461\System.Security.Cryptography.Algorithms.dll" target="tools\net461" />
-    <file src="net461\System.Security.SecureString.dll" target="tools\net461" />
-    <file src="net461\System.Threading.Overlapped.dll" target="tools\net461" />
-    <file src="net461\System.Xml.XPath.XDocument.dll" target="tools\net461" />
-
     <file src="$ProjectDirectory$\build\*.*" target="build" />
     <file src="$ProjectDirectory$\build\*.*" target="buildCrossTargeting" />
   </files>

@@ -17,7 +17,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [InlineData("win11-x64", "win11", "", "x64")]
         [InlineData("alpine.3.7-x86", "alpine", "3.7", "x86")]
         [InlineData("ubuntu.19.01-x64", "ubuntu", "19.01", "x64")]
-        [InlineData("centos.7-x64-corert", "centos", "7", "x64-corert")]
+        [InlineData("centos.7-x64", "centos", "7", "x64")]
         public void ParseRuntimeId(string rid, string expectedOSName, string expectedVersion, string expectedQualifiers)
         {
             RuntimeIdMap.ParseRuntimeId(rid, out var actualOSName, out var actualVersion, out var actualQualifiers);
@@ -51,13 +51,15 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [InlineData("alpine.3.7-x64", "alpine-x64")]
         [InlineData("ubuntu.19.01-x64", "linux-x64")]
         [InlineData("fedora.30-x64", "fedora-x64")]
-        [InlineData("centos.7-x64-corert", "rhel-x64")]
-        [InlineData("centos.8-x64-corert", "rhel-x64")]
+        [InlineData("centos.7-x64", "rhel-x64")]
+        [InlineData("centos.8-x64", "rhel-x64")]
         [InlineData("debian.7-x64", "linux-x64")]
         [InlineData("debian.8-x64", "linux-x64")]
         [InlineData("debian.9-x64", "debian.9-x64")]
         [InlineData("debian.10-x64", "debian.9-x64")]
         [InlineData("osx.10.14-x64", "osx")]
+        [InlineData("ubuntu.18.04-x64", "ubuntu.18.04-x64")]
+        [InlineData("ubuntu.18.10-x64", "linux-x64")]
         public void GetNativeLibraryDirectoryName(string rid, string expected)
         {
             string actual = RuntimeIdMap.GetNativeLibraryDirectoryName(rid);
