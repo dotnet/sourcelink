@@ -13,6 +13,10 @@ resources:
   - container: Alpine_3_6
     image: microsoft/dotnet-buildtools-prereqs:alpine-3.6-WithNode-f4d3fe3-20181213005010
 
+# PR trigger
+pr:
+- master
+
 jobs:
 - job: Windows
   variables:
