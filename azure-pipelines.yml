@@ -2,6 +2,10 @@ resources:
   containers:
   - container: Ubuntu_14_04
     image: microsoft/dotnet-buildtools-prereqs:ubuntu-14.04-cross-0cd4667-20170319080304
+  - container: Ubuntu_18_04
+    image: microsoft/dotnet-buildtools-prereqs:ubuntu-18.04-ea8a500-20180507175506
+  - container: Fedora_29
+    image: microsoft/dotnet-buildtools-prereqs:fedora-29-2f0798a-20181105183801
   - container: RHEL_7
     image: microsoft/dotnet-buildtools-prereqs:rhel7_prereqs_2
   - container: CentOS_6
@@ -45,14 +49,22 @@ jobs:
 - job: Unix
   strategy:
     matrix:
-      Ubuntu_Debug:
+      Ubuntu18_Debug:
+        _configuration: Debug
+        _os: 'Ubuntu 18.4'
+        _container: Ubuntu_18_04
+      Ubuntu18_Release:
+        _configuration: Release
+        _os: 'Ubuntu 18.4'
+        _container: Ubuntu_18_04
+      Ubuntu14:
         _configuration: Debug
         _os: 'Ubuntu 14.4'
         _container: Ubuntu_14_04
-      Ubuntu_Release:
-        _configuration: Release
-        _os: 'Ubuntu 14.4'
-        _container: Ubuntu_14_04
+      Fedora_Debug:
+        _configuration: Debug
+        _os: 'Fedora 29'
+        _container: Fedora_29
       RHEL:
         _configuration: Debug
         _os: 'RHEL 7'
