@@ -10,9 +10,7 @@
 
     <!-- Opt-in repo features -->
     <UsingToolNetFrameworkReferenceAssemblies>true</UsingToolNetFrameworkReferenceAssemblies>
-    <!-- TODO: Symbol uploader doesn't support dylib files in packages 
     <UsingToolSymbolUploader>true</UsingToolSymbolUploader> 
-    -->
 
     <MicrosoftNETTestSdkVersion>15.9.0-dev2</MicrosoftNETTestSdkVersion>
     <XUnitVersion>2.4.1</XUnitVersion>
