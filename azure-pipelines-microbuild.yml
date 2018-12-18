@@ -25,15 +25,6 @@ steps:
             /p:DotNetSymbolServerTokenSymWeb=$(symweb-symbol-server-pat)
   displayName: Build
 
-- task: PublishTestResults@1
-  displayName: Publish Test Results
-  inputs:
-    testRunner: XUnit
-    testResultsFiles: 'artifacts/TestResults/$(BuildConfiguration)/*.xml'
-    mergeTestResults: true
-    testRunTitle: 'Unit Tests'
-  condition: succeededOrFailed()
-
 - task: NuGetPublisher@0
   displayName: Publish NuGet Packages to MyGet
   inputs:
@@ -42,30 +33,31 @@ steps:
     nuGetVersion: 4.0.0.2283
   condition: succeeded()
 
-- task: CopyPublishBuildArtifacts@1
-  displayName: Publish Artifacts
+- task: PublishBuildArtifacts@1
+  displayName: Publish Logs
   inputs:
-    CopyRoot: '$(Build.SourcesDirectory)'
-    Contents: |
-     artifacts\bin\$(BuildConfiguration)
-     artifacts\log\$(BuildConfiguration)
-     artifacts\TestResults\$(BuildConfiguration)
-     artifacts\SymStore\$(BuildConfiguration)
-     artifacts\packages\$(BuildConfiguration)
-    ArtifactName: '$(Build.BuildNumber)'
-    ArtifactType: FilePath
-    TargetPath: '$(DropRoot)\$(TeamName)\$(Build.DefinitionName)'
-  condition: succeededOrFailed()
+    PathtoPublish: '$(Build.SourcesDirectory)\artifacts\log\$(_configuration)'
+    ArtifactName: 'Logs'
+  continueOnError: true
+  condition: not(succeeded())
+
+- task: PublishTestResults@1
+  displayName: Publish Test Results
+  inputs:
+    testRunner: XUnit
+    testResultsFiles: 'artifacts/TestResults/$(BuildConfiguration)/*.xml'
+    mergeTestResults: true
+    testRunTitle: 'Unit Tests'
+  condition: always()
+
+# Archive NuGet packages to DevOps.
+- task: PublishBuildArtifacts@1
+  displayName: Publish Artifact Packages
+  inputs:
+    PathtoPublish: 'artifacts\packages\$(BuildConfiguration)'
+    ArtifactName: 'Packages'
+  condition: succeeded()
 
 - task: ms-vseng.MicroBuildTasks.521a94ea-9e68-468a-8167-6dcf361ea776.MicroBuildCleanup@1
   displayName: Cleanup
-  condition: succeededOrFailed()
-
-- task: PublishBuildArtifacts@1
-  displayName: Publish MicroBuild Artifacts
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)\MicroBuild\Output'
-    ArtifactName: '$(Build.BuildNumber)'
-    publishLocation: FilePath
-    TargetPath: '$(DropRoot)\$(TeamName)\$(Build.DefinitionName)'
   condition: succeededOrFailed()
