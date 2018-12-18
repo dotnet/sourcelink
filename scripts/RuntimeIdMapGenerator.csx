@@ -18,6 +18,7 @@ var availableRids = new[]
     "linux-x64",
     "osx",
     "rhel-x64",
+    "ubuntu.18.04-x64",
     "win-x64",
     "win-x86",
 };

@@ -14,6 +14,13 @@
     <PackageId>*fake_packageid_for_project_$(MSBuildProjectName)*</PackageId>
   </PropertyGroup>
 
+  <!-- 
+    Workaround for https://github.com/Microsoft/msbuild/issues/2527.
+  -->
+  <PropertyGroup>
+    <ImplicitlyExpandNETStandardFacades Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework'">false</ImplicitlyExpandNETStandardFacades>
+  </PropertyGroup>
+
   <Target Name="_UpdatePackageId" BeforeTargets="$(PackDependsOn)" >
     <PropertyGroup>
       <PackageId>$(_ProjectDefinedPackageId)</PackageId>
