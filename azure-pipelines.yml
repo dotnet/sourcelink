@@ -31,7 +31,6 @@ jobs:
       continueOnError: true
       condition: not(succeeded())
 
-jobs:
 - job: macOS
   variables:
     _configuration: Debug
