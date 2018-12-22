@@ -84,7 +84,7 @@ jobs:
       Debian:
         _configuration: Debug
         _os: 'Debian 8.2'
-        _container: Alpine_8_2
+        _container: Debian_8_2
       OpenSUSE:
         _configuration: Debug
         _os: 'OpenSUSE 42.3'
