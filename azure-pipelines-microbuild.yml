@@ -18,7 +18,6 @@ steps:
 
 - script: eng\common\CIBuild.cmd 
             -configuration $(BuildConfiguration)
-            /p:PB_PublishBlobFeedKey=$(PB_PublishBlobFeedKey)
             /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
             /p:DotNetSignType=$(SignType)
             /p:DotNetSymbolServerTokenMsdl=$(microsoft-symbol-server-pat)
@@ -60,4 +59,4 @@ steps:
 
 - task: ms-vseng.MicroBuildTasks.521a94ea-9e68-468a-8167-6dcf361ea776.MicroBuildCleanup@1
   displayName: Cleanup
-  condition: succeededOrFailed()
+  condition: always()
