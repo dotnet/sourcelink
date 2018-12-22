@@ -24,15 +24,18 @@ You can enable SourceLink experience in your own project by setting a few proper
  
     <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
-
-    <!-- Optional: Include the PDB in the built .nupkg -->
-    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+  
+    <!-- Optional: Build symbol package (.snupkg) to distribute PDBs with SourceLink -->
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
   <ItemGroup>
     <!-- Add PackageReference specific for your source control provider (see below) --> 
   </ItemGroup>
 </Project>
 ```
+
+If you distribute the library via a package published to [NuGet.org](nuget.org), it is recommended to build a [symbol package](https://docs.microsoft.com/en-us/nuget/create-packages/symbol-packages-snupkg) and publish it to [NuGet.org](nuget.org) as well.
 
 SourceLink packages are currently available for the following source control providers.
 
