@@ -249,20 +249,6 @@ function InitializeToolset {
   _InitializeToolset="$toolset_build_proj"
 }
 
-function ExitWithExitCode {
-  if [[ "$ci" == true && "$prepare_machine" == true ]]; then
-    StopProcesses
-  fi
-  exit $1
-}
-
-function StopProcesses {
-  echo "Killing running build processes..."
-  pkill -9 "dotnet"
-  pkill -9 "vbcscompiler"
-  return 0
-}
-
 function MSBuild {
   if [[ "$ci" == true ]]; then
     if [[ "$binary_log" != true ]]; then
@@ -290,6 +276,69 @@ function MSBuild {
     echo "Build failed (exit code '$lastexitcode')." >&2
     ExitWithExitCode $lastexitcode
   fi
+}
+
+function DockerRun {
+  local build_script="$1"    # build script path relative to the repo root
+  local docker_dir="$2"      # directory containing Dockerfile
+  shift 2                    # arguments passed to the build script
+
+  if [[ ! -a "$docker_dir/Dockerfile" ]]; then
+    echo "Container not found: '$docker_dir'." >&2
+    ExitWithExitCode 1
+  fi
+
+  local container_repo_root="/opt/code"
+  local container_tag="arcade-build"
+
+  # Make container name specific to the current build if we're running in CI
+  local container_name="arcade-build"
+  if [[ -n "${BUILD_BUILDID:-}" ]]; then
+    container_name="$container_name-$BUILD_BUILDID"
+  fi
+
+  # Ensure that all docker containers are stopped when running in CI.
+  # Exit with true even if "kill" failed as it will fail if they stopped gracefully
+  if [[ "$prepare_machine" == true ]]; then
+    docker kill $(docker ps -q) > /dev/null || true
+  fi
+
+  # Build the docker container (will be fast if it is already built)
+  echo "Building docker container using Dockerfile: $docker_dir"
+  docker build --build-arg USER_ID=$(id -u) -t $container_tag $docker_dir || {
+    local exit_code=$?
+    echo "Error while building container (exit code '$exit_code')." >&2
+    ExitWithExitCode $exit_code
+  }
+
+  local build_command="$container_repo_root/$build_script"
+
+  # Run the build in the container
+  # Note: passwords/keys should not be passed in the environment
+  echo "Running command: $build_command $@"
+  docker run -t --rm --sig-proxy=true \
+    --name $container_name \
+    -v $repo_root:$container_repo_root \
+    $container_tag \
+    $build_command "$@" || {
+    local exit_code=$?
+    echo "Build in docker container failed (exit code '$exit_code')." >&2
+    ExitWithExitCode $exit_code
+  }
+}
+
+function ExitWithExitCode {
+  if [[ "$ci" == true && "$prepare_machine" == true ]]; then
+    StopProcesses
+  fi
+  exit $1
+}
+
+function StopProcesses {
+  echo "Killing running build processes..."
+  pkill -9 "dotnet"
+  pkill -9 "vbcscompiler"
+  return 0
 }
 
 ResolvePath "${BASH_SOURCE[0]}"

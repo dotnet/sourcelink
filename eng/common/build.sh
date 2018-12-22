@@ -64,6 +64,9 @@ prepare_machine=false
 verbosity='minimal'
 properties=''
 
+docker=''
+args=''
+
 while [[ $# > 0 ]]; do
   opt="$(echo "$1" | awk '{print tolower($0)}')"
   case "$opt" in
@@ -73,10 +76,12 @@ while [[ $# > 0 ]]; do
       ;;
     --configuration|-c)
       configuration=$2
+      args="$args $1"
       shift
       ;;
     --verbosity|-v)
       verbosity=$2
+      args="$args $1"
       shift
       ;;
     --binarylog|-bl)
@@ -114,6 +119,7 @@ while [[ $# > 0 ]]; do
       ;;
     --projects)
       projects=$2
+      args="$args $1"
       shift
       ;;
     --ci)
@@ -121,11 +127,18 @@ while [[ $# > 0 ]]; do
       ;;
     --warnaserror)
       warn_as_error=$2
+      args="$args $1"
       shift
       ;;
     --nodereuse)
       node_reuse=$2
+      args="$args $1"
       shift
+      ;;
+    --docker)
+      docker=$2
+      shift 2
+      continue
       ;;
     /p:*)
       properties="$properties $1"
@@ -137,6 +150,7 @@ while [[ $# > 0 ]]; do
       ;;
   esac
 
+  args="$args $1"
   shift
 done
 
@@ -146,6 +160,11 @@ if [[ "$ci" == true ]]; then
 fi
 
 . "$scriptroot/tools.sh"
+
+if [[ -n "$docker" ]]; then
+  DockerRun "eng/common/build.sh" "$eng_root/common/docker/$docker" $args
+  exit
+fi
 
 function InitializeCustomToolset {
   local script="$eng_root/restore-toolset.sh"
