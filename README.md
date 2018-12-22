@@ -25,7 +25,7 @@ You can enable SourceLink experience in your own project by setting a few proper
     <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
   
-    <!-- Optional: Build symbol package (.snupkg) to distribute PDBs with SourceLink -->
+    <!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing SourceLink -->
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
