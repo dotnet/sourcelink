@@ -45,7 +45,7 @@ For projects hosted by [GitHub](http://github.com) or [GitHub Enterprise](https:
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-18618-05" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
@@ -55,7 +55,7 @@ For projects hosted by [Azure DevOps](https://www.visualstudio.com/team-services
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.Vsts.Git" Version="1.0.0-beta-63127-02" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.Vsts.Git" Version="1.0.0-beta2-18618-05" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
@@ -66,7 +66,7 @@ For projects hosted by on-prem [Team Foundation Server](https://visualstudio.mic
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.Tfs.Git" Version="1.0.0-beta-63127-02" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.Tfs.Git" Version="1.0.0-beta2-18618-05" PrivateAssets="All"/>
   <SourceLinkTfsGitHost Include="tfs-server-name" VirtualDirectory="tfs"/>
 </ItemGroup>
 ```
@@ -79,7 +79,7 @@ For projects hosted by [GitLab](https://gitlab.com) reference [Microsoft.SourceL
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.GitLab" Version="1.0.0-beta-63127-02" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.GitLab" Version="1.0.0-beta2-18618-05" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
@@ -89,7 +89,7 @@ For projects hosted on [Bitbucket.org](https://bitbucket.org) in git repositorie
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.Bitbucket.Git" Version="1.0.0-beta-63127-02" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.Bitbucket.Git" Version="1.0.0-beta2-18618-05" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
