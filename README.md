@@ -35,7 +35,7 @@ You can enable SourceLink experience in your own project by setting a few proper
 </Project>
 ```
 
-If you distribute the library via a package published to [NuGet.org](nuget.org), it is recommended to build a [symbol package](https://docs.microsoft.com/en-us/nuget/create-packages/symbol-packages-snupkg) and publish it to [NuGet.org](nuget.org) as well.
+If you distribute the library via a package published to [NuGet.org](http://nuget.org), it is recommended to build a [symbol package](https://docs.microsoft.com/en-us/nuget/create-packages/symbol-packages-snupkg) and publish it to [NuGet.org](http://nuget.org) as well.
 
 SourceLink packages are currently available for the following source control providers.
 
