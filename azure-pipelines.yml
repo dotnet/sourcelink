@@ -32,6 +32,8 @@ jobs:
   timeoutInMinutes: 20
 
   steps:
+    - checkout: self
+      clean: true
     - script: eng/cibuild.cmd -configuration $(_configuration) -prepareMachine
       displayName: Build and Test
 
@@ -94,7 +96,9 @@ jobs:
   pool: dnceng-linux-external-temp
   timeoutInMinutes: 20
 
-  steps:
+  steps:  
+    - checkout: self
+      clean: true
     - script: ./eng/cibuild.sh --configuration $(_configuration) --prepareMachine
       displayName: Build and Test
     - task: PublishTestResults@1
