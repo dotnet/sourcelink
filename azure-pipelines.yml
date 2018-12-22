@@ -65,7 +65,7 @@ jobs:
         _configuration: Debug
         _os: 'Ubuntu 14.4'
         _container: Ubuntu_14_04
-      Fedora_Debug:
+      Fedora:
         _configuration: Debug
         _os: 'Fedora 29'
         _container: Fedora_29
