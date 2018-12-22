@@ -12,6 +12,10 @@ resources:
     image: microsoft/dotnet-buildtools-prereqs:centos-6-376e1a3-20174311014331
   - container: Alpine_3_6
     image: microsoft/dotnet-buildtools-prereqs:alpine-3.6-WithNode-f4d3fe3-20181213005010
+  - container: Debian_8_2
+    image: microsoft/dotnet-buildtools-prereqs:debian-8.2-debpkg-d770b8b-20180628122423
+  - container: OpenSUSE_42_3
+    image: microsoft/dotnet-buildtools-prereqs:opensuse-42.3-d46ee12-20180327014902
 
 jobs:
 - job: Windows
@@ -77,6 +81,15 @@ jobs:
         _configuration: Debug
         _os: 'Alpine 3.6'
         _container: Alpine_3_6
+      Debian:
+        _configuration: Debug
+        _os: 'Debian 8.2'
+        _container: Alpine_8_2
+      OpenSUSE:
+        _configuration: Debug
+        _os: 'OpenSUSE 42.3'
+        _container: OpenSUSE_42_3
+
   container: $[variables['_container']]
   pool: dnceng-linux-external-temp
   timeoutInMinutes: 20
