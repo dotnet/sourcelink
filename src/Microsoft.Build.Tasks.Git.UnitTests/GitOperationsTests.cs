@@ -295,7 +295,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             Assert.Empty(warnings);
         }
 
-        [ConditionalFact(typeof(UnixOnly))]
+        [ConditionalFact(typeof(UnixOnly), Skip = "https://github.com/dotnet/corefx/issues/34227")]
         public void GetSourceRoots_RelativeSubmodulePaths_Unix_UnicodeAndEscapes()
         {
             var repo = new TestRepository(
