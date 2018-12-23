@@ -116,7 +116,7 @@ namespace Microsoft.SourceLink
             account = repositoryPath = repositoryName = null;
 
             // {"DefaultCollection"|""}/{repositoryPath}/"_ssh"/{"_full"|"_optimized"}/{repositoryName}
-            if (!UriUtilities.TrySplitRelativeUrl(uri.LocalPath, out var parts) || parts.Length == 0)
+            if (!UriUtilities.TrySplitRelativeUrl(uri.GetPath(), out var parts) || parts.Length == 0)
             {
                 return false;
             }
@@ -162,7 +162,7 @@ namespace Microsoft.SourceLink
         {
             repositoryPath = repositoryName = null;
 
-            if (!UriUtilities.TrySplitRelativeUrl(uri.LocalPath, out var parts))
+            if (!UriUtilities.TrySplitRelativeUrl(uri.GetPath(), out var parts))
             {
                 return false;
             }

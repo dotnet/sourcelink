@@ -15,7 +15,12 @@ namespace Microsoft.SourceLink.IntegrationTests
         [ConditionalFact(typeof(DotNetSdkAvailable))]
         public void FullValidation_Https()
         {
-            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, "https://tfs.mydomain.local:8080/tfs/DefaultCollection/project/_git/MyProject");
+            // Test non-ascii characters and escapes in the URL.
+            // Escaped URI reserved characters should remain escaped, non-reserved characters unescaped in the results.
+            var repoUrl = "https://tfs.噸.local:8080/tfs/DefaultCollection/project/_git/test-%72epo\u1234%24%2572%2F";
+            var repoName = "test-repo\u1234%24%2572%2F";
+
+            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -24,7 +29,7 @@ namespace Microsoft.SourceLink.IntegrationTests
   <PublishRepositoryUrl>true</PublishRepositoryUrl>
 </PropertyGroup>
 <ItemGroup>
-  <SourceLinkTfsGitHost Include=""tfs.mydomain.local"" VirtualDirectory=""tfs""/>
+  <SourceLinkTfsGitHost Include=""tfs.噸.local"" VirtualDirectory=""tfs""/>
 </ItemGroup>
 ",
                 customTargets: "",
@@ -43,14 +48,14 @@ namespace Microsoft.SourceLink.IntegrationTests
                 expectedResults: new[]
                 {
                     ProjectSourceRoot,
-                    $"https://tfs.mydomain.local:8080/tfs/DefaultCollection/project/_apis/git/repositories/MyProject/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*",
+                    $"https://tfs.噸.local:8080/tfs/DefaultCollection/project/_apis/git/repositories/{repoName}/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*",
                     s_relativeSourceLinkJsonPath,
-                    "https://tfs.mydomain.local:8080/tfs/DefaultCollection/project/_git/MyProject",
-                    "https://tfs.mydomain.local:8080/tfs/DefaultCollection/project/_git/MyProject",
+                    $"https://tfs.噸.local:8080/tfs/DefaultCollection/project/_git/{repoName}",
+                    $"https://tfs.噸.local:8080/tfs/DefaultCollection/project/_git/{repoName}",
                 });
 
             AssertEx.AreEqual(
-                $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://tfs.mydomain.local:8080/tfs/DefaultCollection/project/_apis/git/repositories/MyProject/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*""}}}}",
+                $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://tfs.噸.local:8080/tfs/DefaultCollection/project/_apis/git/repositories/{repoName}/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*""}}}}",
                 File.ReadAllText(Path.Combine(ProjectDir.Path, s_relativeSourceLinkJsonPath)));
 
             TestUtilities.ValidateAssemblyInformationalVersion(
@@ -61,13 +66,18 @@ namespace Microsoft.SourceLink.IntegrationTests
                 Path.Combine(ProjectDir.Path, s_relativePackagePath),
                 type: "git", 
                 commit: commitSha,
-                url: "https://tfs.mydomain.local:8080/tfs/DefaultCollection/project/_git/MyProject");
+                url: $"https://tfs.噸.local:8080/tfs/DefaultCollection/project/_git/{repoName}");
         }
 
         [ConditionalFact(typeof(DotNetSdkAvailable))]
         public void FullValidation_Ssh()
         {
-            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, "ssh://tfs.mydomain.local:22/tfs/DefaultCollection/project/_ssh/MyProject");
+            // Test non-ascii characters and escapes in the URL.
+            // Escaped URI reserved characters should remain escaped, non-reserved characters unescaped in the results.
+            var repoUrl = "ssh://tfs.噸.local:22/tfs/DefaultCollection/project/_ssh/test-%72epo\u1234%24%2572%2F";
+            var repoName = "test-repo\u1234%24%2572%2F";
+
+            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -76,7 +86,7 @@ namespace Microsoft.SourceLink.IntegrationTests
   <PublishRepositoryUrl>true</PublishRepositoryUrl>
 </PropertyGroup>
 <ItemGroup>
-  <SourceLinkTfsGitHost Include=""tfs.mydomain.local"" VirtualDirectory=""tfs""/>
+  <SourceLinkTfsGitHost Include=""tfs.噸.local"" VirtualDirectory=""tfs""/>
 </ItemGroup>
 ",
                 customTargets: "",
@@ -95,14 +105,14 @@ namespace Microsoft.SourceLink.IntegrationTests
                 expectedResults: new[]
                 {
                     ProjectSourceRoot,
-                    $"https://tfs.mydomain.local/tfs/DefaultCollection/project/_apis/git/repositories/MyProject/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*",
+                    $"https://tfs.噸.local/tfs/DefaultCollection/project/_apis/git/repositories/{repoName}/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*",
                     s_relativeSourceLinkJsonPath,
-                    "https://tfs.mydomain.local/tfs/DefaultCollection/project/_git/MyProject",
-                    "https://tfs.mydomain.local/tfs/DefaultCollection/project/_git/MyProject",
+                    $"https://tfs.噸.local/tfs/DefaultCollection/project/_git/{repoName}",
+                    $"https://tfs.噸.local/tfs/DefaultCollection/project/_git/{repoName}",
                 });
 
             AssertEx.AreEqual(
-                $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://tfs.mydomain.local/tfs/DefaultCollection/project/_apis/git/repositories/MyProject/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*""}}}}",
+                $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://tfs.噸.local/tfs/DefaultCollection/project/_apis/git/repositories/{repoName}/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*""}}}}",
                 File.ReadAllText(Path.Combine(ProjectDir.Path, s_relativeSourceLinkJsonPath)));
 
             TestUtilities.ValidateAssemblyInformationalVersion(
@@ -113,7 +123,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 Path.Combine(ProjectDir.Path, s_relativePackagePath),
                 type: "git",
                 commit: commitSha,
-                url: "https://tfs.mydomain.local/tfs/DefaultCollection/project/_git/MyProject");
+                url: $"https://tfs.噸.local/tfs/DefaultCollection/project/_git/{repoName}");
         }
     }
 }

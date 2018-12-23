@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Build.Framework;
+using Microsoft.Build.Tasks.SourceControl;
 using Microsoft.Build.Utilities;
 using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.VersionControl.Client;
@@ -48,7 +49,7 @@ namespace Microsoft.Build.Tasks.Tfvc
                         var project = workspace.GetTeamProjectForLocalPath(folder.LocalItem);
 
                         // Extract GUID from ArtifactUri "vstfs:///Classification/TeamProject/{Guid}":
-                        var projectId = Path.GetFileName(project.ArtifactUri.LocalPath);
+                        var projectId = Path.GetFileName(project.ArtifactUri.GetPath());
 
                         // SourceLink.Vsts will map each source root to:
                         // {RepositoryUrl}/_versionControl?path={ServerPath}&version={RevisionId}

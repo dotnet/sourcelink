@@ -12,7 +12,7 @@ namespace Microsoft.Build.Tasks.SourceControl
                uri.Scheme == "unknown" && uri.Host != "" && uri.UserInfo == "" && uri.PathAndQuery == "/";
 
         public static int GetExplicitPort(this Uri uri)
-            => new Uri("unknown://" + uri.Authority, UriKind.Absolute).Port;
+            => new Uri("unknown://" + uri.GetAuthority(), UriKind.Absolute).Port;
 
         public static string Combine(string baseUrl, string relativeUrl)
             => string.IsNullOrEmpty(relativeUrl) ? baseUrl : 
@@ -62,5 +62,20 @@ namespace Microsoft.Build.Tasks.SourceControl
             parts = relativeUrl.Substring(start, end - start + 1).Split(new[] { '/' });
             return !parts.Any(part => part.Length == 0);
         }
+
+        public static string GetScheme(this Uri uri)
+            => uri.GetComponents(UriComponents.Scheme, UriFormat.SafeUnescaped);
+
+        public static string GetHost(this Uri uri)
+            => uri.GetComponents(UriComponents.Host, UriFormat.SafeUnescaped);
+
+        public static string GetAuthority(this Uri uri)
+            => uri.GetComponents(UriComponents.Host | UriComponents.Port, UriFormat.SafeUnescaped);
+
+        public static string GetPath(this Uri uri)
+            => uri.GetComponents(UriComponents.Path | UriComponents.KeepDelimiter, UriFormat.SafeUnescaped);
+
+        public static string GetPathAndQuery(this Uri uri)
+            => uri.GetComponents(UriComponents.PathAndQuery, UriFormat.SafeUnescaped);
     }
 }

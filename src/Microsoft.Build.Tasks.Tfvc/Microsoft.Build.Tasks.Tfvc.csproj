@@ -13,6 +13,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\Common\PathUtilities.cs" Link="Common\PathUtilities.cs" />
+    <Compile Include="..\Common\UriUtilities.cs" Link="Common\UriUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Build" Version="$(MicrosoftBuildVersion)" />

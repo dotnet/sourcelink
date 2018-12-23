@@ -50,7 +50,7 @@ namespace Microsoft.Build.Tasks.SourceControl
             => new Uri($"{gitUri.Scheme}://{authority}", UriKind.Absolute);
 
         protected virtual Uri GetDefaultContentUriFromRepositoryUri(Uri repositoryUri)
-            => GetDefaultContentUriFromHostUri(repositoryUri.Authority, repositoryUri);
+            => GetDefaultContentUriFromHostUri(repositoryUri.GetAuthority(), repositoryUri);
 
         protected abstract string BuildSourceLinkUrl(Uri contentUrl, Uri gitUri, string relativeUrl, string revisionId, ITaskItem hostItem);
 
@@ -113,7 +113,7 @@ namespace Microsoft.Build.Tasks.SourceControl
                 return;
             }
 
-            var relativeUrl = gitUri.LocalPath.TrimEnd('/');
+            var relativeUrl = gitUri.GetPath().TrimEnd('/');
 
             // The URL may or may not end with '.git' (case-sensitive), but content URLs do not include '.git' suffix:
             const string gitUrlSuffix = ".git";
@@ -169,7 +169,7 @@ namespace Microsoft.Build.Tasks.SourceControl
                     bool hasDefaultContentUri = string.IsNullOrEmpty(contentUrl);
                     if (hasDefaultContentUri)
                     {
-                        contentUri = GetDefaultContentUriFromHostUri(hostUri.Authority, gitUri);
+                        contentUri = GetDefaultContentUriFromHostUri(hostUri.GetAuthority(), gitUri);
                     }
                     else if (!Uri.TryCreate(contentUrl, UriKind.Absolute, out contentUri) || !isValidContentUri(contentUri))
                     {
@@ -177,7 +177,7 @@ namespace Microsoft.Build.Tasks.SourceControl
                         continue;
                     }
 
-                    yield return new UrlMapping(hostUri.Host, item, hostUri.Port, contentUri, hasDefaultContentUri);
+                    yield return new UrlMapping(hostUri.GetHost(), item, hostUri.Port, contentUri, hasDefaultContentUri);
                 }
             }
 
@@ -186,7 +186,7 @@ namespace Microsoft.Build.Tasks.SourceControl
             {
                 if (Uri.TryCreate(RepositoryUrl, UriKind.Absolute, out var uri))
                 {
-                    yield return new UrlMapping(uri.Host, hostItem: null, uri.GetExplicitPort(), GetDefaultContentUriFromRepositoryUri(uri), hasDefaultContentUri: true);
+                    yield return new UrlMapping(uri.GetHost(), hostItem: null, uri.GetExplicitPort(), GetDefaultContentUriFromRepositoryUri(uri), hasDefaultContentUri: true);
                 }
                 else
                 {
@@ -203,8 +203,8 @@ namespace Microsoft.Build.Tasks.SourceControl
 
                 foreach (var mapping in mappings)
                 {
-                    if (exactHost && repoUri.Host.Equals(mapping.Host, StringComparison.OrdinalIgnoreCase) ||
-                        !exactHost && repoUri.Host.EndsWith("." + mapping.Host, StringComparison.OrdinalIgnoreCase))
+                    if (exactHost && repoUri.GetHost().Equals(mapping.Host, StringComparison.OrdinalIgnoreCase) ||
+                        !exactHost && repoUri.GetHost().EndsWith("." + mapping.Host, StringComparison.OrdinalIgnoreCase))
                     {
                         // Port matches exactly:
                         if (repoUri.Port == mapping.Port)

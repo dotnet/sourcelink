@@ -4,6 +4,7 @@
     <IsShipping>false</IsShipping>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="NuGet.Versioning" Version="$(NuGetVersioningVersion)" />
     <PackageReference Include="Microsoft.Build" Version="$(MicrosoftBuildVersion)" />
     <PackageReference Include="Microsoft.Build.Tasks.Core" Version="$(MicrosoftBuildTasksCore)" />
     <PackageReference Include="xunit.core" Version="$(XunitVersion)" />

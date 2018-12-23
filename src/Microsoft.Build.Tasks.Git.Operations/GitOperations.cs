@@ -152,9 +152,12 @@ namespace Microsoft.Build.Tasks.Git
                 // Don't report a warning since it has already been reported by GetRepositoryUrl task.
                 string repositoryUrl = GetRepositoryUrl(repository);
 
-                var item = new TaskItem(repoRoot);
+                // Item metadata are stored msbuild-escaped. GetMetadata unescapes, SetMetadata stores the value as specified.
+                // Escape msbuild special characters so that URL escapes in the URL are preserved when the URL is read by GetMetadata.
+
+                var item = new TaskItem(Evaluation.ProjectCollection.Escape(repoRoot));
                 item.SetMetadata(Names.SourceRoot.SourceControl, SourceControlName);
-                item.SetMetadata(Names.SourceRoot.ScmRepositoryUrl, repositoryUrl);
+                item.SetMetadata(Names.SourceRoot.ScmRepositoryUrl, Evaluation.ProjectCollection.Escape(repositoryUrl));
                 item.SetMetadata(Names.SourceRoot.RevisionId, revisionId);
                 result.Add(item);
             }
@@ -202,12 +205,16 @@ namespace Microsoft.Build.Tasks.Git
                         continue;
                     }
 
-                    var item = new TaskItem(submoduleRoot);
+                    // Item metadata are stored msbuild-escaped. GetMetadata unescapes, SetMetadata stores the value as specified.
+                    // Escape msbuild special characters so that URL escapes and non-ascii characters in the URL and paths are 
+                    // preserved when read by GetMetadata.
+
+                    var item = new TaskItem(Evaluation.ProjectCollection.Escape(submoduleRoot));
                     item.SetMetadata(Names.SourceRoot.SourceControl, SourceControlName);
-                    item.SetMetadata(Names.SourceRoot.ScmRepositoryUrl, submoduleUrl);
+                    item.SetMetadata(Names.SourceRoot.ScmRepositoryUrl, Evaluation.ProjectCollection.Escape(submoduleUrl));
                     item.SetMetadata(Names.SourceRoot.RevisionId, commitId.Sha);
-                    item.SetMetadata(Names.SourceRoot.ContainingRoot, repoRoot);
-                    item.SetMetadata(Names.SourceRoot.NestedRoot, submodule.Path.EndWithSeparator('/'));
+                    item.SetMetadata(Names.SourceRoot.ContainingRoot, Evaluation.ProjectCollection.Escape(repoRoot));
+                    item.SetMetadata(Names.SourceRoot.NestedRoot, Evaluation.ProjectCollection.Escape(submodule.Path.EndWithSeparator('/')));
                     result.Add(item);
                 }
             }

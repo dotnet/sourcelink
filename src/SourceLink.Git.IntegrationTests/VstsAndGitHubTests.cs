@@ -15,7 +15,12 @@ namespace Microsoft.SourceLink.IntegrationTests
         [ConditionalFact(typeof(DotNetSdkAvailable))]
         public void CustomTranslation()
         {
-            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, "ssh://test@vs-ssh.visualstudio.com:22/test-org/_ssh/test-repo");
+            // Test non-ascii characters and escapes in the URL.
+            // Escaped URI reserved characters should remain escaped, non-reserved characters unescaped in the results.
+            var repoUrl = "ssh://test@vs-ssh.visualstudio.com:22/test-org/_ssh/test-%72epo\u1234%24%2572%2F";
+            var repoName = "test-repo\u1234%24%2572%2F";
+
+            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -60,14 +65,14 @@ namespace Microsoft.SourceLink.IntegrationTests
                 expectedResults: new[]
                 {
                     ProjectSourceRoot,
-                    $"https://raw.githubusercontent.com/test-org/test-repo/{commitSha}/*",
+                    $"https://raw.githubusercontent.com/test-org/{repoName}/{commitSha}/*",
                     s_relativeSourceLinkJsonPath,
-                    "https://github.com/test-org/test-repo",
-                    "https://github.com/test-org/test-repo",
+                    $"https://github.com/test-org/{repoName}",
+                    $"https://github.com/test-org/{repoName}",
                 });
 
             AssertEx.AreEqual(
-                $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://raw.githubusercontent.com/test-org/test-repo/{commitSha}/*""}}}}",
+                $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://raw.githubusercontent.com/test-org/{repoName}/{commitSha}/*""}}}}",
                 File.ReadAllText(Path.Combine(ProjectDir.Path, s_relativeSourceLinkJsonPath)));
 
             TestUtilities.ValidateAssemblyInformationalVersion(
@@ -78,7 +83,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 Path.Combine(ProjectDir.Path, s_relativePackagePath),
                 type: "git",
                 commit: commitSha,
-                url: "https://github.com/test-org/test-repo");
+                url: $"https://github.com/test-org/{repoName}");
         }
     }
 }
