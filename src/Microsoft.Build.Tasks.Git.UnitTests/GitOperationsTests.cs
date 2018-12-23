@@ -92,6 +92,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [Theory]
         [InlineData("http://?", null)]
         [InlineData("https://github.com/org/repo/./.", "https://github.com/org/repo/")]
+        [InlineData("http://github.com/org/\u1234", "http://github.com/org/\u1234")]
         [InlineData("ssh://github.com/org/../repo", "ssh://github.com/repo")]
         [InlineData("ssh://github.com/%32/repo", "ssh://github.com/2/repo")]
         [InlineData("ssh://github.com/%3F/repo", "ssh://github.com/%3F/repo")]
@@ -244,6 +245,31 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             Assert.Empty(warnings);
         }
 
+        [ConditionalFact(typeof(WindowsOnly))]
+        public void GetSourceRoots_RelativeSubmodulePaths_Windows_UnicodeAndEscapes()
+        {
+            var repo = new TestRepository(
+                workingDir: @"C:\%25@噸",
+                commitSha: "0000000000000000000000000000000000000000",
+                submodules: new[]
+                {
+                    new TestSubmodule("%25ሴ", "sub/%25ሴ", "./a/b", "1111111111111111111111111111111111111111"),
+                    new TestSubmodule("%25ለ", "sub/%25ለ", "../a", "2222222222222222222222222222222222222222"),
+                });
+
+            var warnings = new List<KeyValuePair<string, object[]>>();
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add(KVP(message, args)), fileExists: null);
+
+            AssertEx.Equal(new[]
+            {
+                $@"'C:\%25@噸\' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
+                $@"'C:\%25@噸\sub\%25ሴ\' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/%25ሴ/' ContainingRoot='C:\%25@噸\' ScmRepositoryUrl='file:///C:/%25@噸/a/b'",
+                $@"'C:\%25@噸\sub\%25ለ\' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/%25ለ/' ContainingRoot='C:\%25@噸\' ScmRepositoryUrl='file:///C:/a'",
+            }, items.Select(InspectSourceRoot));
+
+            Assert.Empty(warnings);
+        }
+
         [ConditionalFact(typeof(UnixOnly))]
         public void GetSourceRoots_RelativeSubmodulePaths_Unix()
         {
@@ -264,6 +290,31 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 $@"'/src/' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
                 $@"'/src/sub/1/' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/1/' ContainingRoot='/src/' ScmRepositoryUrl='file:///src/a/b'",
                 $@"'/src/sub/2/' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='/src/' ScmRepositoryUrl='file:///a'",
+            }, items.Select(InspectSourceRoot));
+
+            Assert.Empty(warnings);
+        }
+
+        [ConditionalFact(typeof(UnixOnly))]
+        public void GetSourceRoots_RelativeSubmodulePaths_Unix_UnicodeAndEscapes()
+        {
+            var repo = new TestRepository(
+                workingDir: @"/%25@噸",
+                commitSha: "0000000000000000000000000000000000000000",
+                submodules: new[]
+                {
+                    new TestSubmodule("%25ሴ", "sub/%25ሴ", "./a/b", "1111111111111111111111111111111111111111"),
+                    new TestSubmodule("%25ለ", "sub/%25ለ", "../a", "2222222222222222222222222222222222222222"),
+                });
+
+            var warnings = new List<KeyValuePair<string, object[]>>();
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add(KVP(message, args)), fileExists: null);
+
+            AssertEx.Equal(new[]
+            {
+                $@"'/%25@噸/' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
+                $@"'/%25@噸/sub/%25ሴ/' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/%25ሴ/' ContainingRoot='/%25@噸/' ScmRepositoryUrl='file:///%25@噸/a/b'",
+                $@"'/%25@噸/sub/%25ለ/' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/%25ለ/' ContainingRoot='/%25@噸/' ScmRepositoryUrl='file:///a'",
             }, items.Select(InspectSourceRoot));
 
             Assert.Empty(warnings);

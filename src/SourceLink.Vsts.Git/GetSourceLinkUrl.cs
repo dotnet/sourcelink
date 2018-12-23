@@ -17,17 +17,20 @@ namespace Microsoft.SourceLink.Vsts.Git
         protected override string ProviderDisplayName => "Vsts.Git";
 
         protected override Uri GetDefaultContentUriFromHostUri(string authority, Uri gitUri)
-            => TeamFoundationUrlParser.IsVisualStudioHostedServer(gitUri.Host) ?
-                new Uri($"{gitUri.Scheme}://{gitUri.Host.Substring(0, gitUri.Host.IndexOf('.'))}.{authority}", UriKind.Absolute) :
+        {
+            var gitHost = gitUri.GetHost();
+            return TeamFoundationUrlParser.IsVisualStudioHostedServer(gitHost) ?
+                new Uri($"{gitUri.Scheme}://{gitHost.Substring(0, gitHost.IndexOf('.'))}.{authority}", UriKind.Absolute) :
                 new Uri($"{gitUri.Scheme}://{authority}", UriKind.Absolute);
+        }
 
         // Repository URL already contains account in case of VS host. Don't add it like we do when the content URL is inferred from host name.
         protected override Uri GetDefaultContentUriFromRepositoryUri(Uri repositoryUri)
-            => new Uri($"{repositoryUri.Scheme}://{repositoryUri.Authority}", UriKind.Absolute);
+            => new Uri($"{repositoryUri.Scheme}://{repositoryUri.GetAuthority()}", UriKind.Absolute);
 
         protected override string BuildSourceLinkUrl(Uri contentUri, Uri gitUri, string relativeUrl, string revisionId, ITaskItem hostItem)
         {
-            if (!TeamFoundationUrlParser.TryParseHostedHttp(gitUri.Host, relativeUrl, out var projectPath, out var repositoryName))
+            if (!TeamFoundationUrlParser.TryParseHostedHttp(gitUri.GetHost(), relativeUrl, out var projectPath, out var repositoryName))
             {
                 Log.LogError(CommonResources.ValueOfWithIdentityIsInvalid, Names.SourceRoot.RepositoryUrlFullName, SourceRoot.ItemSpec, gitUri);
                 return null;

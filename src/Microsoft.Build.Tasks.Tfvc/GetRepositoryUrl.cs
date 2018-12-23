@@ -1,8 +1,10 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using System;
 using System.IO;
 using System.Linq;
 using Microsoft.Build.Framework;
+using Microsoft.Build.Tasks.SourceControl;
 using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.VersionControl.Client;
 
@@ -23,7 +25,7 @@ namespace Microsoft.Build.Tasks.Tfvc
                 var project = workspace.GetTeamProjectForLocalPath(workspaceInfo.MappedPaths.First());
 
                 // Extract GUID from ArtifactUri "vstfs:///Classification/TeamProject/{Guid}":
-                var projectId = Path.GetFileName(project.ArtifactUri.LocalPath);
+                var projectId = Path.GetFileName(project.ArtifactUri.GetPath());
 
                 Url = collection.Uri.ToString() + "/" + projectId;
             }

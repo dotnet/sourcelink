@@ -17,9 +17,10 @@ namespace Microsoft.SourceLink.Vsts.Git
         //   ssh://ssh.*.com -> https://*.com/{account}
         protected override string TranslateSshUrl(Uri uri)
         {
-            var isVisualStudioHost = TeamFoundationUrlParser.IsVisualStudioHostedServer(uri.Host);
+            var host = uri.GetHost();
+            var isVisualStudioHost = TeamFoundationUrlParser.IsVisualStudioHostedServer(host);
             var prefix = isVisualStudioHost ? "vs-ssh." : "ssh.";
-            if (!uri.Host.StartsWith(prefix))
+            if (!host.StartsWith(prefix))
             {
                 return null;
             }
@@ -29,7 +30,7 @@ namespace Microsoft.SourceLink.Vsts.Git
                 return null;
             }
 
-            var result = uri.Host.Substring(prefix.Length);
+            var result = host.Substring(prefix.Length);
             if (isVisualStudioHost)
             {
                 result = account + "." + result;

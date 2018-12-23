@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using NuGet.Versioning;
 using Xunit;
 
 namespace TestUtilities
@@ -73,27 +74,32 @@ $@"<?xml version=""1.0"" encoding=""utf-8""?>
 
         private int _logIndex;
 
-        private static string GetSdkPath(string dotnetInstallDir, string version)
-            => Path.Combine(dotnetInstallDir, "sdk", version);
-
         static DotNetSdkTestBase()
         {
             s_dotnetExeName = "dotnet" + (Path.DirectorySeparatorChar == '/' ? "" : ".exe");
             s_buildInfo = typeof(DotNetSdkTestBase).Assembly.GetCustomAttribute<BuildInfoAttribute>();
 
-            bool isMatchingDotNetInstance(string dotnetDir)
-                => dotnetDir != null && File.Exists(Path.Combine(dotnetDir, s_dotnetExeName)) && Directory.Exists(GetSdkPath(dotnetDir, s_buildInfo.SdkVersion));
+            var minSdkVersion = SemanticVersion.Parse(s_buildInfo.SdkVersion);
 
-            var dotnetInstallDir = Environment.GetEnvironmentVariable("DOTNET_INSTALL_DIR");
-            if (!isMatchingDotNetInstance(dotnetInstallDir))
-            {
-                dotnetInstallDir = Environment.GetEnvironmentVariable("PATH").Split(Path.PathSeparator).FirstOrDefault(isMatchingDotNetInstance);
-            }
+            bool isDotNetInstallDirectory(string dir)
+                => dir != null && File.Exists(Path.Combine(dir, s_dotnetExeName));
+
+            var dotnetInstallDir =
+                new[] { Environment.GetEnvironmentVariable("DOTNET_INSTALL_DIR") }.Concat(Environment.GetEnvironmentVariable("PATH").Split(Path.PathSeparator)).
+                FirstOrDefault(isDotNetInstallDirectory);
 
             if (dotnetInstallDir != null)
             {
-                s_dotnetInstallDir = dotnetInstallDir;
-                s_dotnetSdkPath = GetSdkPath(dotnetInstallDir, s_buildInfo.SdkVersion);
+                foreach (var dir in Directory.EnumerateDirectories(Path.Combine(dotnetInstallDir, "sdk")))
+                {
+                    var versionDir = Path.GetFileName(dir);
+                    if (SemanticVersion.TryParse(versionDir, out var version) && version >= minSdkVersion)
+                    {
+                        s_dotnetInstallDir = dotnetInstallDir;
+                        s_dotnetSdkPath = Path.Combine(dotnetInstallDir, "sdk", versionDir);
+                        break;
+                    }
+                }
             }
         }
 

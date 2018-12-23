@@ -25,13 +25,13 @@ namespace Microsoft.Build.Tasks.SourceControl
         public ITaskItem[] TranslatedSourceRoots { get; set; }
 
         protected virtual string TranslateSshUrl(Uri uri)
-            => "https://" + uri.Host + uri.PathAndQuery;
+            => "https://" + uri.GetHost() + uri.GetPathAndQuery();
 
         protected virtual string TranslateGitUrl(Uri uri)
-            => "https://" + uri.Host + uri.PathAndQuery;
+            => "https://" + uri.GetHost() + uri.GetPathAndQuery();
 
         protected virtual string TranslateHttpUrl(Uri uri)
-            => uri.Scheme + "://" + uri.Authority + uri.PathAndQuery;
+            => uri.GetScheme() + "://" + uri.GetAuthority() + uri.GetPathAndQuery();
 
         public override bool Execute()
         {
@@ -48,8 +48,8 @@ namespace Microsoft.Build.Tasks.SourceControl
             }
 
             bool isMatchingHostUri(Uri hostUri, Uri uri)
-                => uri.Host.Equals(hostUri.Host, StringComparison.OrdinalIgnoreCase) || 
-                   uri.Host.EndsWith("." + hostUri.Host, StringComparison.OrdinalIgnoreCase);
+                => uri.GetHost().Equals(hostUri.GetHost(), StringComparison.OrdinalIgnoreCase) || 
+                   uri.GetHost().EndsWith("." + hostUri.GetHost(), StringComparison.OrdinalIgnoreCase);
 
             // only need to translate valid ssh URLs that match one of our hosts:
             string translate(string url)
@@ -78,7 +78,12 @@ namespace Microsoft.Build.Tasks.SourceControl
                         continue;
                     }
 
-                    sourceRoot.SetMetadata(Names.SourceRoot.ScmRepositoryUrl, translate(sourceRoot.GetMetadata(Names.SourceRoot.ScmRepositoryUrl)));
+                    // Item metadata are stored msbuild-escaped. GetMetadata unescapes, SetMetadata stores the value as specified.
+                    // When initializing the URL metadata from git information we msbuild-escaped the URL to preserve any URL escapes in it.
+                    // Here, GetMetadata unescapes the msbuild escapes, then we translate the URL and finally msbuild-escape 
+                    // the resulting URL to preserve any URL escapes.
+                    sourceRoot.SetMetadata(Names.SourceRoot.ScmRepositoryUrl,
+                        Evaluation.ProjectCollection.Escape(translate(sourceRoot.GetMetadata(Names.SourceRoot.ScmRepositoryUrl))));
                 }
             }
         }
