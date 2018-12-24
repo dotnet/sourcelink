@@ -100,15 +100,22 @@ For projects hosted on [Bitbucket.org](https://bitbucket.org) in git repositorie
 
 If your repository contains submodules hosted by other git providers reference packages of all these providers. For example, projects in a repository hosted by Azure DevOps that links a GitHub repository via a submodule should reference both [Microsoft.SourceLink.Vsts.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Vsts.Git) and [Microsoft.SourceLink.GitHub](https://www.nuget.org/packages/Microsoft.SourceLink.GitHub) packages. [Additional configuration](https://github.com/dotnet/sourcelink/blob/master/docs/README.md#configuring-projects-with-multiple-sourcelink-providers) might be needed if multiple SourceLink packages are used in the project.
 
-## Prerequisites
+## Prerequisites for .NET projects
 
-Note that [.NET Core SDK 2.1.300](https://www.microsoft.com/net/download/dotnet-core/sdk-2.1.300) or newer is required for SourceLink to work. If building via desktop msbuild (as opposed to `dotnet build`) you'll need version 15.7.
+SourceLink supports classic .NET Framework projects as well as .NET SDK projects, that is projects that import `Microsoft.NET.Sdk` (e.g. like so: `<Project Sdk="Microsoft.NET.Sdk">`). The project may target any .NET Framework or .NET Core App/Standard version. SourceLink also works with both Portable, Embedded and Windows PDBs specified via project property `DebugType`.
 
-## Known Issues
+[.NET Core SDK 2.1.300](https://www.microsoft.com/net/download/dotnet-core/sdk-2.1.300) or newer is required for .NET SDK projects. If building via desktop `msbuild` you'll need version 15.7 or higher.
+
+The following features are not available in projects that do not import `Microsoft.NET.Sdk`:
+- Automatic inclusion of commit SHA in `AssemblyInformationalVersion`.
+- Automatic inclusion of commit SHA and repository URL in NuSpec.
+
+These features can be added via custom msbuild targets.
+
+## Known issues
 
 - `EmbedUntrackedSources` does not work in Visual Basic projects that use .NET SDK: https://github.com/dotnet/sourcelink/issues/193
-- Various build issues on Mono : https://github.com/dotnet/sourcelink/issues/155
-- Issues with OpenSSL dependency on some Linux distros: https://github.com/dotnet/sourcelink/issues/192
+- Various build issues on Mono: https://github.com/dotnet/sourcelink/issues/155
 - Issues with WPF projects when building with `/p:ContinuousIntegrationBuild=true`: https://github.com/dotnet/sourcelink/issues/91
 
 ## Builds
