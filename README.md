@@ -114,7 +114,7 @@ To add SourceLink support to your native project add package references correspo
 </packages>
 ```
 
-Once the packages are restored and the project built the SourceLink information is [passed to the linker](https://docs.microsoft.com/en-us/cpp/build/reference/sourcelink?view=vs-2017) and embedded into the generated PDB.
+Once the packages are restored and the project built the SourceLink information is [passed to the linker](https://docs.microsoft.com/en-us/cpp/build/reference/sourcelink) and embedded into the generated PDB.
 
 The only feature currently supported is mapping of source files to the source repository that is used by the debugger to find source files when stepping into the code. Source embedding and embedding commit SHA and repository URL information in the native binary are not supported for native projects.
 
@@ -134,8 +134,7 @@ These features can be added via custom msbuild targets.
 
 Debugging native binary with SourceLink information embedded in the PDB is supported since Visual Studio 2017 Update 9.
 
-The VC++ linker supports `/SOURCELINK` [switch](https://docs.microsoft.com/en-us/cpp/build/reference/sourcelink?view=vs-2017
-en) since Visual Studio 2017 Update 8, however the PDBs produced by this version are not compatible with case-sensitive source control systems such as git. This issue is fixed in [Visual Studio 2019](https://visualstudio.microsoft.com/vs/preview/).
+The VC++ linker supports `/SOURCELINK` [switch](https://docs.microsoft.com/en-us/cpp/build/reference/sourcelink) since Visual Studio 2017 Update 8, however the PDBs produced by this version are not compatible with case-sensitive source control systems such as git. This issue is fixed in [Visual Studio 2019](https://visualstudio.microsoft.com/vs/preview/).
 
 ## Known issues
 
