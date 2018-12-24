@@ -17,7 +17,7 @@ Having this information available enables the following features:
 1) Including source revision id in `AssemblyInformationalVersionAttribute` and in NuSpec of the package produced by the project.
 2) Automatic detection and publishing of the repository URL.
 3) Embedding sources to the PDB that are not tracked by source control.
-4) Generating [SourceLink](https://github.com/dotnet/designs/blob/master/accepted/diagnostics/source-link.md) that 
+4) Generating [Source Link](https://github.com/dotnet/designs/blob/master/accepted/diagnostics/source-link.md) that 
    enables debuggers to find sources when stepping through the DLL/EXE produced by the project.
 
 To generate Source Link having just the source control package is not sufficient, since various source control providers (hosts) 
@@ -29,11 +29,11 @@ The following Source Link pre-release packages are currently available:
 - Microsoft.SourceLink.Vsts.Git (depends on Microsoft.Build.Tasks.Git package)
 - Microsoft.SourceLink.Vsts.Tfvc (depends on Microsoft.Build.Tasks.Tfvc package)
 
-The system is extensible and custom packages that handle other source control providers can be developed and used. See [Custom SourceLink packages](#creating-custom-sourcelink-packages) for details.
+The system is extensible and custom packages that handle other source control providers can be developed and used. See [Custom Source Link packages](#creating-custom-sourcelink-packages) for details.
 
-Each SourceLink package depends on the corresponding source control package. Referencing a SourceLink package makes the dependent source control package also referenced, thus providing the other source control features to the project.
+Each Source Link package depends on the corresponding source control package. Referencing a Source Link package makes the dependent source control package also referenced, thus providing the other source control features to the project.
 
-Note that it is possible and supported to reference multiple SourceLink packages in a single project provided they depend on the same source control package. This is necessary when the project sources are stored in mutliple submodules hosted by different providers (e.g. VSTS repository containing a GitHub submodule). See [Configuring Projects with Multiple SourceLink Providers](#configuring-projects-with-multiple-sourcelink-providers) for details.
+Note that it is possible and supported to reference multiple Source Link packages in a single project provided they depend on the same source control package. This is necessary when the project sources are stored in mutliple submodules hosted by different providers (e.g. VSTS repository containing a GitHub submodule). See [Configuring Projects with Multiple Source Link Providers](#configuring-projects-with-multiple-sourcelink-providers) for details.
 
 ## Basic Settings
 
@@ -72,7 +72,7 @@ Starting with .NET Core SDK 2.1.300 a fully deterministic build is [turned on](h
 
 ## Example
 
-The following project settings result in repository URL and commit hash automatically detected and included in NuSpec, commit hash included in `AssemblyInformationalVersionAttribute`, all source files available on GitHub linked via [SourceLink](https://github.com/dotnet/designs/blob/master/accepted/diagnostics/source-link.md) (including those in submodules) and source files not available on GitHub embedded in the PDB.
+The following project settings result in repository URL and commit hash automatically detected and included in NuSpec, commit hash included in `AssemblyInformationalVersionAttribute`, all source files available on GitHub linked via [Source Link](https://github.com/dotnet/designs/blob/master/accepted/diagnostics/source-link.md) (including those in submodules) and source files not available on GitHub embedded in the PDB.
 
 Note that .NET Core SDK 2.1.300 is required.
 
@@ -89,9 +89,9 @@ Note that .NET Core SDK 2.1.300 is required.
 </Project>
 ```
 
-## Configuring Projects with Multiple SourceLink Providers
+## Configuring Projects with Multiple Source Link Providers
 
-An additional configuration might be required when a project references multiple SourceLink packages and the source control is hosted on a custom domain. By default a SourceLink package infers the domain of the source control host from the `origin` remote URL. For example, when a GitLab repository is cloned from `http://git.contoso.com` and a project only references Microsoft.SourceLink.GitLab package the package infers that `git.contoso.com` must be a hosting GitLab service. However, when multiple packages are used in the project it's not clear which service is `git.contoso.com` domain hosting.
+An additional configuration might be required when a project references multiple Source Link packages and the source control is hosted on a custom domain. By default a Source Link package infers the domain of the source control host from the `origin` remote URL. For example, when a GitLab repository is cloned from `http://git.contoso.com` and a project only references Microsoft.SourceLink.GitLab package the package infers that `git.contoso.com` must be a hosting GitLab service. However, when multiple packages are used in the project it's not clear which service is `git.contoso.com` domain hosting.
 
 ### Custom Host Domains
 
@@ -137,7 +137,7 @@ May be used by custom targets that need this information.
 
 ### EnableSourceLink
 
-This property is implicitly set to `true` by a SourceLink package. Including a SourceLink package thus enables SourceLink generation unless explicitly disabled by the project by setting this property to `false`.
+This property is implicitly set to `true` by a Source Link package. Including a Source Link package thus enables Source Link generation unless explicitly disabled by the project by setting this property to `false`.
 
 ### SourceRoot
 
@@ -172,9 +172,9 @@ Nested source control roots have the following metadata (e.g. submodules):
 Source roots not under source control:
 - _SourceLinkUrl_: URL to use in source link mapping, including `*` wildcard (e.g. `https://raw.githubusercontent.com/dotnet/roslyn/42abf2e6642db97d2314c017eb179075d5042028/src/Dependencies/CodeAnalysis.Debugging/*`)
 
-## Creating Custom SourceLink Packages
+## Creating Custom Source Link Packages
 
-Each SourceLink package is expected to provide mapping of _repository URLs_ to corresponding _content URLs_ that provide source file content.
+Each Source Link package is expected to provide mapping of _repository URLs_ to corresponding _content URLs_ that provide source file content.
 
 The content URL shall identify an end-point that responds to HTTP GET request with content of the source file identified in the query. The end-point may require authentication. 
 
@@ -190,7 +190,7 @@ The package shall include `build/{PackageName}.props` and `build/{PackageName}.t
 </PropertyGroup> 
 ```
 
-`build/{PackageName}.targets` file shall add a uniquely named SourceLink initialization target to `SourceLinkUrlInitializerTargets` property, e.g. `_InitializeXyzSourceLinkUrl` for source control provider called `Xyz`.
+`build/{PackageName}.targets` file shall add a uniquely named Source Link initialization target to `SourceLinkUrlInitializerTargets` property, e.g. `_InitializeXyzSourceLinkUrl` for source control provider called `Xyz`.
 
 ```xml
 <PropertyGroup>
@@ -198,7 +198,7 @@ The package shall include `build/{PackageName}.props` and `build/{PackageName}.t
 </PropertyGroup>
 ```
 
-The initialization target shall update each item of the `SourceRoot` item group that belongs to the Xyz provider with `SourceLinkUrl` metadata that contains the final URL for this source root that will be stored in the SourceLink file. It shall ignore any `SourceRoot` items whose `SourceControl` and `RepositoryUrl` metadata it does not recognize.
+The initialization target shall update each item of the `SourceRoot` item group that belongs to the Xyz provider with `SourceLinkUrl` metadata that contains the final URL for this source root that will be stored in the Source Link file. It shall ignore any `SourceRoot` items whose `SourceControl` and `RepositoryUrl` metadata it does not recognize.
 
-See [the implementation of GitHub SourceLink package](https://github.com/dotnet/sourcelink/blob/master/src/SourceLink.GitHub/build/Microsoft.SourceLink.GitHub.targets) for an example.
+See [the implementation of GitHub Source Link package](https://github.com/dotnet/sourcelink/blob/master/src/SourceLink.GitHub/build/Microsoft.SourceLink.GitHub.targets) for an example.
 
