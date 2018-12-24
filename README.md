@@ -102,12 +102,12 @@ If your repository contains submodules hosted by other git providers reference p
 
 ## Prerequisites for .NET projects
 
-SourceLink supports classic .NET Framework projects as well as .NET SDK projects, that is projects that import `Microsoft.NET.Sdk` (e.g. like so: `<Project Sdk="Microsoft.NET.Sdk">`). The project may target any .NET Framework or .NET Core App/Standard version. SourceLink also works with both Portable, Embedded and Windows PDBs specified via project property `DebugType`.
+SourceLink supports classic .NET Framework projects as well as .NET SDK projects, that is projects that import `Microsoft.NET.Sdk` (e.g. like so: `<Project Sdk="Microsoft.NET.Sdk">`). The project may target any .NET Framework or .NET Core App/Standard version. All PDB formats are supported: Portable, Embedded and Windows PDBs. 
 
 [.NET Core SDK 2.1.300](https://www.microsoft.com/net/download/dotnet-core/sdk-2.1.300) or newer is required for .NET SDK projects. If building via desktop `msbuild` you'll need version 15.7 or higher.
 
 The following features are not available in projects that do not import `Microsoft.NET.Sdk`:
-- Automatic inclusion of commit SHA in `AssemblyInformationalVersion`.
+- Automatic inclusion of commit SHA in `AssemblyInformationalVersionAttribute`.
 - Automatic inclusion of commit SHA and repository URL in NuSpec.
 
 These features can be added via custom msbuild targets.
