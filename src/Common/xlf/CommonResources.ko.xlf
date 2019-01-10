@@ -14,7 +14,7 @@
       </trans-unit>
       <trans-unit id="UnableToDetermineRepositoryUrl">
         <source>Unable to determine repository url, the source code won't be available via source link.</source>
-        <target state="new">Unable to determine repository url, the source code won't be available via source link.</target>
+        <target state="translated">리포지토리 URL을 확인할 수 없으며, 소스 링크를 통해 소스 코드를 사용할 수 없습니다.</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsInvalid">

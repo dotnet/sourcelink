@@ -29,7 +29,7 @@
       </trans-unit>
       <trans-unit id="SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty">
         <source>Source control information is not available - the generated source link is empty.</source>
-        <target state="new">Source control information is not available - the generated source link is empty.</target>
+        <target state="translated">Informace o řízení zdrojů nejsou k dispozici - vygenerovaný odkaz na zdroj je prázdný.</target>
         <note />
       </trans-unit>
     </body>
