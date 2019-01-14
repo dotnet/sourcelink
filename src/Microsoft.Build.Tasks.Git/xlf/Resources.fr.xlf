@@ -4,7 +4,7 @@
     <body>
       <trans-unit id="InvalidRepositoryRemoteUrl">
         <source>The URL of repository remote '{0}' is invalid: '{1}'.</source>
-        <target state="new">The URL of repository remote '{0}' is invalid: '{1}'.</target>
+        <target state="translated">L'URL du dépôt distant « {0} » n'est pas valide : « {1} ».</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidSubmodulePath_SourceLink">
@@ -19,12 +19,12 @@
       </trans-unit>
       <trans-unit id="RepositoryHasNoRemote">
         <source>Repository has no remote.</source>
-        <target state="new">Repository has no remote.</target>
+        <target state="translated">Le dépôt n'a aucun remote (lien à distance).</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryHasNoCommit">
         <source>Repository has no commit.</source>
-        <target state="needs-review-translation">Le référentiel ne présente aucune validation, le code source ne sera pas disponible via le lien source.</target>
+        <target state="translated">Le dépôt n'a aucune validation.</target>
         <note />
       </trans-unit>
       <trans-unit id="SubmoduleWithoutCommit_SourceLink">

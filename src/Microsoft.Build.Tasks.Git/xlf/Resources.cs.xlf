@@ -4,7 +4,7 @@
     <body>
       <trans-unit id="InvalidRepositoryRemoteUrl">
         <source>The URL of repository remote '{0}' is invalid: '{1}'.</source>
-        <target state="new">The URL of repository remote '{0}' is invalid: '{1}'.</target>
+        <target state="translated">Adresa URL vzdáleného úložiště {0} je neplatná: {1}.</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidSubmodulePath_SourceLink">
@@ -19,12 +19,12 @@
       </trans-unit>
       <trans-unit id="RepositoryHasNoRemote">
         <source>Repository has no remote.</source>
-        <target state="new">Repository has no remote.</target>
+        <target state="translated">Úložiště nemá žádnou vzdálenou entitu.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryHasNoCommit">
         <source>Repository has no commit.</source>
-        <target state="needs-review-translation">Úložiště nemá žádné potvrzení, zdrojový kód nebude přes zdrojový odkaz dostupný.</target>
+        <target state="translated">Úložiště nemá žádné potvrzení.</target>
         <note />
       </trans-unit>
       <trans-unit id="SubmoduleWithoutCommit_SourceLink">
