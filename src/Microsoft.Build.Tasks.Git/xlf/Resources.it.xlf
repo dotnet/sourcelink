@@ -4,7 +4,7 @@
     <body>
       <trans-unit id="InvalidRepositoryRemoteUrl">
         <source>The URL of repository remote '{0}' is invalid: '{1}'.</source>
-        <target state="new">The URL of repository remote '{0}' is invalid: '{1}'.</target>
+        <target state="translated">L'URL del repository remoto '{0}' non è valido: '{1}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidSubmodulePath_SourceLink">
@@ -19,12 +19,12 @@
       </trans-unit>
       <trans-unit id="RepositoryHasNoRemote">
         <source>Repository has no remote.</source>
-        <target state="new">Repository has no remote.</target>
+        <target state="translated">Non esiste alcun ramo remoto per il repository.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryHasNoCommit">
         <source>Repository has no commit.</source>
-        <target state="needs-review-translation">Non esiste alcun commit per il repository. Il codice sorgente non sarà disponibile tramite il collegamento all'origine.</target>
+        <target state="translated">Non esiste alcun commit per il repository.</target>
         <note />
       </trans-unit>
       <trans-unit id="SubmoduleWithoutCommit_SourceLink">

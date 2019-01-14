@@ -4,7 +4,7 @@
     <body>
       <trans-unit id="InvalidRepositoryRemoteUrl">
         <source>The URL of repository remote '{0}' is invalid: '{1}'.</source>
-        <target state="new">The URL of repository remote '{0}' is invalid: '{1}'.</target>
+        <target state="translated">리포지토리 원격 '{0}'의 URL이 잘못되었습니다. '{1}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidSubmodulePath_SourceLink">
@@ -19,12 +19,12 @@
       </trans-unit>
       <trans-unit id="RepositoryHasNoRemote">
         <source>Repository has no remote.</source>
-        <target state="new">Repository has no remote.</target>
+        <target state="translated">리포지토리에 원격이 없습니다.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryHasNoCommit">
         <source>Repository has no commit.</source>
-        <target state="needs-review-translation">리포지토리에 커밋이 없으며, 소스 링크를 통해 소스 코드를 사용할 수 없습니다.</target>
+        <target state="translated">저장소에 커밋 내역이 없습니다.</target>
         <note />
       </trans-unit>
       <trans-unit id="SubmoduleWithoutCommit_SourceLink">

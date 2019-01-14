@@ -4,7 +4,7 @@
     <body>
       <trans-unit id="InvalidRepositoryRemoteUrl">
         <source>The URL of repository remote '{0}' is invalid: '{1}'.</source>
-        <target state="new">The URL of repository remote '{0}' is invalid: '{1}'.</target>
+        <target state="translated">URL-адрес удаленного репозитория "{0}" является недопустимым: "{1}".</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidSubmodulePath_SourceLink">
@@ -19,12 +19,12 @@
       </trans-unit>
       <trans-unit id="RepositoryHasNoRemote">
         <source>Repository has no remote.</source>
-        <target state="new">Repository has no remote.</target>
+        <target state="translated">Отсутствует удаленный репозиторий для этого репозитория.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryHasNoCommit">
         <source>Repository has no commit.</source>
-        <target state="needs-review-translation">В репозитории нет фиксаций. Исходный код по ссылке будет недоступен.</target>
+        <target state="translated">Хранилище не содержит фиксаций.</target>
         <note />
       </trans-unit>
       <trans-unit id="SubmoduleWithoutCommit_SourceLink">
