@@ -138,7 +138,7 @@ The VC++ linker supports `/SOURCELINK` [switch](https://docs.microsoft.com/en-us
 
 ## Known issues
 
-- `EmbedUntrackedSources` does not work in Visual Basic projects that use .NET SDK: https://github.com/dotnet/sourcelink/issues/193
+- `EmbedUntrackedSources` does not work in Visual Basic projects that use .NET SDK: https://github.com/dotnet/sourcelink/issues/193 (fixed in Visual Studio 2019)
 - Various build issues on Mono: https://github.com/dotnet/sourcelink/issues/155
 - Issues with WPF projects when building with `/p:ContinuousIntegrationBuild=true`: https://github.com/dotnet/sourcelink/issues/91
 
