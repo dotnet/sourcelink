@@ -159,7 +159,7 @@ Including PDBs in the .nupkg is generally no longer recommended as it increases 
 - The consumer of the package also needs Visual Studio 2017 Update 9 debugger.
 
 Consider including PDBs in the main package only if it is not possible to use .snupkg for the above reasons. 
-For managed projects, consider switching to Portable PDBs by setting `DebugType` property to `portable`. This is the default on .NET SDK projects, but not classic .NET projects.
+For managed projects, consider switching to Portable PDBs by setting `DebugType` property to `portable`. This is the default for .NET SDK projects, but not classic .NET projects.
 
 ## Builds
 
