@@ -6,7 +6,6 @@ root = true
 
 [*]
 indent_style = space
-end_of_line = crlf
 insert_final_newline = false
 
 [*.{cs,csx,vb,vbx}]
