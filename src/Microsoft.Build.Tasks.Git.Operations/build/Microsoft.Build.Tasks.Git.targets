@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
-  <PropertyGroup>
-    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
-  </PropertyGroup>
-
   <UsingTask TaskName="Microsoft.Build.Tasks.Git.LocateRepository" AssemblyFile="$(MicrosoftBuildTasksGitAssemblyFile)"/>
   <UsingTask TaskName="Microsoft.Build.Tasks.Git.GetSourceRoots" AssemblyFile="$(MicrosoftBuildTasksGitAssemblyFile)"/>
   <UsingTask TaskName="Microsoft.Build.Tasks.Git.GetRepositoryUrl" AssemblyFile="$(MicrosoftBuildTasksGitAssemblyFile)"/>
