@@ -88,11 +88,13 @@ For projects hosted by [GitLab](https://gitlab.com) reference [Microsoft.SourceL
 
 ### Bitbucket.org
 
-For projects hosted on [Bitbucket.org](https://bitbucket.org) in git repositories reference [Microsoft.SourceLink.Bitbucket.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Bitbucket.Git) package: 
+For projects hosted on [Bitbucket.org](https://bitbucket.org) in git repositories reference [Microsoft.SourceLink.Bitbucket.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Bitbucket.Git) package
+and add Bitbucket host configuration. Including flag whether it is Enterprise Edtition or Cloud. For Enterprise Edition provide its version and change value in include attribute to your Bitbucket server name: 
 
 ```xml
 <ItemGroup>
   <PackageReference Include="Microsoft.SourceLink.Bitbucket.Git" Version="1.0.0-beta2-18618-05" PrivateAssets="All"/>
+  <SourceLinkBitbucketGitHost Include="bitbucket.org" EnterpriseEdition="true" Version="4.1" />
 </ItemGroup>
 ```
 
