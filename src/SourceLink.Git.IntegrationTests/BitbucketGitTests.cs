@@ -74,10 +74,11 @@ namespace Microsoft.SourceLink.IntegrationTests
         {
             // Test non-ascii characters and escapes in the URL.
             // Escaped URI reserved characters should remain escaped, non-reserved characters unescaped in the results.
-            var repoUrl = "https://bitbucket.domain.com/test-org/test-%72epo\u1234%24%2572%2F";
+            var repoUrl = "https://bitbucket.domain.com/scm/test-org/test-%72epo\u1234%24%2572%2F";
             var repoName = "test-repo\u1234%24%2572%2F";
 
-            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] {ProjectFileName},
+                repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -107,8 +108,8 @@ namespace Microsoft.SourceLink.IntegrationTests
                     ProjectSourceRoot,
                     $"https://bitbucket.domain.com/projects/test-org/repos/{repoName}/raw/*?at={commitSha}",
                     s_relativeSourceLinkJsonPath,
-                    $"https://bitbucket.domain.com/test-org/{repoName}",
-                    $"https://bitbucket.domain.com/test-org/{repoName}"
+                    $"https://bitbucket.domain.com/scm/test-org/{repoName}",
+                    $"https://bitbucket.domain.com/scm/test-org/{repoName}"
                 });
 
             AssertEx.AreEqual(
@@ -123,14 +124,15 @@ namespace Microsoft.SourceLink.IntegrationTests
                 Path.Combine(ProjectDir.Path, s_relativePackagePath),
                 type: "git",
                 commit: commitSha,
-                url: $"https://bitbucket.domain.com/test-org/{repoName}");
+                url: $"https://bitbucket.domain.com/scm/test-org/{repoName}");
         }
+
         [ConditionalFact(typeof(DotNetSdkAvailable))]
         public void FullValidation_EnterpriseOldHttps()
         {
             // Test non-ascii characters and escapes in the URL.
             // Escaped URI reserved characters should remain escaped, non-reserved characters unescaped in the results.
-            var repoUrl = "https://bitbucket.domain.com/test-org/test-%72epo\u1234%24%2572%2F";
+            var repoUrl = "https://bitbucket.domain.com/scm/test-org/test-%72epo\u1234%24%2572%2F";
             var repoName = "test-repo\u1234%24%2572%2F";
 
             var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
@@ -138,13 +140,13 @@ namespace Microsoft.SourceLink.IntegrationTests
 
             VerifyValues(
                 customProps: @"
-<PropertyGroup>
-  <PublishRepositoryUrl>true</PublishRepositoryUrl>
-</PropertyGroup>
-<ItemGroup>
-  <SourceLinkBitbucketGitHost Include=""bitbucket.domain.com"" EnterpriseEdition=""true"" Version=""4.5""/>
-</ItemGroup>
-",
+        <PropertyGroup>
+          <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        </PropertyGroup>
+        <ItemGroup>
+          <SourceLinkBitbucketGitHost Include=""bitbucket.domain.com"" EnterpriseEdition=""true"" Version=""4.5""/>
+        </ItemGroup>
+        ",
                 customTargets: "",
                 targets: new[]
                 {
@@ -163,8 +165,8 @@ namespace Microsoft.SourceLink.IntegrationTests
                     ProjectSourceRoot,
                     $"https://bitbucket.domain.com/projects/test-org/repos/{repoName}/browse/*?at={commitSha}&raw",
                     s_relativeSourceLinkJsonPath,
-                    $"https://bitbucket.domain.com/test-org/{repoName}",
-                    $"https://bitbucket.domain.com/test-org/{repoName}"
+                    $"https://bitbucket.domain.com/scm/test-org/{repoName}",
+                    $"https://bitbucket.domain.com/scm/test-org/{repoName}"
                 });
 
             AssertEx.AreEqual(
@@ -179,7 +181,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 Path.Combine(ProjectDir.Path, s_relativePackagePath),
                 type: "git",
                 commit: commitSha,
-                url: $"https://bitbucket.domain.com/test-org/{repoName}");
+                url: $"https://bitbucket.domain.com/scm/test-org/{repoName}");
         }
 
         [ConditionalFact(typeof(DotNetSdkAvailable))]

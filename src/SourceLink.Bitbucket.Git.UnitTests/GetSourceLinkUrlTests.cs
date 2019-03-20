@@ -107,7 +107,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
         [InlineData("", "/", "4.6")]
         [InlineData("/", "", "4.6")]
         [InlineData("/", "/", "4.6")]
-        public void BuildSourceLinkUrl_BitbucketEnterpriseOldVersion(string s1, string s2, string bitbucketVersion)
+        public void BuildSourceLinkUrl_BitbucketEnterpriseOldVersionSsh(string s1, string s2, string bitbucketVersion)
         {
             var isEnterpriseEditionSetting = KVP("EnterpriseEdition", "true");
             var version = KVP("Version", bitbucketVersion);
@@ -116,6 +116,36 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
             {
                 BuildEngine = engine,
                 SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://bitbucket.domain.com:100/a/b" + s1), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                Hosts = new[]
+                {
+                    new MockItem("domain.com", KVP("ContentUrl", "https://bitbucket.domain.com" + s2), isEnterpriseEditionSetting, version),
+                }
+            };
+
+            bool result = task.Execute();
+            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            AssertEx.AreEqual(ExpectedUrlForEnterpriseEditionOldVersion, task.SourceLinkUrl);
+            Assert.True(result);
+        }
+
+        [Theory]
+        [InlineData("", "", "4.4")]
+        [InlineData("", "/", "4.4")]
+        [InlineData("/", "", "4.4")]
+        [InlineData("/", "/", "4.4")]
+        [InlineData("", "", "4.6")]
+        [InlineData("", "/", "4.6")]
+        [InlineData("/", "", "4.6")]
+        [InlineData("/", "/", "4.6")]
+        public void BuildSourceLinkUrl_BitbucketEnterpriseOldVersionHttps(string s1, string s2, string bitbucketVersion)
+        {
+            var isEnterpriseEditionSetting = KVP("EnterpriseEdition", "true");
+            var version = KVP("Version", bitbucketVersion);
+            var engine = new MockEngine();
+            var task = new GetSourceLinkUrl()
+            {
+                BuildEngine = engine,
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://bitbucket.domain.com:100/scm/a/b" + s1), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
                     new MockItem("domain.com", KVP("ContentUrl", "https://bitbucket.domain.com" + s2), isEnterpriseEditionSetting, version),
@@ -138,7 +168,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
         [InlineData("", "/", "5.6")]
         [InlineData("/", "", "5.6")]
         [InlineData("/", "/", "5.6")]
-        public void BuildSourceLinkUrl_BitbucketEnterpriseNewVersion(string s1, string s2, string bitbucketVersion)
+        public void BuildSourceLinkUrl_BitbucketEnterpriseNewVersionSsh(string s1, string s2, string bitbucketVersion)
         {
             var isEnterpriseEditionSetting = KVP("EnterpriseEdition", "true");
             var version = KVP("Version", bitbucketVersion);
@@ -147,6 +177,37 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
             {
                 BuildEngine = engine,
                 SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://bitbucket.domain.com:100/a/b" + s1), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                Hosts = new[]
+                {
+                    new MockItem("domain.com", KVP("ContentUrl", "https://bitbucket.domain.com" + s2), isEnterpriseEditionSetting, version),
+                }
+            };
+
+            bool result = task.Execute();
+            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            AssertEx.AreEqual(ExpectedUrlForEnterpriseEditionNewVersion, task.SourceLinkUrl);
+            Assert.True(result);
+        }
+
+        [Theory]
+        [InlineData("", "", "")]
+        [InlineData("", "", "4.7")]
+        [InlineData("", "/", "4.7")]
+        [InlineData("/", "", "4.7")]
+        [InlineData("/", "/", "4.7")]
+        [InlineData("", "", "5.6")]
+        [InlineData("", "/", "5.6")]
+        [InlineData("/", "", "5.6")]
+        [InlineData("/", "/", "5.6")]
+        public void BuildSourceLinkUrl_BitbucketEnterpriseNewVersionHttps(string s1, string s2, string bitbucketVersion)
+        {
+            var isEnterpriseEditionSetting = KVP("EnterpriseEdition", "true");
+            var version = KVP("Version", bitbucketVersion);
+            var engine = new MockEngine();
+            var task = new GetSourceLinkUrl()
+            {
+                BuildEngine = engine,
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://bitbucket.domain.com:100/scm/a/b" + s1), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
                     new MockItem("domain.com", KVP("ContentUrl", "https://bitbucket.domain.com" + s2), isEnterpriseEditionSetting, version),
