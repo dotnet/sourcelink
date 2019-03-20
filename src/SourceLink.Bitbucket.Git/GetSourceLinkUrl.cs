@@ -25,8 +25,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git
         protected override string BuildSourceLinkUrl(Uri contentUri, Uri gitUri, string relativeUrl, string revisionId,
             ITaskItem hostItem)
         {
-
-           var isEnterpriseEditionFlagAvailable =
+            var isEnterpriseEditionFlagAvailable =
                 bool.TryParse(hostItem.GetMetadata(IsEnterpriseEditionMetadataName), out var isEnterpriseEdition);
 
             if (isEnterpriseEditionFlagAvailable && isEnterpriseEdition)
@@ -45,8 +44,13 @@ namespace Microsoft.SourceLink.Bitbucket.Git
             var bitbucketEnterpriseVersion = GetBitbucketEnterpriseVersion(hostItem);
 
             var splits = relativeUrl.Split(new[] {'/'}, StringSplitOptions.RemoveEmptyEntries);
+            var isSshRepoUri = !(splits.Length == 3 && splits[0] == "scm");
+            var projectName = isSshRepoUri ? splits[0] : splits[1];
+            var repositoryName = isSshRepoUri ? splits[1] : splits[2];
+
             var relativeUrlForBitbucketEnterprise =
-                GetRelativeUrlForBitbucketEnterprise(splits[0], splits[1], revisionId, bitbucketEnterpriseVersion);
+                GetRelativeUrlForBitbucketEnterprise(projectName, repositoryName, revisionId,
+                    bitbucketEnterpriseVersion);
 
             var result = UriUtilities.Combine(contentUri.ToString(), relativeUrlForBitbucketEnterprise);
 
