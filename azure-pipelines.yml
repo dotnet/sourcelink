@@ -1,3 +1,11 @@
+# Branches that trigger a build on commit
+trigger:
+- master
+
+# Branches that trigger builds on PR
+pr:
+- master
+
 jobs:
 - job: Windows
   strategy:
