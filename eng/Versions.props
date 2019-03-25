@@ -8,7 +8,7 @@
 
     <!-- Opt-in repo features -->
     <UsingToolNetFrameworkReferenceAssemblies>true</UsingToolNetFrameworkReferenceAssemblies>    
-    <!-- Disable do to https://github.com/dotnet/symstore/issues/81
+    <!-- TODO: enable when we switch to snupkgs
     <UsingToolSymbolUploader>true</UsingToolSymbolUploader> -->
 
     <MicrosoftNETTestSdkVersion>15.9.0-dev2</MicrosoftNETTestSdkVersion>
