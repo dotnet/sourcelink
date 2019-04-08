@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
   <PropertyGroup>
-    <MicrosoftBuildTasksTfvcAssemblyFile>$(MSBuildThisFileDirectory)..\tools\net461\Microsoft.Build.Tasks.Tfvc.dll</MicrosoftBuildTasksTfvcAssemblyFile>
+    <MicrosoftBuildTasksTfvcAssemblyFile>$(MSBuildThisFileDirectory)..\tools\net46\Microsoft.Build.Tasks.Tfvc.dll</MicrosoftBuildTasksTfvcAssemblyFile>
   </PropertyGroup>
 </Project>
