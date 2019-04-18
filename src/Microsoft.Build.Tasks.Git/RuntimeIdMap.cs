@@ -159,6 +159,8 @@ namespace Microsoft.Build.Tasks.Git
             "alpine-x64",
             "alpine.3.6-x64",
             "alpine.3.7-x64",
+            "alpine.3.8-x64",
+            "alpine.3.9-x64",
             "centos-x64",
             "centos.7-x64",
             "debian-x64",
@@ -264,6 +266,8 @@ namespace Microsoft.Build.Tasks.Git
 
         private static readonly string[] s_directories = new[]
         {
+            "alpine-x64",
+            "alpine-x64",
             "alpine-x64",
             "alpine-x64",
             "alpine-x64",

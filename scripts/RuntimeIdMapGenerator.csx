@@ -1,4 +1,6 @@
 #r "Newtonsoft.Json.dll"
+#r "System.Dynamic.Runtime"
+#r "System.ObjectModel"
 
 using System;
 using System.Collections.Generic;
