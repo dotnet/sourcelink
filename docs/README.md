@@ -202,3 +202,46 @@ The initialization target shall update each item of the `SourceRoot` item group 
 
 See [the implementation of GitHub Source Link package](https://github.com/dotnet/sourcelink/blob/master/src/SourceLink.GitHub/build/Microsoft.SourceLink.GitHub.targets) for an example.
 
+## Minimal git repository metadata
+
+In some scenarios it is desirable to build a repository from a directory that contains its sources but does not have `.git` 
+directory containing git metadata. Source Link does not require all git metadata to be present in the `.git` directory, but 
+some metadata are needed. The following list describes the minimal set of directories and files that must be present in order 
+for Source Link to operate properly.
+
+- `.git/HEAD`
+
+  text file containing a commit SHA (e.g. `935f4b5c55167d9e4ed99b753f7340999d66d5de`)
+
+- `.git/config`
+
+  configuration file that specifies `origin` remote URL (e.g. `[remote "origin"] url="http://server.com/repo"`)
+
+- `.git/refs`, `/.git/objects`
+
+  empty directories
+
+If the repository has submodules the file `.gitmodules` must be present in the repository root and must list the URLs and 
+relative paths of all submodules.
+
+For example,
+
+```
+[submodule "submodule-name"]
+  path = submodule-path
+  url = https://server.com/subrepo
+```
+
+The following additional files and directories must be present for each submodule:
+
+- `.git/modules/submodule-name/HEAD`
+
+  text file containing a commit SHA of the submodule
+
+- `.git/modules/submodule-name/refs`, `.git/modules/submodule-name/objects`
+
+  empty directories
+
+- `submodule-path/.git`
+
+  text file pointing to the submodule metadata, with the following contents: `gitdir: ../.git/modules/submodule-name`
