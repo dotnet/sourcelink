@@ -7,7 +7,6 @@ using LibGit2Sharp;
 using Microsoft.Build.Framework;
 using TestUtilities;
 using Xunit;
-using static TestUtilities.KeyValuePairUtils;
 
 namespace Microsoft.Build.Tasks.Git.UnitTests
 {
@@ -17,7 +16,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         private static readonly char s = Path.DirectorySeparatorChar;
         private static readonly string s_root = (s == '/') ? "/usr/src" : @"C:\src";
 
-        private static string InspectSourceRoot(ITaskItem sourceRoot)
+        internal static string InspectSourceRoot(ITaskItem sourceRoot)
         {
             var sourceControl = sourceRoot.GetMetadata("SourceControl");
             var revisionId = sourceRoot.GetMetadata("RevisionId");
@@ -35,8 +34,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
               (string.IsNullOrEmpty(sourceLinkUrl) ? "" : $" SourceLinkUrl='{sourceLinkUrl}'");
         }
 
-        private static string InspectDiagnostic(KeyValuePair<string, object[]> warning)
-            => string.Format(warning.Key, warning.Value);
+        public static string InspectDiagnostic((string Message, object[] Args) warning)
+            => string.Format(warning.Message, warning.Args);
 
         [Fact]
         public void GetRevisionId_RepoWithoutCommits()
@@ -57,8 +56,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         {
             var repo = new TestRepository(workingDir: s_root, commitSha: "1111111111111111111111111111111111111111");
 
-            var warnings = new List<KeyValuePair<string, object[]>>();
-            Assert.Null(GitOperations.GetRepositoryUrl(repo, (message, args) => warnings.Add(KVP(message, args))));
+            var warnings = new List<(string, object[])>();
+            Assert.Null(GitOperations.GetRepositoryUrl(repo, (message, args) => warnings.Add((message, args))));
             AssertEx.Equal(new[] { Resources.RepositoryHasNoRemote }, warnings.Select(InspectDiagnostic));
         }
 
@@ -73,8 +72,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 Array.Empty<string>() :
                 new[] { string.Format(Resources.InvalidRepositoryRemoteUrl, testRemote.Name, testRemote.Url) };
 
-            var warnings = new List<KeyValuePair<string, object[]>>();
-            Assert.Equal(expectedUrl, GitOperations.GetRepositoryUrl(repo, (message, args) => warnings.Add(KVP(message, args))));
+            var warnings = new List<(string, object[])>();
+            Assert.Equal(expectedUrl, GitOperations.GetRepositoryUrl(repo, (message, args) => warnings.Add((message, args))));
             AssertEx.Equal(expectedWarnings, warnings.Select(InspectDiagnostic));
         }
 
@@ -165,8 +164,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         {
             var repo = new TestRepository(workingDir: s_root, commitSha: null);
 
-            var warnings = new List<KeyValuePair<string, object[]>>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add(KVP(message, args)), fileExists: null);
+            var warnings = new List<(string, object[])>();
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)), fileExists: null);
 
             Assert.Empty(items);
             AssertEx.Equal(new[] { Resources.RepositoryHasNoCommit }, warnings.Select(InspectDiagnostic));
@@ -184,8 +183,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     new TestSubmodule("1", "sub/2", "http://2.com", "2222222222222222222222222222222222222222")
                 });
 
-            var warnings = new List<KeyValuePair<string, object[]>>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add(KVP(message, args)), fileExists: null);
+            var warnings = new List<(string, object[])>();
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)), fileExists: null);
 
             AssertEx.Equal(new[]
             {
@@ -208,8 +207,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     new TestSubmodule("1", "sub/2", "http://2.com", "2222222222222222222222222222222222222222")
                 });
 
-            var warnings = new List<KeyValuePair<string, object[]>>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add(KVP(message, args)), fileExists: null);
+            var warnings = new List<(string, object[])>();
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)), fileExists: null);
 
             AssertEx.Equal(new[]
             {
@@ -232,8 +231,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     new TestSubmodule("2", "sub/2", "../a", "2222222222222222222222222222222222222222"),
                 });
 
-            var warnings = new List<KeyValuePair<string, object[]>>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add(KVP(message, args)), fileExists: null);
+            var warnings = new List<(string, object[])>();
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)), fileExists: null);
 
             AssertEx.Equal(new[]
             {
@@ -257,8 +256,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     new TestSubmodule("%25ለ", "sub/%25ለ", "../a", "2222222222222222222222222222222222222222"),
                 });
 
-            var warnings = new List<KeyValuePair<string, object[]>>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add(KVP(message, args)), fileExists: null);
+            var warnings = new List<(string, object[])>();
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)), fileExists: null);
 
             AssertEx.Equal(new[]
             {
@@ -282,8 +281,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     new TestSubmodule("2", "sub/2", "../a", "2222222222222222222222222222222222222222"),
                 });
 
-            var warnings = new List<KeyValuePair<string, object[]>>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add(KVP(message, args)), fileExists: null);
+            var warnings = new List<(string, object[])>();
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)), fileExists: null);
 
             AssertEx.Equal(new[]
             {
@@ -307,8 +306,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     new TestSubmodule("%25ለ", "sub/%25ለ", "../a", "2222222222222222222222222222222222222222"),
                 });
 
-            var warnings = new List<KeyValuePair<string, object[]>>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add(KVP(message, args)), fileExists: null);
+            var warnings = new List<(string, object[])>();
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)), fileExists: null);
 
             AssertEx.Equal(new[]
             {
@@ -333,8 +332,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     new TestSubmodule("3", "sub/3", "http://3.com", "3333333333333333333333333333333333333333"),
                 });
 
-            var warnings = new List<KeyValuePair<string, object[]>>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add(KVP(message, args)), fileExists: null);
+            var warnings = new List<(string, object[])>();
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)), fileExists: null);
 
             AssertEx.Equal(new[]
             {
@@ -358,8 +357,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 config: new Dictionary<string, object> { { "core.gvfs", true } },
                 submodulesSupported: false);
 
-            var warnings = new List<KeyValuePair<string, object[]>>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add(KVP(message, args)), fileExists: _ => false);
+            var warnings = new List<(string, object[])>();
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)), fileExists: _ => false);
 
             AssertEx.Equal(new[]
             {
@@ -391,8 +390,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     new TestSubmodule("1", "sub/1", "http://1.com/", "1111111111111111111111111111111111111111"),
                 });
 
-            var warnings = new List<KeyValuePair<string, object[]>>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add(KVP(message, args)), fileExists: null);
+            var warnings = new List<(string, object[])>();
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)), fileExists: null);
 
             AssertEx.Equal(new[]
             {
