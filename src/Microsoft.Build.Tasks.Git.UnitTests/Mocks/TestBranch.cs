@@ -6,13 +6,13 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 {
     internal class TestBranch : Branch
     {
-        private readonly string _tipCommitSha;
+        private readonly Reference _reference;
 
         public TestBranch(string tipCommitSha)
         {
-            _tipCommitSha = tipCommitSha;
+            _reference = new TestReference(tipCommitSha);
         }
 
-        public override Commit Tip => (_tipCommitSha != null) ? new TestCommit(_tipCommitSha) : null;
+        public override Reference Reference => _reference;
     }
 }

@@ -4,15 +4,15 @@ using LibGit2Sharp;
 
 namespace Microsoft.Build.Tasks.Git.UnitTests
 {
-    internal class TestCommit : Commit
+    internal class TestReference : DirectReference
     {
         private readonly string _sha;
 
-        public TestCommit(string sha)
+        public TestReference(string sha)
         {
             _sha = sha;
         }
 
-        public override string Sha => _sha;
+        public override string TargetIdentifier => _sha;
     }
 }

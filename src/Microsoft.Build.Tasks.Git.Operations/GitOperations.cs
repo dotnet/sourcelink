@@ -118,8 +118,9 @@ namespace Microsoft.Build.Tasks.Git
 
         public static string GetRevisionId(IRepository repository)
         {
-            // An empty repository doesn't have a tip commit:
-            return repository.Head.Tip?.Sha;
+            // An empty repository has a HEAD reference that does not resolve to a direct reference.
+            // The idenfitifer of a direct reference is the commit SHA.
+            return repository.Head.Reference.ResolveToDirectReference()?.TargetIdentifier;
         }
 
         // GVFS doesn't support submodules. gitlib throws when submodule enumeration is attempted.
@@ -373,9 +374,6 @@ namespace Microsoft.Build.Tasks.Git
 
             return containingRepositoryNode;
         }
-
-        private static readonly SequenceComparer<string> SplitPathComparer =
-             new SequenceComparer<string>(Path.DirectorySeparatorChar == '\\' ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
 
         internal static int BinarySearch<T, TValue>(IReadOnlyList<T> list, TValue value, Func<T, TValue, int> compare)
         {
