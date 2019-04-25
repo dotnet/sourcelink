@@ -24,7 +24,7 @@
     <MicrosoftBuildTasksCore>15.7.179</MicrosoftBuildTasksCore>
 
     <!-- Libs -->
-    <LibGit2SharpVersion>0.26.0-preview-0070</LibGit2SharpVersion>
+    <LibGit2SharpVersion>0.27.0-preview-0007</LibGit2SharpVersion>
     <MicrosoftTeamFoundationServerExtendedClientVersion>15.112.1</MicrosoftTeamFoundationServerExtendedClientVersion>
     <MicrosoftDotNetPlatformAbstractionsVersion>2.1.0</MicrosoftDotNetPlatformAbstractionsVersion>
     <NuGetVersioningVersion>4.9.2</NuGetVersioningVersion>
