@@ -12,7 +12,7 @@ The [original Source Link implementation](https://github.com/ctaggart/SourceLink
 
 #### Preview Status
 
-We recommend using Source Link preview for building production packages. Although the implementation details and the public APIs of the Source Link pre-release packages are still in flux, there will be no difference in the format of the data it generates between preview and 1.0.0.
+We recommend using Source Link preview for building production packages. Although the implementation details and the public APIs of the Source Link pre-release packages are still in flux, there will be no difference in the format of the data it generates between preview and 1.0.0. The only changes in the generated data we expect are due to bug fixes that target scenario that previously did not work correctly.
 
 ## <a name="using-sourcelink">Using Source Link in .NET projects
 
