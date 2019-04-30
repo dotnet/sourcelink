@@ -118,8 +118,9 @@ namespace Microsoft.Build.Tasks.Git
 
         public static string GetRevisionId(IRepository repository)
         {
-            // An empty repository doesn't have a tip commit:
-            return repository.Head.Tip?.Sha;
+            // The HEAD reference in an empty repository doesn't resolve to a direct reference.
+            // The target identifier of a direct reference is the commit SHA.
+            return repository.Head.Reference.ResolveToDirectReference()?.TargetIdentifier;
         }
 
         // GVFS doesn't support submodules. gitlib throws when submodule enumeration is attempted.

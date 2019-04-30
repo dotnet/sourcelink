@@ -4,7 +4,8 @@
 
   <PropertyGroup>
     <LangVersion>Latest</LangVersion>
-    <NoWarn>NU5125</NoWarn>
+    <Copyright>$(CopyrightMicrosoft)</Copyright>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
 
   <!-- 

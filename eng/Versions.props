@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
   <PropertyGroup>
-    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
-
     <!-- This repo version -->
     <VersionPrefix>1.0.0</VersionPrefix>
     <PreReleaseVersionLabel>beta2</PreReleaseVersionLabel>
@@ -10,7 +8,7 @@
 
     <!-- Opt-in repo features -->
     <UsingToolNetFrameworkReferenceAssemblies>true</UsingToolNetFrameworkReferenceAssemblies>    
-    <!-- Disable do to https://github.com/dotnet/symstore/issues/81
+    <!-- TODO: enable when we switch to snupkgs
     <UsingToolSymbolUploader>true</UsingToolSymbolUploader> -->
 
     <MicrosoftNETTestSdkVersion>15.9.0-dev2</MicrosoftNETTestSdkVersion>
@@ -31,5 +29,6 @@
     <MicrosoftDotNetPlatformAbstractionsVersion>2.1.0</MicrosoftDotNetPlatformAbstractionsVersion>
     <NuGetVersioningVersion>4.9.2</NuGetVersioningVersion>
     <MicrosoftSourceLinkVersion>1.0.0-beta2-18618-05</MicrosoftSourceLinkVersion>
+    <SystemValueTupleVersion>4.5.0</SystemValueTupleVersion>
   </PropertyGroup>
 </Project>

@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
-  <PropertyGroup>
-    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
-  </PropertyGroup>
-
   <!--
     Default values for properties initialized from Standard CI environment variables.
     See https://github.com/dotnet/designs/blob/master/accepted/build/standard-ci-env-variables.md.
