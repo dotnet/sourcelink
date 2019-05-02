@@ -3,10 +3,12 @@
   <Import Project="InitializeSourceControlInformation.targets"/>
   
   <UsingTask TaskName="Microsoft.SourceLink.Common.GenerateSourceLinkFile" AssemblyFile="$(_MicrosoftSourceLinkCommonAssemblyFile)"/>
-  
-  <PropertyGroup Condition="'$(EnableSourceLink)' == 'true' and '$(DebugType)' != 'none'">
-    <SourceLink>$(IntermediateOutputPath)$(MSBuildProjectName).sourcelink.json</SourceLink>
-  </PropertyGroup>
+
+  <Target Name="_SetSourceLinkFilePath">
+    <PropertyGroup>
+      <SourceLink>$(IntermediateOutputPath)$(MSBuildProjectName).sourcelink.json</SourceLink>
+    </PropertyGroup>
+  </Target>
 
   <!--
     Triggers SetEmbeddedFilesFromSourceControlManagerUntrackedFiles target defined by a source control package Microsoft.Build.Tasks.{Git|Tfvc|...}.
@@ -41,10 +43,10 @@
     This target shall initialize SourceLinkUrl of all items that don't have it initialized yet and belong to the source control provider.
   -->
   <Target Name="GenerateSourceLinkFile"
-          DependsOnTargets="InitializeSourceControlInformation;$(_GenerateSourceLinkFileDependsOnTargets);_InitializeSourceRootMappedPathsOpt;$(SourceLinkUrlInitializerTargets)"
+          DependsOnTargets="InitializeSourceControlInformation;_SetSourceLinkFilePath;$(_GenerateSourceLinkFileDependsOnTargets);_InitializeSourceRootMappedPathsOpt;$(SourceLinkUrlInitializerTargets)"
           BeforeTargets="$(_GenerateSourceLinkFileBeforeTargets)"
           Outputs="$(SourceLink)"
-          Condition="'$(SourceLink)' != '' and '$(SourceControlInformationFeatureSupported)' == 'true'">
+          Condition="'$(EnableSourceLink)' == 'true' and '$(DebugType)' != 'none' and '$(SourceControlInformationFeatureSupported)' == 'true'">
 
     <Microsoft.SourceLink.Common.GenerateSourceLinkFile SourceRoots="@(SourceRoot)" OutputFile="$(SourceLink)" />
 
