@@ -199,7 +199,15 @@ $@"<Project>
             Assert.True(File.Exists(Path.Combine(ObjDir.Path, ProjectFileName + ".nuget.g.targets")));
         }
 
-        protected void VerifyValues(string customProps, string customTargets, string[] targets, string[] expressions, string[] expectedResults = null, string[] expectedErrors = null, string[] expectedWarnings = null)
+        protected void VerifyValues(
+            string customProps, 
+            string customTargets,
+            string[] targets,
+            string[] expressions, 
+            string[] expectedResults = null, 
+            string[] expectedErrors = null, 
+            string[] expectedWarnings = null,
+            string additionalCommandLineArgs = null)
         {
             Debug.Assert(targets != null);
             Debug.Assert(expressions != null);
@@ -217,7 +225,7 @@ $@"<Project>
             bool success = false;
             try
             {
-                var buildResult = ProcessUtilities.Run(DotNetPath, $@"msbuild ""{Project.Path}"" /t:{targetsArg} /p:Configuration={Configuration} /bl:""{buildLog}""",
+                var buildResult = ProcessUtilities.Run(DotNetPath, $@"msbuild ""{Project.Path}"" /t:{targetsArg} /p:Configuration={Configuration} /bl:""{buildLog}"" {additionalCommandLineArgs}",
                     additionalEnvironmentVars: EnvironmentVariables);
 
                 string[] getDiagnostics(string[] lines, bool error)

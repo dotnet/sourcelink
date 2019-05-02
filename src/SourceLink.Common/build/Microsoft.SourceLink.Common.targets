@@ -42,12 +42,11 @@
     Each source control provider package adds its SourceLinkUrl initialization target to SourceLinkUrlInitializerTargets.
     This target shall initialize SourceLinkUrl of all items that don't have it initialized yet and belong to the source control provider.
   -->
-  <Target Name="GenerateSourceLinkFile"
-          DependsOnTargets="InitializeSourceControlInformation;_SetSourceLinkFilePath;$(_GenerateSourceLinkFileDependsOnTargets);_InitializeSourceRootMappedPathsOpt;$(SourceLinkUrlInitializerTargets)"
-          BeforeTargets="$(_GenerateSourceLinkFileBeforeTargets)"
-          Outputs="$(SourceLink)"
-          Condition="'$(EnableSourceLink)' == 'true' and '$(DebugType)' != 'none' and '$(SourceControlInformationFeatureSupported)' == 'true'">
-
+  <Target Name="_GenerateSourceLinkFile"
+          DependsOnTargets="_SetSourceLinkFilePath;$(_GenerateSourceLinkFileDependsOnTargets);_InitializeSourceRootMappedPathsOpt;$(SourceLinkUrlInitializerTargets)"
+          Condition="'$(EnableSourceLink)' == 'true' and '$(DebugType)' != 'none'"
+          Outputs="$(SourceLink)">
+  
     <Microsoft.SourceLink.Common.GenerateSourceLinkFile SourceRoots="@(SourceRoot)" OutputFile="$(SourceLink)" />
 
     <ItemGroup>
@@ -61,5 +60,10 @@
       </Link>
     </ItemGroup>
   </Target>
+
+  <Target Name="GenerateSourceLinkFile"
+          DependsOnTargets="InitializeSourceControlInformation;_GenerateSourceLinkFile"
+          Condition="'$(SourceControlInformationFeatureSupported)' == 'true'"
+          BeforeTargets="$(_GenerateSourceLinkFileBeforeTargets)"/>
   
 </Project>
