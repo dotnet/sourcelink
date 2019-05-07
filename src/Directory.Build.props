@@ -6,6 +6,7 @@
     <LangVersion>Latest</LangVersion>
     <Copyright>$(CopyrightMicrosoft)</Copyright>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <GenerateResxSource>true</GenerateResxSource>
   </PropertyGroup>
 
   <!-- 

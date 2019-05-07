@@ -2,10 +2,6 @@
 <Project>
   <Import Project="Sdk.targets" Sdk="Microsoft.DotNet.Arcade.Sdk" />
 
-  <ItemGroup>
-    <EmbeddedResource Update="*.resx" GenerateSource="true" />
-  </ItemGroup>
-
   <!-- 
     Workaround for https://github.com/NuGet/Home/issues/6754: cyclic dependency.
   -->
