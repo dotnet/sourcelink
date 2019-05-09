@@ -27,11 +27,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 customProps: @"
 <PropertyGroup>
   <PublishRepositoryUrl>true</PublishRepositoryUrl>
-</PropertyGroup>
-<ItemGroup>
-  <SourceLinkBitbucketGitHost Include=""bitbucket.org"" EnterpriseEdition=""false""/>
-</ItemGroup>
-",
+</PropertyGroup>",
                 customTargets: "",
                 targets: new[]
                 {
@@ -88,6 +84,64 @@ namespace Microsoft.SourceLink.IntegrationTests
 </PropertyGroup>
 <ItemGroup>
   <SourceLinkBitbucketGitHost Include=""bitbucket.domain.com"" EnterpriseEdition=""true"" Version=""4.7""/>
+</ItemGroup>
+",
+                customTargets: "",
+                targets: new[]
+                {
+                    "Build", "Pack"
+                },
+                expressions: new[]
+                {
+                    "@(SourceRoot)",
+                    "@(SourceRoot->'%(SourceLinkUrl)')",
+                    "$(SourceLink)",
+                    "$(PrivateRepositoryUrl)",
+                    "$(RepositoryUrl)"
+                },
+                expectedResults: new[]
+                {
+                    ProjectSourceRoot,
+                    $"https://bitbucket.domain.com/projects/test-org/repos/{repoName}/raw/*?at={commitSha}",
+                    s_relativeSourceLinkJsonPath,
+                    $"https://bitbucket.domain.com/scm/test-org/{repoName}",
+                    $"https://bitbucket.domain.com/scm/test-org/{repoName}"
+                });
+
+            AssertEx.AreEqual(
+                $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://bitbucket.domain.com/projects/test-org/repos/{repoName}/raw/*?at={commitSha}""}}}}",
+                File.ReadAllText(Path.Combine(ProjectDir.Path, s_relativeSourceLinkJsonPath)));
+
+            TestUtilities.ValidateAssemblyInformationalVersion(
+                Path.Combine(ProjectDir.Path, s_relativeOutputFilePath),
+                "1.0.0+" + commitSha);
+
+            TestUtilities.ValidateNuSpecRepository(
+                Path.Combine(ProjectDir.Path, s_relativePackagePath),
+                type: "git",
+                commit: commitSha,
+                url: $"https://bitbucket.domain.com/scm/test-org/{repoName}");
+        }
+
+        [ConditionalFact(typeof(DotNetSdkAvailable))]
+        public void FullValidation_EnterpriseNewHttpsWithDefaultFlags()
+        {
+            // Test non-ascii characters and escapes in the URL.
+            // Escaped URI reserved characters should remain escaped, non-reserved characters unescaped in the results.
+            var repoUrl = "https://bitbucket.domain.com/scm/test-org/test-%72epo\u1234%24%2572%2F";
+            var repoName = "test-repo\u1234%24%2572%2F";
+
+            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName },
+                repoUrl);
+            var commitSha = repo.Head.Tip.Sha;
+
+            VerifyValues(
+                customProps: @"
+<PropertyGroup>
+  <PublishRepositoryUrl>true</PublishRepositoryUrl>
+</PropertyGroup>
+<ItemGroup>
+  <SourceLinkBitbucketGitHost Include=""bitbucket.domain.com""/>
 </ItemGroup>
 ",
                 customTargets: "",

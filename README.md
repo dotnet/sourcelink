@@ -92,16 +92,25 @@ For projects hosted by [GitLab](https://gitlab.com) reference [Microsoft.SourceL
 
 ### Bitbucket.org
 
-For projects hosted on [Bitbucket.org](https://bitbucket.org) in git repositories reference [Microsoft.SourceLink.Bitbucket.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Bitbucket.Git) package
-and add Bitbucket host configuration. Including flag whether it is Enterprise Edtition or Cloud. For Enterprise Edition provide its version and change value in include attribute to your Bitbucket server name: 
+For projects hosted on [Bitbucket.org](https://bitbucket.org) in git repositories reference [Microsoft.SourceLink.Bitbucket.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Bitbucket.Git) package:
 
 ```xml
 <ItemGroup>
   <PackageReference Include="Microsoft.SourceLink.Bitbucket.Git" Version="1.0.0-beta2-18618-05" PrivateAssets="All"/>
-  <SourceLinkBitbucketGitHost Include="bitbucket.org" EnterpriseEdition="true" Version="4.1" />
 </ItemGroup>
 ```
 
+For self-hosted Bitbucket projects reference [Microsoft.SourceLink.Bitbucket.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Bitbucket.Git) package and add Bitbucket host configuration.
+Additionally there are two optional attributes with default values: 
+EnterpriseEdition="true" - flag whether it is Enterprise Edtition or Cloud Edition
+Version="4.7" - for Enterprise Edition provides its version
+
+```xml
+<ItemGroup>
+  <PackageReference Include="Microsoft.SourceLink.Bitbucket.Git" Version="1.0.0-beta2-18618-05" PrivateAssets="All"/>
+  <SourceLinkBitbucketGitHost Include="bitbucket.yourdomain.com"/>
+</ItemGroup>
+```
 ### Multiple providers, repositories with submodules
 
 If your repository contains submodules hosted by other git providers reference packages of all these providers. For example, projects in a repository hosted by Azure DevOps that links a GitHub repository via a submodule should reference both [Microsoft.SourceLink.Vsts.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Vsts.Git) and [Microsoft.SourceLink.GitHub](https://www.nuget.org/packages/Microsoft.SourceLink.GitHub) packages. [Additional configuration](https://github.com/dotnet/sourcelink/blob/master/docs/README.md#configuring-projects-with-multiple-sourcelink-providers) might be needed if multiple Source Link packages are used in the project.

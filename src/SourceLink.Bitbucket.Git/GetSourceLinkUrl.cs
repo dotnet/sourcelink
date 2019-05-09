@@ -16,6 +16,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git
         protected override string HostsItemGroupName => "SourceLinkBitbucketGitHost";
         protected override string ProviderDisplayName => "Bitbucket.Git";
 
+        private const string BitbucketCloudHostingUrl = "bitbucket.org";
         private const string IsEnterpriseEditionMetadataName = "EnterpriseEdition";
         private const string VersionMetadataName = "Version";
         private const string VersionWithNewUrlFormat = "4.7";
@@ -28,7 +29,19 @@ namespace Microsoft.SourceLink.Bitbucket.Git
             var isEnterpriseEditionFlagAvailable =
                 bool.TryParse(hostItem.GetMetadata(IsEnterpriseEditionMetadataName), out var isEnterpriseEdition);
 
-            if (isEnterpriseEditionFlagAvailable && isEnterpriseEdition)
+            if (isEnterpriseEditionFlagAvailable)
+            {
+                if (isEnterpriseEdition)
+                {
+                    return BuildSourceLinkUrlForEnterpriseEdition(contentUri, relativeUrl, revisionId, hostItem);
+                }
+                else
+                {
+                    return BuildSourceLinkUrlForCloudEdition(contentUri, relativeUrl, revisionId);
+                }
+            }
+
+            if (!BitbucketCloudHostingUrl.Equals(gitUri.GetHost(), StringComparison.OrdinalIgnoreCase))
             {
                 return BuildSourceLinkUrlForEnterpriseEdition(contentUri, relativeUrl, revisionId, hostItem);
             }
@@ -36,6 +49,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git
             {
                 return BuildSourceLinkUrlForCloudEdition(contentUri, relativeUrl, revisionId);
             }
+
         }
 
         private string BuildSourceLinkUrlForEnterpriseEdition(Uri contentUri, string relativeUrl, string revisionId,
