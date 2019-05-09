@@ -23,8 +23,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git
 
         protected override bool SupportsImplicitHost => false;
 
-        protected override string BuildSourceLinkUrl(Uri contentUri, Uri gitUri, string relativeUrl, string revisionId,
-            ITaskItem hostItem)
+        protected override string BuildSourceLinkUrl(Uri contentUri, Uri gitUri, string relativeUrl, string revisionId, ITaskItem hostItem)
         {
             var isEnterpriseEditionFlagAvailable =
                 bool.TryParse(hostItem.GetMetadata(IsEnterpriseEditionMetadataName), out var isEnterpriseEdition);
