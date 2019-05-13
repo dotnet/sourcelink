@@ -99,7 +99,7 @@ jobs:
         _container: opensuse.42.3
 
   pool:
-    name: NetCorePublic-Int-Pool
+    name: NetCorePublic-Pool
     queue: buildpool.ubuntu.1604.amd64.open
   timeoutInMinutes: 20
 
