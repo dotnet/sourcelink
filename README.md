@@ -101,16 +101,18 @@ For projects hosted on [Bitbucket.org](https://bitbucket.org) in git repositorie
 ```
 
 For self-hosted Bitbucket projects reference [Microsoft.SourceLink.Bitbucket.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Bitbucket.Git) package and add Bitbucket host configuration.
-Additionally there are two optional attributes with default values: 
-EnterpriseEdition="true" - flag whether it is Enterprise Edtition or Cloud Edition
-Version="4.7" - for Enterprise Edition provides its version
+Additional configuration is available when SourceLinkBitbucketGitHost is added to csproj:
+
+- EnterpriseEdition - flag whether it is Enterprise Edition or Cloud Edition, by default it is true.
+- Version="4.7" - for Enterprise Edition provides its version. URL format for accessing files is different for Bitbucket in version < 4.7, please add Bitbucket version if it is the case
 
 ```xml
 <ItemGroup>
   <PackageReference Include="Microsoft.SourceLink.Bitbucket.Git" Version="1.0.0-beta2-18618-05" PrivateAssets="All"/>
-  <SourceLinkBitbucketGitHost Include="bitbucket.yourdomain.com"/>
+  <SourceLinkBitbucketGitHost Include="bitbucket.yourdomain.com" EnterpriseEdition="true" Version="4.7"/>
 </ItemGroup>
 ```
+
 ### Multiple providers, repositories with submodules
 
 If your repository contains submodules hosted by other git providers reference packages of all these providers. For example, projects in a repository hosted by Azure DevOps that links a GitHub repository via a submodule should reference both [Microsoft.SourceLink.Vsts.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Vsts.Git) and [Microsoft.SourceLink.GitHub](https://www.nuget.org/packages/Microsoft.SourceLink.GitHub) packages. [Additional configuration](https://github.com/dotnet/sourcelink/blob/master/docs/README.md#configuring-projects-with-multiple-sourcelink-providers) might be needed if multiple Source Link packages are used in the project.

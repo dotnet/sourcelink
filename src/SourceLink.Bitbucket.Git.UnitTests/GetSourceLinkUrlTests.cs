@@ -32,26 +32,6 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
             Assert.False(result);
         }
 
-        [Fact]
-        public void BuildSourceLinkUrl_bitbucketorgIsHost_UseCloudEditionAsDefault()
-        {
-            var engine = new MockEngine();
-            var task = new GetSourceLinkUrl
-            {
-                BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://bitbucket.org:100/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
-                Hosts = new[]
-                {
-                    new MockItem("bitbucket.org", KVP("ContentUrl", "https://domain.com/x/y"))
-                }
-            };
-
-            bool result = task.Execute();
-            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual(ExpectedUrlForCloudEdition, task.SourceLinkUrl);
-            Assert.True(result);
-        }
-
         [Theory]
         [InlineData("", "")]
         [InlineData("", "/")]
