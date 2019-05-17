@@ -92,11 +92,24 @@ For projects hosted by [GitLab](https://gitlab.com) reference [Microsoft.SourceL
 
 ### Bitbucket.org
 
-For projects hosted on [Bitbucket.org](https://bitbucket.org) in git repositories reference [Microsoft.SourceLink.Bitbucket.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Bitbucket.Git) package: 
+For projects hosted on [Bitbucket.org](https://bitbucket.org) in git repositories reference [Microsoft.SourceLink.Bitbucket.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Bitbucket.Git) package:
 
 ```xml
 <ItemGroup>
   <PackageReference Include="Microsoft.SourceLink.Bitbucket.Git" Version="1.0.0-beta2-18618-05" PrivateAssets="All"/>
+</ItemGroup>
+```
+
+For self-hosted Bitbucket projects reference [Microsoft.SourceLink.Bitbucket.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Bitbucket.Git) package and add Bitbucket host configuration.
+Additional configuration is available when SourceLinkBitbucketGitHost is added to csproj:
+
+- EnterpriseEdition - flag whether it is Enterprise Edition or Cloud Edition, by default it is true.
+- Version="4.7" - for Enterprise Edition provides its version. URL format for accessing files is different for Bitbucket in version < 4.7, please add Bitbucket version if it is the case
+
+```xml
+<ItemGroup>
+  <PackageReference Include="Microsoft.SourceLink.Bitbucket.Git" Version="1.0.0-beta2-18618-05" PrivateAssets="All"/>
+  <SourceLinkBitbucketGitHost Include="bitbucket.yourdomain.com" EnterpriseEdition="true" Version="4.7"/>
 </ItemGroup>
 ```
 
