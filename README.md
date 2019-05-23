@@ -90,9 +90,9 @@ For projects hosted by [GitLab](https://gitlab.com) reference [Microsoft.SourceL
 </ItemGroup>
 ```
 
-### Bitbucket.org
+### Bitbucket
 
-For projects hosted on [Bitbucket.org](https://bitbucket.org) in git repositories reference [Microsoft.SourceLink.Bitbucket.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Bitbucket.Git) package:
+For projects in git repositories hosted on [Bitbucket.org](https://bitbucket.org) or hosted on an on-prem Bitbucket server reference [Microsoft.SourceLink.Bitbucket.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Bitbucket.Git) package:
 
 ```xml
 <ItemGroup>
@@ -100,18 +100,16 @@ For projects hosted on [Bitbucket.org](https://bitbucket.org) in git repositorie
 </ItemGroup>
 ```
 
-For self-hosted Bitbucket projects reference [Microsoft.SourceLink.Bitbucket.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Bitbucket.Git) package and add Bitbucket host configuration.
-Additional configuration is available when SourceLinkBitbucketGitHost is added to csproj:
-
-- EnterpriseEdition - flag whether it is Enterprise Edition or Cloud Edition, by default it is true.
-- Version="4.7" - for Enterprise Edition provides its version. URL format for accessing files is different for Bitbucket in version < 4.7, please add Bitbucket version if it is the case
+If your project is hosted by Bitbucket Server or Bitbucket Data Center older than version 4.7 you must specify `SourceLinkBitbucketGitHost` item group in addition to the package reference:
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.Bitbucket.Git" Version="1.0.0-beta2-18618-05" PrivateAssets="All"/>
-  <SourceLinkBitbucketGitHost Include="bitbucket.yourdomain.com" EnterpriseEdition="true" Version="4.7"/>
+  <SourceLinkBitbucketGitHost Include="bitbucket.yourdomain.com" Version="4.5"/>
 </ItemGroup>
 ```
+
+The item group `SourceLinkBitbucketGitHost` specifies the domain of the Bitbucket host and the version of Bitbucket.
+The version is important since URL format for accessing files changes with version 4.7. By default SourceLink assumes new format (version 4.7+).
 
 ### Multiple providers, repositories with submodules
 
