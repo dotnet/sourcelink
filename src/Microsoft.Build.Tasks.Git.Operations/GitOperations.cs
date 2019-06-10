@@ -26,8 +26,13 @@ namespace Microsoft.Build.Tasks.Git
             return Repository.Discover(directory);
         }
 
+        internal static IRepository CreateRepository(string root)
+            => new Repository(root);
+
         public static string GetRepositoryUrl(IRepository repository, Action<string, object[]> logWarning = null, string remoteName = null)
         {
+            // GetVariableValue("remote", name, "url");
+
             var remotes = repository.Network.Remotes;
             var remote = string.IsNullOrEmpty(remoteName) ? (remotes["origin"] ?? remotes.FirstOrDefault()) : remotes[remoteName];
             if (remote == null)
@@ -179,15 +184,6 @@ namespace Microsoft.Build.Tasks.Git
                     }
 
                     // https://git-scm.com/docs/git-submodule
-                    // <repository> is the URL of the new submodule's origin repository. This may be either an absolute URL, or (if it begins with ./ or ../), 
-                    // the location relative to the superproject's default remote repository (Please note that to specify a repository foo.git which is located 
-                    // right next to a superproject bar.git, you'll have to use ../foo.git instead of ./foo.git - as one might expect when following the rules 
-                    // for relative URLs -- because the evaluation of relative URLs in Git is identical to that of relative directories).
-                    //
-                    // The given URL is recorded into .gitmodules for use by subsequent users cloning the superproject. 
-                    // If the URL is given relative to the superproject's repository, the presumption is the superproject and submodule repositories
-                    // will be kept together in the same relative location, and only the superproject's URL needs to be provided.git --
-                    // submodule will correctly locate the submodule using the relative URL in .gitmodules.
                     var submoduleUrl = NormalizeUrl(submodule.Url, repoRoot);
                     if (submoduleUrl == null)
                     {

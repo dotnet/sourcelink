@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 using LibGit2Sharp;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -72,6 +73,17 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 "ignore_this_c",
                 MockItem.AdjustSeparators(@"sub\ignore_in_submodule_d"),
             }, untrackedFiles.Select(item => item.ItemSpec));
+        }
+
+        [Fact]
+        public void MinimalGitData2()
+        {
+            //Environment.SetEnvironmentVariable("GIT_WORK_TREE", @"D:\temp\x");
+
+            // ignores GIT_WORK_TREE
+            // var repository = new Repository(@"D:\git-experiments\r3\main\.git\worktrees\wt1");
+            var repository = new Repository(@"D:\git-experiments\r3\main");
+            var x = repository.Head.Reference.ResolveToDirectReference()?.TargetIdentifier;
         }
     }
 }

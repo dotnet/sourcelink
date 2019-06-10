@@ -3,7 +3,7 @@
   <Import Project="Sdk.props" Sdk="Microsoft.DotNet.Arcade.Sdk" />
 
   <PropertyGroup>
-    <LangVersion>Latest</LangVersion>
+    <LangVersion>Preview</LangVersion>
     <Copyright>$(CopyrightMicrosoft)</Copyright>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <GenerateResxSource>true</GenerateResxSource>

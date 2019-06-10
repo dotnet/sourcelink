@@ -8,7 +8,7 @@ namespace Microsoft.Build.Tasks.Git
 {
     internal static class RepositoryTasks
     {
-        private static bool Execute<T>(T task, Action<Repository, T> action)
+        private static bool Execute<T>(T task, Action<IRepository, T> action)
             where T: RepositoryTask
         {
             var log = task.Log;
@@ -19,10 +19,10 @@ namespace Microsoft.Build.Tasks.Git
                 return true;
             }
 
-            Repository repo;
+            IRepository repo;
             try
             {
-                repo = new Repository(task.Root);
+                repo = GitOperations.CreateRepository(task.Root);
             }
             catch (RepositoryNotFoundException e)
             {
