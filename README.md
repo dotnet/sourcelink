@@ -109,7 +109,7 @@ If your project is hosted by Bitbucket Server or Bitbucket Data Center older tha
 ```
 
 The item group `SourceLinkBitbucketGitHost` specifies the domain of the Bitbucket host and the version of Bitbucket.
-The version is important since URL format for accessing files changes with version 4.7. By default SourceLink assumes new format (version 4.7+).
+The version is important since URL format for accessing files changes with version 4.7. By default Source Link assumes new format (version 4.7+).
 
 ### Multiple providers, repositories with submodules
 
