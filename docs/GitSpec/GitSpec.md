@@ -33,16 +33,18 @@ The resulting paths (e.g. _git directory_, _common directory_, etc.) also have s
 The search finds the first path on the above list that is either
  1) a path to a valid _git directory_, or
  2) a path to a `.git` file. The content of the file must start with `gitdir:` prefix followed by a path
-    that is a valid _git directory_, otherwise the search fails. The leading and trailing _whitespace_ characters 
-    are trimmed from the path. On Windows any `\` characters in the path 
+    that is a valid _git directory_, otherwise the search fails. On Windows any `\` characters in the path 
     are replaced with `/`. A relative path is considered relative to the directory containing the `.git` file.
+    
+    _libgit2_: The trailing _whitespace_ characters are trimmed from the path. _git_ doesn't trim any whitespace.
 
 If the search does not find any matching path the search fails.
 
 Repository is a [_linked working tree_](https://git-scm.com/docs/git-worktree#_description) if its _git directory_ 
 is different from its _common directory_ and `gitdir` file is present in the _git directory_. This file contains
-the _working directory_ path. The trailing _whitespace_ characters are trimmed from the path. 
-If the path is relative (e.i. starts with `./` or `../`) it is considered relative to the _git directory_.
+the _working directory_ path. If the path is relative (e.i. starts with `./` or `../`) it is considered relative to the _git directory_.
+
+_libgit2_: The trailing _whitespace_ characters are trimmed from the path. _git_ doesn't trim any whitespace.
 
 For other repositories, the _working directory_ is specified in `core.workspace` configuration entry, if present.
 Otherwise it's the parent directory of the path found by the search (i.e. directory containing _git directory_ or `.git` file).
