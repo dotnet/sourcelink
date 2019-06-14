@@ -61,7 +61,10 @@ Find directory on `%PATH%` that contains `git.exe`. If it exists, add its parent
 
 Find directory on `%PATH%` that contains `git.cmd`. If it exists, add its parent directory to the list (the files are expected to be under `bin` or `cmd` subdirectory).
 
-Add the value of `HKEY_CURRENT_USER:SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Git_is1\InstallLocation` registry key.
+On Windows add the value of `InstallLocation` under registry key
+`HKEY_LOCAL_MACHINE:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Git_is1`.
+
+> git actually uses a subdirectory `mingw64` of the directory.
 
 ### System directories
 
@@ -93,8 +96,7 @@ Add the value of `HKEY_CURRENT_USER:SOFTWARE\Microsoft\Windows\CurrentVersion\Un
 
 If real and effective user ids of the current process are the same:
 - if `$XDG_CONFIG_HOME` is set then `$XDG_CONFIG_HOME/git` otherwise, if `$HOME` is set then `$HOME/.config/git`, otherwise error.
-Otherwise
-- directory containing password file `.config/git`.
+- Otherwise directory containing password file `.config/git`.
 
 ### Program Data directory
 
