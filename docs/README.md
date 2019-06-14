@@ -65,10 +65,10 @@ Set `ContinuousIntegrationBuild` to `true` to indicate that the build executes o
 
 By setting `DeterministicSourcePaths` to true the project opts into mapping all source paths included in the project outputs to deterministic values, i.e. values that do not depend on the exact location of the project sources on disk, or the operating system on which the project is being built. 
 
-Only set `DeterministicSourcePaths` to true on a build/CI server, never for for local builds.
-In order for the debugger to find source files when debugging a locally built binary the PDB must contain original, unmapped local paths.
+Only set `DeterministicSourcePaths` to true on a build/CI server, never for local builds.
+In order for the debugger to find source files when debugging a locally built binary, the PDB must contain original, unmapped local paths.
 
-Starting with .NET Core SDK 2.1.300 a fully deterministic build is [turned on](https://github.com/dotnet/roslyn/blob/dev15.7.x/src/Compilers/Core/MSBuildTask/Microsoft.Managed.Core.targets#L45-L55) when both `Deterministic` and `ContinuousIntegrationBuild` properties are set to `true`. 
+Starting with .NET Core SDK 2.1.300, a fully deterministic build is [turned on](https://github.com/dotnet/roslyn/blob/dev15.7.x/src/Compilers/Core/MSBuildTask/Microsoft.Managed.Core.targets#L45-L55) when both `Deterministic` and `ContinuousIntegrationBuild` properties are set to `true`. 
 
 ## Example
 
@@ -105,7 +105,7 @@ Each package defines an msbuild item group named `SourceLink{provider}Host`, whe
 
 ### Custom Content URLs
 
-*Content URL* is the URL where the raw source files can be downloaded from. Items of `SourceLink*Host` item group allow to specify the content URL if necessary. The content URL doesn't need to be specified in most cases as it is infered from the domain.
+*Content URL* is the URL where the raw source files can be downloaded from. Items of `SourceLink*Host` item group allow to specify the content URL if necessary. The content URL doesn't need to be specified in most cases as it is inferred from the domain.
 
 The default content URLs for each package is listed below:
 
