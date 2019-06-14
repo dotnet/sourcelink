@@ -53,24 +53,24 @@ Repository is considered _bare_ if the configuration entry `core.bare` is _true_
 
 ## Directories
 
-### Windows git install directories
+### Windows git install directory
 
-A list containing the following directories (in this order):
+libgit2 finds the  first of the following directories:
 
-Find directory on `%PATH%` that contains `git.exe`. If it exists, add its parent directory to the list (the files are expected to be under `bin` or `cmd` subdirectory).
+Find directory on `%PATH%` that contains `git.exe`. If it exists, the parent directory is the install directory (the files are expected to be under `bin` or `cmd` subdirectory).
 
-Find directory on `%PATH%` that contains `git.cmd`. If it exists, add its parent directory to the list (the files are expected to be under `bin` or `cmd` subdirectory).
+Find directory on `%PATH%` that contains `git.cmd`. If it exists, the parent directory is the install directory (the files are expected to be under `bin` or `cmd` subdirectory).
 
-On Windows add the value of `InstallLocation` under registry key
-`HKEY_LOCAL_MACHINE:SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Git_is1`.
+If the registry value `InstallLocation` under key `HKEY_LOCAL_MACHINE:SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Git_is1` exists it is the install directory.
 
-> git actually uses a subdirectory `mingw64` of the directory.
 
 ### System directories
 
 #### Windows
 
-`{git-install-dirs}\etc`
+`{git-install-directory}\etc`
+
+> git actually uses a subdirectory `{git-install-directory}\mingw64\etc` of the install directory.
 
 #### Unix 
 
