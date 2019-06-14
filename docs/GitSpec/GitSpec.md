@@ -89,8 +89,9 @@ If the registry value `InstallLocation` under key `HKEY_LOCAL_MACHINE:SOFTWARE\M
 ### XDG directories
 
 #### Windows
-  `%XDG_CONFIG_HOME%\git`, `%APPDATA%\git`, `%LOCALAPPDATA%\git`, `%HOME%\.config\git`, `%HOMEDRIVE%%HOMEPATH%\.config\git`, 
-  `%USERPROFILE%\.config\git`
+  First that exists: `%XDG_CONFIG_HOME%\git`, `%APPDATA%\git`, `%LOCALAPPDATA%\git`, `%HOME%\.config\git`, `%HOMEDRIVE%%HOMEPATH%\.config\git`, `%USERPROFILE%\.config\git`
+
+> git doesn't seem to use `%APPDATA%\git` and `%LOCALAPPDATA%\git`
 
 #### Unix 
 
