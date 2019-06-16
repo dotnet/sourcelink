@@ -44,7 +44,7 @@ Repository is a [_linked working tree_](https://git-scm.com/docs/git-worktree#_d
 is different from its _common directory_ and `gitdir` file is present in the _git directory_. 
 The file contains an absolute path to the _working directory_ path. The trailing _whitespace_ characters are trimmed from the path.
 
-For other repositories, the _working directory_ is specified in `core.workspace` configuration entry, if present.
+For other repositories, the _working directory_ is specified in `core.worktree` configuration entry, if present.
 Otherwise it's the parent directory of the path found by the search (i.e. directory containing _git directory_ or `.git` file).
 
 Repository is considered _bare_ if the configuration entry `core.bare` is _true_ and the repository is not a _linked working tree_.
