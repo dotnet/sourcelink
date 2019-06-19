@@ -9,6 +9,6 @@ namespace Microsoft.Build.Tasks.Git
         [Output]
         public string RevisionId { get; internal set; }
 
-        public override bool Execute() => TaskImplementation.GetSourceRevisionId(this);
+        public override bool Execute() => RepositoryTasks.GetSourceRevisionId(this);
     }
 }

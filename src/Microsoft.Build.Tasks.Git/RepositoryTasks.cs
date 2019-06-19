@@ -2,13 +2,12 @@
 
 using System;
 using System.IO;
-using LibGit2Sharp;
 
 namespace Microsoft.Build.Tasks.Git
 {
     internal static class RepositoryTasks
     {
-        private static bool Execute<T>(T task, Action<IRepository, T> action)
+        private static bool Execute<T>(T task, Action<GitRepository, T> action)
             where T: RepositoryTask
         {
             var log = task.Log;
@@ -19,7 +18,7 @@ namespace Microsoft.Build.Tasks.Git
                 return true;
             }
 
-            IRepository repo;
+            GitRepository repo;
             try
             {
                 repo = GitOperations.CreateRepository(task.Root);
@@ -60,7 +59,7 @@ namespace Microsoft.Build.Tasks.Git
             catch (Exception e)
             {
 #if NET461
-                foreach (var message in TaskImplementation.GetLog())
+                foreach (var message in AssemblyResolver.GetLog())
                 {
                     task.Log.LogMessage(message);
                 }

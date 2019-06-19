@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using LibGit2Sharp;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Tasks.SourceControl;
 using Microsoft.Build.Utilities;
@@ -17,13 +15,12 @@ namespace Microsoft.Build.Tasks.Git
     {
         private const string SourceControlName = "git";
 
-        [MethodImpl(MethodImplOptions.NoInlining)]
         public static string LocateRepository(string directory)
         {
             // Repository.Discover returns the path to .git directory for repositories with a working directory.
             // For bare repositories it returns the repository directory.
             // Returns null if the path is invalid or no repository is found.
-            return Repository.Discover(directory);
+            return GitRepository.LocateRepository((directory);
         }
 
         internal static IRepository CreateRepository(string root)

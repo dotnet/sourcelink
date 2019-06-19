@@ -11,6 +11,6 @@ namespace Microsoft.Build.Tasks.Git
         [Output]
         public string Url { get; internal set; }
 
-        public override bool Execute() => TaskImplementation.GetRepositoryUrl(this);
+        public override bool Execute() => RepositoryTasks.GetRepositoryUrl(this);
     }
 }

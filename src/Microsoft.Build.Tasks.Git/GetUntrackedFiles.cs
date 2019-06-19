@@ -18,6 +18,6 @@ namespace Microsoft.Build.Tasks.Git
         [Output]
         public ITaskItem[] UntrackedFiles { get; set; }
 
-        public override bool Execute() => TaskImplementation.GetUntrackedFiles(this);
+        public override bool Execute() => RepositoryTasks.GetUntrackedFiles(this);
     }
 }

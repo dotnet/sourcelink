@@ -20,6 +20,6 @@ namespace Microsoft.Build.Tasks.Git
         [Output]
         public ITaskItem[] Roots { get; internal set; }
 
-        public override bool Execute() => TaskImplementation.GetSourceRoots(this);
+        public override bool Execute() => RepositoryTasks.GetSourceRoots(this);
     }
 }

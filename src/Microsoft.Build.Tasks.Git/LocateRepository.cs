@@ -15,6 +15,6 @@ namespace Microsoft.Build.Tasks.Git
         [Output]
         public string Id { get; set; }
 
-        public override bool Execute() => TaskImplementation.LocateRepository(this);
+        public override bool Execute() => RepositoryTasks.LocateRepository(this);
     }
 }
