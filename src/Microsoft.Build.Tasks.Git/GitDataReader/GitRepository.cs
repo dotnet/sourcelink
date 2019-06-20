@@ -11,21 +11,6 @@ namespace Microsoft.Build.Tasks.Git
 {
     internal sealed class GitRepository
     {
-        private readonly struct SubmoduleInfo
-        {
-            public readonly ImmutableArray<GitSubmodule> Submodules;
-            public readonly ImmutableArray<string> Diagnostics;
-
-            public SubmoduleInfo(ImmutableArray<GitSubmodule> submodules, ImmutableArray<string> diagnostics)
-            {
-                Debug.Assert(!submodules.IsDefault);
-                Debug.Assert(!diagnostics.IsDefault);
-
-                Submodules = submodules;
-                Diagnostics = diagnostics;
-            }
-        }
-
         private const int SupportedGitRepoFormatVersion = 0;
 
         private const string CommonDirFileName = "commondir";
@@ -40,7 +25,7 @@ namespace Microsoft.Build.Tasks.Git
 
         public GitConfig Config { get; }
 
-        public GitIgnore Ignore => _gitIgnore.Value;
+        public GitIgnore Ignore => _lazyIgnore.Value;
 
         /// <summary>
         /// Full path.
@@ -59,8 +44,9 @@ namespace Microsoft.Build.Tasks.Git
 
         public GitEnvironment Environment { get; }
 
-        private readonly Lazy<SubmoduleInfo> _submodules;
-        private readonly Lazy<GitIgnore> _gitIgnore;
+        private readonly Lazy<(ImmutableArray<GitSubmodule> Submodules, ImmutableArray<string> Diagnostics)> _lazySubmodules;
+        private readonly Lazy<GitIgnore> _lazyIgnore;
+        private readonly Lazy<string> _lazyHeadCommitSha;
 
         internal GitRepository(GitEnvironment environment, GitConfig config, string gitDirectory, string commonDirectory, string workingDirectory)
         {
@@ -75,8 +61,27 @@ namespace Microsoft.Build.Tasks.Git
             WorkingDirectory = workingDirectory;
             Environment = environment;
 
-            _submodules = new Lazy<SubmoduleInfo>(LoadSubmoduleConfiguration);
-            _gitIgnore = new Lazy<GitIgnore>(LoadIgnore);
+            _lazySubmodules = new Lazy<(ImmutableArray<GitSubmodule>, ImmutableArray<string>)>(ReadSubmodules);
+            _lazyIgnore = new Lazy<GitIgnore>(LoadIgnore);
+            _lazyHeadCommitSha = new Lazy<string>(() => ReadHeadCommitSha(GitDirectory, CommonDirectory));
+        }
+
+        // test only
+        internal GitRepository(
+            GitEnvironment environment,
+            GitConfig config,
+            string gitDirectory,
+            string commonDirectory,
+            string workingDirectory,
+            ImmutableArray<GitSubmodule> submodules,
+            ImmutableArray<string> submoduleDiagnostics,
+            GitIgnore ignore,
+            string headCommitSha)
+            : this(environment, config, gitDirectory, commonDirectory, workingDirectory)
+        {
+            _lazySubmodules = new Lazy<(ImmutableArray<GitSubmodule>, ImmutableArray<string>)>(() => (submodules, submoduleDiagnostics));
+            _lazyIgnore = new Lazy<GitIgnore>(() => ignore);
+            _lazyHeadCommitSha = new Lazy<string>(() => headCommitSha);
         }
 
         /// <summary>
@@ -185,41 +190,28 @@ namespace Microsoft.Build.Tasks.Git
         /// <exception cref="InvalidDataException"/>
         /// <returns>Null if the HEAD tip reference can't be resolved.</returns>
         public string GetHeadCommitSha()
-            => GetHeadCommitSha(GitDirectory, CommonDirectory);
+            => _lazyHeadCommitSha.Value;
 
         /// <summary>
         /// Returns the commit SHA of the current HEAD tip of the specified submodule.
         /// </summary>
-        /// <param name="submoduleWorkingDirectory">The path to the submodule working directory relative to the working directory of this repository.</param>
         /// <exception cref="IOException"/>
         /// <exception cref="InvalidDataException"/>
         /// <returns>Null if the HEAD tip reference can't be resolved.</returns>
-        public string GetSubmoduleHeadCommitSha(string submoduleWorkingDirectory)
+        internal string GetSubmoduleHeadCommitSha(string submoduleWorkingDirectoryFullPath)
         {
-            Debug.Assert(submoduleWorkingDirectory != null);
-
-            string dotGitPath;
-            try
-            {
-                dotGitPath = Path.Combine(GetWorkingDirectory(), submoduleWorkingDirectory, GitDirName);
-            }
-            catch
-            {
-                throw new InvalidDataException(string.Format(Resources.InvalidModulePath, submoduleWorkingDirectory));
-            }
-
-            var gitDirectory = ReadDotGitFile(dotGitPath);
+            var gitDirectory = ReadDotGitFile(Path.Combine(submoduleWorkingDirectoryFullPath, GitDirName));
             if (!IsGitDirectory(gitDirectory, out var commonDirectory))
             {
                 return null;
             }
 
-            return GetHeadCommitSha(gitDirectory, commonDirectory);
+            return ReadHeadCommitSha(gitDirectory, commonDirectory);
         }
 
         /// <exception cref="IOException"/>
         /// <exception cref="InvalidDataException"/>
-        private static string GetHeadCommitSha(string gitDirectory, string commonDirectory)
+        private static string ReadHeadCommitSha(string gitDirectory, string commonDirectory)
         {
             // See
             // https://git-scm.com/docs/gitrepository-layout#Documentation/gitrepository-layout.txt-HEAD
@@ -305,22 +297,22 @@ namespace Microsoft.Build.Tasks.Git
         /// <exception cref="IOException"/>
         /// <exception cref="InvalidDataException"/>
         public ImmutableArray<GitSubmodule> GetSubmodules()
-            => _submodules.Value.Submodules;
+            => _lazySubmodules.Value.Submodules;
 
         /// <exception cref="IOException"/>
         /// <exception cref="InvalidDataException"/>
         public ImmutableArray<string> GetSubmoduleDiagnostics()
-            => _submodules.Value.Diagnostics;
+            => _lazySubmodules.Value.Diagnostics;
 
         /// <exception cref="IOException"/>
         /// <exception cref="InvalidDataException"/>
-        private SubmoduleInfo LoadSubmoduleConfiguration()
+        private (ImmutableArray<GitSubmodule> Submodules, ImmutableArray<string> Diagnostics) ReadSubmodules()
         {
             var workingDirectory = GetWorkingDirectory();
-            var submodulesConfigFile = Path.Combine(workingDirectory, GitModulesFileName);
-            if (!File.Exists(submodulesConfigFile))
+            var submoduleConfig = ReadSubmoduleConfig();
+            if (submoduleConfig == null)
             {
-                return new SubmoduleInfo(ImmutableArray<GitSubmodule>.Empty, ImmutableArray<string>.Empty);
+                return (ImmutableArray<GitSubmodule>.Empty, ImmutableArray<string>.Empty);
             }
 
             ImmutableArray<string>.Builder lazyDiagnostics = null;
@@ -329,9 +321,66 @@ namespace Microsoft.Build.Tasks.Git
                 => (lazyDiagnostics ??= ImmutableArray.CreateBuilder<string>()).Add(diagnostic);
 
             var builder = ImmutableArray.CreateBuilder<GitSubmodule>();
-            var reader = new GitConfig.Reader(GitDirectory, CommonDirectory, Environment);
-            var submoduleConfig = reader.LoadFrom(submodulesConfigFile);
 
+            foreach (var (name, path, url) in EnumerateSubmoduleConfig(submoduleConfig))
+            {
+                if (string.IsNullOrWhiteSpace(path))
+                {
+                    reportDiagnostic(string.Format(Resources.InvalidSubmodulePath, name, path));
+                    continue;
+                }
+
+                if (string.IsNullOrWhiteSpace(url))
+                {
+                    reportDiagnostic(string.Format(Resources.InvalidSubmoduleUrl, name, url));
+                    continue;
+                }
+
+                string fullPath;
+                try
+                {
+                    fullPath = Path.GetFullPath(Path.Combine(workingDirectory, path));
+                }
+                catch
+                {
+                    reportDiagnostic(string.Format(Resources.InvalidSubmodulePath, name, path));
+                    continue;
+                }
+
+                string headCommitSha;
+                try
+                {
+                    headCommitSha = GetSubmoduleHeadCommitSha(fullPath);
+                }
+                catch (Exception e) when (e is IOException || e is InvalidDataException)
+                {
+                    reportDiagnostic(e.Message);
+                    continue;
+                }
+
+                builder.Add(new GitSubmodule(name, path, fullPath, url, headCommitSha));
+            }
+
+            return (builder.ToImmutable(), (lazyDiagnostics != null) ? lazyDiagnostics.ToImmutable() : ImmutableArray<string>.Empty);
+        }
+
+        // internal for testing
+        internal GitConfig ReadSubmoduleConfig()
+        {
+            var workingDirectory = GetWorkingDirectory();
+            var submodulesConfigFile = Path.Combine(workingDirectory, GitModulesFileName);
+            if (!File.Exists(submodulesConfigFile))
+            {
+                return null;
+            }
+
+            var reader = new GitConfig.Reader(GitDirectory, CommonDirectory, Environment);
+            return reader.LoadFrom(submodulesConfigFile);
+        }
+
+        // internal for testing
+        internal static IEnumerable<(string Name, string Path, string Url)> EnumerateSubmoduleConfig(GitConfig submoduleConfig)
+        {
             foreach (var group in submoduleConfig.Variables.
                 Where(kvp => kvp.Key.SectionNameEquals("submodule")).
                 GroupBy(kvp => kvp.Key.SubsectionName, GitVariableName.SubsectionNameComparer).
@@ -353,34 +402,8 @@ namespace Microsoft.Build.Tasks.Git
                     }
                 }
 
-                if (string.IsNullOrWhiteSpace(path))
-                {
-                    reportDiagnostic(string.Format(Resources.InvalidSubmodulePath, name, path));
-                }
-                else if (string.IsNullOrWhiteSpace(url))
-                {
-                    reportDiagnostic(string.Format(Resources.InvalidSubmoduleUrl, name, url));
-                }
-                else
-                {
-                    string fullPath;
-                    try
-                    {
-                        fullPath = Path.GetFullPath(Path.Combine(workingDirectory, path));
-                    }
-                    catch
-                    {
-                        reportDiagnostic(string.Format(Resources.InvalidSubmodulePath, name, path));
-                        continue;
-                    }
-
-                    builder.Add(new GitSubmodule(name, path, fullPath, url));
-                }
+                yield return (name, path, url);
             }
-
-            return new SubmoduleInfo(
-                builder.ToImmutable(), 
-                (lazyDiagnostics != null) ? lazyDiagnostics.ToImmutable() : ImmutableArray<string>.Empty);
         }
 
         private GitIgnore LoadIgnore()

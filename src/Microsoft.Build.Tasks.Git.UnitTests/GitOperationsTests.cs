@@ -10,8 +10,6 @@ using Xunit;
 
 namespace Microsoft.Build.Tasks.Git.UnitTests
 {
-    using static KeyValuePairUtils;
-
     public class GitOperationsTests
     {
         private static readonly bool IsUnix = Path.DirectorySeparatorChar == '/';
@@ -20,13 +18,40 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
         private static readonly GitEnvironment s_environment = new GitEnvironment("/home");
 
-        private static GitRepository CreateRepository(
+        private string _workingDir = s_root;
+
+        private GitRepository CreateRepository(
             string workingDir = null,
-            GitConfig config = null)
+            GitConfig config = null,
+            string commitSha = null,
+            ImmutableArray<GitSubmodule> submodules = default,
+            GitIgnore ignore = null)
         {
-            workingDir ??= s_root;
+            workingDir ??= _workingDir;
             var gitDir = Path.Combine(workingDir, ".git");
-            return new GitRepository(s_environment, config ?? GitConfig.Empty, gitDir, gitDir, workingDir);
+            return new GitRepository(
+                s_environment,
+                config ?? GitConfig.Empty,
+                gitDir, 
+                gitDir,
+                _workingDir,
+                submodules.IsDefault ? ImmutableArray<GitSubmodule>.Empty : submodules,
+                submoduleDiagnostics: ImmutableArray<string>.Empty,
+                ignore ?? new GitIgnore(root: null, workingDir, ignoreCase: false),
+                commitSha);
+        }
+
+        private GitSubmodule CreateSubmodule(string name, string relativePath, string url, string headCommitSha)
+            => new GitSubmodule(name, relativePath, Path.GetFullPath(Path.Combine(_workingDir, relativePath)), url, headCommitSha);
+
+        internal static GitIgnore CreateIgnore(string workingDirectory, string[] filePathsRelativeToWorkingDirectory)
+        {
+            var patterns = filePathsRelativeToWorkingDirectory.Select(p => new GitIgnore.Pattern(p, GitIgnore.PatternFlags.FullPath));
+
+            return new GitIgnore(
+                new GitIgnore.PatternGroup(parent: null, PathUtils.ToPosixDirectoryPath(workingDirectory), patterns.ToImmutableArray()),
+                workingDirectory,
+                ignoreCase: false);
         }
 
         private static GitVariableName CreateVariableName(string str)
@@ -40,9 +65,9 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             };
         }
 
-        private static GitConfig CreateConfig(params KeyValuePair<string, string>[] variables)
+        private static GitConfig CreateConfig(params (string Name, string Value)[] variables)
             => new GitConfig(ImmutableDictionary.CreateRange(
-                variables.Select(v => KVP(CreateVariableName(v.Key), ImmutableArray.Create(v.Value)))));
+                variables.Select(v => new KeyValuePair<GitVariableName, ImmutableArray<string>>(CreateVariableName(v.Name), ImmutableArray.Create(v.Value)))));
 
         [Fact]
         public void GetRepositoryUrl_NoRemotes()
@@ -57,8 +82,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         public void GetRepositoryUrl_Origin()
         {
             var repo = CreateRepository(config: CreateConfig(
-                KVP("remote.abc.url", "http://github.com/abc"),
-                KVP("remote.origin.url", "http://github.com/origin")));
+                ("remote.abc.url", "http://github.com/abc"),
+                ("remote.origin.url", "http://github.com/origin")));
 
             var warnings = new List<(string, object[])>();
 
@@ -71,8 +96,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         public void GetRepositoryUrl_NoOrigin()
         {
             var repo = CreateRepository(config: CreateConfig(
-                KVP("remote.abc.url", "http://github.com/abc"),
-                KVP("remote.def.url", "http://github.com/def")));
+                ("remote.abc.url", "http://github.com/abc"),
+                ("remote.def.url", "http://github.com/def")));
 
             var warnings = new List<(string, object[])>();
 
@@ -85,8 +110,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         public void GetRepositoryUrl_Specified()
         {
             var repo = CreateRepository(config: CreateConfig(
-                KVP("remote.abc.url", "http://github.com/abc"),
-                KVP("remote.origin.url", "http://github.com/origin")));
+                ("remote.abc.url", "http://github.com/abc"),
+                ("remote.origin.url", "http://github.com/origin")));
 
             var warnings = new List<(string, object[])>();
 
@@ -101,8 +126,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         public void GetRepositoryUrl_SpecifiedNotFound_OriginFallback()
         {
             var repo = CreateRepository(config: CreateConfig(
-                KVP("remote.abc.url", "http://github.com/abc"),
-                KVP("remote.origin.url", "http://github.com/origin")));
+                ("remote.abc.url", "http://github.com/abc"),
+                ("remote.origin.url", "http://github.com/origin")));
 
             var warnings = new List<(string, object[])>();
 
@@ -120,8 +145,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         public void GetRepositoryUrl_SpecifiedNotFound_FirstFallback()
         {
             var repo = CreateRepository(config: CreateConfig(
-                KVP("remote.abc.url", "http://github.com/abc"),
-                KVP("remote.def.url", "http://github.com/def")));
+                ("remote.abc.url", "http://github.com/abc"),
+                ("remote.def.url", "http://github.com/def")));
 
             var warnings = new List<(string, object[])>();
 
@@ -138,7 +163,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [Fact]
         public void GetRepositoryUrl_BadUrl()
         {
-            var repo = CreateRepository(config: CreateConfig(KVP("remote.origin.url", "http://?")));
+            var repo = CreateRepository(config: CreateConfig(("remote.origin.url", "http://?")));
 
             var warnings = new List<(string, object[])>();
             Assert.Null(GitOperations.GetRepositoryUrl(repo, (message, args) => warnings.Add((message, args))));
@@ -229,88 +254,82 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         {
             Assert.Equal(expectedUrl, GitOperations.NormalizeUrl(url, s_root));
         }
-#if TODO
+
         [Fact]
         public void GetSourceRoots_RepoWithoutCommits()
         {
-            var repo = new TestRepository(workingDir: s_root, commitSha: null);
+            var repo = CreateRepository();
 
             var warnings = new List<(string, object[])>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)), fileExists: null);
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
 
             Assert.Empty(items);
-            AssertEx.Equal(new[] { Resources.RepositoryHasNoCommit }, warnings.Select(InspectDiagnostic));
+            AssertEx.Equal(new[] { Resources.RepositoryHasNoCommit }, warnings.Select(TestUtilities.InspectDiagnostic));
         }
 
         [Fact]
         public void GetSourceRoots_RepoWithoutCommitsWithSubmodules()
         {
-            var repo = new TestRepository(
-                workingDir: s_root,
+            var repo = CreateRepository(
                 commitSha: null,
-                submodules: new[] 
-                {
-                    new TestSubmodule("1", "sub/1", "http://1.com", "1111111111111111111111111111111111111111"),
-                    new TestSubmodule("1", "sub/2", "http://2.com", "2222222222222222222222222222222222222222")
-                });
+                submodules: ImmutableArray.Create(
+                    CreateSubmodule("1", "sub/1", "http://1.com", "1111111111111111111111111111111111111111"),
+                    CreateSubmodule("1", "sub/2", "http://2.com", "2222222222222222222222222222222222222222")));
 
             var warnings = new List<(string, object[])>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)), fileExists: null);
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
             {
-                $@"'{s_root}{s}sub{s}1{s}' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/1/' ContainingRoot='{s_root}{s}' ScmRepositoryUrl='http://1.com/'",
-                $@"'{s_root}{s}sub{s}2{s}' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='{s_root}{s}' ScmRepositoryUrl='http://2.com/'",
-            }, items.Select(InspectSourceRoot));
+                $@"'{_workingDir}{s}sub{s}1{s}' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/1/' ContainingRoot='{_workingDir}{s}' ScmRepositoryUrl='http://1.com/'",
+                $@"'{_workingDir}{s}sub{s}2{s}' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='{_workingDir}{s}' ScmRepositoryUrl='http://2.com/'",
+            }, items.Select(TestUtilities.InspectSourceRoot));
 
-            AssertEx.Equal(new[] { Resources.RepositoryHasNoCommit }, warnings.Select(InspectDiagnostic));
+            AssertEx.Equal(new[] { Resources.RepositoryHasNoCommit }, warnings.Select(TestUtilities.InspectDiagnostic));
         }
 
         [Fact]
         public void GetSourceRoots_RepoWithCommitsWithSubmodules()
         {
-            var repo = new TestRepository(
-                workingDir: s_root,
+            var repo = CreateRepository(
                 commitSha: "0000000000000000000000000000000000000000",
-                submodules: new[]
-                {
-                    new TestSubmodule("1", "sub/1", "http://1.com", workDirCommitSha: null),
-                    new TestSubmodule("1", "sub/2", "http://2.com", "2222222222222222222222222222222222222222")
-                });
+                submodules: ImmutableArray.Create(
+                    CreateSubmodule("1", "sub/1", "http://1.com", headCommitSha: null),
+                    CreateSubmodule("1", "sub/2", "http://2.com", "2222222222222222222222222222222222222222")));
 
             var warnings = new List<(string, object[])>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)), fileExists: null);
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
             {
-                $@"'{s_root}{s}' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
-                $@"'{s_root}{s}sub{s}2{s}' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='{s_root}{s}' ScmRepositoryUrl='http://2.com/'",
-            }, items.Select(InspectSourceRoot));
+                $@"'{_workingDir}{s}' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
+                $@"'{_workingDir}{s}sub{s}2{s}' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='{_workingDir}{s}' ScmRepositoryUrl='http://2.com/'",
+            }, items.Select(TestUtilities.InspectSourceRoot));
 
-            AssertEx.Equal(new[] { string.Format(Resources.SubmoduleWithoutCommit_SourceLink, "1") }, warnings.Select(InspectDiagnostic));
+            AssertEx.Equal(new[] { string.Format(Resources.SourceCodeWontBeAvailableViaSourceLink, string.Format(Resources.SubmoduleWithoutCommit, "1")) }, 
+                warnings.Select(TestUtilities.InspectDiagnostic));
         }
 
         [ConditionalFact(typeof(WindowsOnly))]
         public void GetSourceRoots_RelativeSubmodulePaths_Windows()
         {
-            var repo = new TestRepository(
-                workingDir: @"C:\src",
+            _workingDir = @"C:\src";
+
+            var repo = CreateRepository(
                 commitSha: "0000000000000000000000000000000000000000",
-                submodules: new[]
-                {
-                    new TestSubmodule("1", "sub/1", "./a/b", "1111111111111111111111111111111111111111"),
-                    new TestSubmodule("2", "sub/2", "../a", "2222222222222222222222222222222222222222"),
-                });
+                submodules: ImmutableArray.Create(
+                    CreateSubmodule("1", "sub/1", "./a/b", "1111111111111111111111111111111111111111"),
+                    CreateSubmodule("2", "sub/2", "../a", "2222222222222222222222222222222222222222")));
 
             var warnings = new List<(string, object[])>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)), fileExists: null);
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
             {
                 $@"'C:\src\' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
                 $@"'C:\src\sub\1\' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/1/' ContainingRoot='C:\src\' ScmRepositoryUrl='file:///C:/src/a/b'",
                 $@"'C:\src\sub\2\' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='C:\src\' ScmRepositoryUrl='file:///C:/a'",
-            }, items.Select(InspectSourceRoot));
+            }, items.Select(TestUtilities.InspectSourceRoot));
 
             Assert.Empty(warnings);
         }
@@ -318,24 +337,23 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [ConditionalFact(typeof(WindowsOnly))]
         public void GetSourceRoots_RelativeSubmodulePaths_Windows_UnicodeAndEscapes()
         {
-            var repo = new TestRepository(
-                workingDir: @"C:\%25@噸",
+            _workingDir = @"C:\%25@噸";
+
+            var repo = CreateRepository(
                 commitSha: "0000000000000000000000000000000000000000",
-                submodules: new[]
-                {
-                    new TestSubmodule("%25ሴ", "sub/%25ሴ", "./a/b", "1111111111111111111111111111111111111111"),
-                    new TestSubmodule("%25ለ", "sub/%25ለ", "../a", "2222222222222222222222222222222222222222"),
-                });
+                submodules: ImmutableArray.Create(
+                    CreateSubmodule("%25ሴ", "sub/%25ሴ", "./a/b", "1111111111111111111111111111111111111111"),
+                    CreateSubmodule("%25ለ", "sub/%25ለ", "../a", "2222222222222222222222222222222222222222")));
 
             var warnings = new List<(string, object[])>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)), fileExists: null);
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
             {
                 $@"'C:\%25@噸\' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
                 $@"'C:\%25@噸\sub\%25ሴ\' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/%25ሴ/' ContainingRoot='C:\%25@噸\' ScmRepositoryUrl='file:///C:/%25@噸/a/b'",
                 $@"'C:\%25@噸\sub\%25ለ\' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/%25ለ/' ContainingRoot='C:\%25@噸\' ScmRepositoryUrl='file:///C:/a'",
-            }, items.Select(InspectSourceRoot));
+            }, items.Select(TestUtilities.InspectSourceRoot));
 
             Assert.Empty(warnings);
         }
@@ -343,24 +361,23 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [ConditionalFact(typeof(UnixOnly))]
         public void GetSourceRoots_RelativeSubmodulePaths_Unix()
         {
-            var repo = new TestRepository(
-                workingDir: @"/src",
+            _workingDir = @"/src";
+
+            var repo = CreateRepository(
                 commitSha: "0000000000000000000000000000000000000000",
-                submodules: new[]
-                {
-                    new TestSubmodule("1", "sub/1", "./a/b", "1111111111111111111111111111111111111111"),
-                    new TestSubmodule("2", "sub/2", "../a", "2222222222222222222222222222222222222222"),
-                });
+                submodules: ImmutableArray.Create(
+                    CreateSubmodule("1", "sub/1", "./a/b", "1111111111111111111111111111111111111111"),
+                    CreateSubmodule("2", "sub/2", "../a", "2222222222222222222222222222222222222222")));
 
             var warnings = new List<(string, object[])>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)), fileExists: null);
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
             {
                 $@"'/src/' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
                 $@"'/src/sub/1/' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/1/' ContainingRoot='/src/' ScmRepositoryUrl='file:///src/a/b'",
                 $@"'/src/sub/2/' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='/src/' ScmRepositoryUrl='file:///a'",
-            }, items.Select(InspectSourceRoot));
+            }, items.Select(TestUtilities.InspectSourceRoot));
 
             Assert.Empty(warnings);
         }
@@ -368,107 +385,49 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [ConditionalFact(typeof(UnixOnly), Skip = "https://github.com/dotnet/corefx/issues/34227")]
         public void GetSourceRoots_RelativeSubmodulePaths_Unix_UnicodeAndEscapes()
         {
-            var repo = new TestRepository(
-                workingDir: @"/%25@噸",
+            _workingDir = @"/%25@噸";
+
+            var repo = CreateRepository(
                 commitSha: "0000000000000000000000000000000000000000",
-                submodules: new[]
-                {
-                    new TestSubmodule("%25ሴ", "sub/%25ሴ", "./a/b", "1111111111111111111111111111111111111111"),
-                    new TestSubmodule("%25ለ", "sub/%25ለ", "../a", "2222222222222222222222222222222222222222"),
-                });
+                submodules: ImmutableArray.Create(
+                    CreateSubmodule("%25ሴ", "sub/%25ሴ", "./a/b", "1111111111111111111111111111111111111111"),
+                    CreateSubmodule("%25ለ", "sub/%25ለ", "../a", "2222222222222222222222222222222222222222")));
 
             var warnings = new List<(string, object[])>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)), fileExists: null);
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
             {
                 $@"'/%25@噸/' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
                 $@"'/%25@噸/sub/%25ሴ/' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/%25ሴ/' ContainingRoot='/%25@噸/' ScmRepositoryUrl='file:///%25@噸/a/b'",
                 $@"'/%25@噸/sub/%25ለ/' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/%25ለ/' ContainingRoot='/%25@噸/' ScmRepositoryUrl='file:///a'",
-            }, items.Select(InspectSourceRoot));
+            }, items.Select(TestUtilities.InspectSourceRoot));
 
             Assert.Empty(warnings);
         }
 
         [Fact]
-        public void GetSourceRoots_InvalidSubmoduleUrlOrPath()
+        public void GetSourceRoots_InvalidSubmoduleUrl()
         {
-            var repo = new TestRepository(
-                workingDir: s_root,
+            var repo = CreateRepository(
                 commitSha: "0000000000000000000000000000000000000000",
-                submodules: new[]
-                {
-                    new TestSubmodule("1", "sub/1", "http:///", "1111111111111111111111111111111111111111"),
-                    new TestSubmodule("2", "sub/\0*<>|:", "http://2.com", "2222222222222222222222222222222222222222"),
-                    new TestSubmodule("3", "sub/3", "http://3.com", "3333333333333333333333333333333333333333"),
-                });
+                submodules: ImmutableArray.Create(
+                    CreateSubmodule("1", "sub/1", "http:///", "1111111111111111111111111111111111111111"),
+                    CreateSubmodule("3", "sub/3", "http://3.com", "3333333333333333333333333333333333333333")));
 
             var warnings = new List<(string, object[])>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)), fileExists: null);
+            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
             {
                 $@"'{s_root}{s}' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
                 $@"'{s_root}{s}sub{s}3{s}' SourceControl='git' RevisionId='3333333333333333333333333333333333333333' NestedRoot='sub/3/' ContainingRoot='{s_root}{s}' ScmRepositoryUrl='http://3.com/'",
-            }, items.Select(InspectSourceRoot));
+            }, items.Select(TestUtilities.InspectSourceRoot));
 
             AssertEx.Equal(new[] 
             {
-                string.Format(Resources.InvalidSubmoduleUrl_SourceLink, "1", "http:///"),
-                string.Format(Resources.InvalidSubmodulePath_SourceLink, "2", "sub/\0*<>|:")
-            }, warnings.Select(InspectDiagnostic));
-        }
-
-        [Fact]
-        public void GetSourceRoots_GvfsWithoutModules()
-        {
-            var repo = new TestRepository(
-                workingDir: s_root,
-                commitSha: "0000000000000000000000000000000000000000",
-                config: new Dictionary<string, object> { { "core.gvfs", true } },
-                submodulesSupported: false);
-
-            var warnings = new List<(string, object[])>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)), fileExists: _ => false);
-
-            AssertEx.Equal(new[]
-            {
-                $@"'{s_root}{s}' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
-            }, items.Select(InspectSourceRoot));
-        }
-
-        [Fact]
-        public void GetSourceRoots_GvfsWithModules()
-        {
-            var repo = new TestRepository(
-                workingDir: s_root,
-                commitSha: "0000000000000000000000000000000000000000",
-                config: new Dictionary<string, object> { { "core.gvfs", true } },
-                submodulesSupported: false);
-
-            Assert.Throws<LibGit2SharpException>(() => GitOperations.GetSourceRoots(repo, null, fileExists: _ => true));
-        }
-
-        [Fact]
-        public void GetSourceRoots_GvfsBadOptionType()
-        {
-            var repo = new TestRepository(
-                workingDir: s_root,
-                commitSha: "0000000000000000000000000000000000000000",
-                config: new Dictionary<string, object> { { "core.gvfs", 1 } },
-                submodules: new[]
-                {
-                    new TestSubmodule("1", "sub/1", "http://1.com/", "1111111111111111111111111111111111111111"),
-                });
-
-            var warnings = new List<(string, object[])>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)), fileExists: null);
-
-            AssertEx.Equal(new[]
-            {
-                $@"'{s_root}{s}' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
-                $@"'{s_root}{s}sub{s}1{s}' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/1/' ContainingRoot='{s_root}{s}' ScmRepositoryUrl='http://1.com/'",
-            }, items.Select(InspectSourceRoot));
+                string.Format(Resources.SourceCodeWontBeAvailableViaSourceLink, string.Format(Resources.InvalidSubmoduleUrl, "1", "http:///")),
+            }, warnings.Select(TestUtilities.InspectDiagnostic));
         }
 
         [ConditionalTheory(typeof(WindowsOnly))]
@@ -554,18 +513,15 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [Fact]
         public void BuildDirectoryTree()
         {
-            var repo = new TestRepository(
-                workingDir: s_root,
+            var repo = CreateRepository(
                 commitSha: null,
-                submodules: new[]
-                {
-                    new TestSubmodule(null, "c/x", null, null),
-                    new TestSubmodule(null, "e", null, null),
-                    new TestSubmodule(null, "a", null, null),
-                    new TestSubmodule(null, "a/a/a/a/", null, null),
-                    new TestSubmodule(null, "c", null, null),
-                    new TestSubmodule(null, "a/z", null, null),
-                });
+                submodules: ImmutableArray.Create(
+                    CreateSubmodule("1", "c/x", "http://github.com/1", null),
+                    CreateSubmodule("2", "e", "http://github.com/2", null),
+                    CreateSubmodule("3", "a", "http://github.com/3", null),
+                    CreateSubmodule("4", "a/a/a/a/", "http://github.com/4", null),
+                    CreateSubmodule("5", "c", "http://github.com/5", null),
+                    CreateSubmodule("6", "a/z", "http://github.com/6", null)));
 
             var root = GitOperations.BuildDirectoryTree(repo);
 
@@ -582,25 +538,20 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [Fact]
         public void GetUntrackedFiles_ProjectInMainRepoIncludesFilesInSubmodules()
         {
-            string gitRoot = s_root.Replace('\\', '/');
-
-            var repo = new TestRepository(
-                workingDir: s_root,
+            var repo = CreateRepository(
                 commitSha: "0000000000000000000000000000000000000000",
-                submodules: new[]
-                {
-                    new TestSubmodule("1", "sub/1", "http://1.com", "1111111111111111111111111111111111111111"),
-                    new TestSubmodule("2", "sub/2", "http://2.com", "2222222222222222222222222222222222222222")
-                },
-                ignoredPaths: new[] { gitRoot + @"/c.cs", gitRoot + @"/p/d.cs", gitRoot + @"/sub/1/x.cs" });
+                submodules: ImmutableArray.Create(
+                    CreateSubmodule("1", "sub/1", "http://1.com", "1111111111111111111111111111111111111111"),
+                    CreateSubmodule("2", "sub/2", "http://2.com", "2222222222222222222222222222222222222222")),
+                ignore: CreateIgnore(_workingDir, new[] { "c.cs", "p/d.cs", "sub/1/x.cs" }));
 
-            var subRoot1 = Path.Combine(s_root, "sub", "1");
-            var subRoot2 = Path.Combine(s_root, "sub", "2");
+            var subRoot1 = Path.Combine(_workingDir, "sub", "1");
+            var subRoot2 = Path.Combine(_workingDir, "sub", "2");
 
-            var subRepos = new Dictionary<string, TestRepository>()
+            var subRepos = new Dictionary<string, GitRepository>()
             {
-                { subRoot1, new TestRepository(subRoot1, commitSha: null, ignoredPaths: new[] { gitRoot + @"/sub/1/obj/a.cs" }) },
-                { subRoot2, new TestRepository(subRoot2, commitSha: null, ignoredPaths: new[] { gitRoot + @"/sub/2/obj/b.cs" }) },
+                { subRoot1, CreateRepository(workingDir: subRoot1, commitSha: null, ignore: CreateIgnore(subRoot1, new[] { "obj/a.cs" })) },
+                { subRoot2, CreateRepository(workingDir: subRoot2, commitSha: null, ignore: CreateIgnore(subRoot2, new[] { "obj/b.cs" })) },
             };
 
             var actual = GitOperations.GetUntrackedFiles(repo,
@@ -613,7 +564,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     new MockItem(@"..\..\w.cs"),                   // outside of repo
                     new MockItem(IsUnix ? "/d/w.cs" : @"D:\w.cs"), // outside of repo
                 },
-                projectDirectory: Path.Combine(s_root, "p"),
+                projectDirectory: Path.Combine(_workingDir, "p"),
                 root => subRepos[root]);
 
             AssertEx.Equal(new[] 
@@ -628,25 +579,20 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [Fact]
         public void GetUntrackedFiles_ProjectInSubmodule()
         {
-            string gitRoot = s_root.Replace('\\', '/');
-
-            var repo = new TestRepository(
-                workingDir: s_root,
+            var repo = CreateRepository(
                 commitSha: "0000000000000000000000000000000000000000",
-                submodules: new[]
-                {
-                    new TestSubmodule("1", "sub/1", "http://1.com", "1111111111111111111111111111111111111111"),
-                    new TestSubmodule("2", "sub/2", "http://2.com", "2222222222222222222222222222222222222222")
-                },
-                ignoredPaths: new[] { gitRoot + "/c.cs", gitRoot + "/sub/1/x.cs" });
+                submodules: ImmutableArray.Create(
+                    CreateSubmodule("1", "sub/1", "http://1.com", "1111111111111111111111111111111111111111"),
+                    CreateSubmodule("2", "sub/2", "http://2.com", "2222222222222222222222222222222222222222")),
+                ignore: CreateIgnore(_workingDir, new[] { "c.cs", "sub/1/x.cs" }));
 
             var subRoot1 = Path.Combine(s_root, "sub", "1");
             var subRoot2 = Path.Combine(s_root, "sub", "2");
 
-            var subRepos = new Dictionary<string, TestRepository>()
+            var subRepos = new Dictionary<string, GitRepository>()
             {
-                { subRoot1, new TestRepository(subRoot1, commitSha: null, ignoredPaths: new[] { gitRoot + "/sub/1/obj/a.cs" }) },
-                { subRoot2, new TestRepository(subRoot2, commitSha: null, ignoredPaths: new[] { gitRoot + "/sub/2/obj/b.cs" }) },
+                { subRoot1, CreateRepository(subRoot1, commitSha: null, ignore: CreateIgnore(subRoot1, new[] { "obj/a.cs" })) },
+                { subRoot2, CreateRepository(subRoot2, commitSha: null, ignore: CreateIgnore(subRoot2, new[] { "obj/b.cs" })) },
             };
 
             var actual = GitOperations.GetUntrackedFiles(repo,
@@ -669,6 +615,5 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 MockItem.AdjustSeparators(@"..\..\c.cs")
             }, actual.Select(item => item.ItemSpec));
         }
-#endif
     }
 }

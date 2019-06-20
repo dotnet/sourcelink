@@ -1,5 +1,7 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using System.Diagnostics;
+
 namespace Microsoft.Build.Tasks.Git
 {
     internal readonly struct GitSubmodule
@@ -22,12 +24,23 @@ namespace Microsoft.Build.Tasks.Git
         /// </summary>
         public string Url { get; }
 
-        public GitSubmodule(string name, string workingDirectoryRelativePath, string workingDirectoryFullPath, string url)
+        /// <summary>
+        /// Head tip commit SHA. Null, if there is no commit.
+        /// </summary>
+        public string HeadCommitSha { get; }
+
+        internal GitSubmodule(string name, string workingDirectoryRelativePath, string workingDirectoryFullPath, string url, string headCommitSha)
         {
+            Debug.Assert(name != null);
+            Debug.Assert(workingDirectoryRelativePath != null);
+            Debug.Assert(workingDirectoryFullPath != null);
+            Debug.Assert(url != null);
+
             Name = name;
             WorkingDirectoryRelativePath = workingDirectoryRelativePath;
             WorkingDirectoryFullPath = workingDirectoryFullPath;
             Url = url;
+            HeadCommitSha = headCommitSha;
         }
     }
 }

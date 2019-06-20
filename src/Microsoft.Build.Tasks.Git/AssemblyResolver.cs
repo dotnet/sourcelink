@@ -15,7 +15,7 @@ namespace Microsoft.Build.Tasks.Git
     internal static class AssemblyResolver
     {
         private static readonly string s_taskDirectory = Path.GetDirectoryName(typeof(AssemblyResolver).Assembly.Location);
-        private static readonly List<string> s_loaderLog;
+        private static readonly List<string> s_loaderLog = new List<string>();
 
         public static void Initialize()
         {

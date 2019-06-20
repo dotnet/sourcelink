@@ -190,16 +190,106 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 [submodule ""S5""]         # ignore if url unspecified
 	path = s4
 ");
-
             var repository = new GitRepository(new GitEnvironment("/home"), GitConfig.Empty, gitDir.Path, gitDir.Path, workingDir.Path);
 
-            var submodules = repository.GetSubmodules();
+            var submodules = GitRepository.EnumerateSubmoduleConfig(repository.ReadSubmoduleConfig());
             AssertEx.Equal(new[]
             {
                 "S1: 'subs/s1' 'http://github.com/test1'",
                 "S2: 's2' 'http://github.com/test3'",
                 "S3: 's3' '../repo2'",
+            }, submodules.Where(s => s.Url != null && s.Path != null).Select(s => $"{s.Name}: '{s.Path}' '{s.Url}'"));
+        }
+
+        [Fact]
+        public void Submodules_Errors()
+        {
+            using var temp = new TempRoot();
+
+            var workingDir = temp.CreateDirectory();
+            var gitDir = workingDir.CreateDirectory(".git");
+            gitDir.CreateDirectory("modules").CreateDirectory("sub10").CreateDirectory("commondir");
+
+            workingDir.CreateDirectory("sub6").CreateDirectory(".git");
+            workingDir.CreateDirectory("sub7").CreateFile(".git").WriteAllText("xyz");
+            workingDir.CreateDirectory("sub8").CreateFile(".git").WriteAllText("gitdir: <>");
+            workingDir.CreateDirectory("sub9").CreateFile(".git").WriteAllText("gitdir: ../.git/modules/sub9");
+            workingDir.CreateDirectory("sub10").CreateFile(".git").WriteAllText("gitdir: ../.git/modules/sub10");
+
+            workingDir.CreateFile(".gitmodules").WriteAllText(@"
+[submodule ""S1""]             # whitespace-only path
+  path = ""  ""
+  url = http://github.com
+
+[submodule ""S2""]             # empty path
+  path =                  
+  url = http://github.com
+
+[submodule ""S4""]             # invalid path
+  path = sub<>
+  url = http://github.com
+
+[submodule ""S3""]             # invalid url
+  path = sub3
+  url = http://?
+
+[submodule ""S4""]             # whitespace-only url
+  path = sub4
+  url = ""   ""             
+
+[submodule ""S5""]             # path does not exist
+  path = sub5
+  url = http://github.com
+
+[submodule ""S6""]             # sub6/.git is a directory, but should be a file
+  path = sub6
+  url = http://github.com
+
+[submodule ""S7""]             # sub7/.git has invalid format
+  path = sub7
+  url = http://github.com
+
+[submodule ""S8""]             # sub8/.git contains invalid path
+  path = sub8
+  url = http://github.com
+
+[submodule ""S9""]             # sub9/.git points to directory that does not exist
+  path = sub9
+  url = http://github.com
+
+[submodule ""S10""]            # sub10/.git points to directory that has commondir directory (it should be a file)
+  path = sub10
+  url = http://github.com
+");
+            var repository = new GitRepository(new GitEnvironment("/home"), GitConfig.Empty, gitDir.Path, gitDir.Path, workingDir.Path);
+
+            var submodules = repository.GetSubmodules();
+            AssertEx.Equal(new[]
+            {
+                "S10: 'sub10' 'http://github.com'",
+                "S9: 'sub9' 'http://github.com'"
             }, submodules.Select(s => $"{s.Name}: '{s.WorkingDirectoryRelativePath}' '{s.Url}'"));
+
+            var diagnostics = repository.GetSubmoduleDiagnostics();
+            AssertEx.Equal(new[]
+            {
+              // The path of submodule 'S1' is missing or invalid: '  '
+              string.Format(Resources.InvalidSubmodulePath, "S1", "  "),
+              // The path of submodule 'S2' is missing or invalid: ''
+              string.Format(Resources.InvalidSubmodulePath, "S2", ""),
+              // Could not find a part of the path 'sub3\.git'.
+              TestUtilities.GetExceptionMessage(() => File.ReadAllText(Path.Combine(workingDir.Path, "sub3", ".git"))),
+              // The URL of submodule 'S4' is missing or invalid: '   '
+              string.Format(Resources.InvalidSubmoduleUrl, "S4", "   "),
+              // Could not find a part of the path 'sub5\.git'.
+              TestUtilities.GetExceptionMessage(() => File.ReadAllText(Path.Combine(workingDir.Path, "sub5", ".git"))),
+              // Access to the path 'sub6\.git' is denied
+              TestUtilities.GetExceptionMessage(() => File.ReadAllText(Path.Combine(workingDir.Path, "sub6", ".git"))),
+              // The format of the file 'sub7\.git' is invalid.
+              string.Format(Resources.FormatOfFileIsInvalid, Path.Combine(workingDir.Path, "sub7", ".git")),
+              // Path specified in file 'sub8\.git' is invalid.
+              string.Format(Resources.PathSpecifiedInFileIsInvalid, Path.Combine(workingDir.Path, "sub8", ".git"))
+            }, diagnostics);
         }
 
         [Fact]

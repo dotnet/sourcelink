@@ -15,6 +15,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\Common\Names.cs" Link="Common\Names.cs" />
+    <Compile Include="..\Common\Tuple.cs" Link="Common\Tuple.cs" />
     <Compile Include="..\Common\PathUtilities.cs" Link="Common\PathUtilities.cs" />
     <Compile Include="..\Common\SequenceComparer.cs" Link="Common\SequenceComparer.cs" />
   </ItemGroup>

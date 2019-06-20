@@ -171,7 +171,7 @@ namespace Microsoft.Build.Tasks.Git
 
             foreach (var submodule in repository.GetSubmodules())
             {
-                var commitSha = repository.GetSubmoduleHeadCommitSha(submodule.WorkingDirectoryRelativePath);
+                var commitSha = submodule.HeadCommitSha;
                 if (commitSha == null)
                 {
                     logWarning(Resources.SourceCodeWontBeAvailableViaSourceLink, 
@@ -221,7 +221,6 @@ namespace Microsoft.Build.Tasks.Git
             Func<string, GitRepository> repositoryFactory)
         {
             var directoryTree = BuildDirectoryTree(repository);
-            var ignoreMatcher = repository.Ignore.CreateMatcher();
 
             return files.Where(file =>
             {
