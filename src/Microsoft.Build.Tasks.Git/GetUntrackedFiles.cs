@@ -16,8 +16,12 @@ namespace Microsoft.Build.Tasks.Git
         public string ProjectDirectory { get; set; }
 
         [Output]
-        public ITaskItem[] UntrackedFiles { get; set; }
+        public ITaskItem[] UntrackedFiles { get; private set; }
 
-        public override bool Execute() => RepositoryTasks.GetUntrackedFiles(this);
+        private protected override void Execute(GitRepository repository)
+        {
+            UntrackedFiles = GitOperations.GetUntrackedFiles(
+                repository, Files, ProjectDirectory, dir => GitRepository.OpenRepository(dir, repository.Environment));
+        }
     }
 }

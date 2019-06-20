@@ -89,7 +89,7 @@ namespace Microsoft.Build.Tasks.Git
                 return Path.GetDirectoryName(gitCmd);
             }
 
-#if REGISTRY
+#if REGISTRY // TODO
             string registryInstallLocation;
             try
             {

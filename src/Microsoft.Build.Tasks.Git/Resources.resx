@@ -117,14 +117,59 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="SubmoduleWithoutCommit_SourceLink" xml:space="preserve">
-    <value>Submodule '{0}' doesn't have any commit, the source code won't be available via source link.</value>
+  <data name="PathMustBeAbsolute" xml:space="preserve">
+    <value>Path must be absolute</value>
   </data>
-  <data name="InvalidSubmoduleUrl_SourceLink" xml:space="preserve">
-    <value>The URL of submodule '{0}' is invalid: '{1}', the source code won't be available via source link.</value>
+  <data name="PathMustBeFilePath" xml:space="preserve">
+    <value>Path must be a file path</value>
   </data>
-  <data name="InvalidSubmodulePath_SourceLink" xml:space="preserve">
-    <value>The path of submodule '{0}' is invalid: '{1}', the source code won't be available via source link.</value>
+  <data name="ErrorReadingGitRepositoryInformation" xml:space="preserve">
+    <value>Error reading git repository information: {0}</value>
+  </data>
+  <data name="UnsupportedRepositoryVersion" xml:space="preserve">
+    <value>Unsupported repository version {0}. Only versions up to {1} are supported.</value>
+  </data>
+  <data name="PathSpecifiedInFileIsNotAbsolute" xml:space="preserve">
+    <value>Path specified in file '{0}' is not absolute.</value>
+  </data>
+  <data name="PathSpecifiedInFileIsInvalid" xml:space="preserve">
+    <value>Path specified in file '{0}' is invalid.</value>
+  </data>
+  <data name="ValueOfIsNotValidPath" xml:space="preserve">
+    <value>The value of {0} is not a valid path: '{1}'.</value>
+  </data>
+  <data name="InvalidModulePath" xml:space="preserve">
+    <value>Invalid module path: '{0}'.</value>
+  </data>
+  <data name="RecursionDetectedWhileResolvingReference" xml:space="preserve">
+    <value>Recursion detected while resolving reference: '{0}'.</value>
+  </data>
+  <data name="RepositoryDoesNotHaveWorkingDirectory" xml:space="preserve">
+    <value>Repository does not have a working directory.</value>
+  </data>
+  <data name="InvalidFormatOfFileAtPath" xml:space="preserve">
+    <value>Repository does not have a working directory.</value>
+  </data>
+  <data name="FormatOfFileIsInvalid" xml:space="preserve">
+    <value>The format of the file '{0}' is invalid.</value>
+  </data>
+  <data name="InvalidReference" xml:space="preserve">
+    <value>Invalid reference: '{0}'.</value>
+  </data>
+  <data name="ConfigurationFileRecursionExceededMaximumAllowedDepth" xml:space="preserve">
+    <value>Configuration file recursion exceeded maximum allowed depth of {0}.</value>
+  </data>
+  <data name="SubmoduleWithoutCommit" xml:space="preserve">
+    <value>Submodule '{0}' doesn't have any commit</value>
+  </data>
+  <data name="InvalidSubmoduleUrl" xml:space="preserve">
+    <value>The URL of submodule '{0}' is missing or invalid: '{1}'</value>
+  </data>
+  <data name="InvalidSubmodulePath" xml:space="preserve">
+    <value>The path of submodule '{0}' is missing or invalid: '{1}'</value>
+  </data>
+  <data name="SourceCodeWontBeAvailableViaSourceLink" xml:space="preserve">
+    <value>{0} -- the source code won't be available via Source Link.</value>
   </data>
   <data name="RepositoryHasNoCommit" xml:space="preserve">
     <value>Repository has no commit.</value>
@@ -136,9 +181,6 @@
     <value>The URL of repository remote '{0}' is invalid: '{1}'.</value>
   </data>
   <data name="UnableToLocateRepository" xml:space="preserve">
-    <value>Unable to locate repository containing directory '{0}'.</value>
-  </data>
-  <data name="BareRepositoriesNotSupported" xml:space="preserve">
-    <value>Bare repositories are not supported: '{0}'.</value>
+    <value>Unable to locate repository with working directory that contains directory '{0}'.</value>
   </data>
 </root>

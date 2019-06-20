@@ -1,28 +1,26 @@
-﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
 #if NET461
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using Microsoft.Build.Framework;
 
 namespace Microsoft.Build.Tasks.Git
 {
     internal static class AssemblyResolver
     {
-        private static readonly string s_taskDirectory;
+        private static readonly string s_taskDirectory = Path.GetDirectoryName(typeof(AssemblyResolver).Assembly.Location);
+        private static readonly List<string> s_loaderLog;
 
-        static AssemblyResolver()
+        public static void Initialize()
         {
-            s_taskDirectory = Path.GetDirectoryName(typeof(AssemblyResolver).Assembly.Location);
-            s_nullVersion = new Version(0, 0, 0, 0);
-            s_loaderLog = new List<string>();
-
             AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve;
         }
-
-        private static readonly Version s_nullVersion;
-        private static readonly List<string> s_loaderLog;
 
         private static void Log(ResolveEventArgs args, string outcome)
         {
@@ -42,33 +40,35 @@ namespace Microsoft.Build.Tasks.Git
 
         private static Assembly AssemblyResolve(object sender, ResolveEventArgs args)
         {
-            // Limit resolution scope to minimum to affect the rest of msbuild as little as possible.
-            // Only resolve System.* assemblies from the task directory that are referenced with 0.0.0.0 version (from netstandard.dll).
+            var name = new AssemblyName(args.Name);
 
-            var referenceName = new AssemblyName(args.Name);
-            if (!referenceName.Name.StartsWith("System.", StringComparison.OrdinalIgnoreCase))
+            if (!name.Name.Equals("System.Collections.Immutable", StringComparison.OrdinalIgnoreCase))
             {
-                Log(args, "not System");
                 return null;
             }
 
-            if (referenceName.Version != s_nullVersion)
+            var fullPath = Path.Combine(s_taskDirectory, "System.Collections.Immutable.dll");
+
+            Assembly sci;
+            try
             {
-                Log(args, "not null version");
+                sci = Assembly.LoadFile(fullPath);
+            }
+            catch (Exception e)
+            {
+                Log(args, $"exception while loading '{fullPath}': {e.Message}");
                 return null;
             }
 
-            var referencePath = Path.Combine(s_taskDirectory, referenceName.Name + ".dll");
-            if (!File.Exists(referencePath))
+            if (name.Version <= sci.GetName().Version)
             {
-                Log(args, $"file '{referencePath}' not found");
-                return null;
+                Log(args, $"loaded '{fullPath}' to {AppDomain.CurrentDomain.FriendlyName}");
+                return sci;
             }
 
-            Log(args, $"loading from '{referencePath}'");
-            return Assembly.Load(AssemblyName.GetAssemblyName(referencePath));
+            return null;
         }
     }
 }
-#endif
 
+#endif

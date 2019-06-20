@@ -11,6 +11,21 @@ namespace Microsoft.Build.Tasks.Git
 {
     internal sealed class GitRepository
     {
+        private readonly struct SubmoduleInfo
+        {
+            public readonly ImmutableArray<GitSubmodule> Submodules;
+            public readonly ImmutableArray<string> Diagnostics;
+
+            public SubmoduleInfo(ImmutableArray<GitSubmodule> submodules, ImmutableArray<string> diagnostics)
+            {
+                Debug.Assert(!submodules.IsDefault);
+                Debug.Assert(!diagnostics.IsDefault);
+
+                Submodules = submodules;
+                Diagnostics = diagnostics;
+            }
+        }
+
         private const int SupportedGitRepoFormatVersion = 0;
 
         private const string CommonDirFileName = "commondir";
@@ -44,7 +59,7 @@ namespace Microsoft.Build.Tasks.Git
 
         public GitEnvironment Environment { get; }
 
-        private readonly Lazy<ImmutableArray<GitSubmodule>> _submodules;
+        private readonly Lazy<SubmoduleInfo> _submodules;
         private readonly Lazy<GitIgnore> _gitIgnore;
 
         internal GitRepository(GitEnvironment environment, GitConfig config, string gitDirectory, string commonDirectory, string workingDirectory)
@@ -60,7 +75,7 @@ namespace Microsoft.Build.Tasks.Git
             WorkingDirectory = workingDirectory;
             Environment = environment;
 
-            _submodules = new Lazy<ImmutableArray<GitSubmodule>>(LoadSubmoduleConfiguration);
+            _submodules = new Lazy<SubmoduleInfo>(LoadSubmoduleConfiguration);
             _gitIgnore = new Lazy<GitIgnore>(LoadIgnore);
         }
 
@@ -96,7 +111,7 @@ namespace Microsoft.Build.Tasks.Git
             string versionStr = config.GetVariableValue("core", "repositoryformatversion");
             if (GitConfig.TryParseInt64Value(versionStr, out var version) && version > SupportedGitRepoFormatVersion)
             {
-                throw new NotSupportedException($"Unsupported repository version {versionStr}. Only versions up to {SupportedGitRepoFormatVersion} are supported.");
+                throw new NotSupportedException(string.Format(Resources.UnsupportedRepositoryVersion, versionStr, SupportedGitRepoFormatVersion));
             }
 
             return new GitRepository(environment, config, gitDirectory, commonDirectory, workingDirectory);
@@ -132,7 +147,7 @@ namespace Microsoft.Build.Tasks.Git
                 // Path in gitdir file must be absolute.
                 if (!PathUtils.IsAbsolute(workingDirectory))
                 {
-                    throw new InvalidDataException($"Path specified in '{gitdirFilePath}' is not absolute.");
+                    throw new InvalidDataException(string.Format(Resources.PathSpecifiedInFileIsNotAbsolute, gitdirFilePath));
                 }
 
                 try
@@ -141,7 +156,7 @@ namespace Microsoft.Build.Tasks.Git
                 }
                 catch
                 {
-                    throw new InvalidDataException($"Path specified in '{gitdirFilePath}' is invalid.");
+                    throw new InvalidDataException(string.Format(Resources.PathSpecifiedInFileIsInvalid, gitdirFilePath));
                 }
             }
 
@@ -156,7 +171,7 @@ namespace Microsoft.Build.Tasks.Git
                 }
                 catch
                 {
-                    throw new InvalidDataException($"The value of core.worktree is not a valid path: '{value}'");
+                    throw new InvalidDataException(string.Format(Resources.ValueOfIsNotValidPath, "core.worktree", value));
                 }
             }
 
@@ -190,7 +205,7 @@ namespace Microsoft.Build.Tasks.Git
             }
             catch
             {
-                throw new InvalidDataException($"Invalid module path: '{submoduleWorkingDirectory}'");
+                throw new InvalidDataException(string.Format(Resources.InvalidModulePath, submoduleWorkingDirectory));
             }
 
             var gitDirectory = ReadDotGitFile(dotGitPath);
@@ -242,7 +257,7 @@ namespace Microsoft.Build.Tasks.Git
                 if (lazyVisitedReferences != null && !lazyVisitedReferences.Add(symRef))
                 {
                     // infinite recursion
-                    throw new InvalidDataException($"Recursion detected while resolving reference: '{reference}'");
+                    throw new InvalidDataException(string.Format(Resources.RecursionDetectedWhileResolvingReference, reference));
                 }
 
                 string content;
@@ -252,7 +267,7 @@ namespace Microsoft.Build.Tasks.Git
                 }
                 catch (ArgumentException)
                 {
-                    throw new InvalidDataException($"Invalid reference: '{reference}'");
+                    throw new InvalidDataException(string.Format(Resources.InvalidReference, reference));
                 }
                 catch (Exception e) when (e is FileNotFoundException || e is DirectoryNotFoundException)
                 {
@@ -278,11 +293,11 @@ namespace Microsoft.Build.Tasks.Git
                 return reference;
             }
 
-            throw new InvalidDataException($"Invalid reference: '{reference}'");
+            throw new InvalidDataException(string.Format(Resources.InvalidReference, reference));
         }
 
         private string GetWorkingDirectory()
-            => WorkingDirectory ?? throw new InvalidOperationException("Repository does not have a working directory");
+            => WorkingDirectory ?? throw new InvalidOperationException(Resources.RepositoryDoesNotHaveWorkingDirectory);
 
         private static bool IsObjectId(string reference)
             => reference.Length == 40 && reference.All(CharUtils.IsHexadecimalDigit);
@@ -290,17 +305,28 @@ namespace Microsoft.Build.Tasks.Git
         /// <exception cref="IOException"/>
         /// <exception cref="InvalidDataException"/>
         public ImmutableArray<GitSubmodule> GetSubmodules()
-            => _submodules.Value;
+            => _submodules.Value.Submodules;
 
         /// <exception cref="IOException"/>
         /// <exception cref="InvalidDataException"/>
-        private ImmutableArray<GitSubmodule> LoadSubmoduleConfiguration()
+        public ImmutableArray<string> GetSubmoduleDiagnostics()
+            => _submodules.Value.Diagnostics;
+
+        /// <exception cref="IOException"/>
+        /// <exception cref="InvalidDataException"/>
+        private SubmoduleInfo LoadSubmoduleConfiguration()
         {
-            var submodulesConfigFile = Path.Combine(GetWorkingDirectory(), GitModulesFileName);
+            var workingDirectory = GetWorkingDirectory();
+            var submodulesConfigFile = Path.Combine(workingDirectory, GitModulesFileName);
             if (!File.Exists(submodulesConfigFile))
             {
-                return ImmutableArray<GitSubmodule>.Empty;
+                return new SubmoduleInfo(ImmutableArray<GitSubmodule>.Empty, ImmutableArray<string>.Empty);
             }
+
+            ImmutableArray<string>.Builder lazyDiagnostics = null;
+
+            void reportDiagnostic(string diagnostic)
+                => (lazyDiagnostics ??= ImmutableArray.CreateBuilder<string>()).Add(diagnostic);
 
             var builder = ImmutableArray.CreateBuilder<GitSubmodule>();
             var reader = new GitConfig.Reader(GitDirectory, CommonDirectory, Environment);
@@ -311,6 +337,7 @@ namespace Microsoft.Build.Tasks.Git
                 GroupBy(kvp => kvp.Key.SubsectionName, GitConfig.VariableKey.SubsectionNameComparer).
                 OrderBy(group => group.Key))
             {
+                string name = group.Key;
                 string url = null;
                 string path = null;
 
@@ -326,13 +353,34 @@ namespace Microsoft.Build.Tasks.Git
                     }
                 }
 
-                if (path != null && url != null)
+                if (string.IsNullOrWhiteSpace(path))
                 {
-                    builder.Add(new GitSubmodule(group.Key, path, url));
+                    reportDiagnostic(string.Format(Resources.InvalidSubmodulePath, name, path));
+                }
+                else if (string.IsNullOrWhiteSpace(url))
+                {
+                    reportDiagnostic(string.Format(Resources.InvalidSubmoduleUrl, name, url));
+                }
+                else
+                {
+                    string fullPath;
+                    try
+                    {
+                        fullPath = Path.GetFullPath(Path.Combine(workingDirectory, path));
+                    }
+                    catch
+                    {
+                        reportDiagnostic(string.Format(Resources.InvalidSubmodulePath, name, path));
+                        continue;
+                    }
+
+                    builder.Add(new GitSubmodule(name, path, fullPath, url));
                 }
             }
 
-            return builder.ToImmutable();
+            return new SubmoduleInfo(
+                builder.ToImmutable(), 
+                (lazyDiagnostics != null) ? lazyDiagnostics.ToImmutable() : ImmutableArray<string>.Empty);
         }
 
         private GitIgnore LoadIgnore()
@@ -419,7 +467,7 @@ namespace Microsoft.Build.Tasks.Git
 
             if (!content.StartsWith(GitDirPrefix))
             {
-                throw new InvalidDataException($"Invalid format of '.git' file at '{path}'");
+                throw new InvalidDataException(string.Format(Resources.FormatOfFileIsInvalid, path));
             }
 
             // git does not trim whitespace:
@@ -432,7 +480,7 @@ namespace Microsoft.Build.Tasks.Git
             }
             catch
             {
-                throw new InvalidDataException($"Invalid path specified in '.git' file at '{path}'");
+                throw new InvalidDataException(string.Format(Resources.PathSpecifiedInFileIsInvalid, path));
             }
         }
 

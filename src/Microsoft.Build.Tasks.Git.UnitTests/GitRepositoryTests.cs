@@ -199,7 +199,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 "S1: 'subs/s1' 'http://github.com/test1'",
                 "S2: 's2' 'http://github.com/test3'",
                 "S3: 's3' '../repo2'",
-            }, submodules.Select(s => $"{s.Name}: '{s.WorkingDirectoryPath}' '{s.Url}'"));
+            }, submodules.Select(s => $"{s.Name}: '{s.WorkingDirectoryRelativePath}' '{s.Url}'"));
         }
 
         [Fact]

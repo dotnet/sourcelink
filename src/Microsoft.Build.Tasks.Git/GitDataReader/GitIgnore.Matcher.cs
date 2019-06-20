@@ -69,12 +69,12 @@ namespace Microsoft.Build.Tasks.Git
             {
                 if (!PathUtils.IsAbsolute(fullPath))
                 {
-                    throw new ArgumentException("Path must be absolute", nameof(fullPath));
+                    throw new ArgumentException(Resources.PathMustBeAbsolute, nameof(fullPath));
                 }
 
                 if (PathUtils.HasTrailingDirectorySeparator(fullPath))
                 {
-                    throw new ArgumentException("Path must be a file path", nameof(fullPath));
+                    throw new ArgumentException(Resources.PathMustBeFilePath, nameof(fullPath));
                 }
 
                 return IsPathIgnored(PathUtils.ToPosixPath(fullPath), isDirectoryPath: false);
@@ -89,7 +89,7 @@ namespace Microsoft.Build.Tasks.Git
             {
                 if (!PathUtils.IsAbsolute(fullPath))
                 {
-                    throw new ArgumentException("Path must be absolute", nameof(fullPath));
+                    throw new ArgumentException(Resources.PathMustBeAbsolute, nameof(fullPath));
                 }
 
                 // git uses the FS case-sensitivity for checking directory existence:

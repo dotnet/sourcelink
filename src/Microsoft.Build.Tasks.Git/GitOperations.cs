@@ -15,33 +15,37 @@ namespace Microsoft.Build.Tasks.Git
     {
         private const string SourceControlName = "git";
 
-        public static string LocateRepository(string directory)
+        public static string GetRepositoryUrl(GitRepository repository, Action<string, object[]> logWarning = null, string remoteName = null)
         {
-            // Repository.Discover returns the path to .git directory for repositories with a working directory.
-            // For bare repositories it returns the repository directory.
-            // Returns null if the path is invalid or no repository is found.
-            return GitRepository.LocateRepository((directory);
-        }
+            const string RemoteSectionName = "remote";
 
-        internal static IRepository CreateRepository(string root)
-            => new Repository(root);
-
-        public static string GetRepositoryUrl(IRepository repository, Action<string, object[]> logWarning = null, string remoteName = null)
-        {
-            // GetVariableValue("remote", name, "url");
-
-            var remotes = repository.Network.Remotes;
-            var remote = string.IsNullOrEmpty(remoteName) ? (remotes["origin"] ?? remotes.FirstOrDefault()) : remotes[remoteName];
-            if (remote == null)
+            if (string.IsNullOrEmpty(remoteName))
             {
-                logWarning?.Invoke(Resources.RepositoryHasNoRemote, Array.Empty<string>());
-                return null;
+                remoteName = "origin";
             }
 
-            var url = NormalizeUrl(remote.Url, repository.Info.WorkingDirectory);
+            string remoteUrl = repository.Config.GetVariableValue(RemoteSectionName, remoteName, "url");
+            if (remoteUrl == null)
+            {
+                var remoteVariable = repository.Config.Variables.
+                    Where(kvp => kvp.Key.SectionNameEquals(RemoteSectionName)).
+                    OrderBy(kvp => kvp.Key.SubsectionName, GitConfig.VariableKey.SubsectionNameComparer).
+                    FirstOrDefault();
+
+                remoteName = remoteVariable.Key.SubsectionName;
+                if (remoteName == null)
+                {
+                    logWarning?.Invoke(Resources.RepositoryHasNoRemote, Array.Empty<string>());
+                    return null;
+                }
+
+                remoteUrl = remoteVariable.Value.Last();
+            }
+
+            var url = NormalizeUrl(remoteUrl, repository.WorkingDirectory);
             if (url == null)
             {
-                logWarning?.Invoke(Resources.InvalidRepositoryRemoteUrl, new[] { remote.Name, remote.Url });
+                logWarning?.Invoke(Resources.InvalidRepositoryRemoteUrl, new[] { remoteName, remoteUrl });
             }
 
             return url;
@@ -118,38 +122,12 @@ namespace Microsoft.Build.Tasks.Git
             return Uri.TryCreate(url, UriKind.Absolute, out uri);
         }
 
-        public static string GetRevisionId(IRepository repository)
-        {
-            // The HEAD reference in an empty repository doesn't resolve to a direct reference.
-            // The target identifier of a direct reference is the commit SHA.
-            return repository.Head.Reference.ResolveToDirectReference()?.TargetIdentifier;
-        }
-
-        // GVFS doesn't support submodules. gitlib throws when submodule enumeration is attempted.
-        private static bool SubmodulesSupported(IRepository repository, Func<string, bool> fileExists)
-        {
-            try
-            {
-                if (repository.Config.GetValueOrDefault<bool>("core.gvfs"))
-                {
-                    // Checking core.gvfs is not sufficient, check the presence of the file as well:
-                    return fileExists(Path.Combine(repository.Info.WorkingDirectory, ".gitmodules"));
-                }
-            }
-            catch (LibGit2SharpException)
-            {
-                // exception thrown if the value is not Boolean
-            }
-
-            return true;
-        }
-
-        public static ITaskItem[] GetSourceRoots(IRepository repository, Action<string, object[]> logWarning, Func<string, bool> fileExists)
+        public static ITaskItem[] GetSourceRoots(GitRepository repository, Action<string, object[]> logWarning)
         {
             var result = new List<TaskItem>();
             var repoRoot = GetRepositoryRoot(repository);
 
-            var revisionId = GetRevisionId(repository);
+            var revisionId = repository.GetHeadCommitSha();
             if (revisionId != null)
             {
                 // Don't report a warning since it has already been reported by GetRepositoryUrl task.
@@ -169,66 +147,59 @@ namespace Microsoft.Build.Tasks.Git
                 logWarning(Resources.RepositoryHasNoCommit, Array.Empty<object>());
             }
 
-            if (SubmodulesSupported(repository, fileExists))
+            foreach (var submodule in repository.GetSubmodules())
             {
-                foreach (var submodule in repository.Submodules)
+                var commitSha = repository.GetSubmoduleHeadCommitSha(submodule.WorkingDirectoryRelativePath);
+                if (commitSha == null)
                 {
-                    var commitId = submodule.WorkDirCommitId;
-                    if (commitId == null)
-                    {
-                        logWarning(Resources.SubmoduleWithoutCommit_SourceLink, new[] { submodule.Name });
-                        continue;
-                    }
+                    logWarning(Resources.SourceCodeWontBeAvailableViaSourceLink, 
+                        new[] { string.Format(Resources.SubmoduleWithoutCommit, new[] { submodule.Name }) });
 
-                    // https://git-scm.com/docs/git-submodule
-                    var submoduleUrl = NormalizeUrl(submodule.Url, repoRoot);
-                    if (submoduleUrl == null)
-                    {
-                        logWarning(Resources.InvalidSubmoduleUrl_SourceLink, new[] { submodule.Name, submodule.Url });
-                        continue;
-                    }
-
-                    string submoduleRoot;
-                    try
-                    {
-                        submoduleRoot = Path.GetFullPath(Path.Combine(repoRoot, submodule.Path)).EndWithSeparator();
-                    }
-                    catch
-                    {
-                        logWarning(Resources.InvalidSubmodulePath_SourceLink, new[] { submodule.Name, submodule.Path });
-                        continue;
-                    }
-
-                    // Item metadata are stored msbuild-escaped. GetMetadata unescapes, SetMetadata stores the value as specified.
-                    // Escape msbuild special characters so that URL escapes and non-ascii characters in the URL and paths are 
-                    // preserved when read by GetMetadata.
-
-                    var item = new TaskItem(Evaluation.ProjectCollection.Escape(submoduleRoot));
-                    item.SetMetadata(Names.SourceRoot.SourceControl, SourceControlName);
-                    item.SetMetadata(Names.SourceRoot.ScmRepositoryUrl, Evaluation.ProjectCollection.Escape(submoduleUrl));
-                    item.SetMetadata(Names.SourceRoot.RevisionId, commitId.Sha);
-                    item.SetMetadata(Names.SourceRoot.ContainingRoot, Evaluation.ProjectCollection.Escape(repoRoot));
-                    item.SetMetadata(Names.SourceRoot.NestedRoot, Evaluation.ProjectCollection.Escape(submodule.Path.EndWithSeparator('/')));
-                    result.Add(item);
+                    continue;
                 }
+
+                // https://git-scm.com/docs/git-submodule
+                var submoduleUrl = NormalizeUrl(submodule.Url, repoRoot);
+                if (submoduleUrl == null)
+                {
+                    logWarning(Resources.SourceCodeWontBeAvailableViaSourceLink, 
+                        new[] { string.Format(Resources.InvalidSubmoduleUrl, submodule.Name, submodule.Url) });
+
+                    continue;
+                }
+
+                // Item metadata are stored msbuild-escaped. GetMetadata unescapes, SetMetadata stores the value as specified.
+                // Escape msbuild special characters so that URL escapes and non-ascii characters in the URL and paths are 
+                // preserved when read by GetMetadata.
+
+                var item = new TaskItem(Evaluation.ProjectCollection.Escape(submodule.WorkingDirectoryFullPath.EndWithSeparator()));
+                item.SetMetadata(Names.SourceRoot.SourceControl, SourceControlName);
+                item.SetMetadata(Names.SourceRoot.ScmRepositoryUrl, Evaluation.ProjectCollection.Escape(submoduleUrl));
+                item.SetMetadata(Names.SourceRoot.RevisionId, commitSha);
+                item.SetMetadata(Names.SourceRoot.ContainingRoot, Evaluation.ProjectCollection.Escape(repoRoot));
+                item.SetMetadata(Names.SourceRoot.NestedRoot, Evaluation.ProjectCollection.Escape(submodule.WorkingDirectoryRelativePath.EndWithSeparator('/')));
+                result.Add(item);
+            }
+
+            foreach (var diagnostic in repository.GetSubmoduleDiagnostics())
+            {
+                logWarning(Resources.SourceCodeWontBeAvailableViaSourceLink, new[] { diagnostic });
             }
 
             return result.ToArray();
         }
 
-        private static string GetRepositoryRoot(IRepository repository)
-        {
-            Debug.Assert(!repository.Info.IsBare);
-            return Path.GetFullPath(repository.Info.WorkingDirectory).EndWithSeparator();
-        }
+        private static string GetRepositoryRoot(GitRepository repository)
+            => repository.WorkingDirectory.EndWithSeparator();
 
         public static ITaskItem[] GetUntrackedFiles(
-            IRepository repository,
+            GitRepository repository,
             ITaskItem[] files, 
             string projectDirectory,
-            Func<string, IRepository> repositoryFactory)
+            Func<string, GitRepository> repositoryFactory)
         {
             var directoryTree = BuildDirectoryTree(repository);
+            var ignoreMatcher = repository.Ignore.CreateMatcher();
 
             return files.Where(file =>
             {
@@ -241,10 +212,9 @@ namespace Microsoft.Build.Tasks.Git
                 if (containingDirectory == null)
                 {
                     return true;
-                }   
+                }
 
-                // Note: libgit API doesn't work with backslashes.
-                return containingDirectory.GetRepository(repositoryFactory).Ignore.IsPathIgnored(fullPath.Replace('\\', '/'));
+                return containingDirectory.GetMatcher(repositoryFactory).IsNormalizedFilePathIgnored(fullPath) ?? true;
             }).ToArray();
         }
 
@@ -254,7 +224,7 @@ namespace Microsoft.Build.Tasks.Git
             public readonly List<SourceControlDirectory> OrderedChildren;
 
             public string RepositoryFullPath;
-            private IRepository _lazyRepository;
+            private GitIgnore.Matcher _lazyMatcher;
 
             public SourceControlDirectory(string name)
                 : this(name, null, new List<SourceControlDirectory>())
@@ -273,47 +243,35 @@ namespace Microsoft.Build.Tasks.Git
                 OrderedChildren = orderedChildren;
             }
 
-            public void SetRepository(string fullPath, IRepository repository)
+            public void SetMatcher(string fullPath, GitIgnore.Matcher matcher)
             {
                 RepositoryFullPath = fullPath;
-                _lazyRepository = repository;
+                _lazyMatcher = matcher;
             }
 
             public int FindChildIndex(string name)
                 => BinarySearch(OrderedChildren, name, (n, v) => n.Name.CompareTo(v));
 
-            public IRepository GetRepository(Func<string, IRepository> repositoryFactory)
-                => _lazyRepository ?? (_lazyRepository = repositoryFactory(RepositoryFullPath));
+            public GitIgnore.Matcher GetMatcher(Func<string, GitRepository> repositoryFactory)
+                => _lazyMatcher ?? (_lazyMatcher = repositoryFactory(RepositoryFullPath).Ignore.CreateMatcher());
         }
 
-        internal static SourceControlDirectory BuildDirectoryTree(IRepository repository)
+        internal static SourceControlDirectory BuildDirectoryTree(GitRepository repository)
         {
-            var repoRoot = Path.GetFullPath(repository.Info.WorkingDirectory);
+            var repoRoot = repository.WorkingDirectory;
 
             var treeRoot = new SourceControlDirectory("");
-            AddTreeNode(treeRoot, repoRoot, repository);
+            AddTreeNode(treeRoot, repoRoot, repository.Ignore.CreateMatcher());
 
-            foreach (var submodule in repository.Submodules)
+            foreach (var submodule in repository.GetSubmodules())
             {
-                string fullPath;
-
-                try
-                {
-                    fullPath = Path.GetFullPath(Path.Combine(repoRoot, submodule.Path));
-                }
-                catch
-                {
-                    // ignore submodules with bad paths
-                    continue;
-                }
-
-                AddTreeNode(treeRoot, fullPath, repositoryOpt: null);
+                AddTreeNode(treeRoot, submodule.WorkingDirectoryFullPath, matcherOpt: null);
             }
 
             return treeRoot;
         }
 
-        private static void AddTreeNode(SourceControlDirectory root, string fullPath, IRepository repositoryOpt)
+        private static void AddTreeNode(SourceControlDirectory root, string fullPath, GitIgnore.Matcher matcherOpt)
         {
             var segments = PathUtilities.Split(fullPath);
 
@@ -335,7 +293,7 @@ namespace Microsoft.Build.Tasks.Git
 
                 if (i == segments.Length - 1)
                 {
-                    node.SetRepository(fullPath, repositoryOpt);
+                    node.SetMatcher(fullPath, matcherOpt);
                 }
             }
         }

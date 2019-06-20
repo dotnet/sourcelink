@@ -130,7 +130,7 @@ namespace Microsoft.Build.Tasks.Git
 
                 if (includeDepth > MaxIncludeDepth)
                 {
-                    throw new InvalidDataException($"Configuration files recursion exceeded maximum allowed depth of {MaxIncludeDepth}");
+                    throw new InvalidDataException(string.Format(Resources.ConfigurationFileRecursionExceededMaximumAllowedDepth, MaxIncludeDepth));
                 }
 
                 TextReader reader;
@@ -191,7 +191,7 @@ namespace Microsoft.Build.Tasks.Git
                         // Spec https://git-scm.com/docs/git-config#_includes:
                         if (IsIncludePath(key, path))
                         {
-                            string includedConfigPath = NormalizeRelativePath(relativePath: variableValue, basePath: path);
+                            string includedConfigPath = NormalizeRelativePath(relativePath: variableValue, basePath: path, key);
                             LoadVariablesFrom(includedConfigPath, variables, includeDepth + 1);
                         }
                     }
@@ -199,7 +199,7 @@ namespace Microsoft.Build.Tasks.Git
             }
 
             /// <exception cref="InvalidDataException"/>
-            private string NormalizeRelativePath(string relativePath, string basePath)
+            private string NormalizeRelativePath(string relativePath, string basePath, VariableKey key)
             {
                 string root;
                 if (relativePath.Length >= 2 && relativePath[0] == '~' && PathUtils.IsDirectorySeparator(relativePath[1]))
@@ -218,7 +218,7 @@ namespace Microsoft.Build.Tasks.Git
                 }
                 catch
                 {
-                    throw new InvalidDataException($"Invalid path: {relativePath}");
+                    throw new InvalidDataException(string.Format(Resources.ValueOfIsNotValidPath, key.ToString(), relativePath));
                 }
             }
 

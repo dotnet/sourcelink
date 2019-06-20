@@ -10,17 +10,23 @@ namespace Microsoft.Build.Tasks.Git
         /// Working directory path as specified in .gitmodules file.
         /// Expected to be relative to the working directory of the containing repository and have Posix directory separators (not normalized).
         /// </summary>
-        public string WorkingDirectoryPath { get; }
+        public string WorkingDirectoryRelativePath { get; }
+
+        /// <summary>
+        /// Normalized full path.
+        /// </summary>
+        public string WorkingDirectoryFullPath { get; }
 
         /// <summary>
         /// An absolute URL or a relative path (if it starts with `./` or `../`) to the default remote of the containing repository.
         /// </summary>
         public string Url { get; }
 
-        public GitSubmodule(string name, string workingDirectoryPath, string url)
+        public GitSubmodule(string name, string workingDirectoryRelativePath, string workingDirectoryFullPath, string url)
         {
             Name = name;
-            WorkingDirectoryPath = workingDirectoryPath;
+            WorkingDirectoryRelativePath = workingDirectoryRelativePath;
+            WorkingDirectoryFullPath = workingDirectoryFullPath;
             Url = url;
         }
     }
