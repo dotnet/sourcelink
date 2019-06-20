@@ -220,6 +220,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             Assert.Equal("0000000000000000000000000000000000000000", GitRepository.ResolveReference("ref: refs/heads/br1", commonDir.Path));
             Assert.Equal("0000000000000000000000000000000000000000", GitRepository.ResolveReference("ref: refs/heads/br2", commonDir.Path));
 
+            // branch without commits (emtpy repository) will have not file in refs/heads:
             Assert.Null(GitRepository.ResolveReference("ref: refs/heads/none", commonDir.Path));
         }
 

@@ -183,4 +183,7 @@
   <data name="UnableToLocateRepository" xml:space="preserve">
     <value>Unable to locate repository with working directory that contains directory '{0}'.</value>
   </data>
+  <data name="RepositoryDoesNotHaveSpecifiedRemote" xml:space="preserve">
+    <value>Repository does not have the specified remote '{0}'; using '{1}' instead.</value>
+  </data>
 </root>

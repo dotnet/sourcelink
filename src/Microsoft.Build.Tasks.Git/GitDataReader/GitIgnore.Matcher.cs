@@ -39,6 +39,8 @@ namespace Microsoft.Build.Tasks.Git
 
             private PatternGroup GetPatternGroup(string directory)
             {
+                Debug.Assert(PathUtils.HasTrailingSlash(directory));
+
                 if (_patternGroups.TryGetValue(directory, out var group))
                 {
                     return group;
@@ -51,10 +53,11 @@ namespace Microsoft.Build.Tasks.Git
                 }
                 else
                 {
-                    parent = GetPatternGroup(PathUtils.ToPosixDirectoryPath(Path.GetDirectoryName(PathUtils.TrimTrailingSlash(directory))));
+                    var parentDirectory = directory.Substring(0, directory.LastIndexOf('/', directory.Length - 2, directory.Length - 1) + 1);
+                    parent = GetPatternGroup(parentDirectory);
                 }
 
-                group = LoadFromFile(Path.Combine(directory, GitIgnoreFileName), parent) ?? parent;
+                group = LoadFromFile(directory + GitIgnoreFileName, parent) ?? parent;
 
                 _patternGroups.Add(directory, group);
                 return group;

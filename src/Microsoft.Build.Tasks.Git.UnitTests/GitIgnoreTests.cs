@@ -86,7 +86,7 @@ D1/c.cs
 /*.c
 ");
 
-            var ignore = new GitIgnore(root: null, PathUtils.ToPosixDirectoryPath(workingDir.Path), ignoreCase: false);
+            var ignore = new GitIgnore(root: null, workingDir.Path, ignoreCase: false);
             var matcher = ignore.CreateMatcher();
 
             // outside of the working directory:

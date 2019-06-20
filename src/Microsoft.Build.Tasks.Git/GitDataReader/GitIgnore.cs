@@ -78,12 +78,11 @@ namespace Microsoft.Build.Tasks.Git
 
         internal GitIgnore(PatternGroup root, string workingDirectory, bool ignoreCase)
         {
-            Debug.Assert(PathUtils.IsPosixPath(workingDirectory));
-            Debug.Assert(PathUtils.HasTrailingSlash(workingDirectory));
+            Debug.Assert(PathUtils.IsAbsolute(workingDirectory));
 
             IgnoreCase = ignoreCase;
-            WorkingDirectory = workingDirectory;
-            _workingDirectoryNoSlash = PathUtils.TrimTrailingSlash(workingDirectory);
+            WorkingDirectory = PathUtils.ToPosixDirectoryPath(workingDirectory);
+            _workingDirectoryNoSlash = PathUtils.TrimTrailingSlash(WorkingDirectory);
             Root = root;
         }
 

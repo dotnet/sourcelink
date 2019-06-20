@@ -12,58 +12,11 @@ namespace Microsoft.Build.Tasks.Git
 {
     internal sealed partial class GitConfig
     {
-        public static readonly GitConfig Empty = new GitConfig(ImmutableDictionary<VariableKey, ImmutableArray<string>>.Empty);
+        public static readonly GitConfig Empty = new GitConfig(ImmutableDictionary<GitVariableName, ImmutableArray<string>>.Empty);
 
-        internal readonly struct VariableKey : IEquatable<VariableKey>
-        {
-            public static readonly StringComparer SectionNameComparer = StringComparer.OrdinalIgnoreCase;
-            public static readonly StringComparer SubsectionNameComparer = StringComparer.Ordinal;
-            public static readonly StringComparer VariableNameComparer = StringComparer.OrdinalIgnoreCase;
+        public readonly ImmutableDictionary<GitVariableName, ImmutableArray<string>> Variables;
 
-            public readonly string SectionName;
-            public readonly string SubsectionName;
-            public readonly string VariableName;
-
-            public VariableKey(string sectionName, string subsectionName, string variableName)
-            {
-                Debug.Assert(sectionName != null);
-                Debug.Assert(subsectionName != null);
-                Debug.Assert(variableName != null);
-
-                SectionName = sectionName;
-                SubsectionName = subsectionName;
-                VariableName = variableName;
-            }
-
-            public bool SectionNameEquals(string name)
-                => SectionNameComparer.Equals(SectionName, name);
-
-            public bool SubsectionNameEquals(string name)
-                => SubsectionNameComparer.Equals(SubsectionName, name);
-
-            public bool VariableNameEquals(string name)
-                => VariableNameComparer.Equals(VariableName, name);
-
-            public bool Equals(VariableKey other)
-                => SectionNameEquals(other.SectionName) &&
-                   SubsectionNameEquals(other.SubsectionName) &&
-                   VariableNameEquals(other.VariableName);
-
-            public override bool Equals(object obj)
-                => obj is VariableKey other && Equals(other);
-
-            public override int GetHashCode()
-                => SectionName.GetHashCode() ^ SubsectionName.GetHashCode() ^ VariableName.GetHashCode();
-
-            public override string ToString()
-                => (SubsectionName.Length == 0) ?
-                    SectionName + "." + VariableName :
-                    SectionName + "." + SubsectionName + "." + VariableName;
-        }
-
-        public readonly ImmutableDictionary<VariableKey, ImmutableArray<string>> Variables;
-
-        public GitConfig(ImmutableDictionary<VariableKey, ImmutableArray<string>> variables)
+        public GitConfig(ImmutableDictionary<GitVariableName, ImmutableArray<string>> variables)
         {
             Debug.Assert(variables != null);
             Variables = variables;
@@ -77,7 +30,7 @@ namespace Microsoft.Build.Tasks.Git
             => GetVariableValues(section, subsection: "", name);
 
         public ImmutableArray<string> GetVariableValues(string section, string subsection, string name)
-            => Variables.TryGetValue(new VariableKey(section, subsection, name), out var multiValue) ? multiValue : default;
+            => Variables.TryGetValue(new GitVariableName(section, subsection, name), out var multiValue) ? multiValue : default;
 
         public string GetVariableValue(string section, string name)
             => GetVariableValue(section, "", name);

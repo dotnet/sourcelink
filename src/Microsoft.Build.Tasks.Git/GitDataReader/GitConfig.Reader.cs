@@ -39,7 +39,7 @@ namespace Microsoft.Build.Tasks.Git
             /// <exception cref="InvalidDataException"/>
             internal GitConfig Load()
             {
-                var variables = new Dictionary<VariableKey, List<string>>();
+                var variables = new Dictionary<GitVariableName, List<string>>();
 
                 foreach (var path in EnumerateExistingConfigurationFiles())
                 {
@@ -53,7 +53,7 @@ namespace Microsoft.Build.Tasks.Git
             /// <exception cref="InvalidDataException"/>
             internal GitConfig LoadFrom(string path)
             {
-                var variables = new Dictionary<VariableKey, List<string>>();
+                var variables = new Dictionary<GitVariableName, List<string>>();
                 LoadVariablesFrom(path, variables, includeDepth: 0);
                 return new GitConfig(variables.ToImmutableDictionary(kvp => kvp.Key, kvp => kvp.Value.ToImmutableArray()));
             }
@@ -120,7 +120,7 @@ namespace Microsoft.Build.Tasks.Git
 
             /// <exception cref="IOException"/>
             /// <exception cref="InvalidDataException"/>
-            internal void LoadVariablesFrom(string path, Dictionary<VariableKey, List<string>> variables, int includeDepth)
+            internal void LoadVariablesFrom(string path, Dictionary<GitVariableName, List<string>> variables, int includeDepth)
             {
                 // https://git-scm.com/docs/git-config#_syntax
 
@@ -180,7 +180,7 @@ namespace Microsoft.Build.Tasks.Git
 
                         // Variable declared outside of a section is allowed (has no section name prefix).
 
-                        var key = new VariableKey(sectionName, subsectionName, variableName);
+                        var key = new GitVariableName(sectionName, subsectionName, variableName);
                         if (!variables.TryGetValue(key, out var values))
                         {
                             variables.Add(key, values = new List<string>());
@@ -199,7 +199,7 @@ namespace Microsoft.Build.Tasks.Git
             }
 
             /// <exception cref="InvalidDataException"/>
-            private string NormalizeRelativePath(string relativePath, string basePath, VariableKey key)
+            private string NormalizeRelativePath(string relativePath, string basePath, GitVariableName key)
             {
                 string root;
                 if (relativePath.Length >= 2 && relativePath[0] == '~' && PathUtils.IsDirectorySeparator(relativePath[1]))
@@ -222,17 +222,17 @@ namespace Microsoft.Build.Tasks.Git
                 }
             }
 
-            private bool IsIncludePath(VariableKey key, string configFilePath)
+            private bool IsIncludePath(GitVariableName key, string configFilePath)
             {
                 // unconditional:
-                if (key.Equals(new VariableKey("include", "", "path")))
+                if (key.Equals(new GitVariableName("include", "", "path")))
                 {
                     return true;
                 }
 
                 // conditional:
-                if (VariableKey.SectionNameComparer.Equals(key.SectionName, "includeIf") &&
-                    VariableKey.VariableNameComparer.Equals(key.VariableName, "path") &&
+                if (GitVariableName.SectionNameComparer.Equals(key.SectionName, "includeIf") &&
+                    GitVariableName.VariableNameComparer.Equals(key.VariableName, "path") &&
                     key.SubsectionName != "")
                 {
                     bool ignoreCase;

@@ -72,6 +72,11 @@
         <target state="new">Recursion detected while resolving reference: '{0}'.</target>
         <note />
       </trans-unit>
+      <trans-unit id="RepositoryDoesNotHaveSpecifiedRemote">
+        <source>Repository does not have the specified remote '{0}'; using '{1}' instead.</source>
+        <target state="new">Repository does not have the specified remote '{0}'; using '{1}' instead.</target>
+        <note />
+      </trans-unit>
       <trans-unit id="RepositoryDoesNotHaveWorkingDirectory">
         <source>Repository does not have a working directory.</source>
         <target state="new">Repository does not have a working directory.</target>

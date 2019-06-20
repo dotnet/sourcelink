@@ -334,7 +334,7 @@ namespace Microsoft.Build.Tasks.Git
 
             foreach (var group in submoduleConfig.Variables.
                 Where(kvp => kvp.Key.SectionNameEquals("submodule")).
-                GroupBy(kvp => kvp.Key.SubsectionName, GitConfig.VariableKey.SubsectionNameComparer).
+                GroupBy(kvp => kvp.Key.SubsectionName, GitVariableName.SubsectionNameComparer).
                 OrderBy(group => group.Key))
             {
                 string name = group.Key;

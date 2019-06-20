@@ -3,6 +3,11 @@
     <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Mocks\**" />
+    <EmbeddedResource Remove="Mocks\**" />
+    <None Remove="Mocks\**" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Microsoft.Build.Tasks.Git\Microsoft.Build.Tasks.Git.csproj" />
     <ProjectReference Include="..\TestUtilities\TestUtilities.csproj" />
   </ItemGroup>
