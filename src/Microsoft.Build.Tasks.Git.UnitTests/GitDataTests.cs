@@ -1,5 +1,5 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
-using LibGit2Sharp;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,6 +16,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [Fact]
         public void MinimalGitData()
         {
+            var environment = new GitEnvironment("/home");
             var repoDir = Temp.CreateDirectory();
 
             var gitDir = repoDir.CreateDirectory(".git");
@@ -41,20 +42,20 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             gitDirSub.CreateDirectory("objects");
             gitDirSub.CreateDirectory("refs");
 
-            var repository = new Repository(gitDir.Path);
+            var repository = GitRepository.OpenRepository(repoDir.Path, environment);
 
             Assert.Equal("http://github.com/test-org/test-repo", GitOperations.GetRepositoryUrl(repository));
-            Assert.Equal("1111111111111111111111111111111111111111", GitOperations.GetRevisionId(repository));
+            Assert.Equal("1111111111111111111111111111111111111111", repository.GetHeadCommitSha());
 
             var warnings = new List<(string, object[])>();
-            var sourceRoots = GitOperations.GetSourceRoots(repository, (message, args) => warnings.Add((message, args)), File.Exists);
+            var sourceRoots = GitOperations.GetSourceRoots(repository, (message, args) => warnings.Add((message, args)));
             AssertEx.Equal(new[]
             {
                 $@"'{repoDir.Path}{s}' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' ScmRepositoryUrl='http://github.com/test-org/test-repo'",
                 $@"'{repoDir.Path}{s}sub{s}' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/' ContainingRoot='{repoDir.Path}{s}' ScmRepositoryUrl='https://github.com/test-org/test-sub'",
-            }, sourceRoots.Select(GitOperationsTests.InspectSourceRoot));
+            }, sourceRoots.Select(TestUtilities.InspectSourceRoot));
 
-            AssertEx.Equal(new string[0], warnings.Select(GitOperationsTests.InspectDiagnostic));
+            AssertEx.Equal(new string[0], warnings.Select(TestUtilities.InspectDiagnostic));
 
             var files = new[] 
             {
@@ -64,7 +65,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 new MockItem(@"sub\ignore_in_submodule_d"),
             };
 
-            var untrackedFiles = GitOperations.GetUntrackedFiles(repository, files, repoDir.Path, path => new Repository(path));
+            var untrackedFiles = GitOperations.GetUntrackedFiles(repository, files, repoDir.Path, path => GitRepository.OpenRepository(path, environment));
 
             AssertEx.Equal(new[]
             {

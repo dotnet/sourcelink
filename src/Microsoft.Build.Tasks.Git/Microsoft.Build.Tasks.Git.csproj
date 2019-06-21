@@ -2,9 +2,19 @@
   <PropertyGroup>
     <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
     <AutoGenerateAssemblyVersion>true</AutoGenerateAssemblyVersion>
+    
+    <!-- Using an explicit nuspec file since NuGet Pack target currently doesn't support including dependencies in tools packages -->
+    <IsPackable>true</IsPackable>
+    <PackageId>Microsoft.Build.Tasks.Git</PackageId>
+    <BuildOutputTargetFolder>tools</BuildOutputTargetFolder>
+
+    <PackageDescription>MSBuild tasks providing git repository information.</PackageDescription>
+    <PackageTags>MSBuild Tasks source control git</PackageTags>
+    <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\Common\Names.cs" Link="Common\Names.cs" />
+    <Compile Include="..\Common\ValueTuple.cs" Link="Common\ValueTuple.cs" />
     <Compile Include="..\Common\PathUtilities.cs" Link="Common\PathUtilities.cs" />
     <Compile Include="..\Common\SequenceComparer.cs" Link="Common\SequenceComparer.cs" />
   </ItemGroup>
@@ -17,5 +27,9 @@
     <InternalsVisibleTo Include="Microsoft.Build.Tasks.Git.Operations" />
     <InternalsVisibleTo Include="Microsoft.Build.Tasks.Git.UnitTests" />
     <InternalsVisibleTo Include="Microsoft.SourceLink.Git.IntegrationTests" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="build/**/*.*" Pack="true" PackagePath="build/%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="build/**/*.*" Pack="true" PackagePath="buildCrossTargeting/%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
 </Project>

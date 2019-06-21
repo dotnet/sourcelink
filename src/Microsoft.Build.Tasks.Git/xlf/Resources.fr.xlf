@@ -2,19 +2,84 @@
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
   <file datatype="xml" source-language="en" target-language="fr" original="../Resources.resx">
     <body>
+      <trans-unit id="ConfigurationFileRecursionExceededMaximumAllowedDepth">
+        <source>Configuration file recursion exceeded maximum allowed depth of {0}.</source>
+        <target state="new">Configuration file recursion exceeded maximum allowed depth of {0}.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ErrorReadingGitRepositoryInformation">
+        <source>Error reading git repository information: {0}</source>
+        <target state="new">Error reading git repository information: {0}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FormatOfFileIsInvalid">
+        <source>The format of the file '{0}' is invalid.</source>
+        <target state="new">The format of the file '{0}' is invalid.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="InvalidFormatOfFileAtPath">
+        <source>Repository does not have a working directory.</source>
+        <target state="new">Repository does not have a working directory.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="InvalidModulePath">
+        <source>Invalid module path: '{0}'.</source>
+        <target state="new">Invalid module path: '{0}'.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="InvalidReference">
+        <source>Invalid reference: '{0}'.</source>
+        <target state="new">Invalid reference: '{0}'.</target>
+        <note />
+      </trans-unit>
       <trans-unit id="InvalidRepositoryRemoteUrl">
         <source>The URL of repository remote '{0}' is invalid: '{1}'.</source>
         <target state="translated">L'URL du dépôt distant « {0} » n'est pas valide : « {1} ».</target>
         <note />
       </trans-unit>
-      <trans-unit id="InvalidSubmodulePath_SourceLink">
-        <source>The path of submodule '{0}' is invalid: '{1}', the source code won't be available via source link.</source>
-        <target state="translated">Le chemin du sous-module '{0}' n'est pas valide : '{1}', le code source ne sera pas disponible via le lien source.</target>
+      <trans-unit id="InvalidSubmodulePath">
+        <source>The path of submodule '{0}' is missing or invalid: '{1}'</source>
+        <target state="new">The path of submodule '{0}' is missing or invalid: '{1}'</target>
         <note />
       </trans-unit>
-      <trans-unit id="InvalidSubmoduleUrl_SourceLink">
-        <source>The URL of submodule '{0}' is invalid: '{1}', the source code won't be available via source link.</source>
-        <target state="translated">L'URL du sous-module '{0}' n'est pas valide : '{1}', le code source ne sera pas disponible via le lien source.</target>
+      <trans-unit id="InvalidSubmoduleUrl">
+        <source>The URL of submodule '{0}' is missing or invalid: '{1}'</source>
+        <target state="new">The URL of submodule '{0}' is missing or invalid: '{1}'</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="PathMustBeAbsolute">
+        <source>Path must be absolute</source>
+        <target state="new">Path must be absolute</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="PathMustBeFilePath">
+        <source>Path must be a file path</source>
+        <target state="new">Path must be a file path</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="PathSpecifiedInFileIsInvalid">
+        <source>Path specified in file '{0}' is invalid.</source>
+        <target state="new">Path specified in file '{0}' is invalid.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="PathSpecifiedInFileIsNotAbsolute">
+        <source>Path specified in file '{0}' is not absolute.</source>
+        <target state="new">Path specified in file '{0}' is not absolute.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RecursionDetectedWhileResolvingReference">
+        <source>Recursion detected while resolving reference: '{0}'.</source>
+        <target state="new">Recursion detected while resolving reference: '{0}'.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RepositoryDoesNotHaveSpecifiedRemote">
+        <source>Repository does not have the specified remote '{0}'; using '{1}' instead.</source>
+        <target state="new">Repository does not have the specified remote '{0}'; using '{1}' instead.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RepositoryDoesNotHaveWorkingDirectory">
+        <source>Repository does not have a working directory.</source>
+        <target state="new">Repository does not have a working directory.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryHasNoRemote">
@@ -27,19 +92,29 @@
         <target state="translated">Le dépôt n'a aucune validation.</target>
         <note />
       </trans-unit>
-      <trans-unit id="SubmoduleWithoutCommit_SourceLink">
-        <source>Submodule '{0}' doesn't have any commit, the source code won't be available via source link.</source>
-        <target state="translated">Le sous-module '{0}' ne présente aucune validation, le code source ne sera pas disponible via le lien source.</target>
+      <trans-unit id="SourceCodeWontBeAvailableViaSourceLink">
+        <source>{0} -- the source code won't be available via Source Link.</source>
+        <target state="new">{0} -- the source code won't be available via Source Link.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="SubmoduleWithoutCommit">
+        <source>Submodule '{0}' doesn't have any commit</source>
+        <target state="new">Submodule '{0}' doesn't have any commit</target>
         <note />
       </trans-unit>
       <trans-unit id="UnableToLocateRepository">
-        <source>Unable to locate repository containing directory '{0}'.</source>
-        <target state="translated">Impossible de localiser le référentiel contenant le répertoire '{0}'.</target>
+        <source>Unable to locate repository with working directory that contains directory '{0}'.</source>
+        <target state="needs-review-translation">Impossible de localiser le référentiel contenant le répertoire '{0}'.</target>
         <note />
       </trans-unit>
-      <trans-unit id="BareRepositoriesNotSupported">
-        <source>Bare repositories are not supported: '{0}'.</source>
-        <target state="translated">Les référentiels nus ne sont pas pris en charge : '{0}'.</target>
+      <trans-unit id="UnsupportedRepositoryVersion">
+        <source>Unsupported repository version {0}. Only versions up to {1} are supported.</source>
+        <target state="new">Unsupported repository version {0}. Only versions up to {1} are supported.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ValueOfIsNotValidPath">
+        <source>The value of {0} is not a valid path: '{1}'.</source>
+        <target state="new">The value of {0} is not a valid path: '{1}'.</target>
         <note />
       </trans-unit>
     </body>

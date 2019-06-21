@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <UsingTask TaskName="Microsoft.Build.Tasks.Git.LocateRepository" AssemblyFile="$(MicrosoftBuildTasksGitAssemblyFile)"/>
+  <UsingTask TaskName="Microsoft.Build.Tasks.Git.GetUntrackedFiles" AssemblyFile="$(MicrosoftBuildTasksGitAssemblyFile)"/>
+  
+  <Target Name="InitializeSourceControlInformationFromSourceControlManager">
+    <!--
+      Reports a warning if the given project doesn't belong to a repository under source control.
+    -->
+    <Microsoft.Build.Tasks.Git.LocateRepository Path="$(MSBuildProjectDirectory)" >
+      <Output TaskParameter="RepositoryId" PropertyName="_GitRepositoryId" />
+      <Output TaskParameter="Url" PropertyName="ScmRepositoryUrl" />
+      <Output TaskParameter="Roots" ItemName="SourceRoot" />
+      <Output TaskParameter="RevisionId" PropertyName="SourceRevisionId" Condition="'$(SourceRevisionId)' == ''" />
+    </Microsoft.Build.Tasks.Git.LocateRepository>
+
+    <PropertyGroup>
+      <RepositoryType Condition="'$(RepositoryType)' == ''">git</RepositoryType>
+    </PropertyGroup>
+  </Target>
+  
+  <!--
+    Embed files to the PDB that either do not belong to any of the SourceRoot directories
+    or belong to the source repository, but are explicitly ignored (excluded) from source control.
+  -->
+  <Target Name="SetEmbeddedFilesFromSourceControlManagerUntrackedFiles"
+          DependsOnTargets="InitializeSourceControlInformationFromSourceControlManager">
+
+    <Microsoft.Build.Tasks.Git.GetUntrackedFiles RepositoryId="$(_GitRepositoryId)" ProjectDirectory="$(MSBuildProjectDirectory)" Files="@(Compile)">
+      <Output TaskParameter="UntrackedFiles" ItemName="EmbeddedFiles" />
+    </Microsoft.Build.Tasks.Git.GetUntrackedFiles>
+  </Target>
+
+</Project>
