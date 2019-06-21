@@ -141,7 +141,7 @@ D1/c.cs
             // does not match "/*.c"
             Assert.False(matcher.IsPathIgnored(Path.Combine(workingDir.Path, "A", "B", "C", "D1", "x.c")));
 
-            AssertEx.Equal(new[]
+            AssertEx.SetEqual(new[]
             {
                 "/Repo/.git: True",
                 "/Repo/A/B/C/D1/b: True",
@@ -153,7 +153,7 @@ D1/c.cs
                 "/Repo/A/B: False",
                 "/Repo/A: False",
                 "/Repo: False"
-            }, matcher.DirectoryIgnoreStateCache.Select(kvp => $"{kvp.Key.Substring(rootDir.Path.Length)}: {kvp.Value}").OrderBy(s => s, StringComparer.Ordinal));
+            }, matcher.DirectoryIgnoreStateCache.Select(kvp => $"{kvp.Key.Substring(rootDir.Path.Length)}: {kvp.Value}"));
         }
 
         [Fact]
@@ -197,15 +197,20 @@ dir/
             // matches "dir/" (treated as a directory path)
             Assert.True(matcher.IsPathIgnored(Path.Combine(workingDir.Path, "A", "DiR") + Path.DirectorySeparatorChar));
 
-            // matches "dir/" (existing directory path)
-            Assert.True(matcher.IsPathIgnored(Path.Combine(workingDir.Path, "A", "DIR")));
+            if (Path.DirectorySeparatorChar == '\\')
+            {
+                // matches "dir/" (existing directory path, the directory DIR only exists on case-insensitive FS)
+                Assert.True(matcher.IsPathIgnored(Path.Combine(workingDir.Path, "A", "DIR")));
+            }
 
-            AssertEx.Equal(new[]
+            Assert.True(matcher.IsPathIgnored(Path.Combine(workingDir.Path, "A", "diR")));
+
+            AssertEx.SetEqual(new[]
             {
                 "/Repo/A/DIr: True",
                 "/Repo/A: False",
                 "/Repo: False",
-            }, matcher.DirectoryIgnoreStateCache.Select(kvp => $"{kvp.Key.Substring(rootDir.Path.Length)}: {kvp.Value}").OrderBy(s => s, StringComparer.Ordinal));
+            }, matcher.DirectoryIgnoreStateCache.Select(kvp => $"{kvp.Key.Substring(rootDir.Path.Length)}: {kvp.Value}"));
         }
     }
 }
