@@ -312,6 +312,9 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             // branch without commits (emtpy repository) will have not file in refs/heads:
             Assert.Null(GitRepository.ResolveReference("ref: refs/heads/none", commonDir.Path));
+
+            Assert.Null(GitRepository.ResolveReference("ref: refs/heads/rec1   ", commonDir.Path));
+            Assert.Null(GitRepository.ResolveReference("ref: refs/heads/none" + string.Join("/", Path.GetInvalidPathChars()), commonDir.Path));
         }
 
         [Fact]
@@ -327,18 +330,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             Assert.Throws<InvalidDataException>(() => GitRepository.ResolveReference("ref: refs/heads/rec1", commonDir.Path));
             Assert.Throws<InvalidDataException>(() => GitRepository.ResolveReference("ref: xyz/heads/rec1", commonDir.Path));
-
-#if NET461
-            Assert.Throws<InvalidDataException>(() => GitRepository.ResolveReference("ref: refs/heads/\0<>", commonDir.Path));
-#else
-            var invalidPathChars = Path.GetInvalidPathChars();
-            if (invalidPathChars.Length > 0)
-            {
-                Assert.Throws<IOException>(() => GitRepository.ResolveReference("ref: refs/heads/" + string.Join('/', invalidPathChars), commonDir.Path));
-            }
-#endif
             Assert.Throws<InvalidDataException>(() => GitRepository.ResolveReference("ref:refs/heads/rec1", commonDir.Path));
-            Assert.Throws<InvalidDataException>(() => GitRepository.ResolveReference("ref: refs/heads/rec1   ", commonDir.Path));
             Assert.Throws<InvalidDataException>(() => GitRepository.ResolveReference("refs/heads/rec1", commonDir.Path));
             Assert.Throws<InvalidDataException>(() => GitRepository.ResolveReference(new string('0', 39), commonDir.Path));
             Assert.Throws<InvalidDataException>(() => GitRepository.ResolveReference(new string('0', 41), commonDir.Path));

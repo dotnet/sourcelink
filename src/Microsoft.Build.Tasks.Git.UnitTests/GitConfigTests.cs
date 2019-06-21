@@ -12,7 +12,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
     public class GitConfigTests
     {
         private static IEnumerable<string> Inspect(GitConfig config)
-            => config.EnumerateVariables().OrderBy(x => x.Key, StringComparer.Ordinal).Select(kvp => $"{kvp.Key}={string.Join("|", kvp.Value)}");
+            => config.EnumerateVariables().Select(kvp => $"{kvp.Key}={string.Join("|", kvp.Value)}");
 
         private static GitConfig LoadFromString(string gitDirectory, string configPath, string configContent)
             => new GitConfig.Reader(gitDirectory, gitDirectory, new GitEnvironment(Path.GetTempPath()), _ => new StringReader(configContent)).
@@ -34,7 +34,7 @@ d =
 #xxx
 ");
 
-            AssertEx.Equal(new[]
+            AssertEx.SetEqual(new[]
             {
                 ".a=1",
                 "s2.b=2",
@@ -135,13 +135,13 @@ a =
 
             var config = new GitConfig.Reader(gitDirectory, gitDirectory, new GitEnvironment(repoDir), openFile).LoadFrom(Path.Combine(gitDirectory, "config"));
 
-            AssertEx.Equal(new[]
+            AssertEx.SetEqual(new[]
             {
                 "c.n=cfg2|cfg3|cfg4|cfg5|cfg6|cfg7|cfg8|cfg9|cfg10",
                 "core.ignorecase=true",
                 "core.symlinks=false",
-                $"includeif.gitdir/i:~/**/.GIT/.path=cfg9",
                 $"includeif.gitdir/i:{repoDir}/**/.GIT/.path=cfg8",
+                $"includeif.gitdir/i:~/**/.GIT/.path=cfg9",
                 $"includeif.gitdir:..path=cfg0",
                 $"includeif.gitdir:./.path=cfg10",
                 $"includeif.gitdir:{repoDir}.path=cfg0",
@@ -239,7 +239,7 @@ a =
             var reader = new GitConfig.Reader(gitDirectory, commonDirectory, environment, File.OpenText);
             var gitConfig = reader.Load();
 
-            AssertEx.Equal(new[]
+            AssertEx.SetEqual(new[]
             {
                 "cfg.dir=" + expected
             }, Inspect(gitConfig));

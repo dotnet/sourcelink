@@ -270,7 +270,7 @@ namespace Microsoft.Build.Tasks.Git
                 }
                 catch
                 {
-                    throw new InvalidDataException(string.Format(Resources.InvalidReference, reference));
+                    return null;
                 }
 
                 string content;
@@ -279,6 +279,12 @@ namespace Microsoft.Build.Tasks.Git
                     content = ReadReferenceFromFile(path);
                 }
                 catch (Exception e) when (e is FileNotFoundException || e is DirectoryNotFoundException)
+                {
+                    return null;
+                }
+
+                // invalid path:
+                if (content == null)
                 {
                     return null;
                 }
@@ -306,6 +312,11 @@ namespace Microsoft.Build.Tasks.Git
             try
             {
                 return File.ReadAllText(path).TrimEnd(CharUtils.AsciiWhitespace);
+            }
+            catch (ArgumentException)
+            {
+                // bad path
+                return null;
             }
             catch (Exception e) when (!(e is IOException))
             {
