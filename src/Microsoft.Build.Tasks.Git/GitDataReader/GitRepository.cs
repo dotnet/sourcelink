@@ -283,9 +283,9 @@ namespace Microsoft.Build.Tasks.Git
                     return null;
                 }
 
-                if (IsObjectId(reference))
+                if (IsObjectId(content))
                 {
-                    return reference;
+                    return content;
                 }
 
                 lazyVisitedReferences ??= new HashSet<string>();

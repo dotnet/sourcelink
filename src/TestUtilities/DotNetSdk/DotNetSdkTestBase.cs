@@ -55,11 +55,13 @@ $@"<?xml version=""1.0"" encoding=""utf-8""?>
 </configuration>
 ";
 
+        protected readonly TempDirectory RootDir;
         protected readonly TempDirectory ProjectDir;
-        protected readonly TempDirectory ObjDir;
+        protected readonly TempDirectory ProjectObjDir;
         protected readonly TempDirectory NuGetCacheDir;
-        protected readonly TempDirectory OutDir;
+        protected readonly TempDirectory ProjectOutDir;
         protected readonly TempFile Project;
+        protected readonly string SourceRoot;
         protected readonly string ProjectSourceRoot;
         protected readonly string ProjectName;
         protected readonly string ProjectFileName;
@@ -72,6 +74,7 @@ $@"<?xml version=""1.0"" encoding=""utf-8""?>
         protected static readonly string s_relativeOutputFilePath = Path.Combine("obj", "Debug", "netstandard2.0", "test.dll");
         protected static readonly string s_relativePackagePath = Path.Combine("bin", "Debug", "test.1.0.0.nupkg");
 
+        private bool _projectRestored;
         private int _logIndex;
 
         static DotNetSdkTestBase()
@@ -163,25 +166,21 @@ $@"<Project>
             Configuration = "Debug";
             TargetFramework = "netstandard2.0";
 
-            ProjectDir = Temp.CreateDirectory();
-            ProjectSourceRoot = ProjectDir.Path + Path.DirectorySeparatorChar;
-            NuGetCacheDir = ProjectDir.CreateDirectory(".packages");
-            ObjDir = ProjectDir.CreateDirectory("obj");
-            OutDir = ProjectDir.CreateDirectory("bin").CreateDirectory(Configuration).CreateDirectory(TargetFramework);
+            RootDir = Temp.CreateDirectory();
+            NuGetCacheDir = RootDir.CreateDirectory(".packages");
 
-            Project = ProjectDir.CreateFile(ProjectFileName).WriteAllText(s_projectSource);
-            ProjectDir.CreateFile("TestClass.cs").WriteAllText(s_classSource);
-
-            ProjectDir.CreateFile("Directory.Build.props").WriteAllText(
+            RootDir.CreateFile("Directory.Build.props").WriteAllText(
 $@"<Project>
   <ItemGroup>
     {string.Join(Environment.NewLine, packages.Select(packageName => $"<PackageReference Include='{packageName}' Version='1.0.0-*' PrivateAssets='all' />"))}
   </ItemGroup>
 </Project>
 ");
-            ProjectDir.CreateFile("Directory.Build.targets").WriteAllText("<Project/>");
-            ProjectDir.CreateFile(".editorconfig").WriteAllText("root = true");
-            ProjectDir.CreateFile("nuget.config").WriteAllText(GetLocalNuGetConfigContent(s_buildInfo.PackagesDirectory));
+            RootDir.CreateFile("Directory.Build.targets").WriteAllText("<Project/>");
+            RootDir.CreateFile(".editorconfig").WriteAllText("root = true");
+            RootDir.CreateFile("nuget.config").WriteAllText(GetLocalNuGetConfigContent(s_buildInfo.PackagesDirectory));
+
+            SourceRoot = RootDir.Path + Path.DirectorySeparatorChar;
 
             EnvironmentVariables = new Dictionary<string, string>()
             {
@@ -190,13 +189,13 @@ $@"<Project>
                 { "NUGET_PACKAGES", NuGetCacheDir.Path }
             };
 
-            var restoreResult = ProcessUtilities.Run(DotNetPath, $@"msbuild ""{Project.Path}"" /t:restore /bl:{Path.Combine(ProjectDir.Path, "restore.binlog")}",
-                additionalEnvironmentVars: EnvironmentVariables);
-            Assert.True(restoreResult.ExitCode == 0, $"Failed with exit code {restoreResult.ExitCode}: {restoreResult.Output}");
+            ProjectDir = RootDir.CreateDirectory(ProjectName);
+            ProjectSourceRoot = ProjectDir.Path + Path.DirectorySeparatorChar;
+            ProjectObjDir = ProjectDir.CreateDirectory("obj");
+            ProjectOutDir = ProjectDir.CreateDirectory("bin").CreateDirectory(Configuration).CreateDirectory(TargetFramework);
 
-            Assert.True(File.Exists(Path.Combine(ObjDir.Path, "project.assets.json")));
-            Assert.True(File.Exists(Path.Combine(ObjDir.Path, ProjectFileName + ".nuget.g.props")));
-            Assert.True(File.Exists(Path.Combine(ObjDir.Path, ProjectFileName + ".nuget.g.targets")));
+            Project = ProjectDir.CreateFile(ProjectFileName).WriteAllText(s_projectSource);
+            ProjectDir.CreateFile("TestClass.cs").WriteAllText(s_classSource);
         }
 
         protected void VerifyValues(
@@ -207,25 +206,40 @@ $@"<Project>
             string[] expectedResults = null, 
             string[] expectedErrors = null, 
             string[] expectedWarnings = null,
-            string additionalCommandLineArgs = null)
+            string additionalCommandLineArgs = null,
+            string buildVerbosity = "minimal",
+            Func<string, bool> expectedBuildOutputFilter = null)
         {
             Debug.Assert(targets != null);
             Debug.Assert(expressions != null);
             Debug.Assert(expectedResults == null ^ expectedErrors == null);
 
-            var evaluationResultsFile = Path.Combine(OutDir.Path, "EvaluationResult.txt");
+            var evaluationResultsFile = Path.Combine(ProjectOutDir.Path, "EvaluationResult.txt");
 
-            EmitTestHelperProps(ObjDir.Path, ProjectFileName, customProps);
-            EmitTestHelperTargets(ObjDir.Path, evaluationResultsFile, ProjectFileName, expressions, customTargets);
+            EmitTestHelperProps(ProjectObjDir.Path, ProjectFileName, customProps);
+            EmitTestHelperTargets(ProjectObjDir.Path, evaluationResultsFile, ProjectFileName, expressions, customTargets);
 
             var targetsArg = string.Join(";", targets.Concat(new[] { "Test_EvaluateExpressions" }));
             var testBinDirectory = Path.GetDirectoryName(typeof(DotNetSdkTestBase).Assembly.Location);
-            var buildLog = Path.Combine(ProjectDir.Path, $"build{_logIndex++}.binlog");
+            var buildLog = Path.Combine(RootDir.Path, $"build{_logIndex++}.binlog");
 
             bool success = false;
             try
             {
-                var buildResult = ProcessUtilities.Run(DotNetPath, $@"msbuild ""{Project.Path}"" /t:{targetsArg} /p:Configuration={Configuration} /bl:""{buildLog}"" {additionalCommandLineArgs}",
+                if (!_projectRestored)
+                {
+                    var restoreResult = ProcessUtilities.Run(DotNetPath, $@"msbuild ""{Project.Path}"" /t:restore /bl:{Path.Combine(RootDir.Path, "restore.binlog")}",
+                        additionalEnvironmentVars: EnvironmentVariables);
+                    Assert.True(restoreResult.ExitCode == 0, $"Failed with exit code {restoreResult.ExitCode}: {restoreResult.Output}");
+
+                    Assert.True(File.Exists(Path.Combine(ProjectObjDir.Path, "project.assets.json")));
+                    Assert.True(File.Exists(Path.Combine(ProjectObjDir.Path, ProjectFileName + ".nuget.g.props")));
+                    Assert.True(File.Exists(Path.Combine(ProjectObjDir.Path, ProjectFileName + ".nuget.g.targets")));
+
+                    _projectRestored = true;
+                }
+
+                var buildResult = ProcessUtilities.Run(DotNetPath, $@"msbuild ""{Project.Path}"" /t:{targetsArg} /p:Configuration={Configuration} /bl:""{buildLog}"" /v:{buildVerbosity} {additionalCommandLineArgs}",
                     additionalEnvironmentVars: EnvironmentVariables);
 
                 string[] getDiagnostics(string[] lines, bool error)
@@ -245,7 +259,7 @@ $@"<Project>
                 }
 
                 var outputLines = buildResult.Output.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-
+                
                 if (expectedErrors == null)
                 {
                     Assert.True(buildResult.ExitCode == 0, $"Build failed with exit code {buildResult.ExitCode}: {buildResult.Output}");
@@ -264,13 +278,18 @@ $@"<Project>
                 var actualWarnings = getDiagnostics(outputLines, error: false);
                 AssertEx.Equal(expectedWarnings ?? Array.Empty<string>(), actualWarnings, diagnosticsEqual);
 
+                if (expectedBuildOutputFilter != null)
+                {
+                    Assert.True(outputLines.Any(expectedBuildOutputFilter));
+                }
+
                 success = true;
             }
             finally
             {
                 if (!success)
                 {
-                    try { File.Copy(buildLog, Path.Combine(s_buildInfo.LogDirectory, "test_build_" + Path.GetFileName(ProjectDir.Path) + ".binlog"), overwrite: true); } catch { }
+                    try { File.Copy(buildLog, Path.Combine(s_buildInfo.LogDirectory, "test_build_" + Path.GetFileName(RootDir.Path) + ".binlog"), overwrite: true); } catch { }
                 }
             }
         }

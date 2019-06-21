@@ -53,6 +53,60 @@ namespace Microsoft.SourceLink.IntegrationTests
         }
 
         [ConditionalFact(typeof(DotNetSdkAvailable))]
+        public void MutlipleProjects()
+        {
+            var repoUrl = "http://github.com/test-org/test-repo";
+            var repoName = "test-repo";
+
+            var projectName2 = "Project2";
+            var projectFileName2 = projectName2 + ".csproj";
+
+            var project2 = RootDir.CreateDirectory(projectName2).CreateFile(projectFileName2).WriteAllText(@"
+<Project Sdk='Microsoft.NET.Sdk'>
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+</Project>
+");
+
+            using var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(
+                RootDir.Path, 
+                new[] { Path.Combine(ProjectName, ProjectFileName), Path.Combine(projectName2, projectFileName2), }, 
+                repoUrl);
+
+            var commitSha = repo.Head.Tip.Sha;
+
+            VerifyValues(
+                customProps: $@"
+<ItemGroup>
+  <ProjectReference Include='{project2.Path}'/>
+</ItemGroup>
+",
+                customTargets: "",
+                targets: new[]
+                {
+                    "Build"
+                },
+                expressions: new[]
+                {
+                    "@(SourceRoot)",
+                    "@(SourceRoot->'%(SourceLinkUrl)')",
+                    "$(SourceLink)",
+                    "$(PrivateRepositoryUrl)",
+                },
+                expectedResults: new[]
+                {
+                    SourceRoot,
+                    $"https://raw.githubusercontent.com/test-org/{repoName}/{commitSha}/*",
+                    s_relativeSourceLinkJsonPath,
+                    $"http://github.com/test-org/{repoName}",
+                },
+                // the second project should reuse the repository info cached by the first project:
+                buildVerbosity: "detailed",
+                expectedBuildOutputFilter: line => line.Contains("SourceLink: Reusing cached git repository information."));
+        }
+
+        [ConditionalFact(typeof(DotNetSdkAvailable))]
         public void FullValidation_Https()
         {
             // Test non-ascii characters and escapes in the URL.
