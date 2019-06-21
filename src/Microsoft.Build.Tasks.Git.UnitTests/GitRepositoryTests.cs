@@ -212,7 +212,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             workingDir.CreateDirectory("sub6").CreateDirectory(".git");
             workingDir.CreateDirectory("sub7").CreateFile(".git").WriteAllText("xyz");
-            workingDir.CreateDirectory("sub8").CreateFile(".git").WriteAllText("gitdir: <>");
+            workingDir.CreateDirectory("sub8").CreateFile(".git").WriteAllText("gitdir: \0<>");
             workingDir.CreateDirectory("sub9").CreateFile(".git").WriteAllText("gitdir: ../.git/modules/sub9");
             workingDir.CreateDirectory("sub10").CreateFile(".git").WriteAllText("gitdir: ../.git/modules/sub10");
 
@@ -327,7 +327,11 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             Assert.Throws<InvalidDataException>(() => GitRepository.ResolveReference("ref: refs/heads/rec1", commonDir.Path));
             Assert.Throws<InvalidDataException>(() => GitRepository.ResolveReference("ref: xyz/heads/rec1", commonDir.Path));
-            Assert.Throws<InvalidDataException>(() => GitRepository.ResolveReference("ref: refs/heads/<>", commonDir.Path));
+#if NET461
+           Assert.Throws<InvalidDataException>(() => GitRepository.ResolveReference("ref: refs/heads/\0<>", commonDir.Path));
+#else
+           Assert.Throws<IOException>(() => GitRepository.ResolveReference("ref: refs/heads/\0<>", commonDir.Path));
+#endif
             Assert.Throws<InvalidDataException>(() => GitRepository.ResolveReference("ref:refs/heads/rec1", commonDir.Path));
             Assert.Throws<InvalidDataException>(() => GitRepository.ResolveReference("ref: refs/heads/rec1   ", commonDir.Path));
             Assert.Throws<InvalidDataException>(() => GitRepository.ResolveReference("refs/heads/rec1", commonDir.Path));

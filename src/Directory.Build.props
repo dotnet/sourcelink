@@ -7,12 +7,7 @@
     <Copyright>$(CopyrightMicrosoft)</Copyright>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <GenerateResxSource>true</GenerateResxSource>
-    
-    <!-- 
-      When building a .NET Core exe make sure to include the template runtimeconfig.json file 
-      which has all of our global settings 
-    -->
-    <UserRuntimeConfig Condition="'$(TargetFrameworkIdentifier)' == '.NETCoreApp' AND '$(OutputType)' == 'Exe'">$(RepositoryEngineeringDir)runtimeconfig.template.json</UserRuntimeConfig>
+    <UserRuntimeConfig Condition="$(TargetFramework.StartsWith('netcoreapp'))">$(RepositoryEngineeringDir)runtimeconfig.template.json</UserRuntimeConfig>
   </PropertyGroup>
 
   <!-- 
