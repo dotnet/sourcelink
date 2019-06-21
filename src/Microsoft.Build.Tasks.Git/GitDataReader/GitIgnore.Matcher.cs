@@ -28,7 +28,7 @@ namespace Microsoft.Build.Tasks.Git
             internal Matcher(GitIgnore ignore)
             {
                 Ignore = ignore;
-                _patternGroups = new Dictionary<string, PatternGroup>();
+                _patternGroups = new Dictionary<string, PatternGroup>(StringComparer.Ordinal);
                 _directoryIgnoreStateCache = new Dictionary<string, bool>(Ignore.PathComparer);
                 _reusableGroupList = new List<PatternGroup>();
             }

@@ -12,7 +12,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
     public class GitConfigTests
     {
         private static IEnumerable<string> Inspect(GitConfig config)
-            => config.EnumerateVariables().OrderBy(x => x.Key).Select(kvp => $"{kvp.Key}={string.Join("|", kvp.Value)}");
+            => config.EnumerateVariables().OrderBy(x => x.Key, StringComparer.Ordinal).Select(kvp => $"{kvp.Key}={string.Join("|", kvp.Value)}");
 
         private static GitConfig LoadFromString(string gitDirectory, string configPath, string configContent)
             => new GitConfig.Reader(gitDirectory, gitDirectory, new GitEnvironment(Path.GetTempPath()), _ => new StringReader(configContent)).
