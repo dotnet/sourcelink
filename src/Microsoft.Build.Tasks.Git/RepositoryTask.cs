@@ -13,10 +13,7 @@ namespace Microsoft.Build.Tasks.Git
 #if NET461
         static RepositoryTask() => AssemblyResolver.Initialize();
 #endif
-        private static readonly string s_cacheKey = "SourceLinkLocateRepository-3AE29AB7-AE6B-48BA-9851-98A15ED51C94";
-
-        [Required]
-        public string Directory { get; set; }
+        private static readonly string s_cacheKeyPrefix = "3AE29AB7-AE6B-48BA-9851-98A15ED51C94:";
 
         public sealed override bool Execute()
         {
@@ -46,6 +43,9 @@ namespace Microsoft.Build.Tasks.Git
 
         private protected abstract void Execute(GitRepository repository);
 
+        protected abstract string GetRepositoryId();
+        protected abstract string GetInitialPath();
+
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void ExecuteImpl()
         {
@@ -68,18 +68,46 @@ namespace Microsoft.Build.Tasks.Git
 
         private GitRepository GetOrCreateRepositoryInstance()
         {
-            var cachedEntry = (StrongBox<GitRepository>)BuildEngine4.GetRegisteredTaskObject(s_cacheKey, RegisteredTaskObjectLifetime.Build);
-            if (cachedEntry != null)
+            GitRepository repository;
+
+            var repositoryId = GetRepositoryId();
+            if (repositoryId != null)
             {
-                Log.LogMessage(MessageImportance.Low, $"SourceLink: Reusing cached git repository information.");
-                return cachedEntry.Value;
+                if (TryGetCachedRepositoryInstance(GetCacheKey(repositoryId), requireCached: true, out repository))
+                {
+                    return repository;
+                }
+
+                return null;
             }
 
-            GitRepository repository;
+            var initialPath = GetInitialPath();
+
+            GitRepositoryLocation location;
+            try
+            {
+                if (!GitRepository.TryFindRepository(initialPath, out location))
+                {
+                    Log.LogWarning(Resources.UnableToLocateRepository, initialPath);
+                    return null;
+                }
+            }
+            catch (Exception e) when (e is IOException || e is InvalidDataException || e is NotSupportedException)
+            {
+                Log.LogError(Resources.ErrorReadingGitRepositoryInformation, e.Message);
+                return null;
+            }
+
+            var cacheKey = GetCacheKey(location.GitDirectory);
+            if (TryGetCachedRepositoryInstance(cacheKey, requireCached: false, out repository))
+            {
+                return repository;
+            }
+
             try
             {
                 // TODO: configure environment
-                repository = GitRepository.OpenRepository(Directory, GitEnvironment.CreateFromProcessEnvironment());
+                repository = GitRepository.OpenRepository(location, GitEnvironment.CreateFromProcessEnvironment());
             }
             catch (Exception e) when (e is IOException || e is InvalidDataException || e is NotSupportedException)
             {
@@ -89,17 +117,45 @@ namespace Microsoft.Build.Tasks.Git
 
             if (repository?.WorkingDirectory == null)
             {
-                Log.LogWarning(Resources.UnableToLocateRepository, Directory);
+                Log.LogWarning(Resources.UnableToLocateRepository, initialPath);
                 repository = null;
             }
 
-            BuildEngine4.RegisterTaskObject(
-                s_cacheKey, 
-                new StrongBox<GitRepository>(repository),
-                RegisteredTaskObjectLifetime.Build,
-                allowEarlyCollection: true);
+            CacheRepositoryInstance(cacheKey, repository);
 
             return repository;
+        }
+
+        private string GetCacheKey(string repositoryId)
+            => s_cacheKeyPrefix + repositoryId;
+
+        private bool TryGetCachedRepositoryInstance(string cacheKey, bool requireCached, out GitRepository repository)
+        {
+            var entry = (StrongBox<GitRepository>)BuildEngine4.GetRegisteredTaskObject(cacheKey, RegisteredTaskObjectLifetime.Build);
+
+            if (entry != null)
+            {
+                Log.LogMessage(MessageImportance.Low, $"SourceLink: Reusing cached git repository information.");
+                repository = entry.Value;
+                return repository != null;
+            }
+
+            if (requireCached)
+            {
+                Log.LogError($"SourceLink: Repository instance not found in cache: '{cacheKey.Substring(s_cacheKeyPrefix.Length)}'");
+            }
+
+            repository = null;
+            return false;
+        }
+
+        private void CacheRepositoryInstance(string cacheKey, GitRepository repository)
+        {
+            BuildEngine4.RegisterTaskObject(
+                  cacheKey,
+                  new StrongBox<GitRepository>(repository),
+                  RegisteredTaskObjectLifetime.Build,
+                  allowEarlyCollection: true);
         }
     }
 }

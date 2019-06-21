@@ -10,8 +10,8 @@
     <!--
       Reports a warning if the given project doesn't belong to a repository under source control.
     -->
-    <Microsoft.Build.Tasks.Git.LocateRepository Directory="$(MSBuildProjectDirectory)" >
-      <Output TaskParameter="WorkingDirectory" PropertyName="_GitWorkingDirectory" />
+    <Microsoft.Build.Tasks.Git.LocateRepository Path="$(MSBuildProjectDirectory)" >
+      <Output TaskParameter="RepositoryId" PropertyName="_GitRepositoryId" />
       <Output TaskParameter="Url" PropertyName="ScmRepositoryUrl" />
       <Output TaskParameter="Roots" ItemName="SourceRoot" />
       <Output TaskParameter="RevisionId" PropertyName="SourceRevisionId" Condition="'$(SourceRevisionId)' == ''" />
@@ -29,7 +29,7 @@
   <Target Name="SetEmbeddedFilesFromSourceControlManagerUntrackedFiles"
           DependsOnTargets="InitializeSourceControlInformationFromSourceControlManager">
 
-    <Microsoft.Build.Tasks.Git.GetUntrackedFiles Directory="$(_GitWorkingDirectory)" ProjectDirectory="$(MSBuildProjectDirectory)" Files="@(Compile)">
+    <Microsoft.Build.Tasks.Git.GetUntrackedFiles RepositoryId="$(_GitRepositoryId)" ProjectDirectory="$(MSBuildProjectDirectory)" Files="@(Compile)">
       <Output TaskParameter="UntrackedFiles" ItemName="EmbeddedFiles" />
     </Microsoft.Build.Tasks.Git.GetUntrackedFiles>
   </Target>

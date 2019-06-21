@@ -8,6 +8,12 @@ namespace Microsoft.Build.Tasks.Git
     {
         public string RemoteName { get; set; }
 
+        [Required]
+        public string Path { get; set; }
+
+        [Output]
+        public string GitDirectory { get; private set; }
+
         [Output]
         public string WorkingDirectory { get; private set; }
 
@@ -33,6 +39,9 @@ namespace Microsoft.Build.Tasks.Git
         /// </summary>
         [Output]
         public string RevisionId { get; private set; }
+
+        protected override string GetRepositoryId() => null;
+        protected override string GetInitialPath() => Path;
 
         private protected override void Execute(GitRepository repository)
         {

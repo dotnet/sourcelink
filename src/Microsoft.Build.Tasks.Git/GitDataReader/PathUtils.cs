@@ -3,6 +3,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 namespace Microsoft.Build.Tasks.Git
 {
@@ -56,6 +57,9 @@ namespace Microsoft.Build.Tasks.Git
 
         public static bool IsDirectorySeparator(char c)
             => c == Path.DirectorySeparatorChar || c == Path.AltDirectorySeparatorChar;
+
+        public static bool IsNormalized(string path)
+            => Path.GetFullPath(path) == path;
 
         /// <summary>
         /// True if the path is an absolute path (rooted to drive or network share)

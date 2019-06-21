@@ -28,17 +28,17 @@ namespace Microsoft.Build.Tasks.Git
         public GitIgnore Ignore => _lazyIgnore.Value;
 
         /// <summary>
-        /// Full path.
+        /// Normalized full path. OS specific directory separators.
         /// </summary>
         public string GitDirectory { get; }
 
         /// <summary>
-        /// Full path.
+        /// Normalized full path. OS specific directory separators.
         /// </summary>
         public string CommonDirectory { get; }
 
         /// <summary>
-        /// Optional, full path.
+        /// Normalized full path. OS specific directory separators. Optional.
         /// </summary>
         public string WorkingDirectory { get; }
 
@@ -52,8 +52,9 @@ namespace Microsoft.Build.Tasks.Git
         {
             Debug.Assert(environment != null);
             Debug.Assert(config != null);
-            Debug.Assert(gitDirectory != null);
-            Debug.Assert(commonDirectory != null);
+            Debug.Assert(PathUtils.IsNormalized(gitDirectory));
+            Debug.Assert(PathUtils.IsNormalized(commonDirectory));
+            Debug.Assert(workingDirectory == null || PathUtils.IsNormalized(workingDirectory));
 
             Config = config;
             GitDirectory = gitDirectory;
@@ -85,32 +86,53 @@ namespace Microsoft.Build.Tasks.Git
         }
 
         /// <summary>
-        /// Finds a git repository contining the specified path, if any.
+        /// Finds a git repository containing the specified path, if any.
+        /// </summary>
+        /// <exception cref="IOException" />
+        /// <exception cref="InvalidDataException" />
+        /// <exception cref="NotSupportedException">The repository found requires higher version of git repository format that is currently supported.</exception>
+        /// <returns>False if no git repository can be found that contains the specified path.</returns>
+        public static bool TryFindRepository(string path, out GitRepositoryLocation location)
+        {
+            if (!LocateRepository(path, out var gitDirectory, out var commonDirectory, out var defaultWorkingDirectory))
+            {
+                // unable to find repository
+                location = default;
+                return false;
+            }
+
+            location = new GitRepositoryLocation(gitDirectory, commonDirectory, defaultWorkingDirectory);
+            return true;
+        }
+
+        /// <summary>
+        /// Opens a repository at the specified location.
         /// </summary>
         /// <exception cref="IOException" />
         /// <exception cref="InvalidDataException" />
         /// <exception cref="NotSupportedException">The repository found requires higher version of git repository format that is currently supported.</exception>
         /// <returns>null if no git repository can be found that contains the specified path.</returns>
-        public static GitRepository OpenRepository(string path, GitEnvironment environment)
+        internal static GitRepository OpenRepository(string path, GitEnvironment environment)
+            => TryFindRepository(path, out var location) ? OpenRepository(location, environment) : null;
+
+        /// <summary>
+        /// Opens a repository at the specified location.
+        /// </summary>
+        /// <exception cref="IOException" />
+        /// <exception cref="InvalidDataException" />
+        /// <exception cref="NotSupportedException">The repository found requires higher version of git repository format that is currently supported.</exception>
+        public static GitRepository OpenRepository(GitRepositoryLocation location, GitEnvironment environment)
         {
-            Debug.Assert(path != null);
             Debug.Assert(environment != null);
+            Debug.Assert(location.GitDirectory != null);
+            Debug.Assert(location.CommonDirectory != null);
 
             // See https://git-scm.com/docs/gitrepository-layout
 
-            if (!LocateRepository(path, out var gitDirectory, out var commonDirectory, out var defaultWorkingDirectory))
-            {
-                // unable to find repository
-                return null;
-            }
-
-            Debug.Assert(gitDirectory != null);
-            Debug.Assert(commonDirectory != null);
-
-            var reader = new GitConfig.Reader(gitDirectory, commonDirectory, environment);
+            var reader = new GitConfig.Reader(location.GitDirectory, location.CommonDirectory, environment);
             var config = reader.Load();
 
-            var workingDirectory = GetWorkingDirectory(config, gitDirectory, commonDirectory) ?? defaultWorkingDirectory;
+            var workingDirectory = GetWorkingDirectory(config, location.GitDirectory, location.CommonDirectory) ?? location.WorkingDirectory;
 
             // See https://github.com/git/git/blob/master/Documentation/technical/repository-version.txt
             string versionStr = config.GetVariableValue("core", "repositoryformatversion");
@@ -119,7 +141,7 @@ namespace Microsoft.Build.Tasks.Git
                 throw new NotSupportedException(string.Format(Resources.UnsupportedRepositoryVersion, versionStr, SupportedGitRepoFormatVersion));
             }
 
-            return new GitRepository(environment, config, gitDirectory, commonDirectory, workingDirectory);
+            return new GitRepository(environment, config, location.GitDirectory, location.CommonDirectory, workingDirectory);
         }
 
         // internal for testing

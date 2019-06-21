@@ -9,6 +9,8 @@ namespace Microsoft.Build.Tasks.Git
     /// </summary>
     public sealed class GetUntrackedFiles : RepositoryTask
     {
+        public string RepositoryId { get; set; }
+
         [Required]
         public ITaskItem[] Files { get; set; }
 
@@ -17,6 +19,9 @@ namespace Microsoft.Build.Tasks.Git
 
         [Output]
         public ITaskItem[] UntrackedFiles { get; private set; }
+
+        protected override string GetRepositoryId() => RepositoryId;
+        protected override string GetInitialPath() => ProjectDirectory;
 
         private protected override void Execute(GitRepository repository)
         {
