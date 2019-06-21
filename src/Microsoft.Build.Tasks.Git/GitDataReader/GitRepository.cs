@@ -235,21 +235,8 @@ namespace Microsoft.Build.Tasks.Git
         /// <exception cref="InvalidDataException"/>
         private static string ReadHeadCommitSha(string gitDirectory, string commonDirectory)
         {
-            // See
-            // https://git-scm.com/docs/gitrepository-layout#Documentation/gitrepository-layout.txt-HEAD
-            // https://git-scm.com/docs/gitrepository-layout#Documentation/gitrepository-layout.txt-refs
-
-            string headRef;
-            try
-            {
-                headRef = File.ReadAllText(Path.Combine(gitDirectory, GitHeadFileName)).TrimEnd(CharUtils.AsciiWhitespace);
-            }
-            catch (Exception e) when (!(e is IOException))
-            {
-                throw new IOException(e.Message, e);
-            }
-
-            return ResolveReference(headRef, commonDirectory);
+            // See https://git-scm.com/docs/gitrepository-layout#Documentation/gitrepository-layout.txt-HEAD
+            return ResolveReference(ReadReferenceFromFile(Path.Combine(gitDirectory, GitHeadFileName)), commonDirectory);
         }
 
         // internal for testing
@@ -263,6 +250,8 @@ namespace Microsoft.Build.Tasks.Git
         /// <exception cref="InvalidDataException"/>
         private static string ResolveReference(string reference, string commonDirectory, ref HashSet<string> lazyVisitedReferences)
         {
+            // See https://git-scm.com/docs/gitrepository-layout#Documentation/gitrepository-layout.txt-HEAD
+
             const string refPrefix = "ref: ";
             if (reference.StartsWith(refPrefix + "refs/", StringComparison.Ordinal))
             {
@@ -274,22 +263,24 @@ namespace Microsoft.Build.Tasks.Git
                     throw new InvalidDataException(string.Format(Resources.RecursionDetectedWhileResolvingReference, reference));
                 }
 
+                string path;
+                try
+                {
+                    path = Path.Combine(commonDirectory, symRef);
+                }
+                catch
+                {
+                    throw new InvalidDataException(string.Format(Resources.InvalidReference, reference));
+                }
+
                 string content;
                 try
                 {
-                    content = File.ReadAllText(Path.Combine(commonDirectory, symRef)).TrimEnd(CharUtils.AsciiWhitespace);
-                }
-                catch (ArgumentException)
-                {
-                    throw new InvalidDataException(string.Format(Resources.InvalidReference, reference));
+                    content = ReadReferenceFromFile(path);
                 }
                 catch (Exception e) when (e is FileNotFoundException || e is DirectoryNotFoundException)
                 {
                     return null;
-                }
-                catch (Exception e) when (!(e is IOException))
-                {
-                    throw new IOException(e.Message, e);
                 }
 
                 if (IsObjectId(reference))
@@ -308,6 +299,18 @@ namespace Microsoft.Build.Tasks.Git
             }
 
             throw new InvalidDataException(string.Format(Resources.InvalidReference, reference));
+        }
+
+        private static string ReadReferenceFromFile(string path)
+        {
+            try
+            {
+                return File.ReadAllText(path).TrimEnd(CharUtils.AsciiWhitespace);
+            }
+            catch (Exception e) when (!(e is IOException))
+            {
+                throw new IOException(e.Message, e);
+            }
         }
 
         private string GetWorkingDirectory()
