@@ -342,10 +342,10 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             var commonDir = temp.CreateDirectory();
             var refsHeadsDir = commonDir.CreateDirectory("refs").CreateDirectory("heads");
-            refsHeadsDir.CreateFile("master").WriteAllText("0000000000000000000000000000000000000000");
+            refsHeadsDir.CreateFile("master").WriteAllText("0000000000000000000000000000000000000000 \t\v\r\n");
 
             var gitDir = temp.CreateDirectory();
-            gitDir.CreateFile("HEAD").WriteAllText("ref: refs/heads/master");
+            gitDir.CreateFile("HEAD").WriteAllText("ref: refs/heads/master \t\v\r\n");
 
             var repository = new GitRepository(new GitEnvironment("/home"), GitConfig.Empty, gitDir.Path, commonDir.Path, workingDirectory: null);
             Assert.Equal("0000000000000000000000000000000000000000", repository.GetHeadCommitSha());

@@ -6,6 +6,7 @@
     <!-- Using an explicit nuspec file since NuGet Pack target currently doesn't support including dependencies in tools packages -->
     <IsPackable>true</IsPackable>
     <PackageId>Microsoft.Build.Tasks.Git</PackageId>
+    <BuildOutputTargetFolder>tools</BuildOutputTargetFolder>
 
     <PackageDescription>MSBuild tasks providing git repository information.</PackageDescription>
     <PackageTags>MSBuild Tasks source control git</PackageTags>

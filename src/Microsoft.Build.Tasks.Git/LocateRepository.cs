@@ -12,7 +12,7 @@ namespace Microsoft.Build.Tasks.Git
         public string Path { get; set; }
 
         [Output]
-        public string GitDirectory { get; private set; }
+        public string RepositoryId { get; private set; }
 
         [Output]
         public string WorkingDirectory { get; private set; }
@@ -45,6 +45,7 @@ namespace Microsoft.Build.Tasks.Git
 
         private protected override void Execute(GitRepository repository)
         {
+            RepositoryId = repository.GitDirectory;
             WorkingDirectory = repository.WorkingDirectory;
             Url = GitOperations.GetRepositoryUrl(repository, Log.LogWarning, RemoteName);
             Roots = GitOperations.GetSourceRoots(repository, Log.LogWarning);

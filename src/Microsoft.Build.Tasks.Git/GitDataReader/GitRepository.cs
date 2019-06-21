@@ -242,7 +242,7 @@ namespace Microsoft.Build.Tasks.Git
             string headRef;
             try
             {
-                headRef = File.ReadAllText(Path.Combine(gitDirectory, GitHeadFileName));
+                headRef = File.ReadAllText(Path.Combine(gitDirectory, GitHeadFileName)).TrimEnd(CharUtils.AsciiWhitespace);
             }
             catch (Exception e) when (!(e is IOException))
             {
@@ -277,7 +277,7 @@ namespace Microsoft.Build.Tasks.Git
                 string content;
                 try
                 {
-                    content = File.ReadAllText(Path.Combine(commonDirectory, symRef));
+                    content = File.ReadAllText(Path.Combine(commonDirectory, symRef)).TrimEnd(CharUtils.AsciiWhitespace);
                 }
                 catch (ArgumentException)
                 {
