@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
   <UsingTask TaskName="Microsoft.Build.Tasks.Git.LocateRepository" AssemblyFile="$(MicrosoftBuildTasksGitAssemblyFile)"/>
-  <UsingTask TaskName="Microsoft.Build.Tasks.Git.GetSourceRoots" AssemblyFile="$(MicrosoftBuildTasksGitAssemblyFile)"/>
-  <UsingTask TaskName="Microsoft.Build.Tasks.Git.GetRepositoryUrl" AssemblyFile="$(MicrosoftBuildTasksGitAssemblyFile)"/>
-  <UsingTask TaskName="Microsoft.Build.Tasks.Git.GetSourceRevisionId" AssemblyFile="$(MicrosoftBuildTasksGitAssemblyFile)" />
   <UsingTask TaskName="Microsoft.Build.Tasks.Git.GetUntrackedFiles" AssemblyFile="$(MicrosoftBuildTasksGitAssemblyFile)"/>
   
   <Target Name="InitializeSourceControlInformationFromSourceControlManager">
