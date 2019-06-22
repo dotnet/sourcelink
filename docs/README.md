@@ -217,10 +217,6 @@ for Source Link to operate properly.
 
   configuration file that specifies `origin` remote URL (e.g. `[remote "origin"] url="http://server.com/repo"`)
 
-- `.git/refs`, `/.git/objects`
-
-  empty directories
-
 If the repository has submodules the file `.gitmodules` must be present in the repository root and must list the URLs and 
 relative paths of all submodules.
 
@@ -237,10 +233,6 @@ The following additional files and directories must be present for each submodul
 - `.git/modules/submodule-name/HEAD`
 
   text file containing a commit SHA of the submodule
-
-- `.git/modules/submodule-name/refs`, `.git/modules/submodule-name/objects`
-
-  empty directories
 
 - `submodule-path/.git`
 
