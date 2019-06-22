@@ -11,6 +11,8 @@
     <PackageDescription>MSBuild tasks providing git repository information.</PackageDescription>
     <PackageTags>MSBuild Tasks source control git</PackageTags>
     <DevelopmentDependency>true</DevelopmentDependency>
+
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_GetTfmSpecificFilesToPackage</TargetsForTfmSpecificContentInPackage>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\Common\Names.cs" Link="Common\Names.cs" />
@@ -21,7 +23,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Build" Version="$(MicrosoftBuildVersion)" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Build.Tasks.Core" Version="$(MicrosoftBuildTasksCore)" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.DotNet.PlatformAbstractions" Version="$(MicrosoftDotNetPlatformAbstractionsVersion)" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Microsoft.Build.Tasks.Git.Operations" />
@@ -32,4 +33,10 @@
     <None Include="build/**/*.*" Pack="true" PackagePath="build/%(RecursiveDir)%(Filename)%(Extension)" />
     <None Include="build/**/*.*" Pack="true" PackagePath="buildCrossTargeting/%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
+
+  <Target Name="_GetTfmSpecificFilesToPackage" Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework'">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(TargetDir)System.Collections.Immutable.dll" PackagePath="tools/$(TargetFramework)/System.Collections.Immutable.dll"/>
+    </ItemGroup>
+  </Target>
 </Project>
