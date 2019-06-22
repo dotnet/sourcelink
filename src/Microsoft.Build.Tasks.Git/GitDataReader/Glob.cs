@@ -13,7 +13,7 @@ namespace Microsoft.Build.Tasks.Git
     // https://github.com/dotnet/corefx/issues/18922
     // https://github.com/dotnet/corefx/issues/25873
 
-    public static class Glob
+    internal static class Glob
     {
         internal static bool IsMatch(string pattern, string path, bool ignoreCase, bool matchWildCardWithDirectorySeparator)
         {
