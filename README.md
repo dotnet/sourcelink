@@ -52,7 +52,7 @@ For projects hosted by [GitHub](http://github.com) or [GitHub Enterprise](https:
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19270-01" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19324-01" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
@@ -62,7 +62,7 @@ For projects hosted by [Azure DevOps](https://www.visualstudio.com/team-services
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.Vsts.Git" Version="1.0.0-beta2-19270-01" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.Vsts.Git" Version="1.0.0-beta2-19324-01" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
@@ -73,7 +73,7 @@ For projects hosted by on-prem [Team Foundation Server](https://visualstudio.mic
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.Tfs.Git" Version="1.0.0-beta2-19270-01" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.Tfs.Git" Version="1.0.0-beta2-19324-01" PrivateAssets="All"/>
   <SourceLinkTfsGitHost Include="tfs-server-name" VirtualDirectory="tfs"/>
 </ItemGroup>
 ```
@@ -86,7 +86,7 @@ For projects hosted by [GitLab](https://gitlab.com) reference [Microsoft.SourceL
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.GitLab" Version="1.0.0-beta2-19270-01" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.GitLab" Version="1.0.0-beta2-19324-01" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
@@ -96,7 +96,7 @@ For projects in git repositories hosted on [Bitbucket.org](https://bitbucket.org
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.Bitbucket.Git" Version="1.0.0-beta2-19270-01" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.Bitbucket.Git" Version="1.0.0-beta2-19324-01" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
@@ -123,9 +123,9 @@ To add Source Link support to your native project add package references corresp
 
 ```xml
 <packages>
-  <package id="Microsoft.Build.Tasks.Git" version="1.0.0-beta2-19270-01" targetFramework="native" developmentDependency="true" />
-  <package id="Microsoft.SourceLink.Common" version="1.0.0-beta2-19270-01" targetFramework="native" developmentDependency="true" />
-  <package id="Microsoft.SourceLink.GitHub" version="1.0.0-beta2-19270-01" targetFramework="native" developmentDependency="true" />
+  <package id="Microsoft.Build.Tasks.Git" version="1.0.0-beta2-19324-01" targetFramework="native" developmentDependency="true" />
+  <package id="Microsoft.SourceLink.Common" version="1.0.0-beta2-19324-01" targetFramework="native" developmentDependency="true" />
+  <package id="Microsoft.SourceLink.GitHub" version="1.0.0-beta2-19324-01" targetFramework="native" developmentDependency="true" />
 </packages>
 ```
 
