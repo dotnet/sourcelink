@@ -70,9 +70,9 @@ jobs:
 - job: Linux
   strategy:
     matrix:
-      Ubuntu_Debug:
+      Debug:
         _configuration: Debug
-      Ubuntu_Release:
+      Release:
         _configuration: Release
 
   pool:
