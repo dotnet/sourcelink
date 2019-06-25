@@ -3,23 +3,31 @@
 # Stop script if unbound variable found (use ${var:-} if intentional)
 set -u
 
+# Stop script if command returns non-zero exit code.
+# Prevents hidden errors caused by missing error code propagation.
+set -e
+
 usage()
 {
   echo "Common settings:"
-  echo "  --configuration <value>    Build configuration: 'Debug' or 'Release' (short: --c)"
+  echo "  --configuration <value>    Build configuration: 'Debug' or 'Release' (short: -c)"
   echo "  --verbosity <value>        Msbuild verbosity: q[uiet], m[inimal], n[ormal], d[etailed], and diag[nostic] (short: -v)"
   echo "  --binaryLog                Create MSBuild binary log (short: -bl)"
-  echo ""
-  echo "Actions:"
-  echo "  --restore                  Restore dependencies (short: -r)"
-  echo "  --build                    Build all projects (short: -b)"
-  echo "  --rebuild                  Rebuild all projects"
-  echo "  --test                     Run all unit tests (short: -t)"
-  echo "  --sign                     Sign build outputs"
-  echo "  --publish                  Publish artifacts (e.g. symbols)"
-  echo "  --pack                     Package build outputs into NuGet packages and Willow components"
   echo "  --help                     Print help and exit (short: -h)"
   echo ""
+
+  echo "Actions:"
+  echo "  --restore                  Restore dependencies (short: -r)"
+  echo "  --build                    Build solution (short: -b)"
+  echo "  --rebuild                  Rebuild solution"
+  echo "  --test                     Run all unit tests in the solution (short: -t)"
+  echo "  --integrationTest          Run all integration tests in the solution"
+  echo "  --performanceTest          Run all performance tests in the solution"
+  echo "  --pack                     Package build outputs into NuGet packages and Willow components"
+  echo "  --sign                     Sign build outputs"
+  echo "  --publish                  Publish artifacts (e.g. symbols)"
+  echo ""
+
   echo "Advanced settings:"
   echo "  --projects <value>       Project or solution file(s) to build"
   echo "  --ci                     Set when running on CI server"
@@ -27,7 +35,8 @@ usage()
   echo "  --nodeReuse <value>      Sets nodereuse msbuild parameter ('true' or 'false')"
   echo "  --warnAsError <value>    Sets warnaserror msbuild parameter ('true' or 'false')"
   echo ""
-  echo "Command line arguments starting with '/p:' are passed through to MSBuild."
+  echo "Command line arguments not listed above are passed thru to msbuild."
+  echo "Arguments can also be passed in with a single hyphen."
 }
 
 source="${BASH_SOURCE[0]}"
@@ -46,10 +55,10 @@ restore=false
 build=false
 rebuild=false
 test=false
-pack=false
-publish=false
 integration_test=false
 performance_test=false
+pack=false
+publish=false
 sign=false
 public=false
 ci=false
@@ -57,114 +66,96 @@ ci=false
 warn_as_error=true
 node_reuse=true
 binary_log=false
+pipelines_log=false
 
 projects=''
 configuration='Debug'
 prepare_machine=false
 verbosity='minimal'
+
 properties=''
 
-docker=''
-args=''
-
 while [[ $# > 0 ]]; do
-  opt="$(echo "$1" | awk '{print tolower($0)}')"
+  opt="$(echo "${1/#--/-}" | awk '{print tolower($0)}')"
   case "$opt" in
-    --help|-h)
+    -help|-h)
       usage
       exit 0
       ;;
-    --configuration|-c)
+    -configuration|-c)
       configuration=$2
-      args="$args $1"
       shift
       ;;
-    --verbosity|-v)
+    -verbosity|-v)
       verbosity=$2
-      args="$args $1"
       shift
       ;;
-    --binarylog|-bl)
+    -binarylog|-bl)
       binary_log=true
       ;;
-    --restore|-r)
+    -pipelineslog|-pl)
+      pipelines_log=true
+      ;;
+    -restore|-r)
       restore=true
       ;;
-    --build|-b)
+    -build|-b)
       build=true
       ;;
-    --rebuild)
+    -rebuild)
       rebuild=true
       ;;
-    --pack)
+    -pack)
       pack=true
       ;;
-    --test|-t)
+    -test|-t)
       test=true
       ;;
-    --integrationtest)
+    -integrationtest)
       integration_test=true
       ;;
-    --performancetest)
+    -performancetest)
       performance_test=true
       ;;
-    --sign)
+    -sign)
       sign=true
       ;;
-    --publish)
+    -publish)
       publish=true
       ;;
-    --preparemachine)
+    -preparemachine)
       prepare_machine=true
       ;;
-    --projects)
+    -projects)
       projects=$2
-      args="$args $1"
       shift
       ;;
-    --ci)
+    -ci)
       ci=true
       ;;
-    --warnaserror)
+    -warnaserror)
       warn_as_error=$2
-      args="$args $1"
       shift
       ;;
-    --nodereuse)
+    -nodereuse)
       node_reuse=$2
-      args="$args $1"
       shift
-      ;;
-    --docker)
-      docker=$2
-      shift 2
-      continue
-      ;;
-    /p:*)
-      properties="$properties $1"
       ;;
     *)
-      echo "Invalid argument: $1"
-      usage
-      exit 1
+      properties="$properties $1"
       ;;
   esac
 
-  args="$args $1"
   shift
 done
 
 if [[ "$ci" == true ]]; then
+  pipelines_log=true
   binary_log=true
   node_reuse=false
 fi
 
 . "$scriptroot/tools.sh"
-
-if [[ -n "$docker" ]]; then
-  DockerRun "eng/common/build.sh" "$eng_root/common/docker/$docker" $args
-  exit
-fi
 
 function InitializeCustomToolset {
   local script="$eng_root/restore-toolset.sh"
@@ -178,8 +169,8 @@ function Build {
   InitializeToolset
   InitializeCustomToolset
 
-  if [[ -z $projects ]]; then
-    projects="$repo_root/*.sln"
+  if [[ ! -z "$projects" ]]; then
+    properties="$properties /p:Projects=$projects"
   fi
 
   local bl=""
@@ -190,7 +181,6 @@ function Build {
   MSBuild $_InitializeToolset \
     $bl \
     /p:Configuration=$configuration \
-    /p:Projects="$projects" \
     /p:RepoRoot="$repo_root" \
     /p:Restore=$restore \
     /p:Build=$build \
@@ -201,7 +191,6 @@ function Build {
     /p:PerformanceTest=$performance_test \
     /p:Sign=$sign \
     /p:Publish=$publish \
-    /p:ContinuousIntegrationBuild=$ci \
     $properties
 
   ExitWithExitCode 0
@@ -218,6 +207,10 @@ fi
 # Remove once repos are updated.
 if [[ -n "${useInstalledDotNetCli:-}" ]]; then
   use_installed_dotnet_cli="$useInstalledDotNetCli"
+fi
+
+if [[ "$restore" == true && -z ${DisableNativeToolsetInstalls:-} ]]; then
+  InitializeNativeTools
 fi
 
 Build
