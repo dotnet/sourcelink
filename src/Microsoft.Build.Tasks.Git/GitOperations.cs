@@ -15,6 +15,7 @@ namespace Microsoft.Build.Tasks.Git
     {
         private const string SourceControlName = "git";
         private const string RemoteSectionName = "remote";
+        private const string UrlSectionName = "url";
 
         public static string GetRepositoryUrl(GitRepository repository, Action<string, object[]> logWarning = null, string remoteName = null)
         {
@@ -40,7 +41,7 @@ namespace Microsoft.Build.Tasks.Git
                 logWarning?.Invoke(Resources.RepositoryDoesNotHaveSpecifiedRemote, new[] { unknownRemoteName, remoteName });
             }
 
-            var url = NormalizeUrl(remoteUrl, repository.WorkingDirectory);
+            var url = NormalizeUrl(repository.Config, remoteUrl, repository.WorkingDirectory);
             if (url == null)
             {
                 logWarning?.Invoke(Resources.InvalidRepositoryRemoteUrl, new[] { remoteName, remoteUrl });
@@ -72,6 +73,38 @@ namespace Microsoft.Build.Tasks.Git
             remoteUrl = remoteVariable.Value.Last();
             return true;
         }
+
+        internal static string ApplyInsteadOfUrlMapping(GitConfig config, string url)
+        {
+            // See https://git-scm.com/docs/git-config#Documentation/git-config.txt-urlltbasegtinsteadOf
+            // Notes:
+            //  - URL prefix matching is case sensitive.
+            //  - if the replacement is empty the URL is prefixed with the replacement string
+
+            int longestPrefixLength = -1;
+            string replacement = null;
+
+            foreach (var variable in config.Variables)
+            {
+                if (variable.Key.SectionNameEquals(UrlSectionName) && 
+                    variable.Key.VariableNameEquals("insteadOf"))
+                {
+                    foreach (var prefix in variable.Value)
+                    {
+                        if (prefix.Length > longestPrefixLength && url.StartsWith(prefix, StringComparison.Ordinal))
+                        {
+                            longestPrefixLength = prefix.Length;
+                            replacement = variable.Key.SubsectionName;
+                        }
+                    }
+                }
+            }
+
+            return (longestPrefixLength >= 0) ? replacement + url.Substring(longestPrefixLength) : url;
+        }
+
+        internal static string NormalizeUrl(GitConfig config, string url, string root)
+            => NormalizeUrl(ApplyInsteadOfUrlMapping(config, url), root);
 
         internal static string NormalizeUrl(string url, string root)
         {
@@ -181,7 +214,7 @@ namespace Microsoft.Build.Tasks.Git
                 }
 
                 // https://git-scm.com/docs/git-submodule
-                var submoduleUrl = NormalizeUrl(submodule.Url, repoRoot);
+                var submoduleUrl = NormalizeUrl(repository.Config, submodule.Url, repoRoot);
                 if (submoduleUrl == null)
                 {
                     logWarning(Resources.SourceCodeWontBeAvailableViaSourceLink, 

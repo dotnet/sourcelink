@@ -69,6 +69,10 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             => new GitConfig(ImmutableDictionary.CreateRange(
                 variables.Select(v => new KeyValuePair<GitVariableName, ImmutableArray<string>>(CreateVariableName(v.Name), ImmutableArray.Create(v.Value)))));
 
+        private static GitConfig CreateConfig(params (string Name, string[] Values)[] variables)
+            => new GitConfig(ImmutableDictionary.CreateRange(
+                variables.Select(v => new KeyValuePair<GitVariableName, ImmutableArray<string>>(CreateVariableName(v.Name), ImmutableArray.CreateRange(v.Values)))));
+
         [Fact]
         public void GetRepositoryUrl_NoRemotes()
         {
@@ -173,6 +177,20 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             }, warnings.Select(TestUtilities.InspectDiagnostic));
         }
 
+        [Fact]
+        public void GetRepositoryUrl_InsteadOf()
+        {
+            var repo = CreateRepository(config: new GitConfig(ImmutableDictionary.CreateRange(new[]
+            {
+                new KeyValuePair<GitVariableName, ImmutableArray<string>>(new GitVariableName("remote", "origin", "url"), ImmutableArray.Create("http://?")),
+                new KeyValuePair<GitVariableName, ImmutableArray<string>>(new GitVariableName("url", "git@github.com:org/repo", "insteadOf"), ImmutableArray.Create("http://?"))
+            })));
+
+            var warnings = new List<(string, object[])>();
+            Assert.Equal("ssh://git@github.com/org/repo", GitOperations.GetRepositoryUrl(repo, (message, args) => warnings.Add((message, args))));
+            Assert.Empty(warnings);
+        }
+
         [Theory]
         [InlineData("https://github.com/org/repo")]
         [InlineData("http://github.com/org/repo")]
@@ -255,6 +273,30 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             Assert.Equal(expectedUrl, GitOperations.NormalizeUrl(url, s_root));
         }
 
+        [Theory]
+        [InlineData("http://test.com/test-repo", "http", "ssh", "ssh://test.com/test-repo")]
+        [InlineData("http://test.com/test-repo", "", "pre-", "pre-http://test.com/test-repo")]
+        [InlineData("http://test.com/test-repo", "http", "", "://test.com/test-repo")]
+        [InlineData("http://test.com/test-repo", "Http://", "xxx", "http://test.com/test-repo")]
+        public void ApplyInsteadOfUrlMapping_Single(string url, string prefix, string replacement, string mappedUrl)
+        {
+            var config = CreateConfig(($"url.{replacement}.insteadOf", prefix));
+            var actualMappedUrl = GitOperations.ApplyInsteadOfUrlMapping(config, url);
+            Assert.Equal(mappedUrl, actualMappedUrl);
+        }
+
+        [Fact]
+        public void ApplyInsteadOfUrlMapping_Multiple()
+        {
+            var config = CreateConfig(
+                ("url.A.insteadOf", new[] { "http://github", "http:" }),
+                ("url.B.insteadOf", new[] { "http://" }),
+                ("url.C.insteadOf", new[] { "http:/" }));
+
+            var actualMappedUrl = GitOperations.ApplyInsteadOfUrlMapping(config, "http://github.com");
+            Assert.Equal("A.com", actualMappedUrl);
+        }
+
         [Fact]
         public void GetSourceRoots_RepoWithoutCommits()
         {
@@ -272,17 +314,18 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         {
             var repo = CreateRepository(
                 commitSha: null,
+                config: CreateConfig(("url.ssh://.insteadOf", "http://")),
                 submodules: ImmutableArray.Create(
                     CreateSubmodule("1", "sub/1", "http://1.com", "1111111111111111111111111111111111111111"),
-                    CreateSubmodule("1", "sub/2", "http://2.com", "2222222222222222222222222222222222222222")));
+                    CreateSubmodule("1", "sub/2", "http://2.com", "2222222222222222222222222222222222222222"))); ;
 
             var warnings = new List<(string, object[])>();
             var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
             {
-                $@"'{_workingDir}{s}sub{s}1{s}' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/1/' ContainingRoot='{_workingDir}{s}' ScmRepositoryUrl='http://1.com/'",
-                $@"'{_workingDir}{s}sub{s}2{s}' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='{_workingDir}{s}' ScmRepositoryUrl='http://2.com/'",
+                $@"'{_workingDir}{s}sub{s}1{s}' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/1/' ContainingRoot='{_workingDir}{s}' ScmRepositoryUrl='ssh://1.com/'",
+                $@"'{_workingDir}{s}sub{s}2{s}' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='{_workingDir}{s}' ScmRepositoryUrl='ssh://2.com/'",
             }, items.Select(TestUtilities.InspectSourceRoot));
 
             AssertEx.Equal(new[] { Resources.RepositoryHasNoCommit }, warnings.Select(TestUtilities.InspectDiagnostic));
