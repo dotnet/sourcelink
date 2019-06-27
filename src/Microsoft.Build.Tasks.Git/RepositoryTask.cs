@@ -4,16 +4,27 @@ using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using Microsoft.Build.Framework;
+using Microsoft.Build.Tasks.SourceControl;
 using Microsoft.Build.Utilities;
 
 namespace Microsoft.Build.Tasks.Git
 {
     public abstract class RepositoryTask : Task
     {
+        private static readonly string s_cacheKeyPrefix = "3AE29AB7-AE6B-48BA-9851-98A15ED51C94:";
+
+        /// <summary>
+        /// Sets the scope of git repository configuration. By default (no scope specified) configuration is read from environment variables
+        /// and system and global user git/ssh configuration files.
+        /// 
+        /// Supported values:
+        /// If "local" is specified the configuration is only read from the configuration files local to the repository (or work tree).
+        /// </summary>
+        public string ConfigurationScope { get; set; }
+
 #if NET461
         static RepositoryTask() => AssemblyResolver.Initialize();
 #endif
-        private static readonly string s_cacheKeyPrefix = "3AE29AB7-AE6B-48BA-9851-98A15ED51C94:";
 
         public sealed override bool Execute()
         {
@@ -49,15 +60,15 @@ namespace Microsoft.Build.Tasks.Git
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void ExecuteImpl()
         {
-            var repository = GetOrCreateRepositoryInstance();
-            if (repository == null)
-            {
-                // error has already been reported
-                return;
-            }
-
             try
             {
+                var repository = GetOrCreateRepositoryInstance();
+                if (repository == null)
+                {
+                    // error has already been reported
+                    return;
+                }
+
                 Execute(repository);
             }
             catch (Exception e) when (e is IOException || e is InvalidDataException || e is NotSupportedException)
@@ -84,17 +95,9 @@ namespace Microsoft.Build.Tasks.Git
             var initialPath = GetInitialPath();
 
             GitRepositoryLocation location;
-            try
+            if (!GitRepository.TryFindRepository(initialPath, out location))
             {
-                if (!GitRepository.TryFindRepository(initialPath, out location))
-                {
-                    Log.LogWarning(Resources.UnableToLocateRepository, initialPath);
-                    return null;
-                }
-            }
-            catch (Exception e) when (e is IOException || e is InvalidDataException || e is NotSupportedException)
-            {
-                Log.LogError(Resources.ErrorReadingGitRepositoryInformation, e.Message);
+                Log.LogWarning(Resources.UnableToLocateRepository, initialPath);
                 return null;
             }
 
@@ -106,8 +109,7 @@ namespace Microsoft.Build.Tasks.Git
 
             try
             {
-                // TODO: configure environment
-                repository = GitRepository.OpenRepository(location, GitEnvironment.CreateFromProcessEnvironment());
+                repository = GitRepository.OpenRepository(location, GitEnvironment.Create(ConfigurationScope));
             }
             catch (Exception e) when (e is IOException || e is InvalidDataException || e is NotSupportedException)
             {
@@ -127,7 +129,7 @@ namespace Microsoft.Build.Tasks.Git
         }
 
         private string GetCacheKey(string repositoryId)
-            => s_cacheKeyPrefix + repositoryId;
+            => s_cacheKeyPrefix + (string.IsNullOrEmpty(ConfigurationScope) ? "*" : ConfigurationScope) + ":" + repositoryId;
 
         private bool TryGetCachedRepositoryInstance(string cacheKey, bool requireCached, out GitRepository repository)
         {

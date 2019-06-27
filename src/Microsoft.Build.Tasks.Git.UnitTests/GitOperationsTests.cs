@@ -16,8 +16,6 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         private static readonly char s = Path.DirectorySeparatorChar;
         private static readonly string s_root = (s == '/') ? "/usr/src" : @"C:\src";
 
-        private static readonly GitEnvironment s_environment = new GitEnvironment("/home");
-
         private string _workingDir = s_root;
 
         private GitRepository CreateRepository(
@@ -30,7 +28,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             workingDir ??= _workingDir;
             var gitDir = Path.Combine(workingDir, ".git");
             return new GitRepository(
-                s_environment,
+                GitEnvironment.Empty,
                 config ?? GitConfig.Empty,
                 gitDir, 
                 gitDir,
@@ -78,7 +76,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         {
             var repo = CreateRepository();
             var warnings = new List<(string, object[])>();
-            Assert.Null(GitOperations.GetRepositoryUrl(repo, (message, args) => warnings.Add((message, args))));
+            Assert.Null(GitOperations.GetRepositoryUrl(repo, remoteName: null, logWarning: (message, args) => warnings.Add((message, args))));
             AssertEx.Equal(new[] { Resources.RepositoryHasNoRemote }, warnings.Select(TestUtilities.InspectDiagnostic));
         }
 
@@ -91,7 +89,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             var warnings = new List<(string, object[])>();
 
-            Assert.Equal("http://github.com/origin", GitOperations.GetRepositoryUrl(repo, (message, args) => warnings.Add((message, args))));
+            Assert.Equal("http://github.com/origin", GitOperations.GetRepositoryUrl(repo, remoteName: null, logWarning: (message, args) => warnings.Add((message, args))));
 
             Assert.Empty(warnings);
         }
@@ -105,7 +103,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             var warnings = new List<(string, object[])>();
 
-            Assert.Equal("http://github.com/abc", GitOperations.GetRepositoryUrl(repo, (message, args) => warnings.Add((message, args))));
+            Assert.Equal("http://github.com/abc", GitOperations.GetRepositoryUrl(repo, remoteName: null, logWarning: (message, args) => warnings.Add((message, args))));
 
             Assert.Empty(warnings);
         }
@@ -120,8 +118,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var warnings = new List<(string, object[])>();
 
             Assert.Equal("http://github.com/abc",
-                GitOperations.GetRepositoryUrl(repo, (message, args) => warnings.Add((message, args)),
-                remoteName: "abc"));
+                GitOperations.GetRepositoryUrl(repo, remoteName: "abc",
+                    logWarning: (message, args) => warnings.Add((message, args))));
 
             Assert.Empty(warnings);
         }
@@ -136,8 +134,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var warnings = new List<(string, object[])>();
 
             Assert.Equal("http://github.com/origin", 
-                GitOperations.GetRepositoryUrl(repo, (message, args) => warnings.Add((message, args)),
-                remoteName: "myremote"));
+                GitOperations.GetRepositoryUrl(repo, remoteName: "myremote",
+                    logWarning: (message, args) => warnings.Add((message, args))));
 
             AssertEx.Equal(new[]
             {
@@ -155,8 +153,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var warnings = new List<(string, object[])>();
 
             Assert.Equal("http://github.com/abc",
-                GitOperations.GetRepositoryUrl(repo, (message, args) => warnings.Add((message, args)),
-                remoteName: "myremote"));
+                GitOperations.GetRepositoryUrl(repo, remoteName: "myremote",
+                    logWarning: (message, args) => warnings.Add((message, args))));
 
             AssertEx.Equal(new[]
             {
@@ -170,7 +168,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var repo = CreateRepository(config: CreateConfig(("remote.origin.url", "http://?")));
 
             var warnings = new List<(string, object[])>();
-            Assert.Null(GitOperations.GetRepositoryUrl(repo, (message, args) => warnings.Add((message, args))));
+            Assert.Null(GitOperations.GetRepositoryUrl(repo, remoteName: null, logWarning: (message, args) => warnings.Add((message, args))));
             AssertEx.Equal(new[]
             {
                 string.Format(Resources.InvalidRepositoryRemoteUrl, "origin", "http://?")
@@ -187,7 +185,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             })));
 
             var warnings = new List<(string, object[])>();
-            Assert.Equal("ssh://git@github.com/org/repo", GitOperations.GetRepositoryUrl(repo, (message, args) => warnings.Add((message, args))));
+            Assert.Equal("ssh://git@github.com/org/repo", GitOperations.GetRepositoryUrl(repo, remoteName: null, logWarning: (message, args) => warnings.Add((message, args))));
             Assert.Empty(warnings);
         }
 
@@ -303,7 +301,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var repo = CreateRepository();
 
             var warnings = new List<(string, object[])>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
+            var items = GitOperations.GetSourceRoots(repo, remoteName: null, (message, args) => warnings.Add((message, args)));
 
             Assert.Empty(items);
             AssertEx.Equal(new[] { Resources.RepositoryHasNoCommit }, warnings.Select(TestUtilities.InspectDiagnostic));
@@ -320,7 +318,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     CreateSubmodule("1", "sub/2", "http://2.com", "2222222222222222222222222222222222222222"))); ;
 
             var warnings = new List<(string, object[])>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
+            var items = GitOperations.GetSourceRoots(repo, remoteName: null, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
             {
@@ -341,7 +339,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     CreateSubmodule("1", "sub/2", "http://2.com", "2222222222222222222222222222222222222222")));
 
             var warnings = new List<(string, object[])>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
+            var items = GitOperations.GetSourceRoots(repo, remoteName: null, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
             {
@@ -365,7 +363,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     CreateSubmodule("2", "sub/2", "../a", "2222222222222222222222222222222222222222")));
 
             var warnings = new List<(string, object[])>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
+            var items = GitOperations.GetSourceRoots(repo, remoteName: null, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
             {
@@ -389,7 +387,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     CreateSubmodule("%25ለ", "sub/%25ለ", "../a", "2222222222222222222222222222222222222222")));
 
             var warnings = new List<(string, object[])>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
+            var items = GitOperations.GetSourceRoots(repo, remoteName: null, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
             {
@@ -413,7 +411,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     CreateSubmodule("2", "sub/2", "../a", "2222222222222222222222222222222222222222")));
 
             var warnings = new List<(string, object[])>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
+            var items = GitOperations.GetSourceRoots(repo, remoteName: null, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
             {
@@ -437,7 +435,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     CreateSubmodule("%25ለ", "sub/%25ለ", "../a", "2222222222222222222222222222222222222222")));
 
             var warnings = new List<(string, object[])>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
+            var items = GitOperations.GetSourceRoots(repo, remoteName: null, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
             {
@@ -459,7 +457,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     CreateSubmodule("3", "sub/3", "http://3.com", "3333333333333333333333333333333333333333")));
 
             var warnings = new List<(string, object[])>();
-            var items = GitOperations.GetSourceRoots(repo, (message, args) => warnings.Add((message, args)));
+            var items = GitOperations.GetSourceRoots(repo, remoteName: null, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
             {

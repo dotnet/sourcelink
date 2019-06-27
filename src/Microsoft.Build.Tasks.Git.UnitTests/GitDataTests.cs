@@ -16,7 +16,6 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [Fact]
         public void MinimalGitData()
         {
-            var environment = new GitEnvironment("/home");
             var repoDir = Temp.CreateDirectory();
 
             var gitDir = repoDir.CreateDirectory(".git");
@@ -42,13 +41,13 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             gitDirSub.CreateDirectory("objects");
             gitDirSub.CreateDirectory("refs");
 
-            var repository = GitRepository.OpenRepository(repoDir.Path, environment);
+            var repository = GitRepository.OpenRepository(repoDir.Path, GitEnvironment.Empty);
 
-            Assert.Equal("http://github.com/test-org/test-repo", GitOperations.GetRepositoryUrl(repository));
+            Assert.Equal("http://github.com/test-org/test-repo", GitOperations.GetRepositoryUrl(repository, remoteName: null));
             Assert.Equal("1111111111111111111111111111111111111111", repository.GetHeadCommitSha());
 
             var warnings = new List<(string, object[])>();
-            var sourceRoots = GitOperations.GetSourceRoots(repository, (message, args) => warnings.Add((message, args)));
+            var sourceRoots = GitOperations.GetSourceRoots(repository, remoteName: null, (message, args) => warnings.Add((message, args)));
             AssertEx.Equal(new[]
             {
                 $@"'{repoDir.Path}{s}' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' ScmRepositoryUrl='http://github.com/test-org/test-repo'",
@@ -65,7 +64,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 new MockItem(@"sub\ignore_in_submodule_d"),
             };
 
-            var untrackedFiles = GitOperations.GetUntrackedFiles(repository, files, repoDir.Path, path => GitRepository.OpenRepository(path, environment));
+            var untrackedFiles = GitOperations.GetUntrackedFiles(repository, files, repoDir.Path, path => GitRepository.OpenRepository(path, GitEnvironment.Empty));
 
             AssertEx.Equal(new[]
             {

@@ -15,7 +15,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             => config.EnumerateVariables().Select(kvp => $"{kvp.Key}={string.Join("|", kvp.Value)}");
 
         private static GitConfig LoadFromString(string gitDirectory, string configPath, string configContent)
-            => new GitConfig.Reader(gitDirectory, gitDirectory, new GitEnvironment(Path.GetTempPath()), _ => new StringReader(configContent)).
+            => new GitConfig.Reader(gitDirectory, gitDirectory, GitEnvironment.Empty, _ => new StringReader(configContent)).
                LoadFrom(configPath);
 
         [Fact]
@@ -161,6 +161,21 @@ a =
         }
 
         [Fact]
+        public void ConditionalInclude_HomeNotSupported()
+        {
+            var gitDirectory = PathUtils.ToPosixPath(Path.Combine(Path.GetTempPath(), ".git")) + "/";
+
+            var config = @"
+[includeIf ""gitdir/i:~/**/.GIT/""]
+  path = xyz
+";
+
+            var reader = new GitConfig.Reader(gitDirectory, gitDirectory, GitEnvironment.Empty, _ => new StringReader(config));
+
+            Assert.Throws<NotSupportedException>(() => reader.LoadFrom(Path.Combine(gitDirectory, "config")));
+        }
+
+        [Fact]
         public void IncludeRecursion()
         {
             var gitDirectory = PathUtils.ToPosixPath(Path.Combine(Path.GetTempPath(), ".git")) + "/";
@@ -189,7 +204,7 @@ a =
                 });
             }
 
-            Assert.Throws<InvalidDataException>(() => new GitConfig.Reader(gitDirectory, gitDirectory, new GitEnvironment("/home"), openFile).LoadFrom(Path.Combine(gitDirectory, "config")));
+            Assert.Throws<InvalidDataException>(() => new GitConfig.Reader(gitDirectory, gitDirectory, GitEnvironment.Empty, openFile).LoadFrom(Path.Combine(gitDirectory, "config")));
         }
 
         [Theory]

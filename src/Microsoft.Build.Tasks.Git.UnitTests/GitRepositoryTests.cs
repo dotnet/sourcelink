@@ -143,7 +143,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         }
 
         [Fact]
-        public void OpenReopsitory_VersionNotSupported()
+        public void OpenRepository_VersionNotSupported()
         {
             using var temp = new TempRoot();
 
@@ -190,7 +190,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 [submodule ""S5""]         # ignore if url unspecified
 	path = s4
 ");
-            var repository = new GitRepository(new GitEnvironment("/home"), GitConfig.Empty, gitDir.Path, gitDir.Path, workingDir.Path);
+            var repository = new GitRepository(GitEnvironment.Empty, GitConfig.Empty, gitDir.Path, gitDir.Path, workingDir.Path);
 
             var submodules = GitRepository.EnumerateSubmoduleConfig(repository.ReadSubmoduleConfig());
             AssertEx.Equal(new[]
@@ -261,7 +261,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
   path = sub10
   url = http://github.com
 ");
-            var repository = new GitRepository(new GitEnvironment("/home"), GitConfig.Empty, gitDir.Path, gitDir.Path, workingDir.Path);
+            var repository = new GitRepository(GitEnvironment.Empty, GitConfig.Empty, gitDir.Path, gitDir.Path, workingDir.Path);
 
             var submodules = repository.GetSubmodules();
             AssertEx.Equal(new[]
@@ -348,7 +348,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var gitDir = temp.CreateDirectory();
             gitDir.CreateFile("HEAD").WriteAllText("ref: refs/heads/master \t\v\r\n");
 
-            var repository = new GitRepository(new GitEnvironment("/home"), GitConfig.Empty, gitDir.Path, commonDir.Path, workingDirectory: null);
+            var repository = new GitRepository(GitEnvironment.Empty, GitConfig.Empty, gitDir.Path, commonDir.Path, workingDirectory: null);
             Assert.Equal("0000000000000000000000000000000000000000", repository.GetHeadCommitSha());
         }
 
@@ -369,7 +369,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             submoduleRefsHeadsDir.CreateFile("master").WriteAllText("0000000000000000000000000000000000000000");
             submoduleGitDir.CreateFile("HEAD").WriteAllText("ref: refs/heads/master");
 
-            var repository = new GitRepository(new GitEnvironment("/home"), GitConfig.Empty, gitDir.Path, gitDir.Path, workingDir.Path);
+            var repository = new GitRepository(GitEnvironment.Empty, GitConfig.Empty, gitDir.Path, gitDir.Path, workingDir.Path);
             Assert.Equal("0000000000000000000000000000000000000000", repository.GetSubmoduleHeadCommitSha(submoduleWorkingDir.Path));
         }
     }
