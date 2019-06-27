@@ -121,7 +121,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             {
                 EnvironmentVariables.Add("MICROSOFT_SOURCELINK_TEST_ENVIRONMENT_ETC_DIR", homeDir.Path);
 
-                xdgDir.CreateFile("config").WriteAllText(@"[remote ""origin2""]url = http://github.com/test-org/test-repo2");
+                xdgDir.CreateDirectory("git").CreateFile("config").WriteAllText(@"[remote ""origin2""]url = http://github.com/test-org/test-repo2");
             }
             else
             {
