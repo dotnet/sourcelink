@@ -68,7 +68,7 @@ $@"<?xml version=""1.0"" encoding=""utf-8""?>
         protected readonly string Configuration;
         protected readonly string TargetFramework;
         protected readonly string DotNetPath;
-        protected readonly IReadOnlyDictionary<string, string> EnvironmentVariables;
+        protected readonly Dictionary<string, string> EnvironmentVariables;
 
         protected static readonly string s_relativeSourceLinkJsonPath = Path.Combine("obj", "Debug", "netstandard2.0", "test.sourcelink.json");
         protected static readonly string s_relativeOutputFilePath = Path.Combine("obj", "Debug", "netstandard2.0", "test.dll");

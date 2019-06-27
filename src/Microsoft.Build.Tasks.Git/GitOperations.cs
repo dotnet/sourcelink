@@ -17,7 +17,7 @@ namespace Microsoft.Build.Tasks.Git
         private const string RemoteSectionName = "remote";
         private const string UrlSectionName = "url";
 
-        public static string GetRepositoryUrl(GitRepository repository, Action<string, object[]> logWarning = null, string remoteName = null)
+        public static string GetRepositoryUrl(GitRepository repository, string remoteName, Action<string, object[]> logWarning = null)
         {
             string unknownRemoteName = null;
             string remoteUrl = null;
@@ -177,7 +177,7 @@ namespace Microsoft.Build.Tasks.Git
             return Uri.TryCreate(url, UriKind.Absolute, out uri);
         }
 
-        public static ITaskItem[] GetSourceRoots(GitRepository repository, Action<string, object[]> logWarning)
+        public static ITaskItem[] GetSourceRoots(GitRepository repository, string remoteName, Action<string, object[]> logWarning)
         {
             var result = new List<TaskItem>();
             var repoRoot = GetRepositoryRoot(repository);
@@ -186,7 +186,7 @@ namespace Microsoft.Build.Tasks.Git
             if (revisionId != null)
             {
                 // Don't report a warning since it has already been reported by GetRepositoryUrl task.
-                string repositoryUrl = GetRepositoryUrl(repository);
+                string repositoryUrl = GetRepositoryUrl(repository, remoteName, logWarning: null);
 
                 // Item metadata are stored msbuild-escaped. GetMetadata unescapes, SetMetadata stores the value as specified.
                 // Escape msbuild special characters so that URL escapes in the URL are preserved when the URL is read by GetMetadata.

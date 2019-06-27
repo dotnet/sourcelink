@@ -186,4 +186,10 @@
   <data name="RepositoryDoesNotHaveSpecifiedRemote" xml:space="preserve">
     <value>Repository does not have the specified remote '{0}'; using '{1}' instead.</value>
   </data>
+  <data name="ValueOfIsNotValidConfigurationScope" xml:space="preserve">
+    <value>The value of {0} is not a valid configuration scope: '{1}'.</value>
+  </data>
+  <data name="HomeRelativePathsAreNotAllowed" xml:space="preserve">
+    <value>Home relative paths are not allowed when {0} is '{1}': '{2}'</value>
+  </data>
 </root>

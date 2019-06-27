@@ -6,6 +6,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using Microsoft.Build.Tasks.SourceControl;
 
 namespace Microsoft.Build.Tasks.Git
 {
@@ -37,6 +38,7 @@ namespace Microsoft.Build.Tasks.Git
 
             /// <exception cref="IOException"/>
             /// <exception cref="InvalidDataException"/>
+            /// <exception cref="NotSupportedException"/>
             internal GitConfig Load()
             {
                 var variables = new Dictionary<GitVariableName, List<string>>();
@@ -51,6 +53,7 @@ namespace Microsoft.Build.Tasks.Git
 
             /// <exception cref="IOException"/>
             /// <exception cref="InvalidDataException"/>
+            /// <exception cref="NotSupportedException"/>
             internal GitConfig LoadFrom(string path)
             {
                 var variables = new Dictionary<GitVariableName, List<string>>();
@@ -65,10 +68,13 @@ namespace Microsoft.Build.Tasks.Git
                 {
                     return Path.Combine(xdgConfigHome, "git");
                 }
-                else
+                
+                if (_environment.HomeDirectory != null)
                 {
                     return Path.Combine(_environment.HomeDirectory, ".config", "git");
                 }
+
+                return null;
             }
 
             internal IEnumerable<string> EnumerateExistingConfigurationFiles()
@@ -84,28 +90,35 @@ namespace Microsoft.Build.Tasks.Git
                 }
 
                 // system
-                var systemDir = _environment.SystemDirectory;
+                var systemDir = GetSystemConfigurationDirectory();
                 if (systemDir != null)
                 {
                     var systemConfig = Path.Combine(systemDir, "gitconfig");
-                    if (systemConfig != null)
+                    if (File.Exists(systemConfig))
                     {
                         yield return systemConfig;
                     }
                 }
 
                 // XDG
-                var xdgConfig = Path.Combine(GetXdgDirectory(), "config");
-                if (File.Exists(xdgConfig))
+                var xdgDir = GetXdgDirectory();
+                if (xdgDir != null)
                 {
-                    yield return xdgConfig;
+                    var xdgConfig = Path.Combine(xdgDir, "config");
+                    if (File.Exists(xdgConfig))
+                    {
+                        yield return xdgConfig;
+                    }
                 }
 
                 // global (user home)
-                var globalConfig = Path.Combine(_environment.HomeDirectory, ".gitconfig");
-                if (File.Exists(globalConfig))
+                if (_environment.HomeDirectory != null)
                 {
-                    yield return globalConfig;
+                    var globalConfig = Path.Combine(_environment.HomeDirectory, ".gitconfig");
+                    if (File.Exists(globalConfig))
+                    {
+                        yield return globalConfig;
+                    }
                 }
 
                 // local
@@ -115,7 +128,29 @@ namespace Microsoft.Build.Tasks.Git
                     yield return localConfig;
                 }
 
-                // TODO: worktree config
+                // TODO: https://github.com/dotnet/sourcelink/issues/303 
+                // worktree config
+            }
+
+            private string GetSystemConfigurationDirectory()
+            {
+                if (_environment.SystemDirectory == null)
+                {
+                    return null;
+                }
+
+                if (!PathUtils.IsUnixLikePlatform)
+                {
+                    // Git for Windows stores gitconfig under [install dir]\mingw64\etc,
+                    // but other Git Windows implementations use [install dir]\etc.
+                    var mingwEtc = Path.Combine(_environment.SystemDirectory, "..", "mingw64", "etc");
+                    if (Directory.Exists(mingwEtc))
+                    {
+                        return mingwEtc;
+                    }
+                }
+
+                return _environment.SystemDirectory;
             }
 
             /// <exception cref="IOException"/>
@@ -204,7 +239,7 @@ namespace Microsoft.Build.Tasks.Git
                 string root;
                 if (relativePath.Length >= 2 && relativePath[0] == '~' && PathUtils.IsDirectorySeparator(relativePath[1]))
                 {
-                    root = _environment.HomeDirectory;
+                    root = _environment.GetHomeDirectoryForPathExpansion(relativePath);
                     relativePath = relativePath.Substring(2);
                 }
                 else
@@ -221,6 +256,7 @@ namespace Microsoft.Build.Tasks.Git
                     throw new InvalidDataException(string.Format(Resources.ValueOfIsNotValidPath, key.ToString(), relativePath));
                 }
             }
+
 
             private bool IsIncludePath(GitVariableName key, string configFilePath)
             {
@@ -256,20 +292,22 @@ namespace Microsoft.Build.Tasks.Git
                         return false;
                     }
 
-                    if (pattern.Length >= 2 && (pattern[0] == '.' || pattern[0] == '~') && PathUtils.IsDirectorySeparator(pattern[1]))
+                    if (pattern.Length >= 2 && pattern[0] == '.' && pattern[1] == '/')
                     {
                         // leading './' is substituted with the path to the directory containing the current config file.
+                        pattern = PathUtils.CombinePosixPaths(PathUtils.ToPosixPath(Path.GetDirectoryName(configFilePath)), pattern.Substring(2));
+                    }
+                    else if (pattern.Length >= 2 && pattern[0] == '~' && pattern[1] == '/')
+                    {
                         // leading '~/' is substituted with HOME path
-                        var root = (pattern[0] == '.') ? Path.GetDirectoryName(configFilePath) : _environment.HomeDirectory;
-
-                        pattern = PathUtils.CombinePosixPaths(PathUtils.ToPosixPath(root), pattern.Substring(2));
+                        pattern = PathUtils.CombinePosixPaths(PathUtils.ToPosixPath(_environment.GetHomeDirectoryForPathExpansion(pattern)), pattern.Substring(2));
                     }
                     else if (!PathUtils.IsAbsolute(pattern))
                     {
                         pattern = "**/" + pattern;
                     }
 
-                    if (PathUtils.IsDirectorySeparator(pattern[pattern.Length - 1]))
+                    if (pattern[pattern.Length - 1] == '/')
                     {
                         pattern += "**";
                     }

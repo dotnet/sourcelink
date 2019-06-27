@@ -17,6 +17,11 @@
         <target state="new">The format of the file '{0}' is invalid.</target>
         <note />
       </trans-unit>
+      <trans-unit id="HomeRelativePathsAreNotAllowed">
+        <source>Home relative paths are not allowed when {0} is '{1}': '{2}'</source>
+        <target state="new">Home relative paths are not allowed when {0} is '{1}': '{2}'</target>
+        <note />
+      </trans-unit>
       <trans-unit id="InvalidFormatOfFileAtPath">
         <source>Repository does not have a working directory.</source>
         <target state="new">Repository does not have a working directory.</target>
@@ -110,6 +115,11 @@
       <trans-unit id="UnsupportedRepositoryVersion">
         <source>Unsupported repository version {0}. Only versions up to {1} are supported.</source>
         <target state="new">Unsupported repository version {0}. Only versions up to {1} are supported.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ValueOfIsNotValidConfigurationScope">
+        <source>The value of {0} is not a valid configuration scope: '{1}'.</source>
+        <target state="new">The value of {0} is not a valid configuration scope: '{1}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfIsNotValidPath">

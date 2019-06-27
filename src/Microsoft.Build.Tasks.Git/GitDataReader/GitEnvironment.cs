@@ -4,17 +4,24 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Microsoft.Build.Tasks.SourceControl;
 
 namespace Microsoft.Build.Tasks.Git
 {
     internal sealed class GitEnvironment
     {
+        private const string LocalConfigurationScopeName = "local";
+        private const string GitRepositoryConfigurationScopeName = "GitRepositoryConfigurationScope";
+
+        public static readonly GitEnvironment Empty = new GitEnvironment();
+
         public string HomeDirectory { get; }
         public string XdgConfigHomeDirectory { get; }
         public string ProgramDataDirectory { get; }
         public string SystemDirectory { get; }
 
-        // TODO: consider adding environment variables: GIT_DIR, GIT_DISCOVERY_ACROSS_FILESYSTEM, GIT_CEILING_DIRECTORIES
+        // TODO: https://github.com/dotnet/sourcelink/issues/301
+        // consider adding environment variables: GIT_DIR, GIT_DISCOVERY_ACROSS_FILESYSTEM, GIT_CEILING_DIRECTORIES
         // https://git-scm.com/docs/git#Documentation/git.txt-codeGITDIRcode
         // https://git-scm.com/docs/git#Documentation/git.txt-codeGITCEILINGDIRECTORIEScode
         // https://git-scm.com/docs/git#Documentation/git.txt-codeGITDISCOVERYACROSSFILESYSTEMcode
@@ -26,14 +33,15 @@ namespace Microsoft.Build.Tasks.Git
         // https://git-scm.com/docs/git#Documentation/git.txt-codeGITWORKTREEcode
 
         public GitEnvironment(
-            string homeDirectory,
+            string homeDirectory = null,
             string xdgConfigHomeDirectory = null,
             string programDataDirectory = null,
             string systemDirectory = null)
         {
-            Debug.Assert(!string.IsNullOrEmpty(homeDirectory));
-
-            HomeDirectory = homeDirectory;
+            if (!string.IsNullOrWhiteSpace(homeDirectory))
+            {
+                HomeDirectory = homeDirectory;
+            }
 
             if (!string.IsNullOrWhiteSpace(xdgConfigHomeDirectory))
             {
@@ -51,19 +59,38 @@ namespace Microsoft.Build.Tasks.Git
             }
         }
 
+        public static GitEnvironment Create(string configurationScope)
+        {
+            if (string.IsNullOrEmpty(configurationScope))
+            {
+                return CreateFromProcessEnvironment();
+            }
+
+            if (string.Equals(configurationScope, LocalConfigurationScopeName, StringComparison.OrdinalIgnoreCase))
+            {
+                return Empty;
+            }
+
+            throw new NotSupportedException(string.Format(Resources.ValueOfIsNotValidConfigurationScope, GitRepositoryConfigurationScopeName, configurationScope));
+        }
+
         public static GitEnvironment CreateFromProcessEnvironment()
         {
-            var systemDir = PathUtils.IsUnixLikePlatform ? "/etc" : 
-                Path.Combine(FindWindowsGitInstallation(), "mingw64", "etc");
-
             return new GitEnvironment(
                 homeDirectory: Environment.GetFolderPath(Environment.SpecialFolder.UserProfile, Environment.SpecialFolderOption.DoNotVerify),
                 xdgConfigHomeDirectory: Environment.GetEnvironmentVariable("XDG_CONFIG_HOME"),
                 programDataDirectory: Environment.GetEnvironmentVariable("PROGRAMDATA"),
-                systemDirectory: systemDir);
+                systemDirectory: FindSystemDirectory());
         }
 
-        public static string FindWindowsGitInstallation()
+        private static string FindSystemDirectory()
+        {
+            return PathUtils.IsUnixLikePlatform ? 
+                (Environment.GetEnvironmentVariable("MICROSOFT_SOURCELINK_TEST_ENVIRONMENT_ETC_DIR") ?? "/etc") : 
+                Path.Combine(FindWindowsGitInstallation(), "etc");
+        }
+
+        private static string FindWindowsGitInstallation()
         {
             Debug.Assert(!PathUtils.IsUnixLikePlatform);
 
@@ -108,5 +135,9 @@ namespace Microsoft.Build.Tasks.Git
 #endif
             return null;
         }
+
+        internal string GetHomeDirectoryForPathExpansion(string path)
+            => HomeDirectory ?? throw new NotSupportedException(
+                string.Format(Resources.HomeRelativePathsAreNotAllowed, GitRepositoryConfigurationScopeName, LocalConfigurationScopeName, path));
     }
 }

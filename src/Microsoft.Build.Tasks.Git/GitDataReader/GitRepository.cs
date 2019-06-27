@@ -332,16 +332,19 @@ namespace Microsoft.Build.Tasks.Git
 
         /// <exception cref="IOException"/>
         /// <exception cref="InvalidDataException"/>
+        /// <exception cref="NotSupportedException"/>
         public ImmutableArray<GitSubmodule> GetSubmodules()
             => _lazySubmodules.Value.Submodules;
 
         /// <exception cref="IOException"/>
         /// <exception cref="InvalidDataException"/>
+        /// <exception cref="NotSupportedException"/>
         public ImmutableArray<string> GetSubmoduleDiagnostics()
             => _lazySubmodules.Value.Diagnostics;
 
         /// <exception cref="IOException"/>
         /// <exception cref="InvalidDataException"/>
+        /// <exception cref="NotSupportedException"/>
         private (ImmutableArray<GitSubmodule> Submodules, ImmutableArray<string> Diagnostics) ReadSubmodules()
         {
             var workingDirectory = GetWorkingDirectory();
@@ -470,8 +473,9 @@ namespace Microsoft.Build.Tasks.Git
 
             while (directory != null)
             {
-                // TODO: stop on device boundary
-                
+                // TODO: https://github.com/dotnet/sourcelink/issues/302
+                // stop on device boundary
+
                 var dotGitPath = Path.Combine(directory, GitDirName);
 
                 if (Directory.Exists(dotGitPath))
