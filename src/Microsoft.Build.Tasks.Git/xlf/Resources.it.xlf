@@ -18,8 +18,8 @@
         <note />
       </trans-unit>
       <trans-unit id="HomeRelativePathsAreNotAllowed">
-        <source>Home relative paths are not allowed when {0} is '{1}': '{2}'</source>
-        <target state="new">Home relative paths are not allowed when {0} is '{1}': '{2}'</target>
+        <source>Home relative paths are not allowed when {0} is '{1}': '{2}'.</source>
+        <target state="new">Home relative paths are not allowed when {0} is '{1}': '{2}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidFormatOfFileAtPath">
@@ -43,33 +43,33 @@
         <note />
       </trans-unit>
       <trans-unit id="InvalidSubmodulePath">
-        <source>The path of submodule '{0}' is missing or invalid: '{1}'</source>
-        <target state="new">The path of submodule '{0}' is missing or invalid: '{1}'</target>
+        <source>The path of submodule '{0}' is missing or invalid: '{1}'.</source>
+        <target state="new">The path of submodule '{0}' is missing or invalid: '{1}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidSubmoduleUrl">
-        <source>The URL of submodule '{0}' is missing or invalid: '{1}'</source>
-        <target state="new">The URL of submodule '{0}' is missing or invalid: '{1}'</target>
+        <source>The URL of submodule '{0}' is missing or invalid: '{1}'.</source>
+        <target state="new">The URL of submodule '{0}' is missing or invalid: '{1}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="PathMustBeAbsolute">
-        <source>Path must be absolute</source>
-        <target state="new">Path must be absolute</target>
+        <source>Path must be absolute.</source>
+        <target state="new">Path must be absolute.</target>
         <note />
       </trans-unit>
       <trans-unit id="PathMustBeFilePath">
-        <source>Path must be a file path</source>
-        <target state="new">Path must be a file path</target>
+        <source>Path must be a file path.</source>
+        <target state="new">Path must be a file path.</target>
         <note />
       </trans-unit>
       <trans-unit id="PathSpecifiedInFileIsInvalid">
-        <source>Path specified in file '{0}' is invalid.</source>
-        <target state="new">Path specified in file '{0}' is invalid.</target>
+        <source>Path specified in file '{0}' is invalid: '{1}'.</source>
+        <target state="new">Path specified in file '{0}' is invalid: '{1}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="PathSpecifiedInFileIsNotAbsolute">
-        <source>Path specified in file '{0}' is not absolute.</source>
-        <target state="new">Path specified in file '{0}' is not absolute.</target>
+        <source>Path specified in file '{0}' is not absolute: '{1}'.</source>
+        <target state="new">Path specified in file '{0}' is not absolute: '{1}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="RecursionDetectedWhileResolvingReference">
@@ -98,13 +98,13 @@
         <note />
       </trans-unit>
       <trans-unit id="SourceCodeWontBeAvailableViaSourceLink">
-        <source>{0} -- the source code won't be available via Source Link.</source>
-        <target state="new">{0} -- the source code won't be available via Source Link.</target>
+        <source>{0} The source code won't be available via Source Link.</source>
+        <target state="new">{0} The source code won't be available via Source Link.</target>
         <note />
       </trans-unit>
       <trans-unit id="SubmoduleWithoutCommit">
-        <source>Submodule '{0}' doesn't have any commit</source>
-        <target state="new">Submodule '{0}' doesn't have any commit</target>
+        <source>Submodule '{0}' doesn't have any commit.</source>
+        <target state="new">Submodule '{0}' doesn't have any commit.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnableToLocateRepository">

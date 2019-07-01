@@ -118,10 +118,10 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="PathMustBeAbsolute" xml:space="preserve">
-    <value>Path must be absolute</value>
+    <value>Path must be absolute.</value>
   </data>
   <data name="PathMustBeFilePath" xml:space="preserve">
-    <value>Path must be a file path</value>
+    <value>Path must be a file path.</value>
   </data>
   <data name="ErrorReadingGitRepositoryInformation" xml:space="preserve">
     <value>Error reading git repository information: {0}</value>
@@ -130,10 +130,10 @@
     <value>Unsupported repository version {0}. Only versions up to {1} are supported.</value>
   </data>
   <data name="PathSpecifiedInFileIsNotAbsolute" xml:space="preserve">
-    <value>Path specified in file '{0}' is not absolute.</value>
+    <value>Path specified in file '{0}' is not absolute: '{1}'.</value>
   </data>
   <data name="PathSpecifiedInFileIsInvalid" xml:space="preserve">
-    <value>Path specified in file '{0}' is invalid.</value>
+    <value>Path specified in file '{0}' is invalid: '{1}'.</value>
   </data>
   <data name="ValueOfIsNotValidPath" xml:space="preserve">
     <value>The value of {0} is not a valid path: '{1}'.</value>
@@ -160,16 +160,16 @@
     <value>Configuration file recursion exceeded maximum allowed depth of {0}.</value>
   </data>
   <data name="SubmoduleWithoutCommit" xml:space="preserve">
-    <value>Submodule '{0}' doesn't have any commit</value>
+    <value>Submodule '{0}' doesn't have any commit.</value>
   </data>
   <data name="InvalidSubmoduleUrl" xml:space="preserve">
-    <value>The URL of submodule '{0}' is missing or invalid: '{1}'</value>
+    <value>The URL of submodule '{0}' is missing or invalid: '{1}'.</value>
   </data>
   <data name="InvalidSubmodulePath" xml:space="preserve">
-    <value>The path of submodule '{0}' is missing or invalid: '{1}'</value>
+    <value>The path of submodule '{0}' is missing or invalid: '{1}'.</value>
   </data>
   <data name="SourceCodeWontBeAvailableViaSourceLink" xml:space="preserve">
-    <value>{0} -- the source code won't be available via Source Link.</value>
+    <value>{0} The source code won't be available via Source Link.</value>
   </data>
   <data name="RepositoryHasNoCommit" xml:space="preserve">
     <value>Repository has no commit.</value>
@@ -190,6 +190,6 @@
     <value>The value of {0} is not a valid configuration scope: '{1}'.</value>
   </data>
   <data name="HomeRelativePathsAreNotAllowed" xml:space="preserve">
-    <value>Home relative paths are not allowed when {0} is '{1}': '{2}'</value>
+    <value>Home relative paths are not allowed when {0} is '{1}': '{2}'.</value>
   </data>
 </root>

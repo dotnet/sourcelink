@@ -213,8 +213,9 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             workingDir.CreateDirectory("sub6").CreateDirectory(".git");
             workingDir.CreateDirectory("sub7").CreateFile(".git").WriteAllText("xyz");
             workingDir.CreateDirectory("sub8").CreateFile(".git").WriteAllText("gitdir: \0<>");
-            workingDir.CreateDirectory("sub9").CreateFile(".git").WriteAllText("gitdir: ../.git/modules/sub9");
+            workingDir.CreateDirectory("sub9").CreateFile(".git").WriteAllText("gitdir: ../.git/modules/sub9\r\n");
             workingDir.CreateDirectory("sub10").CreateFile(".git").WriteAllText("gitdir: ../.git/modules/sub10");
+            workingDir.CreateDirectory("sub11").CreateFile(".git").WriteAllText("gitdir: ../.git/modules/sub11 \t\v\r\n");
 
             workingDir.CreateFile(".gitmodules").WriteAllText(@"
 [submodule ""S1""]             # whitespace-only path
@@ -260,6 +261,10 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 [submodule ""S10""]            # sub10/.git points to directory that has commondir directory (it should be a file)
   path = sub10
   url = http://github.com
+
+[submodule ""S11""]            # trailing whitespace in path
+  path = sub11
+  url = http://github.com
 ");
             var repository = new GitRepository(GitEnvironment.Empty, GitConfig.Empty, gitDir.Path, gitDir.Path, workingDir.Path);
 
@@ -267,6 +272,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             AssertEx.Equal(new[]
             {
                 "S10: 'sub10' 'http://github.com'",
+                "S11: 'sub11' 'http://github.com'",
                 "S9: 'sub9' 'http://github.com'"
             }, submodules.Select(s => $"{s.Name}: '{s.WorkingDirectoryRelativePath}' '{s.Url}'"));
 
@@ -288,7 +294,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
               // The format of the file 'sub7\.git' is invalid.
               string.Format(Resources.FormatOfFileIsInvalid, Path.Combine(workingDir.Path, "sub7", ".git")),
               // Path specified in file 'sub8\.git' is invalid.
-              string.Format(Resources.PathSpecifiedInFileIsInvalid, Path.Combine(workingDir.Path, "sub8", ".git"))
+              string.Format(Resources.PathSpecifiedInFileIsInvalid, Path.Combine(workingDir.Path, "sub8", ".git"), "\0<>")
             }, diagnostics);
         }
 
@@ -363,7 +369,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var submoduleGitDir = temp.CreateDirectory();
 
             var submoduleWorkingDir = workingDir.CreateDirectory("sub").CreateDirectory("abc");
-            submoduleWorkingDir.CreateFile(".git").WriteAllText("gitdir: " + submoduleGitDir.Path);
+            submoduleWorkingDir.CreateFile(".git").WriteAllText("gitdir: " + submoduleGitDir.Path + "\t \v\f\r\n\n\r");
 
             var submoduleRefsHeadsDir = submoduleGitDir.CreateDirectory("refs").CreateDirectory("heads");
             submoduleRefsHeadsDir.CreateFile("master").WriteAllText("0000000000000000000000000000000000000000");
