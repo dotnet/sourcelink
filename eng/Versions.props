@@ -7,8 +7,7 @@
     <SemanticVersioningV1>true</SemanticVersioningV1>
     <!-- Opt-in repo features -->
     <UsingToolNetFrameworkReferenceAssemblies>true</UsingToolNetFrameworkReferenceAssemblies>
-    <!-- TODO: enable when we switch to snupkgs
-    <UsingToolSymbolUploader>true</UsingToolSymbolUploader> -->
+    <UsingToolSymbolUploader>true</UsingToolSymbolUploader>
     <XUnitVersion>2.4.1</XUnitVersion>
     <!-- 
       MSBuild: Keep the version at 15.7 until we can target net472.
@@ -18,12 +17,13 @@
     -->
     <MicrosoftBuildVersion>15.7.179</MicrosoftBuildVersion>
     <MicrosoftBuildTasksCore>15.7.179</MicrosoftBuildTasksCore>
-    <!-- Libs -->
-    <LibGit2SharpVersion>0.26.0-preview-0070</LibGit2SharpVersion>
     <MicrosoftTeamFoundationServerExtendedClientVersion>15.112.1</MicrosoftTeamFoundationServerExtendedClientVersion>
     <MicrosoftDotNetPlatformAbstractionsVersion>2.1.0</MicrosoftDotNetPlatformAbstractionsVersion>
     <NuGetVersioningVersion>4.9.2</NuGetVersioningVersion>
     <MicrosoftSourceLinkVersion>1.0.0-beta2-19322-03</MicrosoftSourceLinkVersion>
     <SystemValueTupleVersion>4.5.0</SystemValueTupleVersion>
-  </PropertyGroup>
+
+    <!-- libgit2 used for integration tests -->
+    <LibGit2SharpVersion>0.26.0-preview-0070</LibGit2SharpVersion>
+</PropertyGroup>
 </Project>
