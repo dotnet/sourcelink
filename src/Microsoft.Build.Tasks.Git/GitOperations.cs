@@ -110,8 +110,7 @@ namespace Microsoft.Build.Tasks.Git
         {
             // Since git supports scp-like syntax for SSH URLs we convert it here, 
             // so that RepositoryUrl is actually a valid URL in that case.
-            // See https://git-scm.com/book/en/v2/Git-on-the-Server-The-Protocols and
-            // https://github.com/libgit2/libgit2/blob/master/src/transport.c#L72.
+            // See https://git-scm.com/book/en/v2/Git-on-the-Server-The-Protocols.
 
             // Windows device path "X:"
             if (url.Length == 2 && IsWindowsAbsoluteOrDriveRelativePath(url))
