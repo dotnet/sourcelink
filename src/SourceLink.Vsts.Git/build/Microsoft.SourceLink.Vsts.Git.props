@@ -3,5 +3,6 @@
   <ItemGroup>
     <SourceLinkVstsGitHost Include="visualstudio.com" />
     <SourceLinkVstsGitHost Include="vsts.me" />
+    <SourceLinkVstsGitHost Include="dev.azure.com" />
   </ItemGroup>
 </Project>

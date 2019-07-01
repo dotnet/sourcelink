@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
 using System.IO;
+using Microsoft.SourceLink.Common;
 using TestUtilities;
+using Xunit;
 
 namespace Microsoft.SourceLink.IntegrationTests
 {
@@ -84,6 +86,118 @@ namespace Microsoft.SourceLink.IntegrationTests
                 type: "git",
                 commit: commitSha,
                 url: $"https://github.com/test-org/{repoName}");
+        }
+
+        [ConditionalTheory(typeof(DotNetSdkAvailable))]
+        [InlineData("visualstudio.com")]
+        [InlineData("vsts.me")]
+        public void Host_VisualStudio(string host)
+        {
+            // Test non - ascii characters and escapes in the URL.
+            // Escaped URI reserved characters should remain escaped, non-reserved characters unescaped in the results.
+            var repoUrl = $"https://test.{host}/test-org/_git/test-%72epo\u1234%24%2572%2F";
+            var repoName = "test-repo\u1234%24%2572%2F";
+
+            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var commitSha = repo.Head.Tip.Sha;
+
+            VerifyValues(
+                customProps: @"
+<PropertyGroup>
+  <PublishRepositoryUrl>true</PublishRepositoryUrl>
+</PropertyGroup>
+",
+                customTargets: "",
+                targets: new[]
+                {
+                    "Build", "Pack"
+                },
+                expressions: new[]
+                {
+                    "@(SourceRoot)",
+                    "@(SourceRoot->'%(SourceLinkUrl)')",
+                    "$(SourceLink)",
+                    "$(PrivateRepositoryUrl)",
+                    "$(RepositoryUrl)"
+                },
+                expectedResults: new[]
+                {
+                    ProjectSourceRoot,
+                    $"https://test.{host}/test-org/_apis/git/repositories/{repoName}/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*",
+                    s_relativeSourceLinkJsonPath,
+                    $"https://test.{host}/test-org/_git/{repoName}",
+                    $"https://test.{host}/test-org/_git/{repoName}",
+                });
+        }
+
+        [ConditionalTheory(typeof(DotNetSdkAvailable))]
+        [InlineData("dev.azure.com")]
+        public void Host_DevAzureCom(string host)
+        {
+            // Test non - ascii characters and escapes in the URL.
+            // Escaped URI reserved characters should remain escaped, non-reserved characters unescaped in the results.
+            var repoUrl = $"https://{host}/test/test-org/_git/test-%72epo\u1234%24%2572%2F";
+            var repoName = "test-repo\u1234%24%2572%2F";
+
+            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var commitSha = repo.Head.Tip.Sha;
+
+            VerifyValues(
+                customProps: @"
+<PropertyGroup>
+  <PublishRepositoryUrl>true</PublishRepositoryUrl>
+</PropertyGroup>
+",
+                customTargets: "",
+                targets: new[]
+                {
+                    "Build", "Pack"
+                },
+                expressions: new[]
+                {
+                    "@(SourceRoot)",
+                    "@(SourceRoot->'%(SourceLinkUrl)')",
+                    "$(SourceLink)",
+                    "$(PrivateRepositoryUrl)",
+                    "$(RepositoryUrl)"
+                },
+                expectedResults: new[]
+                {
+                    ProjectSourceRoot,
+                    $"https://{host}/test/test-org/_apis/git/repositories/{repoName}/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*",
+                    s_relativeSourceLinkJsonPath,
+                    $"https://{host}/test/test-org/_git/{repoName}",
+                    $"https://{host}/test/test-org/_git/{repoName}",
+                });
+        }
+
+
+        [ConditionalFact(typeof(DotNetSdkAvailable))]
+        public void Host_Unknown()
+        {
+            var repoUrl = $"https://contoso.com/test/test-org/_git/test-repo";
+
+            GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+
+            VerifyValues(
+                customProps: "",
+                customTargets: "",
+                targets: new[]
+                {
+                    "Build", "Pack"
+                },
+                expressions: new[]
+                {
+                    "@(SourceRoot->'%(SourceLinkUrl)')",
+                },
+                expectedResults: new[]
+                {
+                    "",
+                },
+                expectedWarnings: new[]
+                {
+                    string.Format(Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty)
+                });
         }
     }
 }
