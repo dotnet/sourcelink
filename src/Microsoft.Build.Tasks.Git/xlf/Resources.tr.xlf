@@ -63,13 +63,13 @@
         <note />
       </trans-unit>
       <trans-unit id="PathSpecifiedInFileIsInvalid">
-        <source>Path specified in file '{0}' is invalid.</source>
-        <target state="new">Path specified in file '{0}' is invalid.</target>
+        <source>Path specified in file '{0}' is invalid: '{1}'</source>
+        <target state="new">Path specified in file '{0}' is invalid: '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="PathSpecifiedInFileIsNotAbsolute">
-        <source>Path specified in file '{0}' is not absolute.</source>
-        <target state="new">Path specified in file '{0}' is not absolute.</target>
+        <source>Path specified in file '{0}' is not absolute: '{1}'.</source>
+        <target state="new">Path specified in file '{0}' is not absolute: '{1}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="RecursionDetectedWhileResolvingReference">

@@ -174,7 +174,7 @@ namespace Microsoft.Build.Tasks.Git
                 // Path in gitdir file must be absolute.
                 if (!PathUtils.IsAbsolute(workingDirectory))
                 {
-                    throw new InvalidDataException(string.Format(Resources.PathSpecifiedInFileIsNotAbsolute, gitdirFilePath));
+                    throw new InvalidDataException(string.Format(Resources.PathSpecifiedInFileIsNotAbsolute, gitdirFilePath, workingDirectory));
                 }
 
                 try
@@ -183,7 +183,7 @@ namespace Microsoft.Build.Tasks.Git
                 }
                 catch
                 {
-                    throw new InvalidDataException(string.Format(Resources.PathSpecifiedInFileIsInvalid, gitdirFilePath));
+                    throw new InvalidDataException(string.Format(Resources.PathSpecifiedInFileIsInvalid, gitdirFilePath, workingDirectory));
                 }
             }
 
@@ -533,8 +533,7 @@ namespace Microsoft.Build.Tasks.Git
                 throw new InvalidDataException(string.Format(Resources.FormatOfFileIsInvalid, path));
             }
 
-            // git does not trim whitespace:
-            var link = content.Substring(GitDirPrefix.Length);
+            var link = content.Substring(GitDirPrefix.Length).TrimEnd(CharUtils.AsciiWhitespace);
 
             try
             {
@@ -543,7 +542,7 @@ namespace Microsoft.Build.Tasks.Git
             }
             catch
             {
-                throw new InvalidDataException(string.Format(Resources.PathSpecifiedInFileIsInvalid, path));
+                throw new InvalidDataException(string.Format(Resources.PathSpecifiedInFileIsInvalid, path, link));
             }
         }
 
