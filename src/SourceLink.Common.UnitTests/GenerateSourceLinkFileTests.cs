@@ -137,5 +137,33 @@ namespace Microsoft.SourceLink.Common.UnitTests
 
             Assert.Null(content);
         }
+
+        [Fact]
+        public void DoesNotRewriteContentIfFileContentIsSame()
+        {
+            using var temp = new TempRoot();
+            var tempFile = temp.CreateFile();
+            
+            var engine = new MockEngine();
+            var task = new GenerateSourceLinkFile()
+            {
+                BuildEngine = engine,
+                SourceRoots = new[]
+                {
+                    new MockItem(@"/_""_/", KVP("SourceLinkUrl", "https://raw.githubusercontent.com/repo/*"), KVP("SourceControl", "git")),
+                },
+                OutputFile = tempFile.Path
+            };
+
+            var result = task.Execute();
+
+            var beforeWriteTime = File.GetLastWriteTime(tempFile.Path);
+
+            result = task.Execute();
+
+            var afterWriteTime = File.GetLastWriteTime(tempFile.Path);
+
+            Assert.Equal(beforeWriteTime, afterWriteTime);
+        }
     }
 }

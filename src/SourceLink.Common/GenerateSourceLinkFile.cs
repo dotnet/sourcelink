@@ -112,6 +112,16 @@ namespace Microsoft.SourceLink.Common
         {
             try
             {
+                if (File.Exists(OutputFile))
+                {
+                    var originalContent = File.ReadAllText(OutputFile);
+                    if (originalContent == content)
+                    {
+                        // Don't rewrite the file if the contents are the same
+                        return;
+                    }
+                }
+
                 File.WriteAllText(OutputFile, content);
             }
             catch (Exception e)
