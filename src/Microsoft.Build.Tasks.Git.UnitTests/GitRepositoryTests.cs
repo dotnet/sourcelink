@@ -299,50 +299,6 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         }
 
         [Fact]
-        public void ResolveReference()
-        {
-            using var temp = new TempRoot();
-
-            var commonDir = temp.CreateDirectory();
-            var refsHeadsDir = commonDir.CreateDirectory("refs").CreateDirectory("heads");
-
-            refsHeadsDir.CreateFile("master").WriteAllText("0000000000000000000000000000000000000000");
-            refsHeadsDir.CreateFile("br1").WriteAllText("ref: refs/heads/br2");
-            refsHeadsDir.CreateFile("br2").WriteAllText("ref: refs/heads/master");
-
-            Assert.Equal("0123456789ABCDEFabcdef000000000000000000", GitRepository.ResolveReference("0123456789ABCDEFabcdef000000000000000000", commonDir.Path));
-
-            Assert.Equal("0000000000000000000000000000000000000000", GitRepository.ResolveReference("ref: refs/heads/master", commonDir.Path));
-            Assert.Equal("0000000000000000000000000000000000000000", GitRepository.ResolveReference("ref: refs/heads/br1", commonDir.Path));
-            Assert.Equal("0000000000000000000000000000000000000000", GitRepository.ResolveReference("ref: refs/heads/br2", commonDir.Path));
-
-            // branch without commits (emtpy repository) will have not file in refs/heads:
-            Assert.Null(GitRepository.ResolveReference("ref: refs/heads/none", commonDir.Path));
-
-            Assert.Null(GitRepository.ResolveReference("ref: refs/heads/rec1   ", commonDir.Path));
-            Assert.Null(GitRepository.ResolveReference("ref: refs/heads/none" + string.Join("/", Path.GetInvalidPathChars()), commonDir.Path));
-        }
-
-        [Fact]
-        public void ResolveReference_Errors()
-        {
-            using var temp = new TempRoot();
-
-            var commonDir = temp.CreateDirectory();
-            var refsHeadsDir = commonDir.CreateDirectory("refs").CreateDirectory("heads");
-
-            refsHeadsDir.CreateFile("rec1").WriteAllText("ref: refs/heads/rec2");
-            refsHeadsDir.CreateFile("rec2").WriteAllText("ref: refs/heads/rec1");
-
-            Assert.Throws<InvalidDataException>(() => GitRepository.ResolveReference("ref: refs/heads/rec1", commonDir.Path));
-            Assert.Throws<InvalidDataException>(() => GitRepository.ResolveReference("ref: xyz/heads/rec1", commonDir.Path));
-            Assert.Throws<InvalidDataException>(() => GitRepository.ResolveReference("ref:refs/heads/rec1", commonDir.Path));
-            Assert.Throws<InvalidDataException>(() => GitRepository.ResolveReference("refs/heads/rec1", commonDir.Path));
-            Assert.Throws<InvalidDataException>(() => GitRepository.ResolveReference(new string('0', 39), commonDir.Path));
-            Assert.Throws<InvalidDataException>(() => GitRepository.ResolveReference(new string('0', 41), commonDir.Path));
-        }
-
-        [Fact]
         public void GetHeadCommitSha()
         {
             using var temp = new TempRoot();
@@ -376,7 +332,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             submoduleGitDir.CreateFile("HEAD").WriteAllText("ref: refs/heads/master");
 
             var repository = new GitRepository(GitEnvironment.Empty, GitConfig.Empty, gitDir.Path, gitDir.Path, workingDir.Path);
-            Assert.Equal("0000000000000000000000000000000000000000", repository.GetSubmoduleHeadCommitSha(submoduleWorkingDir.Path));
+            Assert.Equal("0000000000000000000000000000000000000000", repository.ReadSubmoduleHeadCommitSha(submoduleWorkingDir.Path));
         }
     }
 }
