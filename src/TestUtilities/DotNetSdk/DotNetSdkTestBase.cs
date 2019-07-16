@@ -262,14 +262,14 @@ $@"<Project>
                 
                 if (expectedErrors == null)
                 {
-                    Assert.True(buildResult.ExitCode == 0, $"Build failed with exit code {buildResult.ExitCode}: {buildResult.Output}");
+                    Assert.True(buildResult.ExitCode == 0, $"Build failed with exit code {buildResult.ExitCode}:{Environment.NewLine}{buildResult.Output}{Environment.NewLine}{buildResult.Errors}");
 
                     var evaluationResult = File.ReadAllLines(evaluationResultsFile).Select(l => (l != EmptyValueMarker) ? l : "");
                     AssertEx.Equal(expectedResults, evaluationResult);
                 }
                 else
                 {
-                    Assert.True(buildResult.ExitCode != 0, $"Build succeeded but should have failed: {buildResult.Output}");
+                    Assert.True(buildResult.ExitCode != 0, $"Build succeeded but should have failed:{Environment.NewLine}{buildResult.Output}{Environment.NewLine}{buildResult.Errors}");
 
                     var actualErrors = getDiagnostics(outputLines, error: true);
                     AssertEx.Equal(expectedErrors, actualErrors, diagnosticsEqual);

@@ -42,6 +42,9 @@ namespace Microsoft.Build.Tasks.Git
         public static string CombinePosixPaths(string root, string relativePath)
             => CombinePaths(root, relativePath, "/");
 
+        public static string CombinePaths(string root, string relativePath)
+            => CombinePaths(root, relativePath, DirectorySeparatorStr);
+
         public static string CombinePaths(string root, string relativePath, string separator)
         {
             Debug.Assert(!string.IsNullOrEmpty(root));
