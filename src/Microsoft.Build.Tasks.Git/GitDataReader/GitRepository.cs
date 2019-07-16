@@ -19,7 +19,7 @@ namespace Microsoft.Build.Tasks.Git
         private const string GitDirFileName = "gitdir";
 
         // See https://git-scm.com/docs/gitrepository-layout#Documentation/gitrepository-layout.txt-HEAD
-        private const string GitHeadFileName = "HEAD";
+        internal const string GitHeadFileName = "HEAD";
 
         private const string GitModulesFileName = ".gitmodules";
 
@@ -47,6 +47,7 @@ namespace Microsoft.Build.Tasks.Git
         private readonly Lazy<(ImmutableArray<GitSubmodule> Submodules, ImmutableArray<string> Diagnostics)> _lazySubmodules;
         private readonly Lazy<GitIgnore> _lazyIgnore;
         private readonly Lazy<string> _lazyHeadCommitSha;
+        private readonly GitReferenceResolver _referenceResolver;
 
         internal GitRepository(GitEnvironment environment, GitConfig config, string gitDirectory, string commonDirectory, string workingDirectory)
         {
@@ -62,9 +63,10 @@ namespace Microsoft.Build.Tasks.Git
             WorkingDirectory = workingDirectory;
             Environment = environment;
 
+            _referenceResolver = new GitReferenceResolver(gitDirectory, commonDirectory);
             _lazySubmodules = new Lazy<(ImmutableArray<GitSubmodule>, ImmutableArray<string>)>(ReadSubmodules);
             _lazyIgnore = new Lazy<GitIgnore>(LoadIgnore);
-            _lazyHeadCommitSha = new Lazy<string>(() => ReadHeadCommitSha(GitDirectory, CommonDirectory));
+            _lazyHeadCommitSha = new Lazy<string>(ReadHeadCommitSha);
         }
 
         // test only
@@ -214,13 +216,18 @@ namespace Microsoft.Build.Tasks.Git
         public string GetHeadCommitSha()
             => _lazyHeadCommitSha.Value;
 
+        /// <exception cref="IOException"/>
+        /// <exception cref="InvalidDataException"/>
+        private string ReadHeadCommitSha()
+            => _referenceResolver.ResolveHeadReference();
+
         /// <summary>
-        /// Returns the commit SHA of the current HEAD tip of the specified submodule.
+        /// Reads and resolves the commit SHA of the current HEAD tip of the specified submodule.
         /// </summary>
         /// <exception cref="IOException"/>
         /// <exception cref="InvalidDataException"/>
         /// <returns>Null if the HEAD tip reference can't be resolved.</returns>
-        internal string GetSubmoduleHeadCommitSha(string submoduleWorkingDirectoryFullPath)
+        internal string ReadSubmoduleHeadCommitSha(string submoduleWorkingDirectoryFullPath)
         {
             var gitDirectory = ReadDotGitFile(Path.Combine(submoduleWorkingDirectoryFullPath, GitDirName));
             if (!IsGitDirectory(gitDirectory, out var commonDirectory))
@@ -228,107 +235,12 @@ namespace Microsoft.Build.Tasks.Git
                 return null;
             }
 
-            return ReadHeadCommitSha(gitDirectory, commonDirectory);
-        }
-
-        /// <exception cref="IOException"/>
-        /// <exception cref="InvalidDataException"/>
-        private static string ReadHeadCommitSha(string gitDirectory, string commonDirectory)
-        {
-            // See https://git-scm.com/docs/gitrepository-layout#Documentation/gitrepository-layout.txt-HEAD
-            return ResolveReference(ReadReferenceFromFile(Path.Combine(gitDirectory, GitHeadFileName)), commonDirectory);
-        }
-
-        // internal for testing
-        internal static string ResolveReference(string reference, string commonDirectory)
-        {
-            HashSet<string> lazyVisitedReferences = null;
-            return ResolveReference(reference, commonDirectory, ref lazyVisitedReferences);
-        }
-
-        /// <exception cref="IOException"/>
-        /// <exception cref="InvalidDataException"/>
-        private static string ResolveReference(string reference, string commonDirectory, ref HashSet<string> lazyVisitedReferences)
-        {
-            // See https://git-scm.com/docs/gitrepository-layout#Documentation/gitrepository-layout.txt-HEAD
-
-            const string refPrefix = "ref: ";
-            if (reference.StartsWith(refPrefix + "refs/", StringComparison.Ordinal))
-            {
-                var symRef = reference.Substring(refPrefix.Length);
-
-                if (lazyVisitedReferences != null && !lazyVisitedReferences.Add(symRef))
-                {
-                    // infinite recursion
-                    throw new InvalidDataException(string.Format(Resources.RecursionDetectedWhileResolvingReference, reference));
-                }
-
-                string path;
-                try
-                {
-                    path = Path.Combine(commonDirectory, symRef);
-                }
-                catch
-                {
-                    return null;
-                }
-
-                string content;
-                try
-                {
-                    content = ReadReferenceFromFile(path);
-                }
-                catch (Exception e) when (e is FileNotFoundException || e is DirectoryNotFoundException)
-                {
-                    return null;
-                }
-
-                // invalid path:
-                if (content == null)
-                {
-                    return null;
-                }
-
-                if (IsObjectId(content))
-                {
-                    return content;
-                }
-
-                lazyVisitedReferences ??= new HashSet<string>();
-
-                return ResolveReference(content, commonDirectory, ref lazyVisitedReferences);
-            }
-
-            if (IsObjectId(reference))
-            {
-                return reference;
-            }
-
-            throw new InvalidDataException(string.Format(Resources.InvalidReference, reference));
-        }
-
-        private static string ReadReferenceFromFile(string path)
-        {
-            try
-            {
-                return File.ReadAllText(path).TrimEnd(CharUtils.AsciiWhitespace);
-            }
-            catch (ArgumentException)
-            {
-                // bad path
-                return null;
-            }
-            catch (Exception e) when (!(e is IOException))
-            {
-                throw new IOException(e.Message, e);
-            }
+            var resolver = new GitReferenceResolver(gitDirectory, commonDirectory);
+            return resolver.ResolveHeadReference();
         }
 
         private string GetWorkingDirectory()
             => WorkingDirectory ?? throw new InvalidOperationException(Resources.RepositoryDoesNotHaveWorkingDirectory);
-
-        private static bool IsObjectId(string reference)
-            => reference.Length == 40 && reference.All(CharUtils.IsHexadecimalDigit);
 
         /// <exception cref="IOException"/>
         /// <exception cref="InvalidDataException"/>
@@ -389,7 +301,7 @@ namespace Microsoft.Build.Tasks.Git
                 string headCommitSha;
                 try
                 {
-                    headCommitSha = GetSubmoduleHeadCommitSha(fullPath);
+                    headCommitSha = ReadSubmoduleHeadCommitSha(fullPath);
                 }
                 catch (Exception e) when (e is IOException || e is InvalidDataException)
                 {
