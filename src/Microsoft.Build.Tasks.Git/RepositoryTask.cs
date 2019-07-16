@@ -94,8 +94,7 @@ namespace Microsoft.Build.Tasks.Git
 
             var initialPath = GetInitialPath();
 
-            GitRepositoryLocation location;
-            if (!GitRepository.TryFindRepository(initialPath, out location))
+            if (!GitRepository.TryFindRepository(initialPath, out var location))
             {
                 Log.LogWarning(Resources.UnableToLocateRepository, initialPath);
                 return null;

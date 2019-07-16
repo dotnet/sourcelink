@@ -15,7 +15,9 @@ namespace Microsoft.Build.Tasks.Git
     {
         private const string SourceControlName = "git";
         private const string RemoteSectionName = "remote";
+        private const string RemoteOriginName = "origin";
         private const string UrlSectionName = "url";
+        private const string UrlVariableName = "url";
 
         public static string GetRepositoryUrl(GitRepository repository, string remoteName, Action<string, object[]> logWarning = null)
         {
@@ -23,7 +25,7 @@ namespace Microsoft.Build.Tasks.Git
             string remoteUrl = null;
             if (!string.IsNullOrEmpty(remoteName))
             {
-                remoteUrl = repository.Config.GetVariableValue(RemoteSectionName, remoteName, "url");
+                remoteUrl = repository.Config.GetVariableValue(RemoteSectionName, remoteName, UrlVariableName);
                 if (remoteUrl == null)
                 {
                     unknownRemoteName = remoteName;
@@ -52,15 +54,15 @@ namespace Microsoft.Build.Tasks.Git
 
         private static bool TryGetRemote(GitConfig config, out string remoteName, out string remoteUrl)
         {
-            remoteName = "origin";
-            remoteUrl = config.GetVariableValue(RemoteSectionName, remoteName, "url");
+            remoteName = RemoteOriginName;
+            remoteUrl = config.GetVariableValue(RemoteSectionName, remoteName, UrlVariableName);
             if (remoteUrl != null)
             {
                 return true;
             }
 
             var remoteVariable = config.Variables.
-                Where(kvp => kvp.Key.SectionNameEquals(RemoteSectionName)).
+                Where(kvp => kvp.Key.SectionNameEquals(RemoteSectionName) && kvp.Key.VariableNameEquals(UrlVariableName)).
                 OrderBy(kvp => kvp.Key.SubsectionName, GitVariableName.SubsectionNameComparer).
                 FirstOrDefault();
 
