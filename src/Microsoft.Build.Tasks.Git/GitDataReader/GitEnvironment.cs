@@ -76,63 +76,75 @@ namespace Microsoft.Build.Tasks.Git
 
         public static GitEnvironment CreateFromProcessEnvironment()
         {
-            return new GitEnvironment(
-                homeDirectory: Environment.GetFolderPath(Environment.SpecialFolder.UserProfile, Environment.SpecialFolderOption.DoNotVerify),
-                xdgConfigHomeDirectory: Environment.GetEnvironmentVariable("XDG_CONFIG_HOME"),
-                programDataDirectory: Environment.GetEnvironmentVariable("PROGRAMDATA"),
-                systemDirectory: FindSystemDirectory());
-        }
+            static string getVariable(string name)
+            {
+                try
+                {
+                    return Environment.GetEnvironmentVariable(name);
+                }
+                catch
+                {
+                    return null;
+                }
+            }
 
-        private static string FindSystemDirectory()
-        {
-            return PathUtils.IsUnixLikePlatform ? 
-                (Environment.GetEnvironmentVariable("MICROSOFT_SOURCELINK_TEST_ENVIRONMENT_ETC_DIR") ?? "/etc") : 
-                Path.Combine(FindWindowsGitInstallation(), "etc");
-        }
-
-        private static string FindWindowsGitInstallation()
-        {
-            Debug.Assert(!PathUtils.IsUnixLikePlatform);
-
-            string[] paths;
+            string homeDirectory;
             try
             {
-                paths = Environment.GetEnvironmentVariable("PATH").Split(Path.PathSeparator);
+                homeDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile, Environment.SpecialFolderOption.DoNotVerify);
             }
             catch
             {
-                paths = Array.Empty<string>();
+                homeDirectory = null;
             }
 
-            var gitExe = paths.FirstOrDefault(dir => File.Exists(Path.Combine(dir, "git.exe")));
+            return new GitEnvironment(
+                homeDirectory: homeDirectory,
+                xdgConfigHomeDirectory: getVariable("XDG_CONFIG_HOME"),
+                programDataDirectory: getVariable("PROGRAMDATA"),
+                systemDirectory: FindSystemDirectory(getVariable("PATH"), getVariable("MICROSOFT_SOURCELINK_TEST_ENVIRONMENT_ETC_DIR")));
+        }
+
+        // internal for testing
+        internal static string FindSystemDirectory(string pathList, string unixEtcDir)
+        {
+            if (PathUtils.IsUnixLikePlatform)
+            {
+                return string.IsNullOrEmpty(unixEtcDir) ? "/etc" : unixEtcDir;
+            }
+
+            var gitInstallDir = FindWindowsGitInstallation(pathList);
+            if (gitInstallDir != null)
+            {
+                return Path.Combine(gitInstallDir, "etc");
+            }
+
+            return null;
+        }
+
+        private static string FindWindowsGitInstallation(string pathList)
+        {
+            Debug.Assert(!PathUtils.IsUnixLikePlatform);
+
+            if (string.IsNullOrEmpty(pathList))
+            {
+                return null;
+            }
+
+            var paths = pathList.Split(Path.PathSeparator);
+
+            var gitExe = paths.FirstOrDefault(dir => !string.IsNullOrWhiteSpace(dir) && File.Exists(PathUtils.CombinePaths(dir, "git.exe")));
             if (gitExe != null)
             {
                 return Path.GetDirectoryName(gitExe);
             }
 
-            var gitCmd = paths.FirstOrDefault(dir => File.Exists(Path.Combine(dir, "git.cmd")));
+            var gitCmd = paths.FirstOrDefault(dir => !string.IsNullOrWhiteSpace(dir) && File.Exists(PathUtils.CombinePaths(dir, "git.cmd")));
             if (gitCmd != null)
             {
                 return Path.GetDirectoryName(gitCmd);
             }
 
-#if REGISTRY // TODO
-            string registryInstallLocation;
-            try
-            {
-                using var regKey = Registry.LocalMachine.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Uninstall\Git_is1");
-                registryInstallLocation = regKey?.GetValue("InstallLocation") as string;
-            }
-            catch
-            {
-                registryInstallLocation = null;
-            }
-
-            if (registryInstallLocation != null)
-            {
-                yield return Path.Combine(registryInstallLocation, subdirectory);
-            }
-#endif
             return null;
         }
 
