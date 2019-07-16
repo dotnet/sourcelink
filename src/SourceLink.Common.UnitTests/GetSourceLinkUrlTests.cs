@@ -14,6 +14,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
         [InlineData("contoso.com/a?x=2")]
         [InlineData("contoso.com/x")]
         [InlineData("a@contoso.com")]
+        [InlineData("file:///D:/contoso")]
         [InlineData("http://contoso.com")]
         [InlineData("http://contoso.com/a")]
         [InlineData("http://a@contoso.com")]
@@ -56,6 +57,28 @@ namespace Microsoft.SourceLink.Common.UnitTests
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
                 "ERROR : " + string.Format(CommonResources.ValuePassedToTaskParameterNotValidUri, "RepositoryUrl", repositoryUrl), engine.Log);
+
+            Assert.False(result);
+        }
+
+        [Theory]
+        [InlineData("file:///D:/a/b")]
+        public void ImplicitHost_Local(string repositoryUrl)
+        {
+            var engine = new MockEngine();
+
+            var task = new MockGetSourceLinkUrlGitTask()
+            {
+                BuildEngine = engine,
+                SourceRoot = new MockItem("x", KVP("RepositoryUrl", "http://abc.com"), KVP("SourceControl", "git")),
+                RepositoryUrl = repositoryUrl,
+                IsSingleProvider = true,
+            };
+
+            bool result = task.Execute();
+
+            AssertEx.AssertEqualToleratingWhitespaceDifferences(
+                "ERROR : " + string.Format(CommonResources.ValuePassedToTaskParameterNotValidHostUri, "RepositoryUrl", repositoryUrl), engine.Log);
 
             Assert.False(result);
         }

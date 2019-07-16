@@ -103,7 +103,7 @@ namespace Microsoft.Build.Tasks.SourceControl
                 return;
             }
 
-            bool IsHexDigit(char c)
+            static bool IsHexDigit(char c)
                 => c >= '0' && c <= '9' || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F';
 
             string revisionId = SourceRoot.GetMetadata(Names.SourceRoot.RevisionId);
@@ -149,8 +149,8 @@ namespace Microsoft.Build.Tasks.SourceControl
 
         private IEnumerable<UrlMapping> GetUrlMappings(Uri gitUri)
         {
-            bool isValidContentUri(Uri uri)
-                => uri.Query == "" && uri.UserInfo == "";
+            static bool isValidContentUri(Uri uri)
+                => uri.GetHost() != "" && uri.Query == "" && uri.UserInfo == "";
 
             if (Hosts != null)
             {
@@ -186,7 +186,16 @@ namespace Microsoft.Build.Tasks.SourceControl
             {
                 if (Uri.TryCreate(RepositoryUrl, UriKind.Absolute, out var uri))
                 {
-                    yield return new UrlMapping(uri.GetHost(), hostItem: null, uri.GetExplicitPort(), GetDefaultContentUriFromRepositoryUri(uri), hasDefaultContentUri: true);
+                    // If the URL is a local path the host will be empty.
+                    var host = uri.GetHost();
+                    if (host != "")
+                    {
+                        yield return new UrlMapping(host, hostItem: null, uri.GetExplicitPort(), GetDefaultContentUriFromRepositoryUri(uri), hasDefaultContentUri: true);
+                    }
+                    else
+                    {
+                        Log.LogError(CommonResources.ValuePassedToTaskParameterNotValidHostUri, nameof(RepositoryUrl), RepositoryUrl);
+                    }
                 }
                 else
                 {
