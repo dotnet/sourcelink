@@ -1,40 +1,40 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
   <file datatype="xml" source-language="en" target-language="pt-BR" original="../Resources.resx">
     <body>
       <trans-unit id="ConfigurationFileRecursionExceededMaximumAllowedDepth">
         <source>Configuration file recursion exceeded maximum allowed depth of {0}.</source>
-        <target state="new">Configuration file recursion exceeded maximum allowed depth of {0}.</target>
+        <target state="translated">A recursão do arquivo de configuração excedeu a profundidade máxima permitida de {0}.</target>
         <note />
       </trans-unit>
       <trans-unit id="ErrorReadingGitRepositoryInformation">
         <source>Error reading git repository information: {0}</source>
-        <target state="new">Error reading git repository information: {0}</target>
+        <target state="translated">Erro ao ler informações do repositório git: {0}</target>
         <note />
       </trans-unit>
       <trans-unit id="FormatOfFileIsInvalid">
         <source>The format of the file '{0}' is invalid.</source>
-        <target state="new">The format of the file '{0}' is invalid.</target>
+        <target state="translated">O formato do arquivo '{0}' é inválido.</target>
         <note />
       </trans-unit>
       <trans-unit id="HomeRelativePathsAreNotAllowed">
         <source>Home relative paths are not allowed when {0} is '{1}': '{2}'.</source>
-        <target state="new">Home relative paths are not allowed when {0} is '{1}': '{2}'.</target>
+        <target state="translated">Caminhos relativos à página inicial não são permitidos quando {0} é '{1}': '{2}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidFormatOfFileAtPath">
         <source>Repository does not have a working directory.</source>
-        <target state="new">Repository does not have a working directory.</target>
+        <target state="translated">O repositório não tem um diretório de trabalho.</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidModulePath">
         <source>Invalid module path: '{0}'.</source>
-        <target state="new">Invalid module path: '{0}'.</target>
+        <target state="translated">Caminho de módulo inválido: '{0}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidReference">
         <source>Invalid reference: '{0}'.</source>
-        <target state="new">Invalid reference: '{0}'.</target>
+        <target state="translated">Referência inválida: '{0}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidRepositoryRemoteUrl">
@@ -44,47 +44,47 @@
       </trans-unit>
       <trans-unit id="InvalidSubmodulePath">
         <source>The path of submodule '{0}' is missing or invalid: '{1}'.</source>
-        <target state="new">The path of submodule '{0}' is missing or invalid: '{1}'.</target>
+        <target state="translated">O caminho do submódulo '{0}' está ausente ou é inválido: '{1}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidSubmoduleUrl">
         <source>The URL of submodule '{0}' is missing or invalid: '{1}'.</source>
-        <target state="new">The URL of submodule '{0}' is missing or invalid: '{1}'.</target>
+        <target state="translated">A URL do submódulo '{0}' está ausente ou é inválida: '{1}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="PathMustBeAbsolute">
         <source>Path must be absolute.</source>
-        <target state="new">Path must be absolute.</target>
+        <target state="translated">O caminho precisa ser absoluto.</target>
         <note />
       </trans-unit>
       <trans-unit id="PathMustBeFilePath">
         <source>Path must be a file path.</source>
-        <target state="new">Path must be a file path.</target>
+        <target state="translated">O caminho precisa ser um caminho de arquivo.</target>
         <note />
       </trans-unit>
       <trans-unit id="PathSpecifiedInFileIsInvalid">
         <source>Path specified in file '{0}' is invalid: '{1}'.</source>
-        <target state="new">Path specified in file '{0}' is invalid: '{1}'.</target>
+        <target state="translated">O caminho especificado no arquivo '{0}' é inválido: '{1}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="PathSpecifiedInFileIsNotAbsolute">
         <source>Path specified in file '{0}' is not absolute: '{1}'.</source>
-        <target state="new">Path specified in file '{0}' is not absolute: '{1}'.</target>
+        <target state="translated">O caminho especificado no arquivo '{0}' não é absoluto: '{1}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="RecursionDetectedWhileResolvingReference">
         <source>Recursion detected while resolving reference: '{0}'.</source>
-        <target state="new">Recursion detected while resolving reference: '{0}'.</target>
+        <target state="translated">Recursão detectada ao resolver referência: '{0}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryDoesNotHaveSpecifiedRemote">
         <source>Repository does not have the specified remote '{0}'; using '{1}' instead.</source>
-        <target state="new">Repository does not have the specified remote '{0}'; using '{1}' instead.</target>
+        <target state="translated">O repositório não tem o '{0}' remoto especificado; em vez disso, está usando '{1}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryDoesNotHaveWorkingDirectory">
         <source>Repository does not have a working directory.</source>
-        <target state="new">Repository does not have a working directory.</target>
+        <target state="translated">O repositório não tem um diretório de trabalho.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryHasNoRemote">
@@ -99,32 +99,32 @@
       </trans-unit>
       <trans-unit id="SourceCodeWontBeAvailableViaSourceLink">
         <source>{0} The source code won't be available via Source Link.</source>
-        <target state="new">{0} The source code won't be available via Source Link.</target>
+        <target state="translated">{0} O código-fonte não estará disponível por meio do Link de Origem.</target>
         <note />
       </trans-unit>
       <trans-unit id="SubmoduleWithoutCommit">
         <source>Submodule '{0}' doesn't have any commit.</source>
-        <target state="new">Submodule '{0}' doesn't have any commit.</target>
+        <target state="translated">O submódulo '{0}' não tem nenhuma confirmação.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnableToLocateRepository">
         <source>Unable to locate repository with working directory that contains directory '{0}'.</source>
-        <target state="needs-review-translation">Não foi possível localizar o repositório que contém o diretório '{0}'.</target>
+        <target state="translated">Não é possível localizar o repositório com o diretório de trabalho que contém o diretório '{0}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnsupportedRepositoryVersion">
         <source>Unsupported repository version {0}. Only versions up to {1} are supported.</source>
-        <target state="new">Unsupported repository version {0}. Only versions up to {1} are supported.</target>
+        <target state="translated">{0} de versão do repositório sem suporte. Há suporte apenas para versões de até {1}.</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfIsNotValidConfigurationScope">
         <source>The value of {0} is not a valid configuration scope: '{1}'.</source>
-        <target state="new">The value of {0} is not a valid configuration scope: '{1}'.</target>
+        <target state="translated">O valor de {0} não é um escopo de configuração válido: '{1}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfIsNotValidPath">
         <source>The value of {0} is not a valid path: '{1}'.</source>
-        <target state="new">The value of {0} is not a valid path: '{1}'.</target>
+        <target state="translated">O valor de {0} não é um caminho válido: '{1}'.</target>
         <note />
       </trans-unit>
     </body>
