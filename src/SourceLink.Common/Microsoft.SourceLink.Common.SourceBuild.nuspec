@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    $CommonMetadataElements$
+  </metadata>
+  <files>
+    <file src="netcoreapp2.0\publish\**\Microsoft.SourceLink.Common.*" target="tools\netcoreapp2.0" />
+
+    <file src="$ProjectDirectory$\build\*.*" target="build" />
+    <file src="$ProjectDirectory$\buildCrossTargeting\*.*" target="buildCrossTargeting" />
+  </files>
+</package>

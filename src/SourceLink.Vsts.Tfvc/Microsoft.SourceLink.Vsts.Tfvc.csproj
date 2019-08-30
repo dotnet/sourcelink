@@ -1,11 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(DotNetBuildFromSource)' == 'true'">netcoreapp2.0</TargetFrameworks>
     <AutoGenerateAssemblyVersion>true</AutoGenerateAssemblyVersion>
 
     <!-- Using an explicit nuspec file since NuGet Pack target currently doesn't support including dependencies in tools packages -->
     <IsPackable>true</IsPackable>
     <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
+    <NuspecFile Condition="'$(DotNetBuildFromSource)' == 'true'">$(MSBuildProjectName).SourceBuild.nuspec</NuspecFile>
     <NuspecBasePath>$(OutputPath)</NuspecBasePath>
     
     <PackageDescription>Generates source link for VSTS TFVC repositories.</PackageDescription>

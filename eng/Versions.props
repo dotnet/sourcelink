@@ -6,7 +6,7 @@
     <PreReleaseVersionLabel>beta2</PreReleaseVersionLabel>
     <SemanticVersioningV1>true</SemanticVersioningV1>
     <!-- Opt-in repo features -->
-    <UsingToolNetFrameworkReferenceAssemblies>true</UsingToolNetFrameworkReferenceAssemblies>
+    <UsingToolNetFrameworkReferenceAssemblies Condition="'$(DotNetBuildFromSource)' != 'true'">true</UsingToolNetFrameworkReferenceAssemblies>
     <UsingToolSymbolUploader>true</UsingToolSymbolUploader>
     <XUnitVersion>2.4.1</XUnitVersion>
     <!-- 
