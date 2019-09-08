@@ -473,8 +473,7 @@ namespace Microsoft.Build.Tasks.Git
             {
                 try
                 {
-                    // note: git does not trim whitespace
-                    commonDirectory = Path.Combine(directory, File.ReadAllText(commonLinkPath));
+                    commonDirectory = Path.Combine(directory, File.ReadAllText(commonLinkPath).TrimEnd(CharUtils.AsciiWhitespace));
                 }
                 catch
                 {

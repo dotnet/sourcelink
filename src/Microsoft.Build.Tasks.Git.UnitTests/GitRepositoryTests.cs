@@ -23,11 +23,11 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var worktreeGitSubDir = worktreeGitDir.CreateDirectory("B");
             var worktreeDir = temp.CreateDirectory();
             var worktreeSubDir = worktreeDir.CreateDirectory("C");
-            var worktreeGitFile = worktreeDir.CreateFile(".git").WriteAllText("gitdir: " + worktreeGitDir);
+            var worktreeGitFile = worktreeDir.CreateFile(".git").WriteAllText("gitdir: " + worktreeGitDir + " \r\n\t\v");
 
             worktreeGitDir.CreateFile("HEAD");
-            worktreeGitDir.CreateFile("commondir").WriteAllText(mainGitDir.Path);
-            worktreeGitDir.CreateFile("gitdir").WriteAllText(worktreeGitFile.Path);
+            worktreeGitDir.CreateFile("commondir").WriteAllText(mainGitDir.Path + " \r\n\t\v");
+            worktreeGitDir.CreateFile("gitdir").WriteAllText(worktreeGitFile.Path + " \r\n\t\v");
 
             // start under main repository directory:
             Assert.True(GitRepository.LocateRepository(
