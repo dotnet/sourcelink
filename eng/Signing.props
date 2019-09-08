@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project>
-  <ItemGroup>
-    <FileSignInfo Include="LibGit2Sharp.dll" CertificateName="None"/>
-    <FileSignInfo Include="git2-a904fc6.dll" CertificateName="None"/>
-  </ItemGroup>
-</Project>
