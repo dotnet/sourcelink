@@ -55,6 +55,9 @@ Set `EmbedUntrackedSources` to `true` to instruct the build system to embed proj
 
 Has no effect if `EmbedAllSources` is true.
 
+If the project generates additional source files that are added to `Compile` item group in a custom target this target must run before `BeforeCompile` target (specify `BeforeTargets="BeforeCompile"`). 
+Otherwise, these additional source files will not be automatically embedded into the PDB. 
+
 ### ContinuousIntegrationBuild
 
 Set `ContinuousIntegrationBuild` to `true` to indicate that the build executes on a build/CI server. 
