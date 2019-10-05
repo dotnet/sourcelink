@@ -203,7 +203,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [Theory]
         [InlineData("http://?", null)]
         [InlineData("https://github.com/org/repo/./.", "https://github.com/org/repo/")]
-        [InlineData("http://github.com/org/\u1234", "http://github.com/org/\u1234")]
+        [InlineData("http://github.com/org/\u1234", "http://github.com/org/%E1%88%B4")]
         [InlineData("ssh://github.com/org/../repo", "ssh://github.com/repo")]
         [InlineData("ssh://github.com/%32/repo", "ssh://github.com/2/repo")]
         [InlineData("ssh://github.com/%3F/repo", "ssh://github.com/%3F/repo")]
@@ -219,14 +219,17 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [InlineData(@"C:x\y\..\z", null)]
         [InlineData(@"C:org/repo", null)]
         [InlineData(@"D:\src", "file:///D:/src")]
+        [InlineData(@"D:\a%20b", "file:///D:/a%2520b")]
         [InlineData(@"\\", null)]
         [InlineData(@"\\server", "file://server/")]
         [InlineData(@"\\server\dir", "file://server/dir")]
         [InlineData(@"relative/./path", "file:///C:/src/a/b/relative/path")]
+        [InlineData(@"%20", "file:///C:/src/a/b/%2520")]
+        [InlineData(@"..\%20", "file:///C:/src/a/%2520")]
         [InlineData(@"../relative/path", "file:///C:/src/a/relative/path")]
         [InlineData(@"..\relative\path", "file:///C:/src/a/relative/path")]
         [InlineData(@"../relative/path?a=b", "file:///C:/src/a/relative/path%3Fa=b")]
-        [InlineData(@"../relative/path*<>|\0%00", "file:///C:/src/a/relative/path*<>|/0%00")]
+        [InlineData(@"../relative/path*<>|\0%00", "file:///C:/src/a/relative/path*%3C%3E%7C/0%2500")]
         [InlineData(@"../../../../relative/path", "file:///C:/relative/path")]
         [InlineData(@"a:/../../relative/path", "file:///a:/relative/path")]
         [InlineData(@"Z:/a/b/../../relative/path", "file:///Z:/relative/path")]
@@ -243,11 +246,14 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [ConditionalTheory(typeof(UnixOnly))]
         [InlineData(@"C:org/repo", @"ssh://c/org/repo")]
         [InlineData(@"/xyz/src", @"file:///xyz/src")]
+        [InlineData(@"/a%20b", @"file:///a%2520b")]
         [InlineData(@"\path\a\b", @"file:///path/a/b")]
         [InlineData(@"relative/./path", @"file:///usr/src/a/b/relative/path")]
+        [InlineData(@"%20", "file:///usr/src/a/b/%2520")]
+        [InlineData(@"../%20", "file:///usr/src/a/%2520")]
         [InlineData(@"../relative/path", @"file:///usr/src/a/relative/path")]
         [InlineData(@"../relative/path?a=b", @"file:///usr/src/a/relative/path%3Fa=b")]
-        [InlineData(@"../relative/path*<>|\0%00", @"file:///usr/src/a/relative/path*<>|\0%00")]
+        [InlineData(@"../relative/path*<>|\0%00", @"file:///usr/src/a/relative/path*%3C%3E%7C/0%2500")]
         [InlineData(@"../../../../relative/path", @"file:///relative/path")]
         [InlineData(@"../.://../../relative/path", "file:///usr/src/a/relative/path")]
         [InlineData(@"../.:./../../relative/path", "ssh://../relative/path")]
@@ -261,6 +267,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
         [Theory]
         [InlineData("abc:org/repo", "ssh://abc/org/repo")]
+        [InlineData("abc:org/x%20y", "ssh://abc/org/x%20y")]
         [InlineData("ABC:ORG/REPO/X/Y", "ssh://abc/ORG/REPO/X/Y")]
         [InlineData("github.com:org/repo", "ssh://github.com/org/repo")]
         [InlineData("git@github.com:org/repo", "ssh://git@github.com/org/repo")]
@@ -392,7 +399,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             AssertEx.Equal(new[]
             {
                 $@"'C:\%25@噸\' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
-                $@"'C:\%25@噸\sub\%25ሴ\' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/%25ሴ/' ContainingRoot='C:\%25@噸\' ScmRepositoryUrl='file:///C:/%25@噸/a/b'",
+                $@"'C:\%25@噸\sub\%25ሴ\' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/%25ሴ/' ContainingRoot='C:\%25@噸\' ScmRepositoryUrl='file:///C:/%2525@%E5%99%B8/a/b'",
                 $@"'C:\%25@噸\sub\%25ለ\' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/%25ለ/' ContainingRoot='C:\%25@噸\' ScmRepositoryUrl='file:///C:/a'",
             }, items.Select(TestUtilities.InspectSourceRoot));
 

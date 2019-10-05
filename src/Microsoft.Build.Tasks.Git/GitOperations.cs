@@ -122,7 +122,7 @@ namespace Microsoft.Build.Tasks.Git
 
             if (TryParseScp(url, out var uri))
             {
-                return uri.ToString();
+                return uri.AbsoluteUri;
             }
 
             if (!Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out uri))
@@ -132,14 +132,14 @@ namespace Microsoft.Build.Tasks.Git
 
             if (uri.IsAbsoluteUri)
             {
-                return uri.ToString();
+                return uri.AbsoluteUri;
             }
 
             // Convert relative local path to absolute:
             var rootUri = new Uri(root.EndWithSeparator('/'));
             if (Uri.TryCreate(rootUri, uri, out uri))
             {
-                return uri.ToString();
+                return uri.AbsoluteUri;
             }
 
             return null;
