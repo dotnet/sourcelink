@@ -8,6 +8,9 @@
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <GenerateResxSource>true</GenerateResxSource>
     <UserRuntimeConfig Condition="$(TargetFramework.StartsWith('netcoreapp'))">$(RepositoryEngineeringDir)runtimeconfig.template.json</UserRuntimeConfig>
+    
+    <!-- TODO: https://github.com/dotnet/sourcelink/issues/433 -->
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
   </PropertyGroup>
 
   <!-- 
