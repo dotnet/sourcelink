@@ -12,7 +12,7 @@
 
   <!--
     Triggers SetEmbeddedFilesFromSourceControlManagerUntrackedFiles target defined by a source control package Microsoft.Build.Tasks.{Git|Tfvc|...}.
-    Assumes that all targets that generate source files that the compiler tasks takes as an input run before BeforeCompile target.
+    Assumes that all targets that generate source files and add them to Compile items run before BeforeCompile target.
     This is a convention established by common targets.
   -->
   <Target Name="_SetEmbeddedFilesFromSourceControlManagerUntrackedFiles"
