@@ -10,7 +10,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
     public class GitRepositoryTests
     {
         [Fact]
-        public void LocateRepository_Worktree()
+        public void TryFindRepository_Worktree()
         {
             using var temp = new TempRoot();
 
@@ -30,48 +30,32 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             worktreeGitDir.CreateFile("gitdir").WriteAllText(worktreeGitFile.Path + " \r\n\t\v");
 
             // start under main repository directory:
-            Assert.True(GitRepository.LocateRepository(
-                mainWorkingSubDir.Path,
-                out var locatedGitDirectory,
-                out var locatedCommonDirectory,
-                out var locatedWorkingDirectory));
+            Assert.True(GitRepository.TryFindRepository(mainWorkingSubDir.Path, out var location));
 
-            Assert.Equal(mainGitDir.Path, locatedGitDirectory);
-            Assert.Equal(mainGitDir.Path, locatedCommonDirectory);
-            Assert.Equal(mainWorkingDir.Path, locatedWorkingDirectory);
+            Assert.Equal(mainGitDir.Path, location.GitDirectory);
+            Assert.Equal(mainGitDir.Path, location.CommonDirectory);
+            Assert.Equal(mainWorkingDir.Path, location.WorkingDirectory);
 
             // start at main git directory (git config works from this dir, but git status requires work dir):
-            Assert.True(GitRepository.LocateRepository(
-                mainGitDir.Path,
-                out locatedGitDirectory,
-                out locatedCommonDirectory,
-                out locatedWorkingDirectory));
+            Assert.True(GitRepository.TryFindRepository(mainGitDir.Path, out location));
 
-            Assert.Equal(mainGitDir.Path, locatedGitDirectory);
-            Assert.Equal(mainGitDir.Path, locatedCommonDirectory);
-            Assert.Null(locatedWorkingDirectory);
+            Assert.Equal(mainGitDir.Path, location.GitDirectory);
+            Assert.Equal(mainGitDir.Path, location.CommonDirectory);
+            Assert.Null(location.WorkingDirectory);
 
             // start under worktree directory:
-            Assert.True(GitRepository.LocateRepository(
-                worktreeSubDir.Path,
-                out locatedGitDirectory,
-                out locatedCommonDirectory,
-                out locatedWorkingDirectory));
+            Assert.True(GitRepository.TryFindRepository(worktreeSubDir.Path, out location));
 
-            Assert.Equal(worktreeGitDir.Path, locatedGitDirectory);
-            Assert.Equal(mainGitDir.Path, locatedCommonDirectory);
-            Assert.Equal(worktreeDir.Path, locatedWorkingDirectory);
+            Assert.Equal(worktreeGitDir.Path, location.GitDirectory);
+            Assert.Equal(mainGitDir.Path, location.CommonDirectory);
+            Assert.Equal(worktreeDir.Path, location.WorkingDirectory);
 
             // start under worktree git directory (git config works from this dir, but git status requires work dir):
-            Assert.True(GitRepository.LocateRepository(
-                worktreeGitSubDir.Path,
-                out locatedGitDirectory,
-                out locatedCommonDirectory,
-                out locatedWorkingDirectory));
+            Assert.True(GitRepository.TryFindRepository(worktreeGitSubDir.Path, out location));
 
-            Assert.Equal(worktreeGitDir.Path, locatedGitDirectory);
-            Assert.Equal(mainGitDir.Path, locatedCommonDirectory);
-            Assert.Null(locatedWorkingDirectory);
+            Assert.Equal(worktreeGitDir.Path, location.GitDirectory);
+            Assert.Equal(mainGitDir.Path, location.CommonDirectory);
+            Assert.Null(location.WorkingDirectory);
         }
 
         [Fact]
@@ -93,26 +77,18 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             submoduleGitDir.CreateDirectory("refs");
 
             // start under submodule working directory:
-            Assert.True(GitRepository.LocateRepository(
-                submoduleWorkDir.Path,
-                out var locatedGitDirectory,
-                out var locatedCommonDirectory,
-                out var locatedWorkingDirectory));
+            Assert.True(GitRepository.TryFindRepository(submoduleWorkDir.Path, out var location));
 
-            Assert.Equal(submoduleGitDir.Path, locatedGitDirectory);
-            Assert.Equal(submoduleGitDir.Path, locatedCommonDirectory);
-            Assert.Equal(submoduleWorkDir.Path, locatedWorkingDirectory);
+            Assert.Equal(submoduleGitDir.Path, location.GitDirectory);
+            Assert.Equal(submoduleGitDir.Path, location.CommonDirectory);
+            Assert.Equal(submoduleWorkDir.Path, location.WorkingDirectory);
 
             // start under submodule git directory:
-            Assert.True(GitRepository.LocateRepository(
-                submoduleGitDir.Path,
-                out locatedGitDirectory,
-                out locatedCommonDirectory,
-                out locatedWorkingDirectory));
+            Assert.True(GitRepository.TryFindRepository(submoduleGitDir.Path, out location));
 
-            Assert.Equal(submoduleGitDir.Path, locatedGitDirectory);
-            Assert.Equal(submoduleGitDir.Path, locatedCommonDirectory);
-            Assert.Null(locatedWorkingDirectory);
+            Assert.Equal(submoduleGitDir.Path, location.GitDirectory);
+            Assert.Equal(submoduleGitDir.Path, location.CommonDirectory);
+            Assert.Null(location.WorkingDirectory);
         }
 
         [Fact]

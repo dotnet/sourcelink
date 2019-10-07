@@ -175,7 +175,7 @@
     <value>Repository has no commit.</value>
   </data>
   <data name="RepositoryHasNoRemote" xml:space="preserve">
-    <value>Repository has no remote.</value>
+    <value>Repository '{0}' has no remote.</value>
   </data>
   <data name="InvalidRepositoryRemoteUrl" xml:space="preserve">
     <value>The URL of repository remote '{0}' is invalid: '{1}'.</value>
@@ -184,12 +184,15 @@
     <value>Unable to locate repository with working directory that contains directory '{0}'.</value>
   </data>
   <data name="RepositoryDoesNotHaveSpecifiedRemote" xml:space="preserve">
-    <value>Repository does not have the specified remote '{0}'; using '{1}' instead.</value>
+    <value>Repository '{0}' does not have the specified remote '{1}'; using '{2}' instead.</value>
   </data>
   <data name="ValueOfIsNotValidConfigurationScope" xml:space="preserve">
     <value>The value of {0} is not a valid configuration scope: '{1}'.</value>
   </data>
   <data name="HomeRelativePathsAreNotAllowed" xml:space="preserve">
     <value>Home relative paths are not allowed when {0} is '{1}': '{2}'.</value>
+  </data>
+  <data name="RepositoryUrlEvaluationExceededMaximumAllowedDepth" xml:space="preserve">
+    <value>Repository URL evaluation exceeded maximum allowed depth of {0} local repositories.</value>
   </data>
 </root>

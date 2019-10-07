@@ -13,6 +13,8 @@ namespace Microsoft.Build.Tasks.Git
 {
     internal static class GitOperations
     {
+        private const int RemoteRepositoryRecursionLimit = 10;
+
         private const string SourceControlName = "git";
         private const string RemoteSectionName = "remote";
         private const string RemoteOriginName = "origin";
@@ -20,6 +22,27 @@ namespace Microsoft.Build.Tasks.Git
         private const string UrlVariableName = "url";
 
         public static string GetRepositoryUrl(GitRepository repository, string remoteName, Action<string, object[]> logWarning = null)
+            => GetRepositoryUrl(repository, remoteName, recursionDepth: 0, logWarning);
+
+        private static string GetRepositoryUrl(GitRepository repository, string remoteName, int recursionDepth, Action<string, object[]> logWarning = null)
+        {
+            var remoteUrl = GetRemoteUrl(repository, ref remoteName, logWarning);
+            if (remoteUrl == null)
+            {
+                return null;
+            }
+
+            var uri = NormalizeUrl(repository.Config, remoteUrl, repository.WorkingDirectory);
+            if (uri == null)
+            {
+                logWarning?.Invoke(Resources.InvalidRepositoryRemoteUrl, new[] { remoteName, remoteUrl });
+                return null;
+            }
+
+            return ResolveUrl(uri, repository.Environment, remoteName, recursionDepth, logWarning);
+        }
+
+        private static string GetRemoteUrl(GitRepository repository, ref string remoteName, Action<string, object[]> logWarning)
         {
             string unknownRemoteName = null;
             string remoteUrl = null;
@@ -34,22 +57,40 @@ namespace Microsoft.Build.Tasks.Git
 
             if (remoteUrl == null && !TryGetRemote(repository.Config, out remoteName, out remoteUrl))
             {
-                logWarning?.Invoke(Resources.RepositoryHasNoRemote, Array.Empty<string>());
+                logWarning?.Invoke(Resources.RepositoryHasNoRemote, new[] { repository.WorkingDirectory });
                 return null;
             }
 
             if (unknownRemoteName != null)
             {
-                logWarning?.Invoke(Resources.RepositoryDoesNotHaveSpecifiedRemote, new[] { unknownRemoteName, remoteName });
+                logWarning?.Invoke(Resources.RepositoryDoesNotHaveSpecifiedRemote, new[] { repository.WorkingDirectory, unknownRemoteName, remoteName });
             }
 
-            var url = NormalizeUrl(repository.Config, remoteUrl, repository.WorkingDirectory);
-            if (url == null)
+            return remoteUrl;
+        }
+
+        private static string ResolveUrl(Uri uri, GitEnvironment environment, string remoteName, int recursionDepth, Action<string, object[]> logWarning)
+        {
+            if (!uri.IsFile)
             {
-                logWarning?.Invoke(Resources.InvalidRepositoryRemoteUrl, new[] { remoteName, remoteUrl });
+                return uri.AbsoluteUri;
             }
 
-            return url;
+            var repositoryPath = uri.LocalPath;
+            if (!GitRepository.TryGetRepositoryLocation(repositoryPath, out var remoteRepositoryLocation))
+            {
+                logWarning?.Invoke(Resources.RepositoryHasNoRemote, new[] { repositoryPath });
+                return uri.AbsoluteUri;
+            }
+
+            if (recursionDepth > RemoteRepositoryRecursionLimit)
+            {
+                logWarning?.Invoke(Resources.RepositoryUrlEvaluationExceededMaximumAllowedDepth, new[] { RemoteRepositoryRecursionLimit.ToString() });
+                return null;
+            }
+
+            var remoteRepository = GitRepository.OpenRepository(remoteRepositoryLocation, environment);
+            return GetRepositoryUrl(remoteRepository, remoteName, recursionDepth + 1, logWarning) ?? uri.AbsoluteUri;
         }
 
         private static bool TryGetRemote(GitConfig config, out string remoteName, out string remoteUrl)
@@ -105,10 +146,10 @@ namespace Microsoft.Build.Tasks.Git
             return (longestPrefixLength >= 0) ? replacement + url.Substring(longestPrefixLength) : url;
         }
 
-        internal static string NormalizeUrl(GitConfig config, string url, string root)
+        internal static Uri NormalizeUrl(GitConfig config, string url, string root)
             => NormalizeUrl(ApplyInsteadOfUrlMapping(config, url), root);
 
-        internal static string NormalizeUrl(string url, string root)
+        internal static Uri NormalizeUrl(string url, string root)
         {
             // Since git supports scp-like syntax for SSH URLs we convert it here, 
             // so that RepositoryUrl is actually a valid URL in that case.
@@ -117,12 +158,12 @@ namespace Microsoft.Build.Tasks.Git
             // Windows device path "X:"
             if (url.Length == 2 && IsWindowsAbsoluteOrDriveRelativePath(url))
             {
-                return "file:///" + url + "/";
+                return new Uri("file:///" + url + "/");
             }
 
             if (TryParseScp(url, out var uri))
             {
-                return uri.AbsoluteUri;
+                return uri;
             }
 
             if (!Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out uri))
@@ -132,14 +173,14 @@ namespace Microsoft.Build.Tasks.Git
 
             if (uri.IsAbsoluteUri)
             {
-                return uri.AbsoluteUri;
+                return uri;
             }
 
             // Convert relative local path to absolute:
             var rootUri = new Uri(root.EndWithSeparator('/'));
             if (Uri.TryCreate(rootUri, uri, out uri))
             {
-                return uri.AbsoluteUri;
+                return uri;
             }
 
             return null;
@@ -215,11 +256,20 @@ namespace Microsoft.Build.Tasks.Git
                 }
 
                 // https://git-scm.com/docs/git-submodule
-                var submoduleUrl = NormalizeUrl(repository.Config, submodule.Url, repoRoot);
+                var submoduleUri = NormalizeUrl(repository.Config, submodule.Url, repoRoot);
+                if (submoduleUri == null)
+                {
+                    logWarning(Resources.SourceCodeWontBeAvailableViaSourceLink,
+                        new[] { string.Format(Resources.InvalidSubmoduleUrl, submodule.Name, submodule.Url) });
+
+                    continue;
+                }
+
+                var submoduleUrl = ResolveUrl(submoduleUri, repository.Environment, remoteName, recursionDepth: 0, logWarning);
                 if (submoduleUrl == null)
                 {
-                    logWarning(Resources.SourceCodeWontBeAvailableViaSourceLink, 
-                        new[] { string.Format(Resources.InvalidSubmoduleUrl, submodule.Name, submodule.Url) });
+                    logWarning(Resources.SourceCodeWontBeAvailableViaSourceLink,
+                       new[] { string.Format(Resources.InvalidSubmoduleUrl, submodule.Name, submodule.Url) });
 
                     continue;
                 }

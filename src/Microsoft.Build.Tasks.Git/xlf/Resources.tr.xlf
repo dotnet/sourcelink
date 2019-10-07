@@ -78,8 +78,8 @@
         <note />
       </trans-unit>
       <trans-unit id="RepositoryDoesNotHaveSpecifiedRemote">
-        <source>Repository does not have the specified remote '{0}'; using '{1}' instead.</source>
-        <target state="translated">Depo, belirtilen '{0}' uzak öğesine sahip değil; bunun yerine '{1}' kullanılıyor.</target>
+        <source>Repository '{0}' does not have the specified remote '{1}'; using '{2}' instead.</source>
+        <target state="new">Repository '{0}' does not have the specified remote '{1}'; using '{2}' instead.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryDoesNotHaveWorkingDirectory">
@@ -88,13 +88,18 @@
         <note />
       </trans-unit>
       <trans-unit id="RepositoryHasNoRemote">
-        <source>Repository has no remote.</source>
-        <target state="translated">Depoda uzak kaynak yok.</target>
+        <source>Repository '{0}' has no remote.</source>
+        <target state="new">Repository '{0}' has no remote.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryHasNoCommit">
         <source>Repository has no commit.</source>
         <target state="translated">Depoda işleme yok.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RepositoryUrlEvaluationExceededMaximumAllowedDepth">
+        <source>Repository URL evaluation exceeded maximum allowed depth of {0} local repositories.</source>
+        <target state="new">Repository URL evaluation exceeded maximum allowed depth of {0} local repositories.</target>
         <note />
       </trans-unit>
       <trans-unit id="SourceCodeWontBeAvailableViaSourceLink">

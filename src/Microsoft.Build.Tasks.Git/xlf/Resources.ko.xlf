@@ -78,8 +78,8 @@
         <note />
       </trans-unit>
       <trans-unit id="RepositoryDoesNotHaveSpecifiedRemote">
-        <source>Repository does not have the specified remote '{0}'; using '{1}' instead.</source>
-        <target state="translated">리포지토리에 지정한 원격 '{0}'이 (가) 없습니다. 대신 '{1}'을 사용합니다.</target>
+        <source>Repository '{0}' does not have the specified remote '{1}'; using '{2}' instead.</source>
+        <target state="new">Repository '{0}' does not have the specified remote '{1}'; using '{2}' instead.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryDoesNotHaveWorkingDirectory">
@@ -88,13 +88,18 @@
         <note />
       </trans-unit>
       <trans-unit id="RepositoryHasNoRemote">
-        <source>Repository has no remote.</source>
-        <target state="translated">리포지토리에 원격이 없습니다.</target>
+        <source>Repository '{0}' has no remote.</source>
+        <target state="new">Repository '{0}' has no remote.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryHasNoCommit">
         <source>Repository has no commit.</source>
         <target state="translated">저장소에 커밋 내역이 없습니다.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RepositoryUrlEvaluationExceededMaximumAllowedDepth">
+        <source>Repository URL evaluation exceeded maximum allowed depth of {0} local repositories.</source>
+        <target state="new">Repository URL evaluation exceeded maximum allowed depth of {0} local repositories.</target>
         <note />
       </trans-unit>
       <trans-unit id="SourceCodeWontBeAvailableViaSourceLink">
