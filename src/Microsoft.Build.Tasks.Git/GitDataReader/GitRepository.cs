@@ -85,27 +85,7 @@ namespace Microsoft.Build.Tasks.Git
             _lazySubmodules = new Lazy<(ImmutableArray<GitSubmodule>, ImmutableArray<string>)>(() => (submodules, submoduleDiagnostics));
             _lazyIgnore = new Lazy<GitIgnore>(() => ignore);
             _lazyHeadCommitSha = new Lazy<string>(() => headCommitSha);
-        }
-
-        /// <summary>
-        /// Finds a git repository containing the specified path, if any.
-        /// </summary>
-        /// <exception cref="IOException" />
-        /// <exception cref="InvalidDataException" />
-        /// <exception cref="NotSupportedException">The repository found requires higher version of git repository format that is currently supported.</exception>
-        /// <returns>False if no git repository can be found that contains the specified path.</returns>
-        public static bool TryFindRepository(string path, out GitRepositoryLocation location)
-        {
-            if (!LocateRepository(path, out var gitDirectory, out var commonDirectory, out var defaultWorkingDirectory))
-            {
-                // unable to find repository
-                location = default;
-                return false;
-            }
-
-            location = new GitRepositoryLocation(gitDirectory, commonDirectory, defaultWorkingDirectory);
-            return true;
-        }
+        }        
 
         /// <summary>
         /// Opens a repository at the specified location.
@@ -237,7 +217,7 @@ namespace Microsoft.Build.Tasks.Git
 
             var resolver = new GitReferenceResolver(gitDirectory, commonDirectory);
             return resolver.ResolveHeadReference();
-        }
+        } 
 
         private string GetWorkingDirectory()
             => WorkingDirectory ?? throw new InvalidOperationException(Resources.RepositoryDoesNotHaveWorkingDirectory);
@@ -368,63 +348,100 @@ namespace Microsoft.Build.Tasks.Git
             return new GitIgnore(root, workingDirectory, ignoreCase);
         }
 
+        /// <summary>
+        /// Returns <see cref="GitRepositoryLocation"/> if the specified <paramref name="repositoryDirectory"/> is 
+        /// a valid repository directory.
+        /// </summary>
         /// <exception cref="IOException" />
         /// <exception cref="InvalidDataException" />
-        internal static bool LocateRepository(string directory, out string gitDirectory, out string commonDirectory, out string workingDirectory)
+        /// <exception cref="NotSupportedException">The repository found requires higher version of git repository format that is currently supported.</exception>
+        /// <returns>False if no git repository can be found that contains the specified path.</returns>
+        public static bool TryGetRepositoryLocation(string directory, out GitRepositoryLocation location)
         {
-            gitDirectory = commonDirectory = workingDirectory = null;
-
             try
             {
                 directory = Path.GetFullPath(directory);
             }
             catch
             {
+                location = default;
+                return false;
+            }
+
+            return TryGetRepositoryLocationImpl(directory, out location);
+        }
+
+        /// <summary>
+        /// Finds a git repository containing the specified path, if any.
+        /// </summary>
+        /// <exception cref="IOException" />
+        /// <exception cref="InvalidDataException" />
+        /// <exception cref="NotSupportedException">The repository found requires higher version of git repository format that is currently supported.</exception>
+        /// <returns>False if no git repository can be found that contains the specified path.</returns>
+        public static bool TryFindRepository(string directory, out GitRepositoryLocation location)
+        {
+            try
+            {
+                directory = Path.GetFullPath(directory);
+            }
+            catch
+            {
+                location = default;
                 return false;
             }
 
             while (directory != null)
             {
+                if (TryGetRepositoryLocationImpl(directory, out location))
+                {
+                    return true;
+                }
+
                 // TODO: https://github.com/dotnet/sourcelink/issues/302
                 // stop on device boundary
-
-                var dotGitPath = Path.Combine(directory, GitDirName);
-
-                if (Directory.Exists(dotGitPath))
-                {
-                    if (IsGitDirectory(dotGitPath, out commonDirectory))
-                    {
-                        gitDirectory = dotGitPath;
-                        workingDirectory = directory;
-                        return true;
-                    }
-                }
-                else if (File.Exists(dotGitPath))
-                {
-                    var link = ReadDotGitFile(dotGitPath);
-                    if (IsGitDirectory(link, out commonDirectory))
-                    {
-                        gitDirectory = link;
-                        workingDirectory = directory;
-                        return true;
-                    }
-
-                    return false;
-                }
-
-                if (Directory.Exists(directory))
-                {
-                    if (IsGitDirectory(directory, out commonDirectory))
-                    {
-                        gitDirectory = directory;
-                        workingDirectory = null;
-                        return true;
-                    }
-                }
-
                 directory = Path.GetDirectoryName(directory);
             }
 
+            location = default;
+            return false;
+        }
+
+        private static bool TryGetRepositoryLocationImpl(string directory, out GitRepositoryLocation location)
+        {
+            string commonDirectory;
+            var dotGitPath = Path.Combine(directory, GitDirName);
+
+            if (Directory.Exists(dotGitPath))
+            {
+                if (IsGitDirectory(dotGitPath, out commonDirectory))
+                {
+                    location = new GitRepositoryLocation(gitDirectory: dotGitPath, commonDirectory, workingDirectory: directory);
+                    return true;
+                }
+            }
+            else if (File.Exists(dotGitPath))
+            {
+                var link = ReadDotGitFile(dotGitPath);
+                if (IsGitDirectory(link, out commonDirectory))
+                {
+                    location = new GitRepositoryLocation(gitDirectory: link, commonDirectory, workingDirectory: directory);
+                    return true;
+                }
+
+                location = default;
+                return false;
+            }
+
+            if (Directory.Exists(directory))
+            {
+                if (IsGitDirectory(directory, out commonDirectory))
+                {
+                    location = new GitRepositoryLocation(gitDirectory: directory, commonDirectory, workingDirectory: null);
+                    return true;
+                }
+            }
+
+            location = default;
             return false;
         }
 
