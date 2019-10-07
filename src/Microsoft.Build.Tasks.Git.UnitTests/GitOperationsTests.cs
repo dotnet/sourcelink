@@ -361,14 +361,14 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [ConditionalTheory(typeof(UnixOnly))]
         [InlineData(@"C:org/repo", @"ssh://c/org/repo")]
         [InlineData(@"/xyz/src", @"file:///xyz/src")]
-        [InlineData(@"/a%20b", @"file:///a%2520b")]
+        // [InlineData(@"/a%20b", @"file:///a%2520b")] // https://github.com/dotnet/sourcelink/issues/439
         [InlineData(@"\path\a\b", @"file:///path/a/b")]
         [InlineData(@"relative/./path", @"file:///usr/src/a/b/relative/path")]
         [InlineData(@"%20", "file:///usr/src/a/b/%2520")]
         [InlineData(@"../%20", "file:///usr/src/a/%2520")]
         [InlineData(@"../relative/path", @"file:///usr/src/a/relative/path")]
         [InlineData(@"../relative/path?a=b", @"file:///usr/src/a/relative/path%3Fa=b")]
-        [InlineData(@"../relative/path*<>|\0%00", @"file:///usr/src/a/relative/path*%3C%3E%7C/0%2500")]
+        // [InlineData(@"../relative/path*<>|\0%00", @"file:///usr/src/a/relative/path*%3C%3E%7C/0%2500")] // https://github.com/dotnet/sourcelink/issues/439
         [InlineData(@"../../../../relative/path", @"file:///relative/path")]
         [InlineData(@"../.://../../relative/path", "file:///usr/src/a/relative/path")]
         [InlineData(@"../.:./../../relative/path", "ssh://../relative/path")]
@@ -479,7 +479,9 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             using var temp = new TempRoot();
 
             var dir = temp.CreateDirectory();
-            var repoDir = dir.CreateDirectory("%25@噸");
+
+            // TODO: test unicode chars on Linux as well https://github.com/dotnet/corefx/issues/34227
+            var repoDir = dir.CreateDirectory("%25@" + (s == '\\' ? "噸" : ""));
 
             var repo1WorkingDir = dir.CreateDirectory("1");
             var repo1GitDir = repo1WorkingDir.CreateDirectory(".git");
@@ -499,30 +501,6 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             {
                 $@"'{repoDir.Path}{s}' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
                 $@"'{repoDir.Path}{s}sub{s}1{s}' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/1/' ContainingRoot='{repoDir.Path}{s}' ScmRepositoryUrl='http://github.com/repo1'",
-            }, items.Select(TestUtilities.InspectSourceRoot));
-
-            Assert.Empty(warnings);
-        }
-
-        [ConditionalFact(typeof(UnixOnly), Skip = "https://github.com/dotnet/corefx/issues/34227")]
-        public void GetSourceRoots_RelativeSubmodulePaths_Unix_UnicodeAndEscapes()
-        {
-            _workingDir = @"/%25@噸";
-
-            var repo = CreateRepository(
-                commitSha: "0000000000000000000000000000000000000000",
-                submodules: ImmutableArray.Create(
-                    CreateSubmodule("%25ሴ", "sub/%25ሴ", "./a/b", "1111111111111111111111111111111111111111"),
-                    CreateSubmodule("%25ለ", "sub/%25ለ", "../a", "2222222222222222222222222222222222222222")));
-
-            var warnings = new List<(string, object[])>();
-            var items = GitOperations.GetSourceRoots(repo, remoteName: null, (message, args) => warnings.Add((message, args)));
-
-            AssertEx.Equal(new[]
-            {
-                $@"'/%25@噸/' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
-                $@"'/%25@噸/sub/%25ሴ/' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/%25ሴ/' ContainingRoot='/%25@噸/' ScmRepositoryUrl='file:///%25@噸/a/b'",
-                $@"'/%25@噸/sub/%25ለ/' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/%25ለ/' ContainingRoot='/%25@噸/' ScmRepositoryUrl='file:///a'",
             }, items.Select(TestUtilities.InspectSourceRoot));
 
             Assert.Empty(warnings);
