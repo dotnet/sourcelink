@@ -3,7 +3,7 @@
     <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
     <AutoGenerateAssemblyVersion>true</AutoGenerateAssemblyVersion>
 
-    <!-- Using an explicit nuspec file since NuGet Pack target currently doesn't support including dependencies in tools packages -->
+    <!-- Using an explicit nuspec file due to https://github.com/NuGet/Home/issues/6754 -->
     <IsPackable>true</IsPackable>
     <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
     <NuspecBasePath>$(OutputPath)</NuspecBasePath>
@@ -12,9 +12,6 @@
     <PackageTags>MSBuild Tasks VSTS TFVC source link</PackageTags>
     <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>
-  <ItemGroup>
-    <None Remove="w3ahtyju.vw2~" />
-  </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Common\Names.cs" Link="Common\Names.cs" />
     <Compile Include="..\Common\GetSourceLinkUrlGitTask.cs" Link="Common\GetSourceLinkUrlGitTask.cs" />

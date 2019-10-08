@@ -4,6 +4,7 @@
     $CommonMetadataElements$
   </metadata>
   <files>
+    $CommonFileElements$
     <file src="$ProjectDirectory$\build\*.*" target="build" />
   </files>
 </package>

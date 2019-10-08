@@ -4,17 +4,18 @@
     $CommonMetadataElements$
   </metadata>
   <files>
-    <file src="net46\Microsoft.Build.Tasks.Tfvc.*" target="tools\net46" />
-    <file src="net46\Microsoft.TeamFoundation.Client.dll" target="tools\net46" />
-    <file src="net46\Microsoft.TeamFoundation.Common.dll" target="tools\net46" />
-    <file src="net46\Microsoft.TeamFoundation.Core.WebApi.dll" target="tools\net46" />
-    <file src="net46\Microsoft.TeamFoundation.VersionControl.Client.dll" target="tools\net46" />
-    <file src="net46\Microsoft.TeamFoundation.VersionControl.Common.dll" target="tools\net46" />
-    <file src="net46\Microsoft.VisualStudio.Services.Client.Interactive.dll" target="tools\net46" />
-    <file src="net46\Microsoft.VisualStudio.Services.Common.dll" target="tools\net46" />
-    <file src="net46\Microsoft.VisualStudio.Services.WebApi.dll" target="tools\net46" />
+    $CommonMetadataFiles$
+    <file src="net461\Microsoft.Build.Tasks.Tfvc.*" target="tools\net461" />
+    <file src="net461\Microsoft.TeamFoundation.Client.dll" target="tools\net461" />
+    <file src="net461\Microsoft.TeamFoundation.Common.dll" target="tools\net461" />
+    <file src="net461\Microsoft.TeamFoundation.Core.WebApi.dll" target="tools\net461" />
+    <file src="net461\Microsoft.TeamFoundation.VersionControl.Client.dll" target="tools\net461" />
+    <file src="net461\Microsoft.TeamFoundation.VersionControl.Common.dll" target="tools\net461" />
+    <file src="net461\Microsoft.VisualStudio.Services.Client.Interactive.dll" target="tools\net461" />
+    <file src="net461\Microsoft.VisualStudio.Services.Common.dll" target="tools\net46" />
+    <file src="net461\Microsoft.VisualStudio.Services.WebApi.dll" target="tools\net46" />
 
     <file src="$ProjectDirectory$\build\*.*" target="build" />
-    <file src="$ProjectDirectory$\build\*.*" target="buildCrossTargeting" />
+    <file src="$ProjectDirectory$\build\*.*" target="buildMultiTargeting" />
   </files>
 </package>
