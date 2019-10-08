@@ -24,10 +24,4 @@
       <PackageId Condition="'$(PackageId)' == ''">$(MSBuildProjectName)</PackageId>
     </PropertyGroup>
   </Target>
-  
-  <PropertyGroup>
-    <TargetsForTfmSpecificContentInPackage>_CorePublish;$(TargetsForTfmSpecificContentInPackage)</TargetsForTfmSpecificContentInPackage>
-  </PropertyGroup>
-
-  <Target Name="_CorePublish" DependsOnTargets="Publish" Condition="'$(TargetFrameworkIdentifier)' == '.NETCoreApp'" />
 </Project>

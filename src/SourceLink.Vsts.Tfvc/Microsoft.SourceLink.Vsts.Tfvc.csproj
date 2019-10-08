@@ -1,9 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+    <TargetFramework>net46</TargetFramework>
     <AutoGenerateAssemblyVersion>true</AutoGenerateAssemblyVersion>
+    <ExcludeFromSourceBuild>true</ExcludeFromSourceBuild>
+    <SuppressFinalPackageVersion>true</SuppressFinalPackageVersion>
 
-    <!-- Using an explicit nuspec file since NuGet Pack target currently doesn't support including dependencies in tools packages -->
+    <!-- Using an explicit nuspec file due to https://github.com/NuGet/Home/issues/6754 -->
     <IsPackable>true</IsPackable>
     <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
     <NuspecBasePath>$(OutputPath)</NuspecBasePath>

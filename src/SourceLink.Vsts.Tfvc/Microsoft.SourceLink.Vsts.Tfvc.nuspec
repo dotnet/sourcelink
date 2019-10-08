@@ -8,8 +8,8 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="netcoreapp2.0\publish\**\Microsoft.SourceLink.*" target="tools\netcoreapp2.0" />
-    <file src="net461\**\Microsoft.SourceLink.*" target="tools\net461" />
+    $CommonFileElements$
+    <file src="**\Microsoft.SourceLink.Vsts.Tfvc.*" target="tools" />
 
     <file src="$ProjectDirectory$\build\*.*" target="build" />
   </files>

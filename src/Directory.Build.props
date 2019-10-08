@@ -4,16 +4,16 @@
 
   <PropertyGroup>
     <LangVersion>Preview</LangVersion>
-    <Copyright>$(CopyrightMicrosoft)</Copyright>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <GenerateResxSource>true</GenerateResxSource>
     <UserRuntimeConfig Condition="$(TargetFramework.StartsWith('netcoreapp'))">$(RepositoryEngineeringDir)runtimeconfig.template.json</UserRuntimeConfig>
     
-    <!-- TODO: https://github.com/dotnet/sourcelink/issues/433 -->
-    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    <!-- Produce snupkg in official builds (when not embedding PDBs to dlls) -->
+    <IncludeSymbols Condition="'$(DebugType)' != 'embedded'">true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
-
-  <!-- 
+  
+  <!--
     Workaround for https://github.com/dotnet/sdk/issues/2232: GenerateDepsFile throws ArgumentException.
   -->
   <PropertyGroup Condition="'$(IsTestProject)' != 'true'">
