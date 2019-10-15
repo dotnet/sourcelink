@@ -71,7 +71,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git
 
         private static string BuildSourceLinkUrlForCloudEdition(Uri contentUri, string relativeUrl, string revisionId)
         {
-            // change bitbuket.org to api.bitbucket.org
+            // change bitbucket.org to api.bitbucket.org
             UriBuilder apiUriBuilder = new UriBuilder(contentUri);
             apiUriBuilder.Host = $"api.{apiUriBuilder.Host}";
 
