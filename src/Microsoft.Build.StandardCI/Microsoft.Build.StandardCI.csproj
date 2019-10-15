@@ -14,6 +14,7 @@
     <PackageTags>Standard CI msbuild targets</PackageTags>
     <DevelopmentDependency>true</DevelopmentDependency>
     <IncludeBuildOutput>false</IncludeBuildOutput>
+    <IncludeSymbols>false</IncludeSymbols>
   </PropertyGroup>
 
   <!-- Nothing to build, just create packages -->
