@@ -71,8 +71,13 @@ namespace Microsoft.SourceLink.Bitbucket.Git
 
         private static string BuildSourceLinkUrlForCloudEdition(Uri contentUri, string relativeUrl, string revisionId)
         {
-            return UriUtilities.Combine(UriUtilities.Combine(contentUri.ToString(), relativeUrl),
-                "raw/" + revisionId + "/*");
+            // change bitbuket.org to api.bitbucket.org
+            UriBuilder apiUriBuilder = new UriBuilder(contentUri);
+            apiUriBuilder.Host = $"api.{apiUriBuilder.Host}";
+
+            string relativeApiUrl = UriUtilities.Combine(UriUtilities.Combine("2.0/repositories", relativeUrl), $"src/{revisionId}/*");
+
+            return UriUtilities.Combine(apiUriBuilder.Uri.ToString(), relativeApiUrl);
         }
 
         private static string GetRelativeUrlForBitbucketEnterprise(string projectName, string repositoryName, string commitId, Version bitbucketVersion)

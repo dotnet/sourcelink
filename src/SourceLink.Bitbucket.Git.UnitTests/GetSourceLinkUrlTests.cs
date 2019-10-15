@@ -9,7 +9,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
     public class GetSourceLinkUrlTests
     {
         private const string ExpectedUrlForCloudEdition =
-            "https://domain.com/x/y/a/b/raw/0123456789abcdefABCDEF000000000000000000/*";
+            "https://api.domain.com/x/y/2.0/repositories/a/b/src/0123456789abcdefABCDEF000000000000000000/*";
         private const string ExpectedUrlForEnterpriseEditionOldVersion = "https://bitbucket.domain.com/projects/a/repos/b/browse/*?at=0123456789abcdefABCDEF000000000000000000&raw";
         private const string ExpectedUrlForEnterpriseEditionNewVersion = "https://bitbucket.domain.com/projects/a/repos/b/raw/*?at=0123456789abcdefABCDEF000000000000000000";
 
