@@ -44,14 +44,14 @@ namespace Microsoft.SourceLink.IntegrationTests
                 expectedResults: new[]
                 {
                     ProjectSourceRoot,
-                    $"https://bitbucket.org/test-org/{repoName}/raw/{commitSha}/*",
+                    $"https://api.bitbucket.org/2.0/repositories/test-org/{repoName}/src/{commitSha}/*",
                     s_relativeSourceLinkJsonPath,
                     $"https://bitbucket.org/test-org/{repoName}",
                     $"https://bitbucket.org/test-org/{repoName}"
                 });
 
             AssertEx.AreEqual(
-                $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://bitbucket.org/test-org/{repoName}/raw/{commitSha}/*""}}}}",
+                $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://api.bitbucket.org/2.0/repositories/test-org/{repoName}/src/{commitSha}/*""}}}}",
                 File.ReadAllText(Path.Combine(ProjectDir.Path, s_relativeSourceLinkJsonPath)));
 
             TestUtilities.ValidateAssemblyInformationalVersion(
@@ -274,14 +274,14 @@ namespace Microsoft.SourceLink.IntegrationTests
                 expectedResults: new[]
                 {
                     ProjectSourceRoot,
-                    $"https://噸.com/test-org/{repoName}/raw/{commitSha}/*",
+                    $"https://api.噸.com/2.0/repositories/test-org/{repoName}/src/{commitSha}/*",
                     s_relativeSourceLinkJsonPath,
                     $"https://噸.com/test-org/{repoName}",
                     $"https://噸.com/test-org/{repoName}"
                 });
 
             AssertEx.AreEqual(
-                $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://噸.com/test-org/{repoName}/raw/{commitSha}/*""}}}}",
+                $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://api.噸.com/2.0/repositories/test-org/{repoName}/src/{commitSha}/*""}}}}",
                 File.ReadAllText(Path.Combine(ProjectDir.Path, s_relativeSourceLinkJsonPath)));
 
             TestUtilities.ValidateAssemblyInformationalVersion(
