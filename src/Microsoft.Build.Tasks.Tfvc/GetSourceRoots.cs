@@ -51,7 +51,7 @@ namespace Microsoft.Build.Tasks.Tfvc
                         // Extract GUID from ArtifactUri "vstfs:///Classification/TeamProject/{Guid}":
                         var projectId = Path.GetFileName(project.ArtifactUri.GetPath());
 
-                        // SourceLink.Vsts will map each source root to:
+                        // SourceLink.AzureRepos will map each source root to:
                         // {RepositoryUrl}/_versionControl?path={ServerPath}&version={RevisionId}
                         var item = new TaskItem(folder.LocalItem);
                         item.SetMetadata("SourceControl", "tfvc");

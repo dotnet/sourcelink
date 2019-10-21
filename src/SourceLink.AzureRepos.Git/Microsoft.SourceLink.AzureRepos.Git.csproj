@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+    <AutoGenerateAssemblyVersion>true</AutoGenerateAssemblyVersion>
+
+    <!-- Using an explicit nuspec file due to https://github.com/NuGet/Home/issues/6754 -->
+    <IsPackable>true</IsPackable>
+    <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
+    <NuspecBasePath>$(OutputPath)</NuspecBasePath>
+
+    <PackageDescription>Generates source link for Azure Repos (formerly known as VSTS) Git repositories.</PackageDescription>
+    <PackageTags>MSBuild Tasks Azure DevOps Repos VSTS Git source link</PackageTags>
+    <DevelopmentDependency>true</DevelopmentDependency>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\Common\Names.cs" Link="Common\Names.cs" />
+    <Compile Include="..\Common\GetSourceLinkUrlGitTask.cs" Link="Common\GetSourceLinkUrlGitTask.cs" />
+    <Compile Include="..\Common\TranslateRepositoryUrlGitTask.cs" Link="Common\TranslateRepositoryUrlGitTask.cs" />
+    <Compile Include="..\Common\UriUtilities.cs" Link="Common\UriUtilities.cs" />
+    <Compile Include="..\Common\AzureDevOpsUrlParser.cs" Link="Common\AzureDevOpsUrlParser.cs" />
+    <EmbeddedResource Include="..\Common\CommonResources.resx" Link="Common\CommonResources.resx">
+      <Namespace>Microsoft.Build.Tasks.SourceControl</Namespace>
+      <GenerateSource>true</GenerateSource>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build" Version="$(MicrosoftBuildVersion)" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="$(MicrosoftBuildTasksCore)" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Microsoft.SourceLink.AzureRepos.Git.UnitTests" />
+  </ItemGroup>
+</Project>

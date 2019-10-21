@@ -17,9 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Build.Tasks.Git.U
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.GitHub", "src\SourceLink.GitHub\Microsoft.SourceLink.GitHub.csproj", "{6B305358-98A3-4F3D-8D69-32475523EE02}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.Vsts.Git", "src\SourceLink.Vsts.Git\Microsoft.SourceLink.Vsts.Git.csproj", "{076D322B-A705-4C57-A5A0-39C81BCFC285}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.AzureRepos.Git", "src\SourceLink.AzureRepos.Git\Microsoft.SourceLink.AzureRepos.Git.csproj", "{076D322B-A705-4C57-A5A0-39C81BCFC285}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.Vsts.Tfvc", "src\SourceLink.Vsts.Tfvc\Microsoft.SourceLink.Vsts.Tfvc.csproj", "{DA058284-2FBD-459C-B9F3-82B5F7713C6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.AzureRepos.Tfvc", "src\SourceLink.AzureRepos.Tfvc\Microsoft.SourceLink.AzureRepos.Tfvc.csproj", "{DA058284-2FBD-459C-B9F3-82B5F7713C6F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestUtilities", "src\TestUtilities\TestUtilities.csproj", "{D6ED6730-02A8-4B21-8D62-C7B2009F53A5}"
 EndProject
@@ -27,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.Git.In
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.GitHub.UnitTests", "src\SourceLink.GitHub.UnitTests\Microsoft.SourceLink.GitHub.UnitTests.csproj", "{15CD9412-587A-457A-94BD-89D69DA7F4B3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.Vsts.Git.UnitTests", "src\SourceLink.Vsts.Git.UnitTests\Microsoft.SourceLink.Vsts.Git.UnitTests.csproj", "{60C82684-6A13-4AEF-A4F5-C429BEDE1913}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.AzureRepos.Git.UnitTests", "src\SourceLink.AzureRepos.Git.UnitTests\Microsoft.SourceLink.AzureRepos.Git.UnitTests.csproj", "{60C82684-6A13-4AEF-A4F5-C429BEDE1913}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.GitLab", "src\SourceLink.GitLab\Microsoft.SourceLink.GitLab.csproj", "{B8F63D05-BF7E-4F09-B87F-2FD2E6D58149}"
 EndProject
@@ -49,9 +49,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.Bitbuc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.Bitbucket.Git.UnitTests", "src\SourceLink.Bitbucket.Git.UnitTests\Microsoft.SourceLink.Bitbucket.Git.UnitTests.csproj", "{97AD20FC-9526-4579-8E95-47890FE12783}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.Tfs.Git", "src\SourceLink.Tfs.Git\Microsoft.SourceLink.Tfs.Git.csproj", "{93F7A7DB-DC3E-46EF-93A5-410625E16B44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.AzureDevOpsServer.Git", "src\SourceLink.AzureDevOpsServer.Git\Microsoft.SourceLink.AzureDevOpsServer.Git.csproj", "{93F7A7DB-DC3E-46EF-93A5-410625E16B44}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.Tfs.Git.UnitTests", "src\SourceLink.Tfs.Git.UnitTests\Microsoft.SourceLink.Tfs.Git.UnitTests.csproj", "{79371F26-FB84-408D-A4A1-B142B247C288}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests", "src\SourceLink.AzureDevOpsServer.Git.UnitTests\Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests.csproj", "{79371F26-FB84-408D-A4A1-B142B247C288}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net46</TargetFramework>
+    <AutoGenerateAssemblyVersion>true</AutoGenerateAssemblyVersion>
+    <ExcludeFromSourceBuild>true</ExcludeFromSourceBuild>
+    <SuppressFinalPackageVersion>true</SuppressFinalPackageVersion>
+
+    <!-- Using an explicit nuspec file due to https://github.com/NuGet/Home/issues/6754 -->
+    <IsPackable>true</IsPackable>
+    <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
+    <NuspecBasePath>$(OutputPath)</NuspecBasePath>
+    
+    <PackageDescription>Generates source link for Azure Repos (formerly known as VSTS) TFVC repositories.</PackageDescription>
+    <PackageTags>MSBuild Tasks Azure DevOps Repos VSTS TFVC source link</PackageTags>
+    <DevelopmentDependency>true</DevelopmentDependency>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build" Version="$(MicrosoftBuildVersion)" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="$(MicrosoftBuildTasksCore)" />
+  </ItemGroup>
+</Project>

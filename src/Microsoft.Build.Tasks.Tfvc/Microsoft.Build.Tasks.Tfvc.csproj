@@ -7,7 +7,7 @@
 
     <!-- Using an explicit nuspec file since NuGet Pack target currently doesn't support including dependencies in tools packages -->
     <PackageDescription>MSBuild tasks providing TFVC repository information.</PackageDescription>
-    <PackageTags>MSBuild Tasks VSTS TFVC source link</PackageTags>
+    <PackageTags>MSBuild Tasks TFVC source link</PackageTags>
     <DevelopmentDependency>true</DevelopmentDependency>
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
 

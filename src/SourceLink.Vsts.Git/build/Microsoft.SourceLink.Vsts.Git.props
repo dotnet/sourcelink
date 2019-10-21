@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project>
-  <ItemGroup>
-    <SourceLinkVstsGitHost Include="visualstudio.com" />
-    <SourceLinkVstsGitHost Include="vsts.me" />
-    <SourceLinkVstsGitHost Include="dev.azure.com" />
-  </ItemGroup>
-</Project>

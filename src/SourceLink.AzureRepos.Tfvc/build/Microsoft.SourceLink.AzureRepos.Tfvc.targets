@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <_SourceLinkAzureReposTfvcAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)..\tools\net461\Microsoft.SourceLink.AzureRepos.Tfvc.dll</_SourceLinkAzureReposTfvcAssemblyFile>
+    <_SourceLinkAzureReposTfvcAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\netcoreapp2.0\Microsoft.SourceLink.AzureRepos.Tfvc.dll</_SourceLinkAzureReposTfvcAssemblyFile>
+  </PropertyGroup>
+
+  <UsingTask TaskName="Microsoft.SourceLink.AzureRepos.Tfvc.GetSourceLinkUrl" AssemblyFile="$(_SourceLinkAzureReposTfvcAssemblyFile)"/>
+
+  <PropertyGroup>
+    <SourceLinkUrlInitializerTargets>$(SourceLinkUrlInitializerTargets);_InitializeAzureReposTfvcSourceLinkUrl</SourceLinkUrlInitializerTargets>
+  </PropertyGroup>
+
+  <Target Name="_InitializeAzureReposTfvcSourceLinkUrl" Inputs="@(SourceRoot)" Outputs="|%(Identity)|">
+    <Microsoft.SourceLink.AzureRepos.Tfvc.GetSourceLinkUrl SourceRoot="@(SourceRoot)">
+      <Output TaskParameter="SourceLinkUrl" PropertyName="_SourceLinkUrlToUpdate"/>
+    </Microsoft.SourceLink.AzureRepos.Tfvc.GetSourceLinkUrl>
+
+    <ItemGroup>
+      <!-- Only update the SourceLinkUrl metadata if the SourceRoot belongs to this source control -->
+      <SourceRoot Update="%(Identity)" SourceLinkUrl="$(_SourceLinkUrlToUpdate)" Condition="'$(_SourceLinkUrlToUpdate)' != 'N/A'"/>
+    </ItemGroup>
+  </Target>
+
+</Project>
