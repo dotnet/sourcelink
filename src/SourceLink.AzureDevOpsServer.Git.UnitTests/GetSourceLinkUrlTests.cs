@@ -119,7 +119,7 @@ namespace Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests
             bool result = task.Execute();
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
-                "ERROR : " + string.Format(CommonResources.AtLeastOneRepositoryHostIsRequired, "SourceLinkAzureDevOpsServerGitHost", "Tfs.Git"), engine.Log);
+                "ERROR : " + string.Format(CommonResources.AtLeastOneRepositoryHostIsRequired, "SourceLinkAzureDevOpsServerGitHost", "AzureDevOpsServer.Git"), engine.Log);
 
             Assert.False(result);
         }
