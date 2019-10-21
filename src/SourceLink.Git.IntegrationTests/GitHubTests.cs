@@ -43,10 +43,10 @@ namespace Microsoft.SourceLink.IntegrationTests
                 expectedWarnings: new[]
                 {
                     // Repository has no remote.
-                    string.Format(Resources.RepositoryHasNoRemote),
+                    string.Format(Resources.RepositoryHasNoRemote, ProjectDir.Path),
 
                     // Repository doesn't have any commit.
-                    string.Format(Resources.RepositoryHasNoCommit),
+                    string.Format(Resources.RepositoryHasNoCommit, ProjectDir.Path),
 
                     // No SourceRoot items specified - the generated source link is empty.
                     string.Format(Common.Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty),
@@ -204,7 +204,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expectedWarnings: new[]
                 {
-                    string.Format(Resources.RepositoryDoesNotHaveSpecifiedRemote, "origin2", "origin")
+                    string.Format(Resources.RepositoryDoesNotHaveSpecifiedRemote, ProjectDir.Path, "origin2", "origin")
                 });
         }
 
