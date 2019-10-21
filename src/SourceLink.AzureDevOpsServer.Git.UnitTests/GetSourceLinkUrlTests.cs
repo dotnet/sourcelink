@@ -45,7 +45,7 @@ namespace Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests
 
             bool result = task.Execute();
 
-            // ERROR : Item 'tfs.com' of item group 'SourceLinkTfsGitHost' must specify metadata 'VirtualDirectory'
+            // ERROR : Item 'tfs.com' of item group 'SourceLinkAzureDevOpsServerGitHost' must specify metadata 'VirtualDirectory'
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
                 "ERROR : " + string.Format(CommonResources.ItemOfItemGroupMustSpecifyMetadata, "tfs.com", "SourceLinkAzureDevOpsServerGitHost", "VirtualDirectory"), engine.Log);
 

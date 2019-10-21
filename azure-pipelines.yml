@@ -77,7 +77,7 @@ stages:
         steps:
         - checkout: self
           clean: true
-        - script: eng\common\cibuild.cmd -configuration $(_BuildConfig) -prepareMachine $(_BuildArgs)
+        - script: eng\cibuild.cmd -configuration $(_BuildConfig) -prepareMachine $(_BuildArgs)
           displayName: Build and Test
 
       - job: MacOS
@@ -96,7 +96,7 @@ stages:
         steps:
         - checkout: self
           clean: true
-        - script: eng/common/cibuild.sh --configuration $(_BuildConfig) --prepareMachine
+        - script: eng/cibuild.sh --configuration $(_BuildConfig) --prepareMachine
           displayName: Build and Test
 
       - job: Linux
@@ -121,7 +121,7 @@ stages:
         steps:
         - checkout: self
           clean: true
-        - script: eng/common/cibuild.sh --configuration $(_BuildConfig) --prepareMachine
+        - script: eng/cibuild.sh --configuration $(_BuildConfig) --prepareMachine
           displayName: Build and Test
 
 - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:

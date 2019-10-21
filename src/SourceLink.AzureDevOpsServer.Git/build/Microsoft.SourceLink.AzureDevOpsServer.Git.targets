@@ -13,7 +13,7 @@
     <SourceControlManagerUrlTranslationTargets>$(SourceControlManagerUrlTranslationTargets);TranslateAzureDevOpsServerGitUrlsInSourceControlInformation</SourceControlManagerUrlTranslationTargets>
   </PropertyGroup>
   
-  <Target Name="_InitializeTfsGitSourceLinkUrl" Inputs="@(SourceRoot)" Outputs="|%(Identity)|">
+  <Target Name="_InitializeAzureDevOpsServerGitSourceLinkUrl" Inputs="@(SourceRoot)" Outputs="|%(Identity)|">
     <!--
       The task calculates SourceLink URL for a given SourceRoot.
 
