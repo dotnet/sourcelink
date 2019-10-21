@@ -29,7 +29,7 @@ namespace Microsoft.SourceLink.IntegrationTests
   <PublishRepositoryUrl>true</PublishRepositoryUrl>
 </PropertyGroup>
 <ItemGroup>
-  <SourceLinkTfsGitHost Include=""tfs.噸.local"" VirtualDirectory=""tfs""/>
+  <SourceLinkAzureDevOpsServerGitHost Include=""tfs.噸.local"" VirtualDirectory=""tfs""/>
 </ItemGroup>
 ",
                 customTargets: "",
@@ -86,7 +86,7 @@ namespace Microsoft.SourceLink.IntegrationTests
   <PublishRepositoryUrl>true</PublishRepositoryUrl>
 </PropertyGroup>
 <ItemGroup>
-  <SourceLinkTfsGitHost Include=""tfs.噸.local"" VirtualDirectory=""tfs""/>
+  <SourceLinkAzureDevOpsServerGitHost Include=""tfs.噸.local"" VirtualDirectory=""tfs""/>
 </ItemGroup>
 ",
                 customTargets: "",

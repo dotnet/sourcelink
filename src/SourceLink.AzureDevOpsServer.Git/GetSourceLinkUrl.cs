@@ -4,17 +4,17 @@ using System;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Tasks.SourceControl;
 
-namespace Microsoft.SourceLink.Tfs.Git
+namespace Microsoft.SourceLink.AzureDevOpsServer.Git
 {
     public sealed class GetSourceLinkUrl : GetSourceLinkUrlGitTask
     {
-        protected override string HostsItemGroupName => "SourceLinkTfsGitHost";
-        protected override string ProviderDisplayName => "Tfs.Git";
+        protected override string HostsItemGroupName => "SourceLinkAzureDevOpsServerGitHost";
+        protected override string ProviderDisplayName => "AzureDevOpsServer.Git";
 
         private const string VirtualDirectoryMetadataName = "VirtualDirectory";
 
         /// <summary>
-        /// To constructs correct SourceLink URL we need to know the virtual directory of the TFS service.
+        /// To constructs correct SourceLink URL we need to know the virtual directory of the AzureDevOps Server.
         /// We can't infer it from repository URL. The user needs to specify it explicitly in the host specification.
         /// </summary>
         protected override bool SupportsImplicitHost => false;

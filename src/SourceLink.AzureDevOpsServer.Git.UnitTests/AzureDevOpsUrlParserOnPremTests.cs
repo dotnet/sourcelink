@@ -2,7 +2,7 @@
 using System;
 using Xunit;
 
-namespace Microsoft.SourceLink.Tfs.Git.UnitTests
+namespace Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests
 {
     public class AzureDevOpsUrlParserOnPremTests
     {

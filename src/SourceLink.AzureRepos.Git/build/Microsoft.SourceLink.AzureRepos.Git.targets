@@ -23,14 +23,6 @@
       Recognized domains are specified via Hosts (initialized from SourceLinkAzureReposGitHost item group).
       In addition SourceLinkHasSingleProvider is true an iplicit host is parsed from RepositoryUrl.
 
-      Example of SourceLinkAzureReposGitHost items:
-
-      <ItemGroup>
-        <SourceLinkAzureReposGitHost Include="mytfs1.com" ContentUrl="http://mytfs1.com"/>
-        <SourceLinkAzureReposGitHost Include="mytfs2.com" />           ContentUrl defaults to https://mytfs2.com
-        <SourceLinkAzureReposGitHost Include="mytfs3.com:8080" />      ContentUrl defaults to https://mytfs3.com:8080
-      </ItemGroup>
-
       ContentUrl is optional. If not specified it defaults to "https://{domain}" or "http://{domain}", based on the scheme of SourceRoot.RepositoryUrl.
     -->
     <Microsoft.SourceLink.AzureRepos.Git.GetSourceLinkUrl RepositoryUrl="$(PrivateRepositoryUrl)" SourceRoot="@(SourceRoot)" Hosts="@(SourceLinkAzureReposGitHost)" IsSingleProvider="$(SourceLinkHasSingleProvider)">

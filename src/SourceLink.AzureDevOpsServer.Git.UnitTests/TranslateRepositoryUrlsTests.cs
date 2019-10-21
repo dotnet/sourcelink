@@ -4,7 +4,7 @@ using TestUtilities;
 using Xunit;
 using static TestUtilities.KeyValuePairUtils;
 
-namespace Microsoft.SourceLink.Tfs.Git.UnitTests
+namespace Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests
 {
     public class TranslateRepositoryUrlsTests
     {

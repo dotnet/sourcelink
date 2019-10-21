@@ -3,7 +3,7 @@
 using System;
 using Microsoft.Build.Tasks.SourceControl;
 
-namespace Microsoft.SourceLink.Tfs.Git
+namespace Microsoft.SourceLink.AzureDevOpsServer.Git
 {
     public sealed class TranslateRepositoryUrls : TranslateRepositoryUrlsGitTask
     {

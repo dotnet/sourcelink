@@ -9,7 +9,7 @@
   </metadata>
   <files>
     $CommonFileElements$
-    <file src="**\Microsoft.SourceLink.Tfs.Git.*" target="tools" />
+    <file src="**\Microsoft.SourceLink.AzureDevOpsServer.Git.*" target="tools" />
 
     <file src="$ProjectDirectory$\build\*.*" target="build" />
     <file src="$ProjectDirectory$\buildMultiTargeting\*.*" target="buildMultiTargeting" />

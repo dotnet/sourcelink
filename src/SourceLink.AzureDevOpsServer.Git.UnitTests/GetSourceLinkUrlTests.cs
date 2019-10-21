@@ -5,7 +5,7 @@ using TestUtilities;
 using Xunit;
 using static TestUtilities.KeyValuePairUtils;
 
-namespace Microsoft.SourceLink.Tfs.Git.UnitTests
+namespace Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests
 {
     public class GetSourceLinkUrlTests
     {
@@ -23,7 +23,7 @@ namespace Microsoft.SourceLink.Tfs.Git.UnitTests
             bool result = task.Execute();
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
-                "ERROR : " + string.Format(CommonResources.AtLeastOneRepositoryHostIsRequired, "SourceLinkTfsGitHost", "Tfs.Git"), engine.Log);
+                "ERROR : " + string.Format(CommonResources.AtLeastOneRepositoryHostIsRequired, "SourceLinkAzureDevOpsServerGitHost", "AzureDevOpsServer.Git"), engine.Log);
 
             Assert.False(result);
         }
@@ -47,7 +47,7 @@ namespace Microsoft.SourceLink.Tfs.Git.UnitTests
 
             // ERROR : Item 'tfs.com' of item group 'SourceLinkTfsGitHost' must specify metadata 'VirtualDirectory'
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
-                "ERROR : " + string.Format(CommonResources.ItemOfItemGroupMustSpecifyMetadata, "tfs.com", "SourceLinkTfsGitHost", "VirtualDirectory"), engine.Log);
+                "ERROR : " + string.Format(CommonResources.ItemOfItemGroupMustSpecifyMetadata, "tfs.com", "SourceLinkAzureDevOpsServerGitHost", "VirtualDirectory"), engine.Log);
 
             Assert.False(result);
         }
@@ -119,7 +119,7 @@ namespace Microsoft.SourceLink.Tfs.Git.UnitTests
             bool result = task.Execute();
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
-                "ERROR : " + string.Format(CommonResources.AtLeastOneRepositoryHostIsRequired, "SourceLinkTfsGitHost", "Tfs.Git"), engine.Log);
+                "ERROR : " + string.Format(CommonResources.AtLeastOneRepositoryHostIsRequired, "SourceLinkAzureDevOpsServerGitHost", "Tfs.Git"), engine.Log);
 
             Assert.False(result);
         }
