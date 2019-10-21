@@ -84,7 +84,7 @@ namespace Microsoft.SourceLink
         {
             projectPath = repositoryName = null;
 
-            if (!UriUtilities.TrySplitRelativeUrl(relativeUrl, out var parts) ||
+            if (!UriUtilities.TrySplitRelativeUrl(relativeUrl, out var parts) || parts.Length == 0 ||
                 !UriUtilities.TrySplitRelativeUrl(virtualDirectory, out var virtualDirectoryParts))
             {
                 return false;

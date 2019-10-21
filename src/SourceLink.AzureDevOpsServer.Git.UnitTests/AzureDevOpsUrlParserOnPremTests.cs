@@ -6,7 +6,6 @@ namespace Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests
 {
     public class AzureDevOpsUrlParserOnPremTests
     {
-#if F
         [Theory]
         [InlineData("")]
         [InlineData("/")]
@@ -23,25 +22,25 @@ namespace Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests
         [InlineData("/a/_git/b//")]
         [InlineData("/a/b/_git/")]
         [InlineData("//b/_git/c")]
-        [InlineData("project/_git/repo")]
         [InlineData("/project/_git/a/b")]
         [InlineData("/project/_ssh/repo")]
-        public void TryParseOnPremHttp_Error(string relativeUrl)
+        [InlineData("/virtual/dir/project/_git/repo", "/virtual/dir2")]
+        [InlineData("/virtual/dir/project/_git/repo", "/virtual/dir/dir3/dir4")]
+        public void TryParseOnPremHttp_Error(string relativeUrl, string virtualDir = "/")
         {
-            Assert.False(AzureDevOpsUrlParser.TryParseOnPremHttp(relativeUrl, out var _, out var _));
+            Assert.False(AzureDevOpsUrlParser.TryParseOnPremHttp(relativeUrl, virtualDir, out _, out _));
         }
 
         [Theory]
-        [InlineData("/project/_git/repo", "project", "repo")]
-        [InlineData("/project/_git/repo/", "project", "repo")]
-        [InlineData("/collection/project/_git/repo", "collection/project", "repo")]
-        [InlineData("/collection/project/team/_git/repo", "collection/project/team", "repo")]
-        [InlineData("/collection/_git/repo", "collection", "repo")]
-        [InlineData("/virtual/iis/path/collection/project/team/_git/repo", "virtual/iis/path/collection/project/team", "repo")]
-        public void TryParseOnPremHttp_Success(string relativeUrl, string repositoryPath, string repositoryName)
+        [InlineData("/collection/project/team/_git/repo", "/", "/collection/project", "repo")]
+        [InlineData("/collection/project/_git/repo", "/", "/collection/project", "repo")]
+        [InlineData("/collection/_git/repo/", "/", "/collection/repo", "repo")]
+        [InlineData("/collection/_git/repo", "/", "/collection/repo", "repo")]
+        [InlineData("/virtual/iis/path/collection/project/team/_git/repo", "/virtual/iis/path", "virtual/iis/path/collection/project", "repo")]
+        public void TryParseOnPremHttp_Success(string relativeUrl, string virtualDirectory, string projectPath, string repositoryName)
         {
-            Assert.True(AzureDevOpsUrlParser.TryParseOnPremHttp(relativeUrl, out var actualRepositoryPath, out var actualRepositoryName));
-            Assert.Equal(repositoryPath, actualRepositoryPath);
+            Assert.True(AzureDevOpsUrlParser.TryParseOnPremHttp(relativeUrl, virtualDirectory, out var actualProjectPath, out var actualRepositoryName));
+            Assert.Equal(projectPath, actualProjectPath);
             Assert.Equal(repositoryName, actualRepositoryName);
         }
 
@@ -84,6 +83,5 @@ namespace Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests
             Assert.Equal(repositoryPath, actualRepositoryPath);
             Assert.Equal(repositoryName, actualRepositoryName);
         }
-#endif
     }
 }
