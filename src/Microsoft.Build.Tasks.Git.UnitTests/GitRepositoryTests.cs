@@ -59,6 +59,56 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         }
 
         [Fact]
+        public void TryFindRepository_Worktree_Realistic()
+        {
+            using var temp = new TempRoot();
+
+            var mainWorkingDir = temp.CreateDirectory();
+            var mainWorkingSubDir = mainWorkingDir.CreateDirectory("A");
+            var mainGitDir = mainWorkingDir.CreateDirectory(".git");
+            mainGitDir.CreateFile("HEAD");
+
+            var worktreesDir = mainGitDir.CreateDirectory("worktrees");
+            var worktreeGitDir = worktreesDir.CreateDirectory("myworktree");
+            var worktreeGitSubDir = worktreeGitDir.CreateDirectory("B");
+            var worktreeDir = temp.CreateDirectory();
+            var worktreeSubDir = worktreeDir.CreateDirectory("C");
+            var worktreeGitFile = worktreeDir.CreateFile(".git").WriteAllText("gitdir: " + worktreeGitDir + " \r\n\t\v");
+
+            worktreeGitDir.CreateFile("HEAD");
+            worktreeGitDir.CreateFile("commondir").WriteAllText("../..\n");
+            worktreeGitDir.CreateFile("gitdir").WriteAllText(worktreeGitFile.Path + " \r\n\t\v");
+
+            // start under main repository directory:
+            Assert.True(GitRepository.TryFindRepository(mainWorkingSubDir.Path, out var location));
+
+            Assert.Equal(mainGitDir.Path, location.GitDirectory);
+            Assert.Equal(mainGitDir.Path, location.CommonDirectory);
+            Assert.Equal(mainWorkingDir.Path, location.WorkingDirectory);
+
+            // start at main git directory (git config works from this dir, but git status requires work dir):
+            Assert.True(GitRepository.TryFindRepository(mainGitDir.Path, out location));
+
+            Assert.Equal(mainGitDir.Path, location.GitDirectory);
+            Assert.Equal(mainGitDir.Path, location.CommonDirectory);
+            Assert.Null(location.WorkingDirectory);
+
+            // start under worktree directory:
+            Assert.True(GitRepository.TryFindRepository(worktreeSubDir.Path, out location));
+
+            Assert.Equal(worktreeGitDir.Path, location.GitDirectory);
+            Assert.Equal(mainGitDir.Path, location.CommonDirectory);
+            Assert.Equal(worktreeDir.Path, location.WorkingDirectory);
+
+            // start under worktree git directory (git config works from this dir, but git status requires work dir):
+            Assert.True(GitRepository.TryFindRepository(worktreeGitSubDir.Path, out location));
+
+            Assert.Equal(worktreeGitDir.Path, location.GitDirectory);
+            Assert.Equal(mainGitDir.Path, location.CommonDirectory);
+            Assert.Null(location.WorkingDirectory);
+        }
+
+        [Fact]
         public void LocateRepository_Submodule()
         {
             using var temp = new TempRoot();
