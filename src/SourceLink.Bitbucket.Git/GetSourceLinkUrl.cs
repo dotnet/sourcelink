@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Tasks.SourceControl;
 
@@ -18,33 +19,68 @@ namespace Microsoft.SourceLink.Bitbucket.Git
 
         private const string IsEnterpriseEditionMetadataName = "EnterpriseEdition";
         private const string VersionMetadataName = "Version";
-        private const string VersionWithNewUrlFormat = "4.7";
+        private static readonly Version s_versionWithNewUrlFormat = new Version(4, 7);
 
         protected override string BuildSourceLinkUrl(Uri contentUri, Uri gitUri, string relativeUrl, string revisionId, ITaskItem hostItem)
         {
-            return
-                bool.TryParse(hostItem?.GetMetadata(IsEnterpriseEditionMetadataName), out var isEnterpriseEdition) && !isEnterpriseEdition
-                    ? BuildSourceLinkUrlForCloudEdition(contentUri, relativeUrl, revisionId)
-                    : BuildSourceLinkUrlForEnterpriseEdition(contentUri, relativeUrl, revisionId, hostItem);
+            // The SourceLinkBitbucketGitHost item for bitbucket.org specifies EnterpriseEdition="false".
+            // Other items that may be specified by the project default to EnterpriseEdition="true" without specifying it.
+            bool isCloud = bool.TryParse(hostItem?.GetMetadata(IsEnterpriseEditionMetadataName), out var isEnterpriseEdition) && !isEnterpriseEdition;
+
+            if (isCloud)
+            {
+                return BuildSourceLinkUrlForCloudEdition(contentUri, relativeUrl, revisionId);
+            }
+
+            if (TryParseEnterpriseUrl(relativeUrl, out var relativeBaseUrl, out var projectName, out var repositoryName))
+            {
+                var version = GetBitbucketEnterpriseVersion(hostItem);
+                return BuildSourceLinkUrlForEnterpriseEdition(contentUri, relativeBaseUrl, projectName, repositoryName, revisionId, version);
+            }
+
+            Log.LogError(CommonResources.ValueOfWithIdentityIsInvalid, Names.SourceRoot.RepositoryUrlFullName, SourceRoot.ItemSpec, gitUri);
+            return null;
         }
 
-        private string BuildSourceLinkUrlForEnterpriseEdition(Uri contentUri, string relativeUrl, string revisionId,
-            ITaskItem hostItem)
+        internal static string BuildSourceLinkUrlForEnterpriseEdition(
+            Uri contentUri,
+            string relativeBaseUrl,
+            string projectName,
+            string repositoryName,
+            string commitSha,
+            Version version)
         {
-            var bitbucketEnterpriseVersion = GetBitbucketEnterpriseVersion(hostItem);
+            var relativeUrl = (version >= s_versionWithNewUrlFormat) ? 
+                $"projects/{projectName}/repos/{repositoryName}/raw/*?at={commitSha}" :
+                $"projects/{projectName}/repos/{repositoryName}/browse/*?at={commitSha}&raw";
 
-            var splits = relativeUrl.Split(new[] {'/'}, StringSplitOptions.RemoveEmptyEntries);
-            var isSshRepoUri = !(splits.Length == 3 && splits[0] == "scm");
-            var projectName = isSshRepoUri ? splits[0] : splits[1];
-            var repositoryName = isSshRepoUri ? splits[1] : splits[2];
+            return UriUtilities.Combine(contentUri.ToString(), UriUtilities.Combine(relativeBaseUrl, relativeUrl));
+        }
 
-            var relativeUrlForBitbucketEnterprise =
-                GetRelativeUrlForBitbucketEnterprise(projectName, repositoryName, revisionId,
-                    bitbucketEnterpriseVersion);
+        internal static bool TryParseEnterpriseUrl(string relativeUrl, out string relativeBaseUrl, out string projectName, out string repositoryName)
+        {
+            // HTTP: {baseUrl}/scm/{projectName}/{repositoryName}
+            // SSH: {baseUrl}/{projectName}/{repositoryName}
 
-            var result = UriUtilities.Combine(contentUri.ToString(), relativeUrlForBitbucketEnterprise);
+            if (!UriUtilities.TrySplitRelativeUrl(relativeUrl, out var parts) || parts.Length < 2)
+            {
+                relativeBaseUrl = projectName = repositoryName = null;
+                return false;
+            }
 
-            return result;
+            var i = parts.Length - 1;
+
+            repositoryName = parts[i--];
+            projectName = parts[i--];
+
+            if (i >= 0 && parts[i] == "scm")
+            {
+                i--;
+            }
+
+            Debug.Assert(i >= -1);
+            relativeBaseUrl = string.Join("/", parts, 0, i + 1);
+            return true;
         }
 
         private Version GetBitbucketEnterpriseVersion(ITaskItem hostItem)
@@ -63,7 +99,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git
             }
             else
             {
-                bitbucketEnterpriseVersion = Version.Parse(VersionWithNewUrlFormat);
+                bitbucketEnterpriseVersion = s_versionWithNewUrlFormat;
             }
 
             return bitbucketEnterpriseVersion;
@@ -78,21 +114,6 @@ namespace Microsoft.SourceLink.Bitbucket.Git
             string relativeApiUrl = UriUtilities.Combine(UriUtilities.Combine("2.0/repositories", relativeUrl), $"src/{revisionId}/*");
 
             return UriUtilities.Combine(apiUriBuilder.Uri.ToString(), relativeApiUrl);
-        }
-
-        private static string GetRelativeUrlForBitbucketEnterprise(string projectName, string repositoryName, string commitId, Version bitbucketVersion)
-        {
-            string relativeUrl;
-            if (bitbucketVersion >= Version.Parse(VersionWithNewUrlFormat))
-            {
-                relativeUrl = $"projects/{projectName}/repos/{repositoryName}/raw/*?at={commitId}";
-            }
-            else
-            {
-                relativeUrl = $"projects/{projectName}/repos/{repositoryName}/browse/*?at={commitId}&raw";
-            }
-
-            return relativeUrl;
         }
     }
 }

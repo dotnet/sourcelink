@@ -1,4 +1,5 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+using System;
 using Microsoft.Build.Tasks.SourceControl;
 using TestUtilities;
 using Xunit;
@@ -8,11 +9,6 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
 {
     public class GetSourceLinkUrlTests
     {
-        private const string ExpectedUrlForCloudEdition =
-            "https://api.domain.com/x/y/2.0/repositories/a/b/src/0123456789abcdefABCDEF000000000000000000/*";
-        private const string ExpectedUrlForEnterpriseEditionOldVersion = "https://bitbucket.domain.com/projects/a/repos/b/browse/*?at=0123456789abcdefABCDEF000000000000000000&raw";
-        private const string ExpectedUrlForEnterpriseEditionNewVersion = "https://bitbucket.domain.com/projects/a/repos/b/raw/*?at=0123456789abcdefABCDEF000000000000000000";
-
         [Fact]
         public void EmptyHosts()
         {
@@ -33,13 +29,39 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
         }
 
         [Theory]
+        [InlineData("a/b", "", "a", "b")]
+        [InlineData("/a/b", "", "a", "b")]
+        [InlineData("/a/b/", "", "a", "b")]
+        [InlineData("scm/a", "", "scm", "a")]
+        [InlineData("scm/a/b", "", "a", "b")]
+        [InlineData("/r/scm/a/b", "r", "a", "b")]
+        [InlineData("/r/s/scm/a/b", "r/s", "a", "b")]
+        [InlineData("/r/s/a/b", "r/s", "a", "b")]
+        [InlineData("/r/s/scm/b", "r/s", "scm", "b")]
+        public void TryParseEnterpriseUrl(string relativeUrl, string expectedBaseUrl, string expectedProjectName, string expectedRepositoryName)
+        {
+            Assert.True(GetSourceLinkUrl.TryParseEnterpriseUrl(relativeUrl, out var baseUrl, out var projectName, out var repositoryName));
+            Assert.Equal(expectedBaseUrl, baseUrl);
+            Assert.Equal(expectedProjectName, projectName);
+            Assert.Equal(expectedRepositoryName, repositoryName);
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData("/")]
+        [InlineData("x")]
+        public void TryParseEnterpriseUrl_Errors(string relativeUrl)
+        {
+            Assert.False(GetSourceLinkUrl.TryParseEnterpriseUrl(relativeUrl, out _, out _, out _));
+        }
+
+        [Theory]
         [InlineData("", "")]
         [InlineData("", "/")]
         [InlineData("/", "")]
         [InlineData("/", "/")]
         public void BuildSourceLinkUrl_BitbucketCloud(string s1, string s2)
         {
-            var isEnterpriseEditionSetting = KVP("EnterpriseEdition", "false");
             var engine = new MockEngine();
             var task = new GetSourceLinkUrl()
             {
@@ -47,14 +69,36 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
                 SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mybitbucket.org:100/a/b" + s1), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
-                    new MockItem("mybitbucket.org", KVP("ContentUrl", "https://domain.com/x/y" + s2), isEnterpriseEditionSetting),
+                    new MockItem("mybitbucket.org", KVP("ContentUrl", "https://domain.com/x/y" + s2), KVP("EnterpriseEdition", "false")),
                 }
             };
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual(ExpectedUrlForCloudEdition, task.SourceLinkUrl);
+            AssertEx.AreEqual("https://api.domain.com/x/y/2.0/repositories/a/b/src/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
             Assert.True(result);
+        }
+
+        [Fact]
+        public void BuildSourceLinkUrl_BitbucketEnterprise_InvalidUrl()
+        {
+            var engine = new MockEngine();
+            var task = new GetSourceLinkUrl()
+            {
+                BuildEngine = engine,
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mybitbucket.org/a"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                Hosts = new[]
+                {
+                    new MockItem("mybitbucket.org", KVP("ContentUrl", "https://domain.com/x/y")),
+                }
+            };
+
+            bool result = task.Execute();
+
+            AssertEx.AssertEqualToleratingWhitespaceDifferences(
+                "ERROR : " + string.Format(CommonResources.ValueOfWithIdentityIsInvalid, "SourceRoot.RepositoryUrl", "/src/", "http://subdomain.mybitbucket.org/a"), engine.Log);
+
+            Assert.False(result);
         }
 
         [Fact]
@@ -74,7 +118,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual(ExpectedUrlForEnterpriseEditionNewVersion, task.SourceLinkUrl);
+            AssertEx.AreEqual("https://bitbucket.domain.com/projects/a/repos/b/raw/*?at=0123456789abcdefABCDEF000000000000000000", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -104,7 +148,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual(ExpectedUrlForEnterpriseEditionOldVersion, task.SourceLinkUrl);
+            AssertEx.AreEqual("https://bitbucket.domain.com/projects/a/repos/b/browse/*?at=0123456789abcdefABCDEF000000000000000000&raw", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -125,7 +169,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://bitbucket.domain.com:100/scm/a/b" + s1), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://bitbucket.domain.com:100/base/scm/a/b" + s1), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
                     new MockItem("domain.com", KVP("ContentUrl", "https://bitbucket.domain.com" + s2), isEnterpriseEditionSetting, version),
@@ -134,7 +178,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual(ExpectedUrlForEnterpriseEditionOldVersion, task.SourceLinkUrl);
+            AssertEx.AreEqual("https://bitbucket.domain.com/base/projects/a/repos/b/browse/*?at=0123456789abcdefABCDEF000000000000000000&raw", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -165,7 +209,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual(ExpectedUrlForEnterpriseEditionNewVersion, task.SourceLinkUrl);
+            AssertEx.AreEqual("https://bitbucket.domain.com/projects/a/repos/b/raw/*?at=0123456789abcdefABCDEF000000000000000000", task.SourceLinkUrl);
             Assert.True(result);
         }
 
@@ -196,7 +240,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual(ExpectedUrlForEnterpriseEditionNewVersion, task.SourceLinkUrl);
+            AssertEx.AreEqual("https://bitbucket.domain.com/projects/a/repos/b/raw/*?at=0123456789abcdefABCDEF000000000000000000", task.SourceLinkUrl);
             Assert.True(result);
         }
 
