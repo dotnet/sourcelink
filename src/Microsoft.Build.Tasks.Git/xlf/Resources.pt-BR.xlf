@@ -79,7 +79,7 @@
       </trans-unit>
       <trans-unit id="RepositoryDoesNotHaveSpecifiedRemote">
         <source>Repository '{0}' does not have the specified remote '{1}'; using '{2}' instead.</source>
-        <target state="new">Repository '{0}' does not have the specified remote '{1}'; using '{2}' instead.</target>
+        <target state="translated">O repositório '{0}' não tem o repositório remoto '{1}' especificado. Em vez dele, ele está usando '{2}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryDoesNotHaveWorkingDirectory">
@@ -89,7 +89,7 @@
       </trans-unit>
       <trans-unit id="RepositoryHasNoRemote">
         <source>Repository '{0}' has no remote.</source>
-        <target state="new">Repository '{0}' has no remote.</target>
+        <target state="translated">O repositório '{0}' não tem nenhum repositório remoto.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryHasNoCommit">
@@ -99,7 +99,7 @@
       </trans-unit>
       <trans-unit id="RepositoryUrlEvaluationExceededMaximumAllowedDepth">
         <source>Repository URL evaluation exceeded maximum allowed depth of {0} local repositories.</source>
-        <target state="new">Repository URL evaluation exceeded maximum allowed depth of {0} local repositories.</target>
+        <target state="translated">A avaliação da URL do repositório excedeu a profundidade máxima permitida de {0} repositórios locais.</target>
         <note />
       </trans-unit>
       <trans-unit id="SourceCodeWontBeAvailableViaSourceLink">

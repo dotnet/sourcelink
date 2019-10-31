@@ -79,7 +79,7 @@
       </trans-unit>
       <trans-unit id="RepositoryDoesNotHaveSpecifiedRemote">
         <source>Repository '{0}' does not have the specified remote '{1}'; using '{2}' instead.</source>
-        <target state="new">Repository '{0}' does not have the specified remote '{1}'; using '{2}' instead.</target>
+        <target state="translated">リポジトリ '{0}' には、指定されたリモート '{1}' がありません。代わりに '{2}' が使用されています。</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryDoesNotHaveWorkingDirectory">
@@ -89,7 +89,7 @@
       </trans-unit>
       <trans-unit id="RepositoryHasNoRemote">
         <source>Repository '{0}' has no remote.</source>
-        <target state="new">Repository '{0}' has no remote.</target>
+        <target state="translated">リモート リポジトリ '{0}' がありません。</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryHasNoCommit">
@@ -99,7 +99,7 @@
       </trans-unit>
       <trans-unit id="RepositoryUrlEvaluationExceededMaximumAllowedDepth">
         <source>Repository URL evaluation exceeded maximum allowed depth of {0} local repositories.</source>
-        <target state="new">Repository URL evaluation exceeded maximum allowed depth of {0} local repositories.</target>
+        <target state="translated">リポジトリ URL の評価が、ローカル リポジトリの許容最大深度 {0} を超えました。</target>
         <note />
       </trans-unit>
       <trans-unit id="SourceCodeWontBeAvailableViaSourceLink">

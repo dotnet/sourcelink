@@ -79,7 +79,7 @@
       </trans-unit>
       <trans-unit id="RepositoryDoesNotHaveSpecifiedRemote">
         <source>Repository '{0}' does not have the specified remote '{1}'; using '{2}' instead.</source>
-        <target state="new">Repository '{0}' does not have the specified remote '{1}'; using '{2}' instead.</target>
+        <target state="translated">Úložiště {0} nemá zadané vzdálené úložiště {1}. Místo toho se použije {2}.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryDoesNotHaveWorkingDirectory">
@@ -89,7 +89,7 @@
       </trans-unit>
       <trans-unit id="RepositoryHasNoRemote">
         <source>Repository '{0}' has no remote.</source>
-        <target state="new">Repository '{0}' has no remote.</target>
+        <target state="translated">Úložiště {0} nemá žádné vzdálené úložiště.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryHasNoCommit">
@@ -99,7 +99,7 @@
       </trans-unit>
       <trans-unit id="RepositoryUrlEvaluationExceededMaximumAllowedDepth">
         <source>Repository URL evaluation exceeded maximum allowed depth of {0} local repositories.</source>
-        <target state="new">Repository URL evaluation exceeded maximum allowed depth of {0} local repositories.</target>
+        <target state="translated">Vyhodnocení adresy URL úložiště překročilo maximální povolenou hloubku {0} místních úložišť.</target>
         <note />
       </trans-unit>
       <trans-unit id="SourceCodeWontBeAvailableViaSourceLink">
