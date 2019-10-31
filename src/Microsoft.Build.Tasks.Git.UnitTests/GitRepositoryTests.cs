@@ -202,10 +202,6 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
   path =                  
   url = http://github.com
 
-[submodule ""S4""]             # invalid path
-  path = sub<>
-  url = http://github.com
-
 [submodule ""S3""]             # invalid url
   path = sub3
   url = http://?
