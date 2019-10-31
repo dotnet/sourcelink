@@ -21,7 +21,7 @@
       output property is set to the content URL corresponding to the domain, otherwise it is set to string "N/A".
 
       Recognized domains are specified via Hosts (initialized from SourceLinkBitbucketGitHost item group).
-      In addition SourceLinkHasSingleProvider is true an iplicit host is parsed from RepositoryUrl.
+      In addition, if SourceLinkHasSingleProvider is true an implicit host is parsed from RepositoryUrl.
 
       Example of SourceLinkBitbucketGitHost items:
 
