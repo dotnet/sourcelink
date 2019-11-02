@@ -491,6 +491,8 @@ namespace Microsoft.Build.Tasks.Git
                 try
                 {
                     commonDirectory = Path.Combine(directory, File.ReadAllText(commonLinkPath).TrimEnd(CharUtils.AsciiWhitespace));
+                    // Normalize relative paths. For example, git worktrees typically have "../.." in this file.
+                    commonDirectory = Path.GetFullPath(commonDirectory);
                 }
                 catch
                 {
