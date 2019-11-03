@@ -29,30 +29,6 @@ namespace Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests
         }
 
         [Fact]
-        public void UnspecifiedVirtualDirectory()
-        {
-            var engine = new MockEngine();
-
-            var task = new GetSourceLinkUrl()
-            {
-                BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://tfs.com/tfs/zzz"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
-                Hosts = new[]
-                {
-                    new MockItem("tfs.com", KVP("VirtualDirectory", ""))
-                }
-            };
-
-            bool result = task.Execute();
-
-            // ERROR : Item 'tfs.com' of item group 'SourceLinkAzureDevOpsServerGitHost' must specify metadata 'VirtualDirectory'
-            AssertEx.AssertEqualToleratingWhitespaceDifferences(
-                "ERROR : " + string.Format(CommonResources.ItemOfItemGroupMustSpecifyMetadata, "tfs.com", "SourceLinkAzureDevOpsServerGitHost", "VirtualDirectory"), engine.Log);
-
-            Assert.False(result);
-        }
-
-        [Fact]
         public void BadUrl()
         {
             var engine = new MockEngine();
@@ -150,6 +126,7 @@ namespace Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests
         }
 
         [Theory]
+        [InlineData("", "/")]
         [InlineData("/", "/")]
         [InlineData("a", "/a/")]
         [InlineData("a/", "/a/")]
