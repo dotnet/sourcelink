@@ -49,6 +49,7 @@ namespace Microsoft.SourceLink.AzureRepos.Git.UnitTests
         [InlineData("account.vsts.me", "/DefaultCollection/project/team/_git/_full/repo", "project", "repo")]
         [InlineData("account.vsts.me", "/DefaultCollection/project/team/_git/_optimized/repo", "project", "repo")]
         [InlineData("account.vsts.me", "/DefaultCollection/_git/repo", "repo", "repo")]
+        [InlineData("contoso.com", "/account/_git/repo", "account/repo", "repo")]
         [InlineData("contoso.com", "/account/project/_git/repo", "account/project", "repo")]
         [InlineData("contoso.com", "/account/project/_git/_full/repo", "account/project", "repo")]
         [InlineData("contoso.com", "/account/project/_git/_optimized/repo", "account/project", "repo")]

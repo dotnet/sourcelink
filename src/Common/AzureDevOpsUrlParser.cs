@@ -63,18 +63,16 @@ namespace Microsoft.SourceLink
                 return false;
             }
 
-            if (isVisualStudioHost)
+            projectPath = projectName ?? repositoryName;
+           
+            if (!isVisualStudioHost)
             {
-                projectPath = projectName ?? repositoryName;
-            }
-            else
-            {
-                if (projectName == null || teamName != null)
+                if (teamName != null)
                 {
                     return false;
                 }
 
-                projectPath = account + "/" + projectName;
+                projectPath = account + "/" + projectPath;
             }
 
             return true;
