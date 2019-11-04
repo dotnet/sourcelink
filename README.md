@@ -52,33 +52,40 @@ For projects hosted by [GitHub](http://github.com) or [GitHub Enterprise](https:
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19351-01" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19554-01" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
-### Azure DevOps (Visual Studio Team Services)
+### Azure Repos (former Visual Studio Team Services)
 
-For projects hosted by [Azure DevOps](https://www.visualstudio.com/team-services) in git repositories reference [Microsoft.SourceLink.Vsts.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Vsts.Git): 
+For projects hosted by [Azure Repos](https://azure.microsoft.com/en-us/services/devops/repos) in git repositories reference [Microsoft.SourceLink.AzureRepos.Git](https://www.nuget.org/packages/Microsoft.SourceLink.AzureRepos.Git): 
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.Vsts.Git" Version="1.0.0-beta2-19351-01" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.AzureRepos.Git" Version="1.0.0-beta2-19554-01" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
-### Team Foundation Server
+### Azure DevOps Server (former Team Foundation Server)
 
-For projects hosted by on-prem [Team Foundation Server](https://visualstudio.microsoft.com/tfs) in git repositories reference
-[Microsoft.SourceLink.Tfs.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Tfs.Git) and add TFS host configuration like so:
+For projects hosted by on-prem [Azure DevOps Server](https://azure.microsoft.com/en-us/services/devops/server/) in git repositories reference
+[Microsoft.SourceLink.AzureDevOpsServer.Git](https://www.nuget.org/packages/Microsoft.SourceLink.AzureDevOpsServer.Git) and add host configuration like so:
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.Tfs.Git" Version="1.0.0-beta2-19351-01" PrivateAssets="All"/>
-  <SourceLinkTfsGitHost Include="tfs-server-name" VirtualDirectory="tfs"/>
+  <PackageReference Include="Microsoft.SourceLink.AzureDevOpsServer.Git" Version="1.0.0-beta2-19554-01" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
-`SourceLinkTfsGitHost` item specifies the domain and optionally the port of the TFS server (e.g. `myserver`, `myserver:8080`, etc.) and IIS virtual directory of the server (e.g. `tfs`).
+If your server is configurated with non-empty IIS [Virtual Directory](docs/TfsVirtualDirectory/README.md), specify this directory in `SourceLinkAzureDevOpsServerGitHost` item like so:
+
+```xml
+<ItemGroup>
+  <SourceLinkAzureDevOpsServerGitHost Include="server-name" VirtualDirectory="tfs"/>
+</ItemGroup>
+```
+
+The `Include` attribute specifies the domain and optionally the port of the server (e.g. `server-name` or `server-name:8080`).
 
 ### GitLab
 
@@ -86,7 +93,7 @@ For projects hosted by [GitLab](https://gitlab.com) reference [Microsoft.SourceL
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.GitLab" Version="1.0.0-beta2-19351-01" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.GitLab" Version="1.0.0-beta2-19554-01" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
@@ -96,7 +103,7 @@ For projects in git repositories hosted on [Bitbucket.org](https://bitbucket.org
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.Bitbucket.Git" Version="1.0.0-beta2-19351-01" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.Bitbucket.Git" Version="1.0.0-beta2-19554-01" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
@@ -113,7 +120,7 @@ The version is important since URL format for accessing files changes with versi
 
 ### Multiple providers, repositories with submodules
 
-If your repository contains submodules hosted by other git providers reference packages of all these providers. For example, projects in a repository hosted by Azure DevOps that links a GitHub repository via a submodule should reference both [Microsoft.SourceLink.Vsts.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Vsts.Git) and [Microsoft.SourceLink.GitHub](https://www.nuget.org/packages/Microsoft.SourceLink.GitHub) packages. [Additional configuration](https://github.com/dotnet/sourcelink/blob/master/docs/README.md#configuring-projects-with-multiple-sourcelink-providers) might be needed if multiple Source Link packages are used in the project.
+If your repository contains submodules hosted by other git providers reference packages of all these providers. For example, projects in a repository hosted by Azure Repos that links a GitHub repository via a submodule should reference both [Microsoft.SourceLink.AzureRepos.Git](https://www.nuget.org/packages/Microsoft.SourceLink.AzureRepos.Git) and [Microsoft.SourceLink.GitHub](https://www.nuget.org/packages/Microsoft.SourceLink.GitHub) packages. [Additional configuration](https://github.com/dotnet/sourcelink/blob/master/docs/README.md#configuring-projects-with-multiple-sourcelink-providers) might be needed if multiple Source Link packages are used in the project.
 
 ## Using Source Link in C++ projects
 
@@ -123,9 +130,9 @@ To add Source Link support to your native project add package references corresp
 
 ```xml
 <packages>
-  <package id="Microsoft.Build.Tasks.Git" version="1.0.0-beta2-19351-01" targetFramework="native" developmentDependency="true" />
-  <package id="Microsoft.SourceLink.Common" version="1.0.0-beta2-19351-01" targetFramework="native" developmentDependency="true" />
-  <package id="Microsoft.SourceLink.GitHub" version="1.0.0-beta2-19351-01" targetFramework="native" developmentDependency="true" />
+  <package id="Microsoft.Build.Tasks.Git" version="1.0.0-beta2-19554-01" targetFramework="native" developmentDependency="true" />
+  <package id="Microsoft.SourceLink.Common" version="1.0.0-beta2-19554-01" targetFramework="native" developmentDependency="true" />
+  <package id="Microsoft.SourceLink.GitHub" version="1.0.0-beta2-19554-01" targetFramework="native" developmentDependency="true" />
 </packages>
 ```
 
