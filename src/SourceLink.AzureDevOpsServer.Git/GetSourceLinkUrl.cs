@@ -22,12 +22,6 @@ namespace Microsoft.SourceLink.AzureDevOpsServer.Git
         protected override string BuildSourceLinkUrl(Uri contentUri, Uri gitUri, string relativeUrl, string revisionId, ITaskItem hostItem)
         {
             var virtualDirectory = hostItem.GetMetadata(VirtualDirectoryMetadataName);
-            if (string.IsNullOrEmpty(virtualDirectory))
-            {
-                Log.LogError(CommonResources.ItemOfItemGroupMustSpecifyMetadata, hostItem.ItemSpec, HostsItemGroupName, VirtualDirectoryMetadataName);
-                return null;
-            }
-
             if (!AzureDevOpsUrlParser.TryParseOnPremHttp(relativeUrl, virtualDirectory, out var projectPath, out var repositoryName))
             {
                 Log.LogError(CommonResources.ValueOfWithIdentityIsInvalid, Names.SourceRoot.RepositoryUrlFullName, SourceRoot.ItemSpec, gitUri);
