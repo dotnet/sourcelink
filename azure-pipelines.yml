@@ -1,11 +1,26 @@
 # Branches that trigger a build on commit
 trigger:
-- master
+  batch: true
+  branches:
+    include:
+    - master
+    - release/*
+  paths:
+    exclude:
+    - README.md
+    - docs/*
 
 # Branches that trigger builds on PR
 pr:
-- master
-
+  branches:
+    include:
+    - master
+    - release/*
+  paths:
+    exclude:
+    - README.md
+    - docs/*
+      
 variables:
   - name: _TeamName
     value: Roslyn
