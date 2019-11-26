@@ -1,11 +1,22 @@
-# Branches that trigger a build on commit
-trigger:
-- master
-
 # Branches that trigger builds on PR
 pr:
-- master
+  branches:
+    include:
+    - master
+    - release/*
+  paths:
+    exclude:
+    - README.md
+    - docs/*
 
+# Run official build every day at midnight, if code has changed since the last run.
+schedules:
+- cron: "0 0 * * *"
+  displayName: Daily Official Build
+  branches:
+    include:
+    - master 
+      
 variables:
   - name: _TeamName
     value: Roslyn
