@@ -1,6 +1,5 @@
-# Branches that trigger a build on commit
-trigger:
-  batch: true
+# Branches that trigger builds on PR
+pr:
   branches:
     include:
     - master
@@ -10,12 +9,13 @@ trigger:
     - README.md
     - docs/*
 
-# Branches that trigger builds on PR
-pr:
+# Run official build every day at midnight, if code has changed since the last run.
+schedules:
+- cron: "0 0 * * *"
+  displayName: Daily Official Build
   branches:
     include:
-    - master
-    - release/*
+    - master 
   paths:
     exclude:
     - README.md
