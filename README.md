@@ -1,4 +1,4 @@
-# Source Link (preview[\*](#preview-status))
+# Source Link
 
 Source Link is a language- and source-control agnostic system for providing first-class source debugging experiences for binaries. The goal of the project is to enable anyone building [NuGet libraries to provide source debugging](https://github.com/dotnet/designs/blob/master/accepted/diagnostics/debugging-with-symbols-and-sources.md) for their users with almost no effort. Microsoft libraries, such as .NET Core and Roslyn have enabled Source Link. Source Link is supported by Microsoft.
 
@@ -9,10 +9,6 @@ Visual Studio 15.3+ supports reading Source Link information from symbols while 
 The [original Source Link implementation](https://github.com/ctaggart/SourceLink) was provided by [@ctaggart](https://github.com/ctaggart). Thanks! The .NET Team and Cameron worked together to make this implementation available in the .NET Foundation.
 
 > If you arrived here from the original Source Link documentation - you do not need to use `SourceLink.Create.CommandLine`. You only need to install the packages listed below.
-
-#### Preview Status
-
-We recommend using Source Link preview for building production packages. Although the implementation details and the public APIs of the Source Link pre-release packages are still in flux, there will be no difference in the format of the data it generates between preview and 1.0.0. The only changes in the generated data we expect are due to bug fixes that target scenario that previously did not work correctly.
 
 ## <a name="using-sourcelink">Using Source Link in .NET projects
 
@@ -52,7 +48,7 @@ For projects hosted by [GitHub](http://github.com) or [GitHub Enterprise](https:
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19554-01" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
@@ -62,7 +58,7 @@ For projects hosted by [Azure Repos](https://azure.microsoft.com/en-us/services/
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.AzureRepos.Git" Version="1.0.0-beta2-19554-01" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.AzureRepos.Git" Version="1.0.0" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
@@ -73,7 +69,7 @@ For projects hosted by on-prem [Azure DevOps Server](https://azure.microsoft.com
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.AzureDevOpsServer.Git" Version="1.0.0-beta2-19554-01" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.AzureDevOpsServer.Git" Version="1.0.0" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
@@ -93,7 +89,7 @@ For projects hosted by [GitLab](https://gitlab.com) reference [Microsoft.SourceL
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.GitLab" Version="1.0.0-beta2-19554-01" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.GitLab" Version="1.0.0" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
@@ -103,7 +99,7 @@ For projects in git repositories hosted on [Bitbucket.org](https://bitbucket.org
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.Bitbucket.Git" Version="1.0.0-beta2-19554-01" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.Bitbucket.Git" Version="1.0.0" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
@@ -130,9 +126,9 @@ To add Source Link support to your native project add package references corresp
 
 ```xml
 <packages>
-  <package id="Microsoft.Build.Tasks.Git" version="1.0.0-beta2-19554-01" targetFramework="native" developmentDependency="true" />
-  <package id="Microsoft.SourceLink.Common" version="1.0.0-beta2-19554-01" targetFramework="native" developmentDependency="true" />
-  <package id="Microsoft.SourceLink.GitHub" version="1.0.0-beta2-19554-01" targetFramework="native" developmentDependency="true" />
+  <package id="Microsoft.Build.Tasks.Git" version="1.0.0" targetFramework="native" developmentDependency="true" />
+  <package id="Microsoft.SourceLink.Common" version="1.0.0" targetFramework="native" developmentDependency="true" />
+  <package id="Microsoft.SourceLink.GitHub" version="1.0.0" targetFramework="native" developmentDependency="true" />
 </packages>
 ```
 
