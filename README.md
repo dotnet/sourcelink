@@ -161,7 +161,8 @@ The VC++ linker supports `/SOURCELINK` [switch](https://docs.microsoft.com/en-us
 ## Known issues
 
 - `EmbedUntrackedSources` does not work in Visual Basic projects that use .NET SDK: https://github.com/dotnet/sourcelink/issues/193 (fixed in Visual Studio 2019)
-- Issues with WPF projects when building with `/p:ContinuousIntegrationBuild=true`: https://github.com/dotnet/sourcelink/issues/91
+- Issue when building WPF projects with `/p:ContinuousIntegrationBuild=true`: https://github.com/dotnet/sourcelink/issues/91
+- Issue when building WPF projects with embedding sources on and `BaseIntermediateOutputPath` not a subdirectory of the project directory: https://github.com/dotnet/sourcelink/issues/492
 
 ## Alternative PDB distribution
 
