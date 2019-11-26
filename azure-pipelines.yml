@@ -16,10 +16,6 @@ schedules:
   branches:
     include:
     - master 
-  paths:
-    exclude:
-    - README.md
-    - docs/*
       
 variables:
   - name: _TeamName
