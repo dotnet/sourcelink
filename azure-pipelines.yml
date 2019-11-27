@@ -95,7 +95,7 @@ stages:
         - task: PublishBuildArtifacts@1
           displayName: Publish Artifact Packages
           inputs:
-            PathtoPublish: 'artifacts\packages\$(BuildConfiguration)'
+            PathtoPublish: 'artifacts\packages\$(_BuildConfig)'
             ArtifactName: 'Packages'
           condition: succeeded()
 
