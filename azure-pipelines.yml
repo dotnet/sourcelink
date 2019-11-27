@@ -91,6 +91,14 @@ stages:
         - script: eng\cibuild.cmd -configuration $(_BuildConfig) -prepareMachine $(_BuildArgs)
           displayName: Build and Test
 
+        # Archive NuGet packages to DevOps (workaround for https://github.com/dotnet/arcade/issues/4444)
+        - task: PublishBuildArtifacts@1
+          displayName: Publish Artifact Packages
+          inputs:
+            PathtoPublish: 'artifacts\packages\$(BuildConfiguration)'
+            ArtifactName: 'Packages'
+          condition: succeeded()
+
       - job: MacOS
         displayName: 'MacOS'
         pool: Hosted macOS
