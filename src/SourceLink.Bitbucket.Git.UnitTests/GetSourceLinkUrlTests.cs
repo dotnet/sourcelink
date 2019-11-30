@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 using System;
+using Microsoft.Build.Evaluation;
 using Microsoft.Build.Tasks.SourceControl;
 using TestUtilities;
 using Xunit;
@@ -76,6 +77,26 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("https://api.domain.com/x/y/2.0/repositories/a/b/src/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void BuildSourceLinkUrl_BitbucketEnterprise_PersonalToken()
+        {
+            var engine = new MockEngine();
+            var task = new GetSourceLinkUrl()
+            {
+                BuildEngine = engine,
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", ProjectCollection.Escape("https://user_name%40domain.com:Bitbucket_personaltoken@bitbucket.domain.tools/scm/abc/project1.git")), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                Hosts = new[]
+                {
+                    new MockItem("bitbucket.domain.tools", KVP("ContentUrl", "https://bitbucket.domain.tools")),
+                }
+            };
+
+            bool result = task.Execute();
+            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            AssertEx.AreEqual("https://bitbucket.domain.tools/projects/abc/repos/project1/raw/*?at=0123456789abcdefABCDEF000000000000000000", task.SourceLinkUrl);
             Assert.True(result);
         }
 
