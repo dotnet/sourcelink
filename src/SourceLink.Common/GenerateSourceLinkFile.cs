@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,11 +13,11 @@ namespace Microsoft.SourceLink.Common
 {
     public sealed class GenerateSourceLinkFile : Task
     {
-        [Required]
-        public ITaskItem[] SourceRoots { get; set; }
+        [Required, NotNull]
+        public ITaskItem[]? SourceRoots { get; set; }
 
-        [Required]
-        public string OutputFile { get; set; }
+        [Required, NotNull]
+        public string? OutputFile { get; set; }
 
         public override bool Execute()
         {
@@ -29,9 +30,9 @@ namespace Microsoft.SourceLink.Common
             return !Log.HasLoggedErrors;
         }
 
-        internal string GenerateSourceLinkContent()
+        internal string? GenerateSourceLinkContent()
         {
-            string JsonEscape(string str)
+            static string jsonEscape(string str)
                 => str.Replace(@"\", @"\\").Replace("\"", "\\\"");
 
             var result = new StringBuilder();
@@ -84,12 +85,12 @@ namespace Microsoft.SourceLink.Common
                 }
 
                 result.Append('"');
-                result.Append(JsonEscape(localPath));
+                result.Append(jsonEscape(localPath));
                 result.Append('*');
                 result.Append('"');
                 result.Append(':');
                 result.Append('"');
-                result.Append(JsonEscape(url));
+                result.Append(jsonEscape(url));
                 result.Append('"');
             }
 

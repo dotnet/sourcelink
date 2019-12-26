@@ -19,9 +19,9 @@ namespace Microsoft.SourceLink.AzureDevOpsServer.Git
         /// </summary>
         protected override bool SupportsImplicitHost => false;
 
-        protected override string BuildSourceLinkUrl(Uri contentUri, Uri gitUri, string relativeUrl, string revisionId, ITaskItem hostItem)
+        protected override string? BuildSourceLinkUrl(Uri contentUri, Uri gitUri, string relativeUrl, string revisionId, ITaskItem? hostItem)
         {
-            var virtualDirectory = hostItem.GetMetadata(VirtualDirectoryMetadataName);
+            var virtualDirectory = hostItem?.GetMetadata(VirtualDirectoryMetadataName) ?? "";
             if (!AzureDevOpsUrlParser.TryParseOnPremHttp(relativeUrl, virtualDirectory, out var projectPath, out var repositoryName))
             {
                 Log.LogError(CommonResources.ValueOfWithIdentityIsInvalid, Names.SourceRoot.RepositoryUrlFullName, SourceRoot.ItemSpec, gitUri);

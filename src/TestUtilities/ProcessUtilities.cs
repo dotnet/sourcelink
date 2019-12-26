@@ -16,9 +16,9 @@ namespace TestUtilities
         public static ProcessResult Run(
             string fileName,
             string arguments,
-            string workingDirectory = null,
-            IEnumerable<KeyValuePair<string, string>> additionalEnvironmentVars = null,
-            string stdInput = null)
+            string? workingDirectory = null,
+            IEnumerable<KeyValuePair<string, string>>? additionalEnvironmentVars = null,
+            string? stdInput = null)
         {
             if (fileName == null) throw new ArgumentNullException(nameof(fileName));
 
@@ -88,7 +88,7 @@ namespace TestUtilities
         /// Launch a process, and return Process object. The process continues to run asynchronously.
         /// You cannot capture the output.
         /// </summary>
-        public static Process StartProcess(string fileName, string arguments, string workingDirectory = null)
+        public static Process StartProcess(string fileName, string arguments, string? workingDirectory = null)
         {
             if (fileName == null)
             {
@@ -111,14 +111,14 @@ namespace TestUtilities
             return p;
         }
 
-        public static string RunAndGetOutput(string exeFileName, string arguments = null, int expectedRetCode = 0, string startFolder = null)
+        public static string RunAndGetOutput(string exeFileName, string? arguments = null, int expectedRetCode = 0, string? startFolder = null)
         {
             ProcessStartInfo startInfo = new ProcessStartInfo(exeFileName);
             if (arguments != null)
             {
                 startInfo.Arguments = arguments;
             }
-            string result = null;
+            string? result = null;
 
             startInfo.CreateNoWindow = true;
             startInfo.RedirectStandardOutput = true;

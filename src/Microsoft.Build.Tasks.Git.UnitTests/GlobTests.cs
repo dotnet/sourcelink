@@ -103,7 +103,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [InlineData("[^]", new char[0])]
         [InlineData("[]", new char[0])]
         [InlineData("[a-]]", new char[0])]
-        public void MatchingRange(string pattern, char[] matchingChars, char[] matchingCharsWildCardMatchesSeparator = null)
+        public void MatchingRange(string pattern, char[] matchingChars, char[]? matchingCharsWildCardMatchesSeparator = null)
         {
             for (int i = 0; i < 255; i++)
             {

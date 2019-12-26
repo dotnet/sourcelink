@@ -6,7 +6,6 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using Microsoft.Build.Tasks.SourceControl;
 
 namespace Microsoft.Build.Tasks.Git
 {
@@ -26,9 +25,9 @@ namespace Microsoft.Build.Tasks.Git
             private readonly Func<string, TextReader> _fileOpener;
             private readonly GitEnvironment _environment;
 
-            public Reader(string gitDirectory, string commonDirectory, GitEnvironment environment, Func<string, TextReader> fileOpener = null)
+            public Reader(string gitDirectory, string commonDirectory, GitEnvironment environment, Func<string, TextReader>? fileOpener = null)
             {
-                Debug.Assert(environment != null);
+                NullableDebug.Assert(environment != null);
 
                 _environment = environment;
                 _gitDirectoryPosix = PathUtils.ToPosixDirectoryPath(gitDirectory);
@@ -61,7 +60,7 @@ namespace Microsoft.Build.Tasks.Git
                 return new GitConfig(variables.ToImmutableDictionary(kvp => kvp.Key, kvp => kvp.Value.ToImmutableArray()));
             }
 
-            private string GetXdgDirectory()
+            private string? GetXdgDirectory()
             {
                 var xdgConfigHome = _environment.XdgConfigHomeDirectory;
                 if (xdgConfigHome != null)
@@ -132,7 +131,7 @@ namespace Microsoft.Build.Tasks.Git
                 // worktree config
             }
 
-            private string GetSystemConfigurationDirectory()
+            private string? GetSystemConfigurationDirectory()
             {
                 if (_environment.SystemDirectory == null)
                 {

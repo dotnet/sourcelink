@@ -8,7 +8,7 @@ namespace Microsoft.SourceLink.Common
 {
     public sealed class SourceLinkHasSingleProvider : Task
     {
-        public string ProviderTargets { get; set; }
+        public string? ProviderTargets { get; set; }
 
         [Output]
         public bool HasSingleProvider { get; set; }

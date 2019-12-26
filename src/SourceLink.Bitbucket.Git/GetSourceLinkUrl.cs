@@ -2,6 +2,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Tasks.SourceControl;
 
@@ -21,7 +22,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git
         private const string VersionMetadataName = "Version";
         private static readonly Version s_versionWithNewUrlFormat = new Version(4, 7);
 
-        protected override string BuildSourceLinkUrl(Uri contentUri, Uri gitUri, string relativeUrl, string revisionId, ITaskItem hostItem)
+        protected override string? BuildSourceLinkUrl(Uri contentUri, Uri gitUri, string relativeUrl, string revisionId, ITaskItem? hostItem)
         {
             // The SourceLinkBitbucketGitHost item for bitbucket.org specifies EnterpriseEdition="false".
             // Other items that may be specified by the project default to EnterpriseEdition="true" without specifying it.
@@ -57,7 +58,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git
             return UriUtilities.Combine(contentUri.ToString(), UriUtilities.Combine(relativeBaseUrl, relativeUrl));
         }
 
-        internal static bool TryParseEnterpriseUrl(string relativeUrl, out string relativeBaseUrl, out string projectName, out string repositoryName)
+        internal static bool TryParseEnterpriseUrl(string relativeUrl, [NotNullWhen(true)]out string? relativeBaseUrl, [NotNullWhen(true)]out string? projectName, [NotNullWhen(true)]out string? repositoryName)
         {
             // HTTP: {baseUrl}/scm/{projectName}/{repositoryName}
             // SSH: {baseUrl}/{projectName}/{repositoryName}
@@ -83,26 +84,21 @@ namespace Microsoft.SourceLink.Bitbucket.Git
             return true;
         }
 
-        private Version GetBitbucketEnterpriseVersion(ITaskItem hostItem)
+        private Version GetBitbucketEnterpriseVersion(ITaskItem? hostItem)
         {
             var bitbucketEnterpriseVersionAsString = hostItem?.GetMetadata(VersionMetadataName);
-            Version bitbucketEnterpriseVersion;
-            if (!string.IsNullOrEmpty(bitbucketEnterpriseVersionAsString))
+            if (!NullableString.IsNullOrEmpty(bitbucketEnterpriseVersionAsString))
             {
-                if (!Version.TryParse(bitbucketEnterpriseVersionAsString, out bitbucketEnterpriseVersion))
+                if (Version.TryParse(bitbucketEnterpriseVersionAsString, out var version))
                 {
-                    Log.LogError(CommonResources.ItemOfItemGroupMustSpecifyMetadata, hostItem.ItemSpec,
-                        HostsItemGroupName, VersionMetadataName);
-
-                    return null;
+                    return version;
                 }
-            }
-            else
-            {
-                bitbucketEnterpriseVersion = s_versionWithNewUrlFormat;
-            }
 
-            return bitbucketEnterpriseVersion;
+                Log.LogError(CommonResources.ItemOfItemGroupMustSpecifyMetadata, hostItem!.ItemSpec,
+                    HostsItemGroupName, VersionMetadataName);
+            }
+            
+            return s_versionWithNewUrlFormat;
         }
 
         private static string BuildSourceLinkUrlForCloudEdition(Uri contentUri, string relativeUrl, string revisionId)

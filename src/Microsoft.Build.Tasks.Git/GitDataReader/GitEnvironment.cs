@@ -2,9 +2,9 @@
 
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using Microsoft.Build.Tasks.SourceControl;
 
 namespace Microsoft.Build.Tasks.Git
 {
@@ -15,10 +15,10 @@ namespace Microsoft.Build.Tasks.Git
 
         public static readonly GitEnvironment Empty = new GitEnvironment();
 
-        public string HomeDirectory { get; }
-        public string XdgConfigHomeDirectory { get; }
-        public string ProgramDataDirectory { get; }
-        public string SystemDirectory { get; }
+        public string? HomeDirectory { get; }
+        public string? XdgConfigHomeDirectory { get; }
+        public string? ProgramDataDirectory { get; }
+        public string? SystemDirectory { get; }
 
         // TODO: https://github.com/dotnet/sourcelink/issues/301
         // consider adding environment variables: GIT_DIR, GIT_DISCOVERY_ACROSS_FILESYSTEM, GIT_CEILING_DIRECTORIES
@@ -33,10 +33,10 @@ namespace Microsoft.Build.Tasks.Git
         // https://git-scm.com/docs/git#Documentation/git.txt-codeGITWORKTREEcode
 
         public GitEnvironment(
-            string homeDirectory = null,
-            string xdgConfigHomeDirectory = null,
-            string programDataDirectory = null,
-            string systemDirectory = null)
+            string? homeDirectory = null,
+            string? xdgConfigHomeDirectory = null,
+            string? programDataDirectory = null,
+            string? systemDirectory = null)
         {
             if (!string.IsNullOrWhiteSpace(homeDirectory))
             {
@@ -59,9 +59,9 @@ namespace Microsoft.Build.Tasks.Git
             }
         }
 
-        public static GitEnvironment Create(string configurationScope)
+        public static GitEnvironment Create(string? configurationScope)
         {
-            if (string.IsNullOrEmpty(configurationScope))
+            if (NullableString.IsNullOrEmpty(configurationScope))
             {
                 return CreateFromProcessEnvironment();
             }
@@ -76,7 +76,7 @@ namespace Microsoft.Build.Tasks.Git
 
         public static GitEnvironment CreateFromProcessEnvironment()
         {
-            static string getVariable(string name)
+            static string? getVariable(string name)
             {
                 try
                 {
@@ -88,7 +88,7 @@ namespace Microsoft.Build.Tasks.Git
                 }
             }
 
-            string homeDirectory;
+            string? homeDirectory;
             try
             {
                 homeDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile, Environment.SpecialFolderOption.DoNotVerify);
@@ -106,7 +106,7 @@ namespace Microsoft.Build.Tasks.Git
         }
 
         // internal for testing
-        internal static string FindSystemDirectory(string pathList, string unixEtcDir)
+        internal static string? FindSystemDirectory(string? pathList, string? unixEtcDir)
         {
             if (PathUtils.IsUnixLikePlatform)
             {
@@ -122,11 +122,11 @@ namespace Microsoft.Build.Tasks.Git
             return null;
         }
 
-        private static string FindWindowsGitInstallation(string pathList)
+        private static string? FindWindowsGitInstallation(string? pathList)
         {
             Debug.Assert(!PathUtils.IsUnixLikePlatform);
 
-            if (string.IsNullOrEmpty(pathList))
+            if (NullableString.IsNullOrEmpty(pathList))
             {
                 return null;
             }

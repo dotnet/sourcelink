@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using Microsoft.Build.Framework;
@@ -21,18 +22,20 @@ namespace Microsoft.Build.Tasks.Git
         private const string UrlSectionName = "url";
         private const string UrlVariableName = "url";
 
-        public static string GetRepositoryUrl(GitRepository repository, string remoteName, Action<string, object[]> logWarning = null)
+        public static string? GetRepositoryUrl(GitRepository repository, string? remoteName, Action<string, object?[]>? logWarning = null)
             => GetRepositoryUrl(repository, remoteName, recursionDepth: 0, logWarning);
 
-        private static string GetRepositoryUrl(GitRepository repository, string remoteName, int recursionDepth, Action<string, object[]> logWarning = null)
+        private static string? GetRepositoryUrl(GitRepository repository, string? remoteName, int recursionDepth, Action<string, object?[]>? logWarning = null)
         {
+            NullableDebug.Assert(repository.WorkingDirectory != null);
+            
             var remoteUrl = GetRemoteUrl(repository, ref remoteName, logWarning);
             if (remoteUrl == null)
             {
                 return null;
             }
 
-            var uri = NormalizeUrl(repository.Config, remoteUrl, repository.WorkingDirectory);
+            var uri = NormalizeUrl(repository, remoteUrl);
             if (uri == null)
             {
                 logWarning?.Invoke(Resources.InvalidRepositoryRemoteUrl, new[] { remoteName, remoteUrl });
@@ -42,11 +45,11 @@ namespace Microsoft.Build.Tasks.Git
             return ResolveUrl(uri, repository.Environment, remoteName, recursionDepth, logWarning);
         }
 
-        private static string GetRemoteUrl(GitRepository repository, ref string remoteName, Action<string, object[]> logWarning)
+        private static string? GetRemoteUrl(GitRepository repository, ref string? remoteName, Action<string, object?[]>? logWarning)
         {
-            string unknownRemoteName = null;
-            string remoteUrl = null;
-            if (!string.IsNullOrEmpty(remoteName))
+            string? unknownRemoteName = null;
+            string? remoteUrl = null;
+            if (!NullableString.IsNullOrEmpty(remoteName))
             {
                 remoteUrl = repository.Config.GetVariableValue(RemoteSectionName, remoteName, UrlVariableName);
                 if (remoteUrl == null)
@@ -69,7 +72,7 @@ namespace Microsoft.Build.Tasks.Git
             return remoteUrl;
         }
 
-        private static string ResolveUrl(Uri uri, GitEnvironment environment, string remoteName, int recursionDepth, Action<string, object[]> logWarning)
+        private static string? ResolveUrl(Uri uri, GitEnvironment environment, string? remoteName, int recursionDepth, Action<string, object?[]>? logWarning)
         {
             if (!uri.IsFile)
             {
@@ -90,10 +93,16 @@ namespace Microsoft.Build.Tasks.Git
             }
 
             var remoteRepository = GitRepository.OpenRepository(remoteRepositoryLocation, environment);
+            if (remoteRepository.WorkingDirectory == null)
+            {
+                logWarning?.Invoke(Resources.UnableToLocateRepository, new[] { repositoryPath });
+                return null;
+            }
+
             return GetRepositoryUrl(remoteRepository, remoteName, recursionDepth + 1, logWarning) ?? uri.AbsoluteUri;
         }
 
-        private static bool TryGetRemote(GitConfig config, out string remoteName, out string remoteUrl)
+        private static bool TryGetRemote(GitConfig config, [NotNullWhen(true)]out string? remoteName, [NotNullWhen(true)]out string? remoteUrl)
         {
             remoteName = RemoteOriginName;
             remoteUrl = config.GetVariableValue(RemoteSectionName, remoteName, UrlVariableName);
@@ -125,7 +134,7 @@ namespace Microsoft.Build.Tasks.Git
             //  - if the replacement is empty the URL is prefixed with the replacement string
 
             int longestPrefixLength = -1;
-            string replacement = null;
+            string? replacement = null;
 
             foreach (var variable in config.Variables)
             {
@@ -146,10 +155,18 @@ namespace Microsoft.Build.Tasks.Git
             return (longestPrefixLength >= 0) ? replacement + url.Substring(longestPrefixLength) : url;
         }
 
-        internal static Uri NormalizeUrl(GitConfig config, string url, string root)
-            => NormalizeUrl(ApplyInsteadOfUrlMapping(config, url), root);
+        internal static Uri? NormalizeUrl(GitRepository repository, string url)
+        {
+            // Git (v2.23.0) treats local relative URLs as relative to the working directory.
+            // This doesn't work when a relative URL is used in a config file locatede in a main .git directory 
+            // but is resolved from a worktree that has a different working directory.
+            // Currently we implement the same behavior as git.
 
-        internal static Uri NormalizeUrl(string url, string root)
+            NullableDebug.Assert(repository.WorkingDirectory != null);
+            return NormalizeUrl(ApplyInsteadOfUrlMapping(repository.Config, url), root: repository.WorkingDirectory);
+        }
+
+        internal static Uri? NormalizeUrl(string url, string root)
         {
             // Since git supports scp-like syntax for SSH URLs we convert it here, 
             // so that RepositoryUrl is actually a valid URL in that case.
@@ -192,7 +209,7 @@ namespace Microsoft.Build.Tasks.Git
                value[1] == ':' &&
                (value[0] >= 'A' && value[0] <= 'Z' || value[0] >= 'a' && value[0] <= 'z');
 
-        private static bool TryParseScp(string value, out Uri uri)
+        private static bool TryParseScp(string value, [NotNullWhen(true)]out Uri? uri)
         {
             uri = null;
            
@@ -219,16 +236,19 @@ namespace Microsoft.Build.Tasks.Git
             return Uri.TryCreate(url, UriKind.Absolute, out uri);
         }
 
-        public static ITaskItem[] GetSourceRoots(GitRepository repository, string remoteName, Action<string, object[]> logWarning)
+        public static ITaskItem[] GetSourceRoots(GitRepository repository, string? remoteName, Action<string, object?[]> logWarning)
         {
+            // Not supported for repositories without a working directory.
+            NullableDebug.Assert(repository.WorkingDirectory != null);
+
             var result = new List<TaskItem>();
-            var repoRoot = GetRepositoryRoot(repository);
+            var repoRoot = repository.WorkingDirectory.EndWithSeparator();
 
             var revisionId = repository.GetHeadCommitSha();
             if (revisionId != null)
             {
                 // Don't report a warning since it has already been reported by GetRepositoryUrl task.
-                string repositoryUrl = GetRepositoryUrl(repository, remoteName, logWarning: null);
+                string? repositoryUrl = GetRepositoryUrl(repository, remoteName, logWarning: null);
 
                 // Item metadata are stored msbuild-escaped. GetMetadata unescapes, SetMetadata stores the value as specified.
                 // Escape msbuild special characters so that URL escapes in the URL are preserved when the URL is read by GetMetadata.
@@ -256,7 +276,7 @@ namespace Microsoft.Build.Tasks.Git
                 }
 
                 // https://git-scm.com/docs/git-submodule
-                var submoduleUri = NormalizeUrl(repository.Config, submodule.Url, repoRoot);
+                var submoduleUri = NormalizeUrl(repository, submodule.Url);
                 if (submoduleUri == null)
                 {
                     logWarning(Resources.SourceCodeWontBeAvailableViaSourceLink,
@@ -295,31 +315,27 @@ namespace Microsoft.Build.Tasks.Git
             return result.ToArray();
         }
 
-        private static string GetRepositoryRoot(GitRepository repository)
-            => repository.WorkingDirectory.EndWithSeparator();
+        public static ITaskItem[] GetUntrackedFiles(GitRepository repository, ITaskItem[] files, string projectDirectory)
+            => GetUntrackedFiles(repository, files, projectDirectory, CreateSubmoduleRepository);
 
-        public static ITaskItem[] GetUntrackedFiles(
-            GitRepository repository,
-            ITaskItem[] files, 
-            string projectDirectory,
-            Func<string, GitRepository> repositoryFactory)
+        private static GitRepository? CreateSubmoduleRepository(GitEnvironment environment, string directoryFullPath)
+            => GitRepository.TryGetRepositoryLocation(directoryFullPath, out var location) ?
+               GitRepository.OpenRepository(location, environment) : null;
+
+        // internal for testing
+        internal static ITaskItem[] GetUntrackedFiles(GitRepository repository, ITaskItem[] files, string projectDirectory, Func<GitEnvironment, string, GitRepository?> repositoryFactory)
         {
-            var directoryTree = BuildDirectoryTree(repository);
+            var directoryTree = BuildDirectoryTree(repository, repositoryFactory);
 
             return files.Where(file =>
             {
                 // file.ItemSpec are relative to projectDirectory.
                 var fullPath = Path.GetFullPath(Path.Combine(projectDirectory, file.ItemSpec));
 
-                var containingDirectory = GetContainingRepository(fullPath, directoryTree);
+                var containingDirectoryMatcher = GetContainingRepositoryMatcher(fullPath, directoryTree);
 
                 // Files that are outside of the repository are considered untracked.
-                if (containingDirectory == null)
-                {
-                    return true;
-                }
-
-                return containingDirectory.GetMatcher(repositoryFactory).IsNormalizedFilePathIgnored(fullPath) ?? true;
+                return containingDirectoryMatcher?.IsNormalizedFilePathIgnored(fullPath) ?? true;
             }).ToArray();
         }
 
@@ -329,55 +345,37 @@ namespace Microsoft.Build.Tasks.Git
             public readonly List<DirectoryNode> OrderedChildren;
 
             // set on nodes that represent submodule working directory:
-            public string WorkingDirectoryFullPath;
-            private GitIgnore.Matcher _lazyMatcher;
+            public Lazy<GitIgnore.Matcher?>? Matcher;
 
-            public DirectoryNode(string name)
-                : this(name, null, new List<DirectoryNode>())
-            {
-            }
-
-            public DirectoryNode(string name, string fullPath)
-                : this(name, fullPath, new List<DirectoryNode>())
-            {
-            }
-
-            public DirectoryNode(string name, string workingDirectoryFullPath, List<DirectoryNode> orderedChildren)
+            public DirectoryNode(string name, List<DirectoryNode> orderedChildren)
             {
                 Name = name;
-                WorkingDirectoryFullPath = workingDirectoryFullPath;
                 OrderedChildren = orderedChildren;
-            }
-
-            public void SetMatcher(string workingDirectory, GitIgnore.Matcher matcher)
-            {
-                WorkingDirectoryFullPath = workingDirectory;
-                _lazyMatcher = matcher;
             }
 
             public int FindChildIndex(string name)
                 => BinarySearch(OrderedChildren, name, (n, v) => n.Name.CompareTo(v));
-
-            public GitIgnore.Matcher GetMatcher(Func<string, GitRepository> repositoryFactory)
-                => _lazyMatcher ?? (_lazyMatcher = repositoryFactory(WorkingDirectoryFullPath).Ignore.CreateMatcher());
         }
 
-        internal static DirectoryNode BuildDirectoryTree(GitRepository repository)
+        internal static DirectoryNode BuildDirectoryTree(GitRepository repository, Func<GitEnvironment, string, GitRepository?> repositoryFactory)
         {
-            var workingDirectory = repository.WorkingDirectory;
+            NullableDebug.Assert(repository.WorkingDirectory != null);
 
-            var treeRoot = new DirectoryNode("");
-            AddTreeNode(treeRoot, workingDirectory, repository.Ignore.CreateMatcher());
+            var treeRoot = new DirectoryNode(name: "", new List<DirectoryNode>());
+            AddTreeNode(treeRoot, repository.WorkingDirectory, new Lazy<GitIgnore.Matcher?>(() => repository.Ignore.CreateMatcher()));
 
             foreach (var submodule in repository.GetSubmodules())
             {
-                AddTreeNode(treeRoot, submodule.WorkingDirectoryFullPath, matcherOpt: null);
+                var submoduleWorkingDirectory = submodule.WorkingDirectoryFullPath;
+
+                AddTreeNode(treeRoot, submoduleWorkingDirectory,
+                    new Lazy<GitIgnore.Matcher?>(() => repositoryFactory(repository.Environment, submoduleWorkingDirectory)?.Ignore.CreateMatcher()));
             }
 
             return treeRoot;
         }
 
-        private static void AddTreeNode(DirectoryNode root, string workingDirectory, GitIgnore.Matcher matcherOpt)
+        private static void AddTreeNode(DirectoryNode root, string workingDirectory, Lazy<GitIgnore.Matcher?> matcher)
         {
             var segments = PathUtilities.Split(workingDirectory);
 
@@ -392,26 +390,26 @@ namespace Microsoft.Build.Tasks.Git
                 }
                 else
                 {
-                    var newNode = new DirectoryNode(segments[i]);
+                    var newNode = new DirectoryNode(segments[i], new List<DirectoryNode>());
                     node.OrderedChildren.Insert(~index, newNode);
                     node = newNode;
                 }
 
                 if (i == segments.Length - 1)
                 {
-                    node.SetMatcher(workingDirectory, matcherOpt);
+                    node.Matcher = matcher;
                 }
             }
         }
 
         // internal for testing
-        internal static DirectoryNode GetContainingRepository(string fullPath, DirectoryNode root)
+        internal static GitIgnore.Matcher? GetContainingRepositoryMatcher(string fullPath, DirectoryNode root)
         {
             var segments = PathUtilities.Split(fullPath);
             Debug.Assert(segments.Length > 0);
 
-            Debug.Assert(root.WorkingDirectoryFullPath == null);
-            DirectoryNode containingRepositoryNode = null;
+            Debug.Assert(root.Matcher == null);
+            GitIgnore.Matcher? containingRepositoryMatcher = null;
 
             var node = root;
             for (int i = 0; i < segments.Length - 1; i++)
@@ -423,13 +421,16 @@ namespace Microsoft.Build.Tasks.Git
                 }
 
                 node = node.OrderedChildren[index];
-                if (node.WorkingDirectoryFullPath != null)
+
+                var matcher = node.Matcher?.Value;
+                if (matcher != null)
                 {
-                    containingRepositoryNode = node;
+                    // inner-most repository determines the ignore state of the file:
+                    containingRepositoryMatcher = matcher;
                 }
             }
 
-            return containingRepositoryNode;
+            return containingRepositoryMatcher;
         }
 
         internal static int BinarySearch<T, TValue>(IReadOnlyList<T> list, TValue value, Func<T, TValue, int> compare)

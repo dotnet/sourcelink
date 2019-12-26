@@ -19,7 +19,7 @@ namespace Microsoft.SourceLink.GitHub
         protected override Uri GetDefaultContentUriFromHostUri(string authority, Uri gitUri)
             => new Uri($"{gitUri.Scheme}://{authority}/raw", UriKind.Absolute);
 
-        protected override string BuildSourceLinkUrl(Uri contentUri, Uri gitUri, string relativeUrl, string revisionId, ITaskItem hostItem)
+        protected override string? BuildSourceLinkUrl(Uri contentUri, Uri gitUri, string relativeUrl, string revisionId, ITaskItem? hostItem)
             => UriUtilities.Combine(UriUtilities.Combine(contentUri.ToString(), relativeUrl), revisionId + "/*");
     }
 }

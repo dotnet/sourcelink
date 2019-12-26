@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 
@@ -40,22 +41,22 @@ namespace Microsoft.Build.Tasks.Git
         /// <summary>
         /// Normalized full path. OS specific directory separators. Optional.
         /// </summary>
-        public string WorkingDirectory { get; }
+        public string? WorkingDirectory { get; }
 
         public GitEnvironment Environment { get; }
 
         private readonly Lazy<(ImmutableArray<GitSubmodule> Submodules, ImmutableArray<string> Diagnostics)> _lazySubmodules;
         private readonly Lazy<GitIgnore> _lazyIgnore;
-        private readonly Lazy<string> _lazyHeadCommitSha;
+        private readonly Lazy<string?> _lazyHeadCommitSha;
         private readonly GitReferenceResolver _referenceResolver;
 
-        internal GitRepository(GitEnvironment environment, GitConfig config, string gitDirectory, string commonDirectory, string workingDirectory)
+        internal GitRepository(GitEnvironment environment, GitConfig config, string gitDirectory, string commonDirectory, string? workingDirectory)
         {
-            Debug.Assert(environment != null);
-            Debug.Assert(config != null);
-            Debug.Assert(PathUtils.IsNormalized(gitDirectory));
-            Debug.Assert(PathUtils.IsNormalized(commonDirectory));
-            Debug.Assert(workingDirectory == null || PathUtils.IsNormalized(workingDirectory));
+            NullableDebug.Assert(environment != null);
+            NullableDebug.Assert(config != null);
+            NullableDebug.Assert(PathUtils.IsNormalized(gitDirectory));
+            NullableDebug.Assert(PathUtils.IsNormalized(commonDirectory));
+            NullableDebug.Assert(workingDirectory == null || PathUtils.IsNormalized(workingDirectory));
 
             Config = config;
             GitDirectory = gitDirectory;
@@ -66,7 +67,7 @@ namespace Microsoft.Build.Tasks.Git
             _referenceResolver = new GitReferenceResolver(gitDirectory, commonDirectory);
             _lazySubmodules = new Lazy<(ImmutableArray<GitSubmodule>, ImmutableArray<string>)>(ReadSubmodules);
             _lazyIgnore = new Lazy<GitIgnore>(LoadIgnore);
-            _lazyHeadCommitSha = new Lazy<string>(ReadHeadCommitSha);
+            _lazyHeadCommitSha = new Lazy<string?>(ReadHeadCommitSha);
         }
 
         // test only
@@ -75,16 +76,16 @@ namespace Microsoft.Build.Tasks.Git
             GitConfig config,
             string gitDirectory,
             string commonDirectory,
-            string workingDirectory,
+            string? workingDirectory,
             ImmutableArray<GitSubmodule> submodules,
             ImmutableArray<string> submoduleDiagnostics,
             GitIgnore ignore,
-            string headCommitSha)
+            string? headCommitSha)
             : this(environment, config, gitDirectory, commonDirectory, workingDirectory)
         {
             _lazySubmodules = new Lazy<(ImmutableArray<GitSubmodule>, ImmutableArray<string>)>(() => (submodules, submoduleDiagnostics));
             _lazyIgnore = new Lazy<GitIgnore>(() => ignore);
-            _lazyHeadCommitSha = new Lazy<string>(() => headCommitSha);
+            _lazyHeadCommitSha = new Lazy<string?>(() => headCommitSha);
         }        
 
         /// <summary>
@@ -94,7 +95,7 @@ namespace Microsoft.Build.Tasks.Git
         /// <exception cref="InvalidDataException" />
         /// <exception cref="NotSupportedException">The repository found requires higher version of git repository format that is currently supported.</exception>
         /// <returns>null if no git repository can be found that contains the specified path.</returns>
-        internal static GitRepository OpenRepository(string path, GitEnvironment environment)
+        internal static GitRepository? OpenRepository(string path, GitEnvironment environment)
             => TryFindRepository(path, out var location) ? OpenRepository(location, environment) : null;
 
         /// <summary>
@@ -105,19 +106,19 @@ namespace Microsoft.Build.Tasks.Git
         /// <exception cref="NotSupportedException">The repository found requires higher version of git repository format that is currently supported.</exception>
         public static GitRepository OpenRepository(GitRepositoryLocation location, GitEnvironment environment)
         {
-            Debug.Assert(environment != null);
-            Debug.Assert(location.GitDirectory != null);
-            Debug.Assert(location.CommonDirectory != null);
+            NullableDebug.Assert(environment != null);
+            NullableDebug.Assert(location.GitDirectory != null);
+            NullableDebug.Assert(location.CommonDirectory != null);
 
             // See https://git-scm.com/docs/gitrepository-layout
 
             var reader = new GitConfig.Reader(location.GitDirectory, location.CommonDirectory, environment);
             var config = reader.Load();
 
-            var workingDirectory = GetWorkingDirectory(config, location.GitDirectory, location.CommonDirectory) ?? location.WorkingDirectory;
+            var workingDirectory = GetWorkingDirectory(config, location);
 
             // See https://github.com/git/git/blob/master/Documentation/technical/repository-version.txt
-            string versionStr = config.GetVariableValue("core", "repositoryformatversion");
+            string? versionStr = config.GetVariableValue("core", "repositoryformatversion");
             if (GitConfig.TryParseInt64Value(versionStr, out var version) && version > SupportedGitRepoFormatVersion)
             {
                 throw new NotSupportedException(string.Format(Resources.UnsupportedRepositoryVersion, versionStr, SupportedGitRepoFormatVersion));
@@ -126,15 +127,14 @@ namespace Microsoft.Build.Tasks.Git
             return new GitRepository(environment, config, location.GitDirectory, location.CommonDirectory, workingDirectory);
         }
 
-        // internal for testing
-        internal static string GetWorkingDirectory(GitConfig config, string gitDirectory, string commonDirectory)
+        private static string? GetWorkingDirectory(GitConfig config, GitRepositoryLocation location)
         {
             // Working trees cannot have the same common directory and git directory.
             // 'gitdir' file in a git directory indicates a working tree.
 
-            var gitdirFilePath = Path.Combine(gitDirectory, GitDirFileName);
+            var gitdirFilePath = Path.Combine(location.GitDirectory, GitDirFileName);
 
-            var isLinkedWorkingTree = PathUtils.ToPosixDirectoryPath(commonDirectory) != PathUtils.ToPosixDirectoryPath(gitDirectory) && 
+            var isLinkedWorkingTree = PathUtils.ToPosixDirectoryPath(location.CommonDirectory) != PathUtils.ToPosixDirectoryPath(location.GitDirectory) && 
                 File.Exists(gitdirFilePath);
 
             if (isLinkedWorkingTree)
@@ -170,13 +170,13 @@ namespace Microsoft.Build.Tasks.Git
             }
 
             // See https://git-scm.com/docs/git-config#Documentation/git-config.txt-coreworktree
-            string value = config.GetVariableValue("core", "worktree");
+            string? value = config.GetVariableValue("core", "worktree");
             if (value != null)
             {
                 // git does not expand home dir relative path ("~/")
                 try
                 {
-                    return Path.GetFullPath(Path.Combine(gitDirectory, value));
+                    return Path.GetFullPath(Path.Combine(location.GitDirectory, value));
                 }
                 catch
                 {
@@ -184,7 +184,7 @@ namespace Microsoft.Build.Tasks.Git
                 }
             }
 
-            return null;
+            return location.WorkingDirectory;
         }
 
         /// <summary>
@@ -193,12 +193,12 @@ namespace Microsoft.Build.Tasks.Git
         /// <exception cref="IOException"/>
         /// <exception cref="InvalidDataException"/>
         /// <returns>Null if the HEAD tip reference can't be resolved.</returns>
-        public string GetHeadCommitSha()
+        public string? GetHeadCommitSha()
             => _lazyHeadCommitSha.Value;
 
         /// <exception cref="IOException"/>
         /// <exception cref="InvalidDataException"/>
-        private string ReadHeadCommitSha()
+        private string? ReadHeadCommitSha()
             => _referenceResolver.ResolveHeadReference();
 
         /// <summary>
@@ -207,7 +207,7 @@ namespace Microsoft.Build.Tasks.Git
         /// <exception cref="IOException"/>
         /// <exception cref="InvalidDataException"/>
         /// <returns>Null if the HEAD tip reference can't be resolved.</returns>
-        internal string ReadSubmoduleHeadCommitSha(string submoduleWorkingDirectoryFullPath)
+        internal string? ReadSubmoduleHeadCommitSha(string submoduleWorkingDirectoryFullPath)
         {
             var gitDirectory = ReadDotGitFile(Path.Combine(submoduleWorkingDirectoryFullPath, GitDirName));
             if (!IsGitDirectory(gitDirectory, out var commonDirectory))
@@ -246,7 +246,7 @@ namespace Microsoft.Build.Tasks.Git
                 return (ImmutableArray<GitSubmodule>.Empty, ImmutableArray<string>.Empty);
             }
 
-            ImmutableArray<string>.Builder lazyDiagnostics = null;
+            ImmutableArray<string>.Builder? lazyDiagnostics = null;
 
             void reportDiagnostic(string diagnostic)
                 => (lazyDiagnostics ??= ImmutableArray.CreateBuilder<string>()).Add(diagnostic);
@@ -255,13 +255,13 @@ namespace Microsoft.Build.Tasks.Git
 
             foreach (var (name, path, url) in EnumerateSubmoduleConfig(submoduleConfig))
             {
-                if (string.IsNullOrWhiteSpace(path))
+                if (NullableString.IsNullOrWhiteSpace(path))
                 {
                     reportDiagnostic(string.Format(Resources.InvalidSubmodulePath, name, path));
                     continue;
                 }
 
-                if (string.IsNullOrWhiteSpace(url))
+                if (NullableString.IsNullOrWhiteSpace(url))
                 {
                     reportDiagnostic(string.Format(Resources.InvalidSubmoduleUrl, name, url));
                     continue;
@@ -278,7 +278,7 @@ namespace Microsoft.Build.Tasks.Git
                     continue;
                 }
 
-                string headCommitSha;
+                string? headCommitSha;
                 try
                 {
                     headCommitSha = ReadSubmoduleHeadCommitSha(fullPath);
@@ -296,7 +296,7 @@ namespace Microsoft.Build.Tasks.Git
         }
 
         // internal for testing
-        internal GitConfig ReadSubmoduleConfig()
+        internal GitConfig? ReadSubmoduleConfig()
         {
             var workingDirectory = GetWorkingDirectory();
             var submodulesConfigFile = Path.Combine(workingDirectory, GitModulesFileName);
@@ -310,7 +310,7 @@ namespace Microsoft.Build.Tasks.Git
         }
 
         // internal for testing
-        internal static IEnumerable<(string Name, string Path, string Url)> EnumerateSubmoduleConfig(GitConfig submoduleConfig)
+        internal static IEnumerable<(string Name, string? Path, string? Url)> EnumerateSubmoduleConfig(GitConfig submoduleConfig)
         {
             foreach (var group in submoduleConfig.Variables.
                 Where(kvp => kvp.Key.SectionNameEquals("submodule")).
@@ -318,8 +318,8 @@ namespace Microsoft.Build.Tasks.Git
                 OrderBy(group => group.Key))
             {
                 string name = group.Key;
-                string url = null;
-                string path = null;
+                string? url = null;
+                string? path = null;
 
                 foreach (var variable in group)
                 {
@@ -408,7 +408,7 @@ namespace Microsoft.Build.Tasks.Git
 
         private static bool TryGetRepositoryLocationImpl(string directory, out GitRepositoryLocation location)
         {
-            string commonDirectory;
+            string? commonDirectory;
             var dotGitPath = Path.Combine(directory, GitDirName);
 
             if (Directory.Exists(dotGitPath))
@@ -475,7 +475,7 @@ namespace Microsoft.Build.Tasks.Git
             }
         }
 
-        private static bool IsGitDirectory(string directory, out string commonDirectory)
+        private static bool IsGitDirectory(string directory, [NotNullWhen(true)]out string? commonDirectory)
         {
             // HEAD file is required
             if (!File.Exists(Path.Combine(directory, GitHeadFileName)))

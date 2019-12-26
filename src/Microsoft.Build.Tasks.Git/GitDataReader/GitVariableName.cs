@@ -17,9 +17,9 @@ namespace Microsoft.Build.Tasks.Git
 
         public GitVariableName(string sectionName, string subsectionName, string variableName)
         {
-            Debug.Assert(sectionName != null);
-            Debug.Assert(subsectionName != null);
-            Debug.Assert(variableName != null);
+            NullableDebug.Assert(sectionName != null);
+            NullableDebug.Assert(subsectionName != null);
+            NullableDebug.Assert(variableName != null);
 
             SectionName = sectionName;
             SubsectionName = subsectionName;

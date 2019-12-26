@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -18,7 +19,7 @@ namespace Microsoft.Build.Tasks.Git
 
         public GitConfig(ImmutableDictionary<GitVariableName, ImmutableArray<string>> variables)
         {
-            Debug.Assert(variables != null);
+            NullableDebug.Assert(variables != null);
             Variables = variables;
         }
 
@@ -32,19 +33,19 @@ namespace Microsoft.Build.Tasks.Git
         public ImmutableArray<string> GetVariableValues(string section, string subsection, string name)
             => Variables.TryGetValue(new GitVariableName(section, subsection, name), out var multiValue) ? multiValue : default;
 
-        public string GetVariableValue(string section, string name)
+        public string? GetVariableValue(string section, string name)
             => GetVariableValue(section, "", name);
 
-        public string GetVariableValue(string section, string subsection, string name)
+        public string? GetVariableValue(string section, string subsection, string name)
         {
             var values = GetVariableValues(section, subsection, name);
             return values.IsDefault ? null : values[values.Length - 1];
         }
 
-        public static bool ParseBooleanValue(string str, bool defaultValue = false)
+        public static bool ParseBooleanValue(string? str, bool defaultValue = false)
             => TryParseBooleanValue(str, out var value) ? value : defaultValue;
 
-        public static bool TryParseBooleanValue(string str, out bool value)
+        public static bool TryParseBooleanValue(string? str, out bool value)
         {
             // https://git-scm.com/docs/git-config#Documentation/git-config.txt-boolean
 
@@ -75,9 +76,9 @@ namespace Microsoft.Build.Tasks.Git
         internal static long ParseInt64Value(string str, long defaultValue = 0)
             => TryParseInt64Value(str, out var value) ? value : defaultValue;
 
-        internal static bool TryParseInt64Value(string str, out long value)
+        internal static bool TryParseInt64Value(string? str, out long value)
         {
-            if (string.IsNullOrEmpty(str))
+            if (NullableString.IsNullOrEmpty(str))
             {
                 value = 0;
                 return false;

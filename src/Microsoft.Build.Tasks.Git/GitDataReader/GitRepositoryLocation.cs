@@ -1,6 +1,6 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
-using System.Diagnostics;
+using System;
 
 namespace Microsoft.Build.Tasks.Git
 {
@@ -19,13 +19,13 @@ namespace Microsoft.Build.Tasks.Git
         /// <summary>
         /// Normalized full path. OS specific directory separators. Optional.
         /// </summary>
-        public readonly string WorkingDirectory { get; }
+        public readonly string? WorkingDirectory { get; }
 
-        internal GitRepositoryLocation(string gitDirectory, string commonDirectory, string workingDirectory)
+        internal GitRepositoryLocation(string gitDirectory, string commonDirectory, string? workingDirectory)
         {
-            Debug.Assert(PathUtils.IsNormalized(gitDirectory));
-            Debug.Assert(PathUtils.IsNormalized(commonDirectory));
-            Debug.Assert(workingDirectory == null || PathUtils.IsNormalized(workingDirectory));
+            NullableDebug.Assert(PathUtils.IsNormalized(gitDirectory));
+            NullableDebug.Assert(PathUtils.IsNormalized(commonDirectory));
+            NullableDebug.Assert(workingDirectory == null || PathUtils.IsNormalized(workingDirectory));
 
             GitDirectory = gitDirectory;
             CommonDirectory = commonDirectory;

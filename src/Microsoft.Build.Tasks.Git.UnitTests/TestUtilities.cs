@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
 using System;
-using System.IO;
 using Microsoft.Build.Framework;
 
 namespace Microsoft.Build.Tasks.Git.UnitTests
@@ -26,10 +25,10 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
               (string.IsNullOrEmpty(sourceLinkUrl) ? "" : $" SourceLinkUrl='{sourceLinkUrl}'");
         }
 
-        public static string InspectDiagnostic((string Message, object[] Args) warning)
+        public static string InspectDiagnostic((string Message, object?[] Args) warning)
             => string.Format(warning.Message, warning.Args);
 
-        public static string GetExceptionMessage(Action action)
+        public static string? GetExceptionMessage(Action action)
         {
             try
             {

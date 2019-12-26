@@ -225,14 +225,14 @@ a =
             homeDir.CreateFile(".gitconfig").WriteAllText("[cfg]dir=home1");
             homeDir.CreateDirectory(".config").CreateDirectory("git").CreateFile("config").WriteAllText("[cfg]dir=home2");
 
-            TempDirectory xdgDir = null;
+            TempDirectory? xdgDir = null;
             if (enableXdg)
             {
                 xdgDir = root.CreateDirectory("xdg");
                 xdgDir.CreateDirectory("git").CreateFile("config").WriteAllText("[cfg]dir=xdg");
             }
 
-            TempDirectory programDataDir = null;
+            TempDirectory? programDataDir = null;
             if (enableProgramData)
             {
                 programDataDir = root.CreateDirectory("programdata");

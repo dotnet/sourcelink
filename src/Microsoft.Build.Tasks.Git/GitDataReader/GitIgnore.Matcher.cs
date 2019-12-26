@@ -16,7 +16,7 @@ namespace Microsoft.Build.Tasks.Git
             /// <summary>
             /// Maps full posix slash-terminated directory name to a pattern group.
             /// </summary>
-            private readonly Dictionary<string, PatternGroup> _patternGroups;
+            private readonly Dictionary<string, PatternGroup?> _patternGroups;
 
             /// <summary>
             /// The result of "is ignored" for directories.
@@ -28,7 +28,7 @@ namespace Microsoft.Build.Tasks.Git
             internal Matcher(GitIgnore ignore)
             {
                 Ignore = ignore;
-                _patternGroups = new Dictionary<string, PatternGroup>(StringComparer.Ordinal);
+                _patternGroups = new Dictionary<string, PatternGroup?>(StringComparer.Ordinal);
                 _directoryIgnoreStateCache = new Dictionary<string, bool>(Ignore.PathComparer);
                 _reusableGroupList = new List<PatternGroup>();
             }
@@ -37,7 +37,7 @@ namespace Microsoft.Build.Tasks.Git
             internal IReadOnlyDictionary<string, bool> DirectoryIgnoreStateCache
                 => _directoryIgnoreStateCache;
 
-            private PatternGroup GetPatternGroup(string directory)
+            private PatternGroup? GetPatternGroup(string directory)
             {
                 Debug.Assert(PathUtils.HasTrailingSlash(directory));
 
@@ -46,7 +46,7 @@ namespace Microsoft.Build.Tasks.Git
                     return group;
                 }
 
-                PatternGroup parent;
+                PatternGroup? parent;
                 if (directory.Equals(Ignore.WorkingDirectory, Ignore.PathComparison))
                 {
                     parent = Ignore.Root;
@@ -159,7 +159,7 @@ namespace Microsoft.Build.Tasks.Git
                 return isIgnored;
             }
 
-            private static void SplitPath(string fullPath, out string directoryWithSlash, out string fileName)
+            private static void SplitPath(string fullPath, out string? directoryWithSlash, out string fileName)
             {
                 Debug.Assert(!PathUtils.HasTrailingSlash(fullPath));
                 int i = fullPath.LastIndexOf('/');
@@ -189,7 +189,7 @@ namespace Microsoft.Build.Tasks.Git
                 // Patterns specified closer to the target file override those specified above.
                 _reusableGroupList.Clear();
                 var groups = _reusableGroupList;
-                for (var patternGroup = GetPatternGroup(directory); patternGroup != null; patternGroup = patternGroup.Parent)
+                for (PatternGroup? patternGroup = GetPatternGroup(directory); patternGroup != null; patternGroup = patternGroup.Parent)
                 {
                     groups.Add(patternGroup);
                 }
@@ -203,7 +203,7 @@ namespace Microsoft.Build.Tasks.Git
                         continue;
                     }
 
-                    string lazyRelativePath = null;
+                    string? lazyRelativePath = null;
 
                     foreach (var pattern in patternGroup.Patterns)
                     {

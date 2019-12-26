@@ -1,8 +1,9 @@
 // Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
 using System;
-using System.Linq;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Microsoft.Build.Tasks.SourceControl;
 
 namespace Microsoft.SourceLink
@@ -17,7 +18,7 @@ namespace Microsoft.SourceLink
            => host.EndsWith(".visualstudio.com", StringComparison.OrdinalIgnoreCase) ||
               host.EndsWith(".vsts.me", StringComparison.OrdinalIgnoreCase);
 
-        public static bool TryParseHostedHttp(string host, string relativeUrl, out string projectPath, out string repositoryName)
+        public static bool TryParseHostedHttp(string host, string relativeUrl, [NotNullWhen(true)]out string? projectPath, [NotNullWhen(true)]out string? repositoryName)
         {
             projectPath = repositoryName = null;
 
@@ -27,7 +28,7 @@ namespace Microsoft.SourceLink
             }
 
             int index = 0;
-            string account;
+            string? account;
             bool isVisualStudioHost = IsVisualStudioHostedServer(host);
 
             if (isVisualStudioHost)
@@ -78,7 +79,7 @@ namespace Microsoft.SourceLink
             return true;
         }
 
-        public static bool TryParseOnPremHttp(string relativeUrl, string virtualDirectory, out string projectPath, out string repositoryName)
+        public static bool TryParseOnPremHttp(string relativeUrl, string virtualDirectory, [NotNullWhen(true)]out string? projectPath, [NotNullWhen(true)]out string? repositoryName)
         {
             projectPath = repositoryName = null;
 
@@ -107,9 +108,9 @@ namespace Microsoft.SourceLink
             return true;
         }
 
-        public static bool TryParseHostedSsh(Uri uri, out string account, out string repositoryPath, out string repositoryName)
+        public static bool TryParseHostedSsh(Uri uri, [NotNullWhen(true)]out string? account, [NotNullWhen(true)]out string? repositoryPath, [NotNullWhen(true)]out string? repositoryName)
         {
-            Debug.Assert(uri != null);
+            NullableDebug.Assert(uri != null);
 
             account = repositoryPath = repositoryName = null;
 
@@ -156,7 +157,7 @@ namespace Microsoft.SourceLink
             return true;
         }
 
-        public static bool TryParseOnPremSsh(Uri uri, out string repositoryPath, out string repositoryName)
+        public static bool TryParseOnPremSsh(Uri uri, [NotNullWhen(true)]out string? repositoryPath, [NotNullWhen(true)]out string? repositoryName)
         {
             repositoryPath = repositoryName = null;
 
@@ -174,7 +175,7 @@ namespace Microsoft.SourceLink
             return true;
         }
         
-        private static bool TryParsePath(string[] parts, int startIndex, string type, out string repositoryPath, out string repositoryName)
+        private static bool TryParsePath(string[] parts, int startIndex, string? type, [NotNullWhen(true)]out string? repositoryPath, [NotNullWhen(true)]out string? repositoryName)
         {
             if (TryParsePath(parts, startIndex, type, out var projectName, out var teamName, out repositoryName))
             {
@@ -186,7 +187,7 @@ namespace Microsoft.SourceLink
             return false;
         }
 
-        private static bool TryParsePath(string[] parts, int projectPartIndex, string type, out string projectName, out string teamName, out string repositoryName)
+        private static bool TryParsePath(string[] parts, int projectPartIndex, string? type, out string? projectName, out string? teamName, [NotNullWhen(true)]out string? repositoryName)
         {
             // {projectName?}/{teamName?}/{type}/{"_full"|"_optimized"|""}/{repositoryName}
 
@@ -216,7 +217,7 @@ namespace Microsoft.SourceLink
             }
         }
 
-        private static bool TryParseRepositoryName(string[] parts, out int teamNameIndex, string type, out string repositoryName)
+        private static bool TryParseRepositoryName(string[] parts, out int teamNameIndex, string? type, [NotNullWhen(true)]out string? repositoryName)
         {
             Debug.Assert(type == "_git" || type == "_ssh" || type == null);
 

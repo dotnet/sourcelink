@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
@@ -15,22 +16,22 @@ namespace Microsoft.Build.Tasks.SourceControl
         protected const string NotApplicableValue = "N/A";
         private const string ContentUrlMetadataName = "ContentUrl";
 
-        [Required]
-        public ITaskItem SourceRoot { get; set; }
+        [Required, NotNull]
+        public ITaskItem? SourceRoot { get; set; }
 
         /// <summary>
         /// List of additional repository hosts for which the task produces SourceLink URLs.
         /// Each item maps a domain of a repository host (stored in the item identity) to a URL of the server that provides source file content (stored in <c>ContentUrl</c> metadata).
         /// <c>ContentUrl</c> is optional.
         /// </summary>
-        public ITaskItem[] Hosts { get; set; }
+        public ITaskItem[]? Hosts { get; set; }
 
-        public string RepositoryUrl { get; set; }
+        public string? RepositoryUrl { get; set; }
 
         public bool IsSingleProvider { get; set; }
 
         [Output]
-        public string SourceLinkUrl { get; set; }
+        public string? SourceLinkUrl { get; set; }
 
         internal GetSourceLinkUrlGitTask() { }
 
@@ -52,7 +53,7 @@ namespace Microsoft.Build.Tasks.SourceControl
         protected virtual Uri GetDefaultContentUriFromRepositoryUri(Uri repositoryUri)
             => GetDefaultContentUriFromHostUri(repositoryUri.GetAuthority(), repositoryUri);
 
-        protected abstract string BuildSourceLinkUrl(Uri contentUrl, Uri gitUri, string relativeUrl, string revisionId, ITaskItem hostItem);
+        protected abstract string? BuildSourceLinkUrl(Uri contentUrl, Uri gitUri, string relativeUrl, string revisionId, ITaskItem? hostItem);
 
         public override bool Execute()
         {
@@ -96,18 +97,17 @@ namespace Microsoft.Build.Tasks.SourceControl
                 return;
             }
 
-            var contentUri = GetMatchingContentUri(mappings, gitUri, out var hostItem);
-            if (contentUri == null)
+            if (!TryGetMatchingContentUri(mappings, gitUri, out var contentUri, out var hostItem))
             {
                 SourceLinkUrl = NotApplicableValue;
                 return;
             }
 
-            static bool IsHexDigit(char c)
+            static bool isHexDigit(char c)
                 => c >= '0' && c <= '9' || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F';
 
             string revisionId = SourceRoot.GetMetadata(Names.SourceRoot.RevisionId);
-            if (revisionId == null || revisionId.Length != 40 || !revisionId.All(IsHexDigit))
+            if (revisionId == null || revisionId.Length != 40 || !revisionId.All(isHexDigit))
             {
                 Log.LogError(CommonResources.ValueOfWithIdentityIsNotValidCommitHash, Names.SourceRoot.RevisionIdFullName, SourceRoot.ItemSpec, revisionId);
                 return;
@@ -128,16 +128,16 @@ namespace Microsoft.Build.Tasks.SourceControl
         private readonly struct UrlMapping
         {
             public readonly string Host;
-            public readonly ITaskItem HostItem;
+            public readonly ITaskItem? HostItem;
             public readonly int Port;
             public readonly Uri ContentUri;
             public readonly bool HasDefaultContentUri;
 
-            public UrlMapping(string host, ITaskItem hostItem, int port, Uri contentUri, bool hasDefaultContentUri)
+            public UrlMapping(string host, ITaskItem? hostItem, int port, Uri contentUri, bool hasDefaultContentUri)
             {
-                Debug.Assert(port >= -1);
-                Debug.Assert(!string.IsNullOrEmpty(host));
-                Debug.Assert(contentUri != null);
+                NullableDebug.Assert(port >= -1);
+                NullableDebug.Assert(!string.IsNullOrEmpty(host));
+                NullableDebug.Assert(contentUri != null);
 
                 Host = host;
                 Port = port;
@@ -204,7 +204,7 @@ namespace Microsoft.Build.Tasks.SourceControl
             }
         }
 
-        private static Uri GetMatchingContentUri(UrlMapping[] mappings, Uri repoUri, out ITaskItem hostItem)
+        private static bool TryGetMatchingContentUri(UrlMapping[] mappings, Uri repoUri, [NotNullWhen(true)]out Uri? contentUri, out ITaskItem? hostItem)
         {
             UrlMapping? findMatch(bool exactHost)
             {
@@ -235,12 +235,13 @@ namespace Microsoft.Build.Tasks.SourceControl
             var result = findMatch(exactHost: true) ?? findMatch(exactHost: false);
             if (result == null)
             {
+                contentUri = null;
                 hostItem = null;
-                return null;
+                return false;
             }
 
             var value = result.Value;
-            var contentUri = value.ContentUri;
+            contentUri = value.ContentUri;
             hostItem = value.HostItem;
 
             // If the mapping did not specify ContentUrl and did not specify port,
@@ -250,7 +251,7 @@ namespace Microsoft.Build.Tasks.SourceControl
                 contentUri = new Uri($"{contentUri.Scheme}://{contentUri.Host}:{repoUri.Port}{contentUri.PathAndQuery}");
             }
 
-            return contentUri;
+            return true;
         }
     }
 }

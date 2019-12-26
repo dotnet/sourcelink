@@ -18,8 +18,8 @@ namespace TestUtilities
 
         private TempDirectory(string path, TempRoot root)
         {
-            Debug.Assert(path != null);
-            Debug.Assert(root != null);
+            NullableDebug.Assert(path != null);
+            NullableDebug.Assert(root != null);
 
             _path = path;
             _root = root;
@@ -61,7 +61,7 @@ namespace TestUtilities
         /// <summary>
         /// Creates a file in this directory that is a copy of the specified file.
         /// </summary>
-        public TempFile CopyFile(string originalPath, string name = null)
+        public TempFile CopyFile(string originalPath, string? name = null)
         {
             string filePath = System.IO.Path.Combine(_path, name ?? System.IO.Path.GetFileName(originalPath));
             File.Copy(originalPath, filePath);

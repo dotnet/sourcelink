@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 
@@ -21,12 +22,12 @@ namespace Microsoft.Build.Tasks.Git
 
             public readonly ImmutableArray<Pattern> Patterns;
 
-            public readonly PatternGroup Parent;
+            public readonly PatternGroup? Parent;
 
-            public PatternGroup(PatternGroup parent, string containingDirectory, ImmutableArray<Pattern> patterns)
+            public PatternGroup(PatternGroup? parent, string containingDirectory, ImmutableArray<Pattern> patterns)
             {
-                Debug.Assert(PathUtils.IsPosixPath(containingDirectory));
-                Debug.Assert(PathUtils.HasTrailingSlash(containingDirectory));
+                NullableDebug.Assert(PathUtils.IsPosixPath(containingDirectory));
+                NullableDebug.Assert(PathUtils.HasTrailingSlash(containingDirectory));
 
                 Parent = parent;
                 ContainingDirectory = containingDirectory;
@@ -41,8 +42,6 @@ namespace Microsoft.Build.Tasks.Git
 
             public Pattern(string glob,  PatternFlags flags)
             {
-                Debug.Assert(glob != null);
-
                 Glob = glob;
                 Flags = flags;
             }
@@ -74,11 +73,11 @@ namespace Microsoft.Build.Tasks.Git
 
         public bool IgnoreCase { get; }
 
-        public PatternGroup Root { get; }
+        public PatternGroup? Root { get; }
 
-        internal GitIgnore(PatternGroup root, string workingDirectory, bool ignoreCase)
+        internal GitIgnore(PatternGroup? root, string workingDirectory, bool ignoreCase)
         {
-            Debug.Assert(PathUtils.IsAbsolute(workingDirectory));
+            NullableDebug.Assert(PathUtils.IsAbsolute(workingDirectory));
 
             IgnoreCase = ignoreCase;
             WorkingDirectory = PathUtils.ToPosixDirectoryPath(workingDirectory);
@@ -97,7 +96,7 @@ namespace Microsoft.Build.Tasks.Git
 
         /// <exception cref="IOException"/>
         /// <exception cref="ArgumentException"><paramref name="path"/> is invalid</exception>
-        internal static PatternGroup LoadFromFile(string path, PatternGroup parent)
+        internal static PatternGroup? LoadFromFile(string? path, PatternGroup? parent)
         {
             // See https://git-scm.com/docs/gitignore#_pattern_format
 
@@ -146,7 +145,7 @@ namespace Microsoft.Build.Tasks.Git
             return new PatternGroup(parent, directory, patterns.ToImmutable());
         }
 
-        internal static bool TryParsePattern(string line, StringBuilder reusableBuffer, out string glob, out PatternFlags flags)
+        internal static bool TryParsePattern(string line, StringBuilder reusableBuffer, [NotNullWhen(true)]out string? glob, out PatternFlags flags)
         {
             glob = null;
             flags = PatternFlags.None;

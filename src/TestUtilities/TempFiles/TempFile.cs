@@ -18,7 +18,7 @@ namespace TestUtilities
             _path = path;
         }
 
-        internal TempFile(string prefix, string extension, string directory, string callerSourcePath, int callerLineNumber)
+        internal TempFile(string? prefix, string? extension, string? directory, string? callerSourcePath, int callerLineNumber)
         {
             while (true)
             {

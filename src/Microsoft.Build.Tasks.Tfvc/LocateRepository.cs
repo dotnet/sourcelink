@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using Microsoft.TeamFoundation.VersionControl.Client;
@@ -8,11 +9,11 @@ namespace Microsoft.Build.Tasks.Tfvc
 {
     public class LocateRepository : Task
     {
-        [Required]
-        public string Directory { get; set; }
+        [Required, NotNull]
+        public string? Directory { get; set; }
 
         [Output]
-        public string Id { get; set; }
+        public string? Id { get; set; }
 
 #if UNUSED
         [Output]

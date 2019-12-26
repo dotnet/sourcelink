@@ -12,25 +12,25 @@ namespace Microsoft.Build.Tasks.SourceControl
     {
         private const string SourceControlName = "git";
 
-        public string RepositoryUrl { get; set; }
-        public ITaskItem[] SourceRoots { get; set; }
+        public string? RepositoryUrl { get; set; }
+        public ITaskItem[]? SourceRoots { get; set; }
 
-        public ITaskItem[] Hosts { get; set; }
+        public ITaskItem[]? Hosts { get; set; }
         public bool IsSingleProvider { get; set; }
 
         [Output]
-        public string TranslatedRepositoryUrl { get; set; }
+        public string? TranslatedRepositoryUrl { get; set; }
 
         [Output]
-        public ITaskItem[] TranslatedSourceRoots { get; set; }
+        public ITaskItem[]? TranslatedSourceRoots { get; set; }
 
-        protected virtual string TranslateSshUrl(Uri uri)
+        protected virtual string? TranslateSshUrl(Uri uri)
             => "https://" + uri.GetHost() + uri.GetPathAndQuery();
 
-        protected virtual string TranslateGitUrl(Uri uri)
+        protected virtual string? TranslateGitUrl(Uri uri)
             => "https://" + uri.GetHost() + uri.GetPathAndQuery();
 
-        protected virtual string TranslateHttpUrl(Uri uri)
+        protected virtual string? TranslateHttpUrl(Uri uri)
             => uri.GetScheme() + "://" + uri.GetAuthority() + uri.GetPathAndQuery();
 
         public override bool Execute()
@@ -47,12 +47,12 @@ namespace Microsoft.Build.Tasks.SourceControl
                 return;
             }
 
-            bool isMatchingHostUri(Uri hostUri, Uri uri)
+            static bool isMatchingHostUri(Uri hostUri, Uri uri)
                 => uri.GetHost().Equals(hostUri.GetHost(), StringComparison.OrdinalIgnoreCase) || 
                    uri.GetHost().EndsWith("." + hostUri.GetHost(), StringComparison.OrdinalIgnoreCase);
 
             // only need to translate valid ssh URLs that match one of our hosts:
-            string translate(string url)
+            string? translate(string? url)
             {
                 if (Uri.TryCreate(url, UriKind.Absolute, out var uri) && 
                     hostUris.Any(h => isMatchingHostUri(h, uri)))

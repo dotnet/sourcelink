@@ -15,7 +15,7 @@ namespace Microsoft.SourceLink.AzureRepos.Git
         // Dommain mapping:
         //   ssh://vs-ssh.*.com -> https://{account}.*.com 
         //   ssh://ssh.*.com -> https://*.com/{account}
-        protected override string TranslateSshUrl(Uri uri)
+        protected override string? TranslateSshUrl(Uri uri)
         {
             var host = uri.GetHost();
             var isVisualStudioHost = AzureDevOpsUrlParser.IsVisualStudioHostedServer(host);

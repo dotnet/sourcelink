@@ -14,6 +14,7 @@
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_GetTfmSpecificFilesToPackage</TargetsForTfmSpecificContentInPackage>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\Common\NullableAttributes.cs" Link="Common\NullableAttributes.cs" />
     <Compile Include="..\Common\PathUtilities.cs" Link="Common\PathUtilities.cs" />
     <Compile Include="..\Common\UriUtilities.cs" Link="Common\UriUtilities.cs" />
   </ItemGroup>

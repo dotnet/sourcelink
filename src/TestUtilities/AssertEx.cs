@@ -37,7 +37,7 @@ namespace TestUtilities
                     return false;
                 }
 
-                return object.Equals(@object, default(T));
+                return object.Equals(@object, default(T)!);
             }
 
             public static bool Equals(T left, T right)
@@ -49,44 +49,38 @@ namespace TestUtilities
             {
                 if (CanBeNull())
                 {
-                    if (object.Equals(x, default(T)))
+                    if (object.Equals(x, default(T)!))
                     {
-                        return object.Equals(y, default(T));
+                        return object.Equals(y, default(T)!);
                     }
 
-                    if (object.Equals(y, default(T)))
+                    if (object.Equals(y, default(T)!))
                     {
                         return false;
                     }
                 }
 
-                if (x.GetType() != y.GetType())
+                if (x!.GetType() != y!.GetType())
                 {
                     return false;
                 }
 
-                var equatable = x as IEquatable<T>;
-                if (equatable != null)
+                if (x is IEquatable<T> equatable)
                 {
                     return equatable.Equals(y);
                 }
 
-                var comparableT = x as IComparable<T>;
-                if (comparableT != null)
+                if (x is IComparable<T> comparableT)
                 {
                     return comparableT.CompareTo(y) == 0;
                 }
 
-                var comparable = x as IComparable;
-                if (comparable != null)
+                if (x is IComparable comparable)
                 {
                     return comparable.CompareTo(y) == 0;
                 }
 
-                var enumerableX = x as IEnumerable;
-                var enumerableY = y as IEnumerable;
-
-                if (enumerableX != null && enumerableY != null)
+                if (x is IEnumerable enumerableX && y is IEnumerable enumerableY)
                 {
                     var enumeratorX = enumerableX.GetEnumerator();
                     var enumeratorY = enumerableY.GetEnumerator();
@@ -119,7 +113,7 @@ namespace TestUtilities
 
         #endregion
 
-        public static void AreEqual<T>(T expected, T actual, string message = null, IEqualityComparer<T> comparer = null)
+        public static void AreEqual<T>(T expected, T actual, string? message = null, IEqualityComparer<T>? comparer = null)
         {
             if (ReferenceEquals(expected, actual))
             {
@@ -148,7 +142,7 @@ namespace TestUtilities
             }
         }
 
-        public static void Equal<T>(ImmutableArray<T> expected, IEnumerable<T> actual, Func<T, T, bool> comparer = null, string message = null)
+        public static void Equal<T>(ImmutableArray<T> expected, IEnumerable<T> actual, Func<T, T, bool>? comparer = null, string? message = null)
         {
             if (actual == null || expected.IsDefault)
             {
@@ -160,7 +154,7 @@ namespace TestUtilities
             }
         }
 
-        public static void Equal<T>(IEnumerable<T> expected, ImmutableArray<T> actual, Func<T, T, bool> comparer = null, string message = null, string itemSeparator = null)
+        public static void Equal<T>(IEnumerable<T> expected, ImmutableArray<T> actual, Func<T, T, bool>? comparer = null, string? message = null, string? itemSeparator = null)
         {
             if (expected == null || actual.IsDefault)
             {
@@ -172,13 +166,13 @@ namespace TestUtilities
             }
         }
 
-        public static void Equal<T>(ImmutableArray<T> expected, ImmutableArray<T> actual, Func<T, T, bool> comparer = null, string message = null, string itemSeparator = null)
+        public static void Equal<T>(ImmutableArray<T> expected, ImmutableArray<T> actual, Func<T, T, bool>? comparer = null, string? message = null, string? itemSeparator = null)
         {
             Equal(expected, (IEnumerable<T>)actual, comparer, message, itemSeparator);
         }
 
-        public static void Equal<T>(IEnumerable<T> expected, IEnumerable<T> actual, Func<T, T, bool> comparer = null, string message = null,
-            string itemSeparator = null, Func<T, string> itemInspector = null)
+        public static void Equal<T>(IEnumerable<T>? expected, IEnumerable<T>? actual, Func<T, T, bool>? comparer = null, string? message = null,
+            string? itemSeparator = null, Func<T, string>? itemInspector = null)
         {
             if (ReferenceEquals(expected, actual))
             {
@@ -206,7 +200,7 @@ namespace TestUtilities
             }
         }
 
-        private static bool SequenceEqual<T>(IEnumerable<T> expected, IEnumerable<T> actual, Func<T, T, bool> comparer = null)
+        private static bool SequenceEqual<T>(IEnumerable<T> expected, IEnumerable<T> actual, Func<T, T, bool>? comparer = null)
         {
             var enumerator1 = expected.GetEnumerator();
             var enumerator2 = actual.GetEnumerator();
@@ -238,7 +232,7 @@ namespace TestUtilities
             return true;
         }
 
-        public static void SetEqual<T>(IEnumerable<T> expected, IEnumerable<T> actual, IEqualityComparer<T> comparer = null, string message = null, string itemSeparator = "\r\n")
+        public static void SetEqual<T>(IEnumerable<T> expected, IEnumerable<T> actual, IEqualityComparer<T>? comparer = null, string? message = null)
         {
             var expectedSet = new HashSet<T>(expected, comparer);
             var result = expected.Count() == actual.Count() && expectedSet.SetEquals(actual);
@@ -288,12 +282,12 @@ namespace TestUtilities
             }
         }
 
-        public static string ToString(object o)
+        public static string ToString(object? o)
         {
             return Convert.ToString(o);
         }
 
-        public static string ToString<T>(IEnumerable<T> list, string separator = ", ", Func<T, string> itemInspector = null)
+        public static string ToString<T>(IEnumerable<T> list, string separator = ", ", Func<T, string>? itemInspector = null)
         {
             if (itemInspector == null)
             {
@@ -313,30 +307,25 @@ namespace TestUtilities
             Assert.False(true, string.Format(format, args));
         }
 
-        public static void Null<T>(T @object, string message = null)
+        public static void Null<T>(T @object, string? message = null)
         {
             Assert.True(AssertEqualityComparer<T>.IsNull(@object), message);
         }
 
-        public static void NotNull<T>(T @object, string message = null)
+        public static void NotNull<T>(T @object, string? message = null)
         {
             Assert.False(AssertEqualityComparer<T>.IsNull(@object), message);
         }
 
         // compares against a baseline
-        public static void AssertEqualToleratingWhitespaceDifferences(
-            string expected,
-            string actual,
-            bool escapeQuotes = true,
-            [CallerFilePath]string expectedValueSourcePath = null,
-            [CallerLineNumber]int expectedValueSourceLine = 0)
+        public static void AssertEqualToleratingWhitespaceDifferences(string expected, string actual, bool escapeQuotes = true)
         {
             var normalizedExpected = NormalizeWhitespace(expected);
             var normalizedActual = NormalizeWhitespace(actual);
 
             if (normalizedExpected != normalizedActual)
             {
-                Assert.True(false, GetAssertMessage(expected, actual, escapeQuotes, expectedValueSourcePath, expectedValueSourceLine));
+                Assert.True(false, GetAssertMessage(expected, actual, escapeQuotes));
             }
         }
 
@@ -414,25 +403,23 @@ namespace TestUtilities
             return output.ToString();
         }
 
-        public static string GetAssertMessage(string expected, string actual, bool escapeQuotes = false, string expectedValueSourcePath = null, int expectedValueSourceLine = 0)
+        public static string GetAssertMessage(string expected, string actual, bool escapeQuotes = false)
         {
-            return GetAssertMessage(DiffUtil.Lines(expected), DiffUtil.Lines(actual), escapeQuotes, expectedValueSourcePath, expectedValueSourceLine);
+            return GetAssertMessage(DiffUtil.Lines(expected), DiffUtil.Lines(actual), escapeQuotes);
         }
 
-        public static string GetAssertMessage<T>(IEnumerable<T> expected, IEnumerable<T> actual, bool escapeQuotes, string expectedValueSourcePath = null, int expectedValueSourceLine = 0)
+        public static string GetAssertMessage<T>(IEnumerable<T> expected, IEnumerable<T> actual, bool escapeQuotes)
         {
-            Func<T, string> itemInspector = escapeQuotes ? new Func<T, string>(t => t.ToString().Replace("\"", "\"\"")) : null;
-            return GetAssertMessage(expected, actual, itemInspector: itemInspector, itemSeparator: "\r\n", expectedValueSourcePath: expectedValueSourcePath, expectedValueSourceLine: expectedValueSourceLine);
+            Func<T, string>? itemInspector = escapeQuotes ? new Func<T, string>(t => t?.ToString().Replace("\"", "\"\"") ?? "null") : null;
+            return GetAssertMessage(expected, actual, itemInspector: itemInspector, itemSeparator: "\r\n");
         }
 
         public static string GetAssertMessage<T>(
             IEnumerable<T> expected,
             IEnumerable<T> actual,
-            Func<T, T, bool> comparer = null,
-            Func<T, string> itemInspector = null,
-            string itemSeparator = null,
-            string expectedValueSourcePath = null,
-            int expectedValueSourceLine = 0)
+            Func<T, T, bool>? comparer = null,
+            Func<T, string>? itemInspector = null,
+            string? itemSeparator = null)
         {
             if (itemInspector == null)
             {
@@ -474,7 +461,7 @@ namespace TestUtilities
             return message.ToString();
         }
 
-        public static void AssertLinesEqual(string expected, string actual, string message = null, Func<string, string, bool> comparer = null)
+        public static void AssertLinesEqual(string expected, string actual, string? message = null, Func<string, string, bool>? comparer = null)
         {
             if (expected == actual)
             {
@@ -484,12 +471,12 @@ namespace TestUtilities
             Assert.NotNull(expected);
             Assert.NotNull(actual);
 
-            IEnumerable<string> GetLines(string str) => 
+            static IEnumerable<string> getLines(string str) => 
                 str.Trim().Replace("\r\n", "\n").Split(new[] { '\r', '\n' }, StringSplitOptions.None);
 
             Equal(
-                GetLines(expected), 
-                GetLines(actual),
+                getLines(expected), 
+                getLines(actual),
                 message: message,
                 comparer: comparer ?? new Func<string, string, bool>((left, right) => left.Trim() == right.Trim()),
                 itemInspector: line => line.Replace("\"", "\"\""),
