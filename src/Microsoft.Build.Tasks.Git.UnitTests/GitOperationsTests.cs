@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
-using Microsoft.Build.Framework;
 using TestUtilities;
 using Xunit;
 
@@ -16,14 +15,14 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         private static readonly char s = Path.DirectorySeparatorChar;
         private static readonly string s_root = (s == '/') ? "/usr/src" : @"C:\src";
 
-        private string _workingDir = s_root;
+        private readonly string _workingDir = s_root;
 
         private GitRepository CreateRepository(
-            string workingDir = null,
-            GitConfig config = null,
-            string commitSha = null,
+            string? workingDir = null,
+            GitConfig? config = null,
+            string? commitSha = null,
             ImmutableArray<GitSubmodule> submodules = default,
-            GitIgnore ignore = null)
+            GitIgnore? ignore = null)
         {
             workingDir ??= _workingDir;
             var gitDir = Path.Combine(workingDir, ".git");
@@ -39,7 +38,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 commitSha);
         }
 
-        private GitSubmodule CreateSubmodule(string name, string relativePath, string url, string headCommitSha, string containingRepositoryWorkingDir = null)
+        private GitSubmodule CreateSubmodule(string name, string relativePath, string url, string? headCommitSha, string? containingRepositoryWorkingDir = null)
             => new GitSubmodule(name, relativePath, Path.GetFullPath(Path.Combine(containingRepositoryWorkingDir ?? _workingDir, relativePath)), url, headCommitSha);
 
         internal static GitIgnore CreateIgnore(string workingDirectory, string[] filePathsRelativeToWorkingDirectory)
@@ -75,7 +74,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         public void GetRepositoryUrl_NoRemotes()
         {
             var repo = CreateRepository();
-            var warnings = new List<(string, object[])>();
+            var warnings = new List<(string, object?[])>();
             Assert.Null(GitOperations.GetRepositoryUrl(repo, remoteName: null, logWarning: (message, args) => warnings.Add((message, args))));
             AssertEx.Equal(new[] { string.Format(Resources.RepositoryHasNoRemote, repo.WorkingDirectory) }, warnings.Select(TestUtilities.InspectDiagnostic));
         }
@@ -87,7 +86,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 ("remote.abc.url", "http://github.com/abc"),
                 ("remote.origin.url", "http://github.com/origin")));
 
-            var warnings = new List<(string, object[])>();
+            var warnings = new List<(string, object?[])>();
 
             Assert.Equal("http://github.com/origin", GitOperations.GetRepositoryUrl(repo, remoteName: null, logWarning: (message, args) => warnings.Add((message, args))));
 
@@ -101,7 +100,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 ("remote.abc.url", "http://github.com/abc"),
                 ("remote.def.url", "http://github.com/def")));
 
-            var warnings = new List<(string, object[])>();
+            var warnings = new List<(string, object?[])>();
 
             Assert.Equal("http://github.com/abc", GitOperations.GetRepositoryUrl(repo, remoteName: null, logWarning: (message, args) => warnings.Add((message, args))));
 
@@ -115,7 +114,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 ("remote.abc.url", "http://github.com/abc"),
                 ("remote.origin.url", "http://github.com/origin")));
 
-            var warnings = new List<(string, object[])>();
+            var warnings = new List<(string, object?[])>();
 
             Assert.Equal("http://github.com/abc",
                 GitOperations.GetRepositoryUrl(repo, remoteName: "abc",
@@ -131,7 +130,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 ("remote.abc.url", "http://github.com/abc"),
                 ("remote.origin.url", "http://github.com/origin")));
 
-            var warnings = new List<(string, object[])>();
+            var warnings = new List<(string, object?[])>();
 
             Assert.Equal("http://github.com/origin", 
                 GitOperations.GetRepositoryUrl(repo, remoteName: "myremote",
@@ -150,7 +149,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 ("remote.abc.url", "http://github.com/abc"),
                 ("remote.def.url", "http://github.com/def")));
 
-            var warnings = new List<(string, object[])>();
+            var warnings = new List<(string, object?[])>();
 
             Assert.Equal("http://github.com/abc",
                 GitOperations.GetRepositoryUrl(repo, remoteName: "myremote",
@@ -167,7 +166,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         {
             var repo = CreateRepository(config: CreateConfig(("remote.origin.url", "http://?")));
 
-            var warnings = new List<(string, object[])>();
+            var warnings = new List<(string, object?[])>();
             Assert.Null(GitOperations.GetRepositoryUrl(repo, remoteName: null, logWarning: (message, args) => warnings.Add((message, args))));
             AssertEx.Equal(new[]
             {
@@ -184,7 +183,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 new KeyValuePair<GitVariableName, ImmutableArray<string>>(new GitVariableName("url", "git@github.com:org/repo", "insteadOf"), ImmutableArray.Create("http://?"))
             })));
 
-            var warnings = new List<(string, object[])>();
+            var warnings = new List<(string, object?[])>();
             Assert.Equal("ssh://git@github.com/org/repo", GitOperations.GetRepositoryUrl(repo, remoteName: null, logWarning: (message, args) => warnings.Add((message, args))));
             Assert.Empty(warnings);
         }
@@ -211,7 +210,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     ImmutableArray.Create(useFileUrl ? new Uri(mainWorkingDir.Path).AbsolutePath : mainWorkingDir.Path)),
             })));
 
-            var warnings = new List<(string, object[])>();
+            var warnings = new List<(string, object?[])>();
             Assert.Equal("http://github.com/repo", GitOperations.GetRepositoryUrl(repo, remoteName: null, logWarning: (message, args) => warnings.Add((message, args))));
             Assert.Empty(warnings);
         }
@@ -235,16 +234,16 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 new KeyValuePair<GitVariableName, ImmutableArray<string>>(new GitVariableName("remote", "origin", "url"), ImmutableArray.Create(mainWorkingDir.Path)),
             })));
 
-            var warnings = new List<(string, object[])>();
+            var warnings = new List<(string, object?[])>();
             Assert.Equal("http://github.com/repo", GitOperations.GetRepositoryUrl(repo, remoteName: "myremote", logWarning: (message, args) => warnings.Add((message, args))));
             AssertEx.Equal(new[] { string.Format(Resources.RepositoryDoesNotHaveSpecifiedRemote, repo.WorkingDirectory, "myremote", "origin") }, warnings.Select(TestUtilities.InspectDiagnostic));
         }
 
         /// <summary>
-        /// Test scenario where a local repository is cloned from another local repository that was cloned from a remote repository.
+        /// Test scenario where a local repository is cloned from another local repository that does not have remote URL specified.
         /// </summary>
         [Fact]
-        public void GetRepositoryUrl_Local_NoRemote()
+        public void GetRepositoryUrl_Local_NoRemoteOriginUrl()
         {
             using var temp = new TempRoot();
 
@@ -257,9 +256,37 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 new KeyValuePair<GitVariableName, ImmutableArray<string>>(new GitVariableName("remote", "origin", "url"), ImmutableArray.Create(mainWorkingDir.Path)),
             })));
 
-            var warnings = new List<(string, object[])>();
+            var warnings = new List<(string, object?[])>();
             Assert.Equal(new Uri(mainWorkingDir.Path).AbsoluteUri, GitOperations.GetRepositoryUrl(repo, remoteName: null, logWarning: (message, args) => warnings.Add((message, args))));
             AssertEx.Equal(new[] { string.Format(Resources.RepositoryHasNoRemote, mainWorkingDir.Path) }, warnings.Select(TestUtilities.InspectDiagnostic));
+        }
+
+        /// <summary>
+        /// Test scenario where a local repository is cloned from another local repository that does not have a working directory.
+        /// </summary>
+        [Fact]
+        public void GetRepositoryUrl_Local_NoWorkingDirectory()
+        {
+            using var temp = new TempRoot();
+
+            var dir = temp.CreateDirectory();
+
+            var gitDir1 = dir.CreateDirectory("1");
+            gitDir1.CreateFile("HEAD");
+            gitDir1.CreateFile("config").WriteAllText(@"[remote ""origin""] url = http://github.com/repo");
+
+            var gitDir2 = dir.CreateDirectory("2");
+            gitDir2.CreateFile("HEAD");
+            gitDir2.CreateFile("config").WriteAllText(@"[remote ""origin""] url = ../1");
+
+            var repo = CreateRepository(config: new GitConfig(ImmutableDictionary.CreateRange(new[]
+            {
+                new KeyValuePair<GitVariableName, ImmutableArray<string>>(new GitVariableName("remote", "origin", "url"), ImmutableArray.Create(gitDir2.Path)),
+            })));
+
+            var warnings = new List<(string, object?[])>();
+            Assert.Null(GitOperations.GetRepositoryUrl(repo, remoteName: null, logWarning: (message, args) => warnings.Add((message, args))));
+            AssertEx.Equal(new[] { string.Format(Resources.UnableToLocateRepository, gitDir2.Path) }, warnings.Select(TestUtilities.InspectDiagnostic));
         }
 
         /// <summary>
@@ -278,7 +305,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 new KeyValuePair<GitVariableName, ImmutableArray<string>>(new GitVariableName("remote", "origin", "url"), ImmutableArray.Create(mainWorkingDir.Path)),
             })));
 
-            var warnings = new List<(string, object[])>();
+            var warnings = new List<(string, object?[])>();
             Assert.Equal(new Uri(mainWorkingDir.Path).AbsoluteUri, GitOperations.GetRepositoryUrl(repo, remoteName: null, logWarning: (message, args) => warnings.Add((message, args))));
             AssertEx.Equal(new[] { string.Format(Resources.RepositoryHasNoRemote, mainWorkingDir.Path) }, warnings.Select(TestUtilities.InspectDiagnostic));
         }
@@ -299,7 +326,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     ImmutableArray.Create(mainWorkingDir.Path)),
             })));
 
-            var warnings = new List<(string, object[])>();
+            var warnings = new List<(string, object?[])>();
             Assert.Equal(new Uri(mainWorkingDir.Path).AbsoluteUri, GitOperations.GetRepositoryUrl(repo, remoteName: null, logWarning: (message, args) => warnings.Add((message, args))));
             AssertEx.Equal(new[] { string.Format(Resources.RepositoryUrlEvaluationExceededMaximumAllowedDepth, "10") }, warnings.Select(TestUtilities.InspectDiagnostic));
         }
@@ -422,7 +449,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         {
             var repo = CreateRepository();
 
-            var warnings = new List<(string, object[])>();
+            var warnings = new List<(string, object?[])>();
             var items = GitOperations.GetSourceRoots(repo, remoteName: null, (message, args) => warnings.Add((message, args)));
 
             Assert.Empty(items);
@@ -439,7 +466,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     CreateSubmodule("1", "sub/1", "http://1.com", "1111111111111111111111111111111111111111"),
                     CreateSubmodule("1", "sub/2", "http://2.com", "2222222222222222222222222222222222222222"))); ;
 
-            var warnings = new List<(string, object[])>();
+            var warnings = new List<(string, object?[])>();
             var items = GitOperations.GetSourceRoots(repo, remoteName: null, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
@@ -460,7 +487,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     CreateSubmodule("1", "sub/1", "http://1.com", headCommitSha: null),
                     CreateSubmodule("1", "sub/2", "http://2.com", "2222222222222222222222222222222222222222")));
 
-            var warnings = new List<(string, object[])>();
+            var warnings = new List<(string, object?[])>();
             var items = GitOperations.GetSourceRoots(repo, remoteName: null, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
@@ -494,7 +521,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 submodules: ImmutableArray.Create(
                     CreateSubmodule("1", "sub/1", "../1", "1111111111111111111111111111111111111111", containingRepositoryWorkingDir: repoDir.Path)));
 
-            var warnings = new List<(string, object[])>();
+            var warnings = new List<(string, object?[])>();
             var items = GitOperations.GetSourceRoots(repo, remoteName: null, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
@@ -515,7 +542,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     CreateSubmodule("1", "sub/1", "http:///", "1111111111111111111111111111111111111111"),
                     CreateSubmodule("3", "sub/3", "http://3.com", "3333333333333333333333333333333333333333")));
 
-            var warnings = new List<(string, object[])>();
+            var warnings = new List<(string, object?[])>();
             var items = GitOperations.GetSourceRoots(repo, remoteName: null, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
@@ -530,84 +557,91 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             }, warnings.Select(TestUtilities.InspectDiagnostic));
         }
 
+        private static GitOperations.DirectoryNode CreateNode(string name, string? submoduleWorkingDirectory, List<GitOperations.DirectoryNode>? children = null)
+            => new GitOperations.DirectoryNode(name, children ?? new List<GitOperations.DirectoryNode>())
+            {
+                Matcher = (submoduleWorkingDirectory != null) ? new Lazy<GitIgnore.Matcher?>(() =>
+                    new GitIgnore.Matcher(new GitIgnore(null, submoduleWorkingDirectory, ignoreCase: false))) : null
+            };
+
         [ConditionalTheory(typeof(WindowsOnly))]
         [InlineData(@"C:\", null)]
         [InlineData(@"C:\x", null)]
         [InlineData(@"C:\x\y\z", null)]
         [InlineData(@"C:\src", null)]
         [InlineData(@"C:\src\", null)]
-        [InlineData(@"C:\src\a\x.cs", @"C:\src\a")]
-        [InlineData(@"C:\src\b\x.cs", @"C:\src")]
-        [InlineData(@"C:\src\ab\x.cs", @"C:\src")]
-        [InlineData(@"C:\src\a\b\x.cs", @"C:\src\a")]
-        [InlineData(@"C:\src\c\x.cs", @"C:\src\c")]
-        [InlineData(@"C:\src\c", @"C:\src")]
-        [InlineData(@"C:\src\c\", @"C:\src")]
-        [InlineData(@"C:\src\c.cs", @"C:\src")]
-        [InlineData(@"C:\src\c\x\x.cs", @"C:\src\c\x")]
-        [InlineData(@"C:\src\d\x.cs", @"C:\src")]
-        [InlineData(@"C:\src\e\x.cs", @"C:\src\e")]
+        [InlineData(@"C:\src\a\x.cs", "C:/src/a/")]
+        [InlineData(@"C:\src\b\x.cs", "C:/src/")]
+        [InlineData(@"C:\src\ab\x.cs", "C:/src/")]
+        [InlineData(@"C:\src\a\b\x.cs", "C:/src/a/")]
+        [InlineData(@"C:\src\c\x.cs", "C:/src/c/")]
+        [InlineData(@"C:\src\c", "C:/src/")]
+        [InlineData(@"C:\src\c\", "C:/src/")]
+        [InlineData(@"C:\src\c.cs", "C:/src/")]
+        [InlineData(@"C:\src\c\x\x.cs", "C:/src/c/x/")]
+        [InlineData(@"C:\src\d\x.cs", "C:/src/")]
+        [InlineData(@"C:\src\e\x.cs", "C:/src/e/")]
         public void GetContainingRepository_Windows(string path, string expectedDirectory)
         {
-            var actual = GitOperations.GetContainingRepository(path,
-                new GitOperations.DirectoryNode("", null,
+            var actual = GitOperations.GetContainingRepositoryMatcher(path,
+                CreateNode("", null,
                     new List<GitOperations.DirectoryNode>
                     {
-                        new GitOperations.DirectoryNode("C:", null, new List<GitOperations.DirectoryNode>
+                        CreateNode("C:", null, new List<GitOperations.DirectoryNode>
                         {
-                            new GitOperations.DirectoryNode("src", @"C:\src", new List<GitOperations.DirectoryNode>
+                            CreateNode("src", @"C:\src", new List<GitOperations.DirectoryNode>
                             {
-                                new GitOperations.DirectoryNode("a", @"C:\src\a"),
-                                new GitOperations.DirectoryNode("c", @"C:\src\c", new List<GitOperations.DirectoryNode>
+                                CreateNode("a", @"C:\src\a"),
+                                CreateNode("c", @"C:\src\c", new List<GitOperations.DirectoryNode>
                                 {
-                                    new GitOperations.DirectoryNode("x", @"C:\src\c\x")
+                                    CreateNode("x", @"C:\src\c\x")
                                 }),
-                                new GitOperations.DirectoryNode("e", @"C:\src\e")
+                                CreateNode("e", @"C:\src\e")
                             }),
                         })
                     }));
 
-            Assert.Equal(expectedDirectory, actual?.WorkingDirectoryFullPath);
+            Assert.Equal(expectedDirectory, actual?.Ignore.WorkingDirectory);
         }
 
         [ConditionalTheory(typeof(UnixOnly))]
-        [InlineData(@"/", null)]
-        [InlineData(@"/x", null)]
-        [InlineData(@"/x/y/z", null)]
-        [InlineData(@"/src", null)]
-        [InlineData(@"/src/", null)]
-        [InlineData(@"/src/a/x.cs", @"/src/a")]
-        [InlineData(@"/src/b/x.cs", @"/src")]
-        [InlineData(@"/src/ab/x.cs", @"/src")]
-        [InlineData(@"/src/a/b/x.cs", @"/src/a")]
-        [InlineData(@"/src/c/x.cs", @"/src/c")]
-        [InlineData(@"/src/c", @"/src")]
-        [InlineData(@"/src/c/", @"/src")]
-        [InlineData(@"/src/c.cs", @"/src")]
-        [InlineData(@"/src/c/x/x.cs", @"/src/c/x")]
-        [InlineData(@"/src/d/x.cs", @"/src")]
-        [InlineData(@"/src/e/x.cs", @"/src/e")]
+        [InlineData("/", null)]
+        [InlineData("/x", null)]
+        [InlineData("/x/y/z", null)]
+        [InlineData("/src", null)]
+        [InlineData("/src/", null)]
+        [InlineData("/src/a/x.cs", "/src/a/")]
+        [InlineData("/src/b/x.cs", "/src/")]
+        [InlineData("/src/ab/x.cs", "/src/")]
+        [InlineData("/src/a/b/x.cs", "/src/a/")]
+        [InlineData("/src/c/x.cs", "/src/c/")]
+        [InlineData("/src/c", "/src/")]
+        [InlineData("/src/c/", "/src/")]
+        [InlineData("/src/c.cs", "/src/")]
+        [InlineData("/src/c/x/x.cs", "/src/c/x/")]
+        [InlineData("/src/d/x.cs", "/src/")]
+        [InlineData("/src/e/x.cs", "/src/e/")]
         public void GetContainingRepository_Unix(string path, string expectedDirectory)
         {
-            var actual = GitOperations.GetContainingRepository(path,
-                new GitOperations.DirectoryNode("", null,
+            var actual = GitOperations.GetContainingRepositoryMatcher(path,
+                CreateNode("", null,
                     new List<GitOperations.DirectoryNode>
                     {
-                        new GitOperations.DirectoryNode("/", null, new List<GitOperations.DirectoryNode>
+                        CreateNode("/", null, new List<GitOperations.DirectoryNode>
                         {
-                            new GitOperations.DirectoryNode("src", "/src", new List<GitOperations.DirectoryNode>
+                            CreateNode("src", "/src", new List<GitOperations.DirectoryNode>
                             {
-                                new GitOperations.DirectoryNode("a", "/src/a"),
-                                new GitOperations.DirectoryNode("c", "/src/c", new List<GitOperations.DirectoryNode>
+                                CreateNode("a", "/src/a"),
+                                CreateNode("c", "/src/c", new List<GitOperations.DirectoryNode>
                                 {
-                                    new GitOperations.DirectoryNode("x", "/src/c/x"),
+                                    CreateNode("x", "/src/c/x"),
                                 }),
-                                new GitOperations.DirectoryNode("e", "/src/e"),
+                                CreateNode("e", "/src/e"),
                             }),
                         })
                     }));
 
-            Assert.Equal(expectedDirectory, actual?.WorkingDirectoryFullPath);
+            Assert.Equal(expectedDirectory, actual?.Ignore.WorkingDirectory);
         }
 
         [Fact]
@@ -623,10 +657,10 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     CreateSubmodule("5", "c", "http://github.com/5", null),
                     CreateSubmodule("6", "a/z", "http://github.com/6", null)));
 
-            var root = GitOperations.BuildDirectoryTree(repo);
+            var root = GitOperations.BuildDirectoryTree(repo, (e, d) => null);
 
-            string inspect(GitOperations.DirectoryNode node)
-                => node.Name + (node.WorkingDirectoryFullPath != null ? $"!" : "") + "{" + string.Join(",", node.OrderedChildren.Select(inspect)) + "}";
+            static string inspect(GitOperations.DirectoryNode node)
+                => node.Name + (node.Matcher != null ? $"!" : "") + "{" + string.Join(",", node.OrderedChildren.Select(inspect)) + "}";
 
             var expected = IsUnix ?
                 "{/{usr{src!{a!{a{a{a!{}}},z!{}},c!{x!{}},e!{}}}}}" :
@@ -665,7 +699,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     new MockItem(IsUnix ? "/d/w.cs" : @"D:\w.cs"), // outside of repo
                 },
                 projectDirectory: Path.Combine(_workingDir, "p"),
-                root => subRepos[root]);
+                (_, root) => subRepos[root]);
 
             AssertEx.Equal(new[] 
             {
@@ -706,7 +740,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     new MockItem(@"..\..\c.cs"),     // ignored in main repo
                 },
                 projectDirectory: subRoot1,
-                root => subRepos[root]);
+                (_, root) => subRepos[root]);
 
             AssertEx.Equal(new[]
             {

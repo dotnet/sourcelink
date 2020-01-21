@@ -9,15 +9,14 @@ namespace Microsoft.Build.Tasks.Tfvc
     public sealed class GetSourceRevisionId : RepositoryTask
     {
         [Output]
-        public string RevisionId { get; private set; }
+        public string? RevisionId { get; private set; }
 
         protected override bool Execute(WorkspaceInfo workspaceInfo)
         {
-            using (var collection = new TfsTeamProjectCollection(workspaceInfo.ServerUri))
-            {
-                var vcServer = collection.GetService<VersionControlServer>();
-                RevisionId = vcServer.GetLatestChangesetId().ToString();
-            }
+            using var collection = new TfsTeamProjectCollection(workspaceInfo.ServerUri);
+
+            var vcServer = collection.GetService<VersionControlServer>();
+            RevisionId = vcServer.GetLatestChangesetId().ToString();
 
             return true;
         }

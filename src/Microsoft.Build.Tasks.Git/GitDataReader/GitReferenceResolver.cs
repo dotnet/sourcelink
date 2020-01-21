@@ -72,7 +72,7 @@ namespace Microsoft.Build.Tasks.Git
                 throw new InvalidDataException($"Expected header not found at the beginning of file '{path}'.");
             }
 
-            string previousObjectId = null;
+            string? previousObjectId = null;
             while (true)
             {
                 var line = reader.ReadLine();
@@ -147,18 +147,18 @@ namespace Microsoft.Build.Tasks.Git
 
         /// <exception cref="IOException"/>
         /// <exception cref="InvalidDataException"/>
-        public string ResolveHeadReference()
+        public string? ResolveHeadReference()
             => ResolveReference(ReadReferenceFromFile(Path.Combine(_gitDirectory, GitRepository.GitHeadFileName)));
 
-        public string ResolveReference(string reference)
+        public string? ResolveReference(string reference)
         {
-            HashSet<string> lazyVisitedReferences = null;
+            HashSet<string>? lazyVisitedReferences = null;
             return ResolveReference(reference, ref lazyVisitedReferences);
         }
 
         /// <exception cref="IOException"/>
         /// <exception cref="InvalidDataException"/>
-        private string ResolveReference(string reference, ref HashSet<string> lazyVisitedReferences)
+        private string? ResolveReference(string reference, ref HashSet<string>? lazyVisitedReferences)
         {
             // See https://git-scm.com/docs/gitrepository-layout#Documentation/gitrepository-layout.txt-HEAD
 
@@ -231,7 +231,7 @@ namespace Microsoft.Build.Tasks.Git
             }
         }
 
-        private string ResolvePackedReference(string reference)
+        private string? ResolvePackedReference(string reference)
             => _lazyPackedReferences.Value.TryGetValue(reference, out var objectId) ? objectId : null;
 
         private static bool IsObjectId(string reference)

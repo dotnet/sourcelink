@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
 using Microsoft.Build.Framework;
-using Microsoft.Build.Tasks.SourceControl;
 using Microsoft.Build.Utilities;
 
 namespace Microsoft.Build.Tasks.Git
@@ -21,7 +21,7 @@ namespace Microsoft.Build.Tasks.Git
         /// Supported values:
         /// If "local" is specified the configuration is only read from the configuration files local to the repository (or work tree).
         /// </summary>
-        public string ConfigurationScope { get; set; }
+        public string? ConfigurationScope { get; set; }
 
 #if NET461
         static RepositoryTask() => AssemblyResolver.Initialize();
@@ -55,10 +55,9 @@ namespace Microsoft.Build.Tasks.Git
 
         private protected abstract void Execute(GitRepository repository);
 
-        protected abstract string GetRepositoryId();
+        protected abstract string? GetRepositoryId();
         protected abstract string GetInitialPath();
 
-        [MethodImpl(MethodImplOptions.NoInlining)]
         private void ExecuteImpl()
         {
             try
@@ -78,9 +77,9 @@ namespace Microsoft.Build.Tasks.Git
             }
         }
 
-        private GitRepository GetOrCreateRepositoryInstance()
+        private GitRepository? GetOrCreateRepositoryInstance()
         {
-            GitRepository repository;
+            GitRepository? repository;
 
             var repositoryId = GetRepositoryId();
             if (repositoryId != null)
@@ -131,9 +130,9 @@ namespace Microsoft.Build.Tasks.Git
         private string GetCacheKey(string repositoryId)
             => s_cacheKeyPrefix + (string.IsNullOrEmpty(ConfigurationScope) ? "*" : ConfigurationScope) + ":" + repositoryId;
 
-        private bool TryGetCachedRepositoryInstance(string cacheKey, bool requireCached, out GitRepository repository)
+        private bool TryGetCachedRepositoryInstance(string cacheKey, bool requireCached, [NotNullWhen(true)]out GitRepository? repository)
         {
-            var entry = (StrongBox<GitRepository>)BuildEngine4.GetRegisteredTaskObject(cacheKey, RegisteredTaskObjectLifetime.Build);
+            var entry = (StrongBox<GitRepository?>)BuildEngine4.GetRegisteredTaskObject(cacheKey, RegisteredTaskObjectLifetime.Build);
 
             if (entry != null)
             {
@@ -151,11 +150,11 @@ namespace Microsoft.Build.Tasks.Git
             return false;
         }
 
-        private void CacheRepositoryInstance(string cacheKey, GitRepository repository)
+        private void CacheRepositoryInstance(string cacheKey, GitRepository? repository)
         {
             BuildEngine4.RegisterTaskObject(
                   cacheKey,
-                  new StrongBox<GitRepository>(repository),
+                  new StrongBox<GitRepository?>(repository),
                   RegisteredTaskObjectLifetime.Build,
                   allowEarlyCollection: true);
         }

@@ -2,6 +2,7 @@
 
 using System;
 using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Build.Tasks.SourceControl
 {
@@ -35,7 +36,7 @@ namespace Microsoft.Build.Tasks.SourceControl
             return url.StartsWith(prefix, StringComparison.Ordinal);
         }
 
-        public static bool TrySplitRelativeUrl(string relativeUrl, out string[] parts)
+        public static bool TrySplitRelativeUrl(string relativeUrl, [NotNullWhen(true)]out string[]? parts)
         {
             // required leading slash:
             if (relativeUrl.Length == 0 || relativeUrl == "/")

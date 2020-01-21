@@ -159,7 +159,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             var src = workingDir.CreateDirectory("src");
 
-            var repository = GitRepository.OpenRepository(src.Path, new GitEnvironment(homeDir.Path));
+            var repository = GitRepository.OpenRepository(src.Path, new GitEnvironment(homeDir.Path))!;
 
             Assert.Equal(gitDir.Path, repository.CommonDirectory);
             Assert.Equal(gitDir.Path, repository.GitDirectory);
@@ -218,7 +218,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 ");
             var repository = new GitRepository(GitEnvironment.Empty, GitConfig.Empty, gitDir.Path, gitDir.Path, workingDir.Path);
 
-            var submodules = GitRepository.EnumerateSubmoduleConfig(repository.ReadSubmoduleConfig());
+            var submodules = GitRepository.EnumerateSubmoduleConfig(repository.ReadSubmoduleConfig()!);
             AssertEx.Equal(new[]
             {
                 "S1: 'subs/s1' 'http://github.com/test1'",

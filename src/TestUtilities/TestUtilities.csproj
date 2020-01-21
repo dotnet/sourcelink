@@ -16,6 +16,10 @@
     <_DotNetSdkBuildIInfoFile>BuildInfo.g.cs</_DotNetSdkBuildIInfoFile>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Include="..\Common\NullableAttributes.cs" Link="Common\NullableAttributes.cs" />
+  </ItemGroup>
+
   <Target Name="_GenerateSdkVersionAttribute" BeforeTargets="CoreCompile" Outputs="$(IntermediateOutputPath)$(_DotNetSdkBuildIInfoFile)">
     <ItemGroup>
       <_Attribute Include="TestUtilities.BuildInfoAttribute">

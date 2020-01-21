@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using Microsoft.Build.Framework;
@@ -10,11 +11,11 @@ namespace Microsoft.SourceLink.AzureRepos.Tfvc
 {
     public sealed class GetSourceLinkUrl : Task
     {
-        [Required]
-        public ITaskItem SourceRoot { get; set; }
+        [Required, NotNull]
+        public ITaskItem? SourceRoot { get; set; }
 
         [Output]
-        public string SourceLinkUrl { get; set; }
+        public string? SourceLinkUrl { get; set; }
 
         public override bool Execute()
         {

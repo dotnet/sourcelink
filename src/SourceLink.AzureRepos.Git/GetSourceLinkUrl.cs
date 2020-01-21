@@ -28,7 +28,7 @@ namespace Microsoft.SourceLink.AzureRepos.Git
         protected override Uri GetDefaultContentUriFromRepositoryUri(Uri repositoryUri)
             => new Uri($"{repositoryUri.Scheme}://{repositoryUri.GetAuthority()}", UriKind.Absolute);
 
-        protected override string BuildSourceLinkUrl(Uri contentUri, Uri gitUri, string relativeUrl, string revisionId, ITaskItem hostItem)
+        protected override string? BuildSourceLinkUrl(Uri contentUri, Uri gitUri, string relativeUrl, string revisionId, ITaskItem? hostItem)
         {
             if (!AzureDevOpsUrlParser.TryParseHostedHttp(gitUri.GetHost(), relativeUrl, out var projectPath, out var repositoryName))
             {
@@ -43,10 +43,10 @@ namespace Microsoft.SourceLink.AzureRepos.Git
         }
 
         // TODO: confirm design and test https://github.com/dotnet/sourcelink/issues/2
-        private Dictionary<Uri, Uri> TryGetEnvironmentUriMap()
+        private Dictionary<Uri, Uri>? TryGetEnvironmentUriMap()
         {
             var urlSeparators = new[] { Path.PathSeparator };
-            Dictionary<Uri, Uri> map = null;
+            Dictionary<Uri, Uri>? map = null;
 
             bool parse(string urls)
             {

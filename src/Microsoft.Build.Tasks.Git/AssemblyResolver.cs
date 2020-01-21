@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using Microsoft.Build.Framework;
 
 namespace Microsoft.Build.Tasks.Git
 {
@@ -38,7 +37,7 @@ namespace Microsoft.Build.Tasks.Git
             }
         }
 
-        private static Assembly AssemblyResolve(object sender, ResolveEventArgs args)
+        private static Assembly? AssemblyResolve(object sender, ResolveEventArgs args)
         {
             var name = new AssemblyName(args.Name);
 

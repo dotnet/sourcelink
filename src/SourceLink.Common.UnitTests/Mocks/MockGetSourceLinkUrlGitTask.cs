@@ -16,7 +16,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
         protected override string HostsItemGroupName
             => "SourceLinkMockHost";
 
-        protected override string BuildSourceLinkUrl(Uri contentUrl, Uri gitUri, string relativeUrl, string revisionId, ITaskItem hostItem)
+        protected override string? BuildSourceLinkUrl(Uri contentUrl, Uri gitUri, string relativeUrl, string revisionId, ITaskItem? hostItem)
             => $"ContentUrl='{contentUrl}' GitUrl='{gitUri}' RelativeUrl='{relativeUrl}' RevisionId='{revisionId}'";
 
         protected override Uri GetDefaultContentUriFromHostUri(string authority, Uri gitUri)

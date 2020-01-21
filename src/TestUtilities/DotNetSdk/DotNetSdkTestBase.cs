@@ -21,19 +21,19 @@ namespace TestUtilities
 
         public readonly TempRoot Temp = new TempRoot();
 
-        private static readonly string s_dotnetExeName;
-        private static readonly string s_dotnetInstallDir;
+        private static readonly string? s_dotnetExeName;
+        private static readonly string? s_dotnetInstallDir;
         private static readonly BuildInfoAttribute s_buildInfo;
-        private static readonly string s_dotnetSdkPath;
+        private static readonly string? s_dotnetSdkPath;
 
-        private static string s_projectSource =
+        private static readonly string s_projectSource =
 @"<Project Sdk='Microsoft.NET.Sdk'>
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 </Project>
 ";
-        private static string s_classSource =
+        private static readonly string s_classSource =
 @"using System;
 
 public class TestClass 
@@ -84,7 +84,7 @@ $@"<?xml version=""1.0"" encoding=""utf-8""?>
 
             var minSdkVersion = SemanticVersion.Parse(s_buildInfo.SdkVersion);
 
-            bool isDotNetInstallDirectory(string dir)
+            static bool isDotNetInstallDirectory(string dir)
                 => dir != null && File.Exists(Path.Combine(dir, s_dotnetExeName));
 
             var dotnetInstallDir =
@@ -203,16 +203,16 @@ $@"<Project>
             string customTargets,
             string[] targets,
             string[] expressions, 
-            string[] expectedResults = null, 
-            string[] expectedErrors = null, 
-            string[] expectedWarnings = null,
-            string additionalCommandLineArgs = null,
+            string[]? expectedResults = null, 
+            string[]? expectedErrors = null, 
+            string[]? expectedWarnings = null,
+            string? additionalCommandLineArgs = null,
             string buildVerbosity = "minimal",
-            Func<string, bool> expectedBuildOutputFilter = null)
+            Func<string, bool>? expectedBuildOutputFilter = null)
         {
-            Debug.Assert(targets != null);
-            Debug.Assert(expressions != null);
-            Debug.Assert(expectedResults == null ^ expectedErrors == null);
+            NullableDebug.Assert(targets != null);
+            NullableDebug.Assert(expressions != null);
+            NullableDebug.Assert(expectedResults == null ^ expectedErrors == null);
 
             var evaluationResultsFile = Path.Combine(ProjectOutDir.Path, "EvaluationResult.txt");
 

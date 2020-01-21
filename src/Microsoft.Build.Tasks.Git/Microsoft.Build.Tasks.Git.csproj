@@ -12,6 +12,7 @@
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_GetTfmSpecificFilesToPackage</TargetsForTfmSpecificContentInPackage>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\Common\NullableAttributes.cs" Link="Common\NullableAttributes.cs" />
     <Compile Include="..\Common\Names.cs" Link="Common\Names.cs" />
     <Compile Include="..\Common\ValueTuple.cs" Link="Common\ValueTuple.cs" />
     <Compile Include="..\Common\PathUtilities.cs" Link="Common\PathUtilities.cs" />

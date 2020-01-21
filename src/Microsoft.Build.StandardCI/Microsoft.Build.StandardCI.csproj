@@ -17,6 +17,10 @@
     <IncludeSymbols>false</IncludeSymbols>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Include="..\Common\NullableAttributes.cs" Link="Common\NullableAttributes.cs" />
+  </ItemGroup>
+
   <!-- Nothing to build, just create packages -->
   <Target Name="Build">
     <MakeDir Directories="$(IntermediateOutputPath)" ContinueOnError="True" />

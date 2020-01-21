@@ -13,22 +13,21 @@ namespace Microsoft.Build.Tasks.Tfvc
     public sealed class GetRepositoryUrl : RepositoryTask
     {
         [Output]
-        public string Url { get; private set; }
+        public string? Url { get; private set; }
 
         protected override bool Execute(WorkspaceInfo workspaceInfo)
         {
-            using (var collection = new TfsTeamProjectCollection(workspaceInfo.ServerUri))
-            {
-                var workspace = workspaceInfo.GetWorkspace(collection);
+            using var collection = new TfsTeamProjectCollection(workspaceInfo.ServerUri);
 
-                // Use the first project:
-                var project = workspace.GetTeamProjectForLocalPath(workspaceInfo.MappedPaths.First());
+            var workspace = workspaceInfo.GetWorkspace(collection);
 
-                // Extract GUID from ArtifactUri "vstfs:///Classification/TeamProject/{Guid}":
-                var projectId = Path.GetFileName(project.ArtifactUri.GetPath());
+            // Use the first project:
+            var project = workspace.GetTeamProjectForLocalPath(workspaceInfo.MappedPaths.First());
 
-                Url = collection.Uri.ToString() + "/" + projectId;
-            }
+            // Extract GUID from ArtifactUri "vstfs:///Classification/TeamProject/{Guid}":
+            var projectId = Path.GetFileName(project.ArtifactUri.GetPath());
+
+            Url = collection.Uri.ToString() + "/" + projectId;
 
             return true;
         }

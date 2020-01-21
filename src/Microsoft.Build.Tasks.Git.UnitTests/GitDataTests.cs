@@ -41,12 +41,12 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             gitDirSub.CreateDirectory("objects");
             gitDirSub.CreateDirectory("refs");
 
-            var repository = GitRepository.OpenRepository(repoDir.Path, GitEnvironment.Empty);
+            var repository = GitRepository.OpenRepository(repoDir.Path, GitEnvironment.Empty)!;
 
             Assert.Equal("http://github.com/test-org/test-repo", GitOperations.GetRepositoryUrl(repository, remoteName: null));
             Assert.Equal("1111111111111111111111111111111111111111", repository.GetHeadCommitSha());
 
-            var warnings = new List<(string, object[])>();
+            var warnings = new List<(string, object?[])>();
             var sourceRoots = GitOperations.GetSourceRoots(repository, remoteName: null, (message, args) => warnings.Add((message, args)));
             AssertEx.Equal(new[]
             {
@@ -64,7 +64,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 new MockItem(@"sub\ignore_in_submodule_d"),
             };
 
-            var untrackedFiles = GitOperations.GetUntrackedFiles(repository, files, repoDir.Path, path => GitRepository.OpenRepository(path, GitEnvironment.Empty));
+            var untrackedFiles = GitOperations.GetUntrackedFiles(repository, files, repoDir.Path);
 
             AssertEx.Equal(new[]
             {

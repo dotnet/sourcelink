@@ -13,6 +13,7 @@
     <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\Common\NullableAttributes.cs" Link="Common\NullableAttributes.cs" />
     <Compile Include="..\Common\Names.cs" Link="Common\Names.cs" />
     <Compile Include="..\Common\GetSourceLinkUrlGitTask.cs" Link="Common\GetSourceLinkUrlGitTask.cs" />
     <Compile Include="..\Common\TranslateRepositoryUrlGitTask.cs" Link="Common\TranslateRepositoryUrlGitTask.cs" />

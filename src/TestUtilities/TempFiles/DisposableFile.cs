@@ -14,7 +14,7 @@ namespace TestUtilities
         {
         }
 
-        public DisposableFile(string prefix = null, string extension = null, string directory = null, string callerSourcePath = null, int callerLineNumber = 0)
+        public DisposableFile(string? prefix = null, string? extension = null, string? directory = null, string? callerSourcePath = null, int callerLineNumber = 0)
             : base(prefix, extension, directory, callerSourcePath, callerLineNumber)
         {
         }

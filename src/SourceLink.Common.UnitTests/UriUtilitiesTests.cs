@@ -38,9 +38,9 @@ namespace Microsoft.SourceLink.Common.UnitTests
         [InlineData("/a/", new[] { "a" })]
         [InlineData("/a//b/", null)]
         [InlineData("/a/b//", null)]
-        public void TrySplitRelativeUrl(string url, string[] parts)
+        public void TrySplitRelativeUrl(string url, string[]? parts)
         {
-            if (!UriUtilities.TrySplitRelativeUrl(url, out var actualParts))
+            if (!UriUtilities.TrySplitRelativeUrl(url, out string[]? actualParts))
             {
                 actualParts = null;
             }

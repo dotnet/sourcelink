@@ -70,10 +70,10 @@ namespace TestUtilities
             }
         }
 
-        public static string DiffReport<T>(IEnumerable<T> expected, IEnumerable<T> actual, Func<T, T, bool> comparer = null, Func<T, string> toString = null, string separator = ",\r\n")
+        public static string DiffReport<T>(IEnumerable<T> expected, IEnumerable<T> actual, Func<T, T, bool>? comparer = null, Func<T, string>? toString = null, string? separator = ",\r\n")
         {
             var lcs = (comparer != null) ? new LCS<T>(comparer) : LCS<T>.Default;
-            toString = toString ?? new Func<T, string>(obj => obj.ToString());
+            toString ??= new Func<T, string>(obj => obj?.ToString() ?? "<null>");
 
             IList<T> expectedList = expected as IList<T> ?? new List<T>(expected);
             IList<T> actualList = actual as IList<T> ?? new List<T>(actual);

@@ -11,7 +11,7 @@ namespace Microsoft.SourceLink.AzureDevOpsServer.Git
         //   ssh://{account}@{domain}:{port}/{repositoryPath}/_ssh/{"_full"|"_optimized"}/{repositoryName}
         // to
         //   https://{domain}/{repositoryPath}/_git/{repositoryName}
-        protected override string TranslateSshUrl(Uri uri)
+        protected override string? TranslateSshUrl(Uri uri)
         {
             if (!AzureDevOpsUrlParser.TryParseOnPremSsh(uri, out var repositoryPath, out var repositoryName))
             {
