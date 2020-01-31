@@ -1,4 +1,5 @@
-﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+﻿// Copyright (c) Microsoft. All Rights Reserved. Licensed under the Apache License, Version 2.0. See
+// License.txt in the project root for license information.
 
 using System;
 using System.Collections.Generic;
@@ -48,13 +49,13 @@ namespace Microsoft.Build.Tasks.SourceControl
             }
 
             static bool isMatchingHostUri(Uri hostUri, Uri uri)
-                => uri.GetHost().Equals(hostUri.GetHost(), StringComparison.OrdinalIgnoreCase) || 
+                => uri.GetHost().Equals(hostUri.GetHost(), StringComparison.OrdinalIgnoreCase) ||
                    uri.GetHost().EndsWith("." + hostUri.GetHost(), StringComparison.OrdinalIgnoreCase);
 
             // only need to translate valid ssh URLs that match one of our hosts:
             string? translate(string? url)
             {
-                if (Uri.TryCreate(url, UriKind.Absolute, out var uri) && 
+                if (Uri.TryCreate(url, UriKind.Absolute, out var uri) &&
                     hostUris.Any(h => isMatchingHostUri(h, uri)))
                 {
                     return (uri.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) ? TranslateHttpUrl(uri) :
@@ -66,7 +67,16 @@ namespace Microsoft.Build.Tasks.SourceControl
                 return url;
             }
 
-            TranslatedRepositoryUrl = translate(RepositoryUrl);
+            try
+            {
+                TranslatedRepositoryUrl = translate(RepositoryUrl);
+            }
+            catch (NotSupportedException e)
+            {
+                Log.LogError(e.Message);
+                return;
+            }
+
             TranslatedSourceRoots = SourceRoots;
 
             if (TranslatedSourceRoots != null)
@@ -78,12 +88,23 @@ namespace Microsoft.Build.Tasks.SourceControl
                         continue;
                     }
 
-                    // Item metadata are stored msbuild-escaped. GetMetadata unescapes, SetMetadata stores the value as specified.
-                    // When initializing the URL metadata from git information we msbuild-escaped the URL to preserve any URL escapes in it.
-                    // Here, GetMetadata unescapes the msbuild escapes, then we translate the URL and finally msbuild-escape 
-                    // the resulting URL to preserve any URL escapes.
-                    sourceRoot.SetMetadata(Names.SourceRoot.ScmRepositoryUrl,
-                        Evaluation.ProjectCollection.Escape(translate(sourceRoot.GetMetadata(Names.SourceRoot.ScmRepositoryUrl))));
+                    string? translatedUrl;
+                    try
+                    {
+                        translatedUrl = translate(sourceRoot.GetMetadata(Names.SourceRoot.ScmRepositoryUrl));
+                    }
+                    catch (NotSupportedException e)
+                    {
+                        Log.LogError(e.Message);
+                        continue;
+                    }
+
+                    // Item metadata are stored msbuild-escaped. GetMetadata unescapes, SetMetadata
+                    // stores the value as specified. When initializing the URL metadata from git
+                    // information we msbuild-escaped the URL to preserve any URL escapes in it.
+                    // Here, GetMetadata unescapes the msbuild escapes, then we translate the URL
+                    // and finally msbuild-escape the resulting URL to preserve any URL escapes.
+                    sourceRoot.SetMetadata(Names.SourceRoot.ScmRepositoryUrl, Evaluation.ProjectCollection.Escape(translatedUrl));
                 }
             }
         }

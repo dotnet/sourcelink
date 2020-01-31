@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <_SourceLinkGitWebAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)..\tools\net461\Microsoft.SourceLink.GitWeb.dll</_SourceLinkGitWebAssemblyFile>
+    <_SourceLinkGitWebAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\netcoreapp2.0\Microsoft.SourceLink.GitWeb.dll</_SourceLinkGitWebAssemblyFile>
+  </PropertyGroup>
+
+  <UsingTask TaskName="Microsoft.SourceLink.GitWeb.GetSourceLinkUrl" AssemblyFile="$(_SourceLinkGitWebAssemblyFile)" />
+  <UsingTask TaskName="Microsoft.SourceLink.GitWeb.TranslateRepositoryUrls" AssemblyFile="$(_SourceLinkGitWebAssemblyFile)" />
+
+  <PropertyGroup>
+    <SourceLinkUrlInitializerTargets>$(SourceLinkUrlInitializerTargets);_InitializeGitWebSourceLinkUrl</SourceLinkUrlInitializerTargets>
+    <SourceControlManagerUrlTranslationTargets>$(SourceControlManagerUrlTranslationTargets);TranslateGitWebUrlsInSourceControlInformation</SourceControlManagerUrlTranslationTargets>
+  </PropertyGroup>
+
+  <Target Name="_InitializeGitWebSourceLinkUrl" Inputs="@(SourceRoot)" Outputs="|%(Identity)|">
+    <!--
+      The task calculates SourceLink URL for a given SourceRoot.
+
+      If the SourceRoot is associated with a git repository with a recognized domain the <see cref="SourceLinkUrl" />
+      output property is set to the content URL corresponding to the domain, otherwise it is set to string "N/A".
+
+      Recognized domains are specified via Hosts (initialized from SourceLinkGitWebHost item group).
+      In addition, if SourceLinkHasSingleProvider is true an implicit host is parsed from RepositoryUrl.
+
+      Example of SourceLinkGitWebHost items:
+
+      <ItemGroup>
+        <SourceLinkGitWebHost Include="myGitWeb1.com" ContentUrl="http://myGitWeb1.com/gitweb" />
+        <SourceLinkGitWebHost Include="myGitWeb2.com" />           ContentUrl defaults to https://myGitWeb2.com/gitweb
+        <SourceLinkGitWebHost Include="myGitWeb3.com:8080" />      ContentUrl defaults to https://myGitWeb3.com:8080/gitweb
+      </ItemGroup>
+
+      ContentUrl is optional. If not specified it defaults to "https://{domain}" or "http://{domain}", based on the scheme of SourceRoot.RepositoryUrl.
+    -->
+    <Microsoft.SourceLink.GitWeb.GetSourceLinkUrl RepositoryUrl="$(PrivateRepositoryUrl)" SourceRoot="@(SourceRoot)" Hosts="@(SourceLinkGitWebHost)" IsSingleProvider="$(SourceLinkHasSingleProvider)">
+      <Output TaskParameter="SourceLinkUrl" PropertyName="_SourceLinkUrlToUpdate" />
+    </Microsoft.SourceLink.GitWeb.GetSourceLinkUrl>
+
+    <ItemGroup>
+      <!-- Only update the SourceLinkUrl metadata if the SourceRoot belongs to this source control -->
+      <SourceRoot Update="%(Identity)" SourceLinkUrl="$(_SourceLinkUrlToUpdate)" Condition="'$(_SourceLinkUrlToUpdate)' != 'N/A'" />
+    </ItemGroup>
+  </Target>
+
+  <!--
+    We need to check the protocols of the URL and issue errors if they are not supported by GitWeb.
+  -->
+  <Target Name="TranslateGitWebUrlsInSourceControlInformation">
+
+    <ItemGroup>
+      <_TranslatedSourceRoot Remove="@(_TranslatedSourceRoot)" />
+    </ItemGroup>
+
+    <Microsoft.SourceLink.GitWeb.TranslateRepositoryUrls RepositoryUrl="$(ScmRepositoryUrl)" SourceRoots="@(SourceRoot)" Hosts="@(SourceLinkGitWebHost)" IsSingleProvider="$(SourceLinkHasSingleProvider)">
+      <Output TaskParameter="TranslatedRepositoryUrl" PropertyName="ScmRepositoryUrl" />
+      <Output TaskParameter="TranslatedSourceRoots" ItemName="_TranslatedSourceRoot" />
+    </Microsoft.SourceLink.GitWeb.TranslateRepositoryUrls>
+
+    <ItemGroup>
+      <SourceRoot Remove="@(SourceRoot)" />
+      <SourceRoot Include="@(_TranslatedSourceRoot)" />
+    </ItemGroup>
+  </Target>
+</Project>

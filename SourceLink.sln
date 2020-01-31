@@ -54,6 +54,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.AzureD
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests", "src\SourceLink.AzureDevOpsServer.Git.UnitTests\Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests.csproj", "{79371F26-FB84-408D-A4A1-B142B247C288}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.GitWeb", "src\SourceLink.GitWeb\Microsoft.SourceLink.GitWeb.csproj", "{C78DD3EF-9D20-4E00-8237-E871BB53F840}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.GitWeb.UnitTests", "src\SourceLink.GitWeb.UnitTests\Microsoft.SourceLink.GitWeb.UnitTests.csproj", "{50503A43-08C0-493B-B8CC-F368983644C1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -136,6 +140,14 @@ Global
 		{79371F26-FB84-408D-A4A1-B142B247C288}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{79371F26-FB84-408D-A4A1-B142B247C288}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{79371F26-FB84-408D-A4A1-B142B247C288}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C78DD3EF-9D20-4E00-8237-E871BB53F840}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C78DD3EF-9D20-4E00-8237-E871BB53F840}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C78DD3EF-9D20-4E00-8237-E871BB53F840}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C78DD3EF-9D20-4E00-8237-E871BB53F840}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50503A43-08C0-493B-B8CC-F368983644C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50503A43-08C0-493B-B8CC-F368983644C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50503A43-08C0-493B-B8CC-F368983644C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50503A43-08C0-493B-B8CC-F368983644C1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
