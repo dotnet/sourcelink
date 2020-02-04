@@ -71,7 +71,7 @@ By setting `DeterministicSourcePaths` to true the project opts into mapping all 
 Only set `DeterministicSourcePaths` to true on a build/CI server, never for local builds.
 In order for the debugger to find source files when debugging a locally built binary, the PDB must contain original, unmapped local paths.
 
-Starting with .NET Core SDK 2.1.300, a fully deterministic build is [turned on](https://github.com/dotnet/roslyn/blob/dev15.7.x/src/Compilers/Core/MSBuildTask/Microsoft.Managed.Core.targets#L45-L55) when both `Deterministic` and `ContinuousIntegrationBuild` properties are set to `true`. 
+Starting with .NET Core SDK 2.1.300, a fully deterministic build is [turned on](https://github.com/dotnet/roslyn/blob/master/src/Compilers/Core/MSBuildTask/Microsoft.Managed.Core.targets#L45-L55) when both `Deterministic` and `ContinuousIntegrationBuild` properties are set to `true`. 
 
 ## Example
 
