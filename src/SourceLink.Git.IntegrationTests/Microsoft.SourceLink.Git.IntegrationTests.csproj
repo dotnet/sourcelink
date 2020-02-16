@@ -7,6 +7,7 @@
     <ProjectReference Include="..\Microsoft.Build.Tasks.Git\Microsoft.Build.Tasks.Git.csproj" />
     <ProjectReference Include="..\SourceLink.Common\Microsoft.SourceLink.Common.csproj" />
     <ProjectReference Include="..\SourceLink.GitHub\Microsoft.SourceLink.GitHub.csproj" />
+    <ProjectReference Include="..\SourceLink.GitWeb\Microsoft.SourceLink.GitWeb.csproj" />
     <ProjectReference Include="..\TestUtilities\TestUtilities.csproj" />
   </ItemGroup>
 </Project>
