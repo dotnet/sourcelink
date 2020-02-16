@@ -43,8 +43,6 @@ namespace Microsoft.SourceLink.GitWeb.UnitTests
                 SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "ssh://git@src.intranet.company.com/root_dir_name/sub_dirs/reponame.git" + s1), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
-                    // NOTE: i don't know what the spec parameter is for. but for all the other
-                    // tests like this for various providers it is the domain of the Repo URL.
                     new MockItem("src.intranet.company.com", KVP("ContentUrl", "https://src.intranet.company.com/gitweb" + s2)),
                 }
             };
