@@ -22,6 +22,7 @@
       <Namespace>Microsoft.Build.Tasks.SourceControl</Namespace>
       <GenerateSource>true</GenerateSource>
     </EmbeddedResource>
+    <EmbeddedResource Update="Resources.resx"/>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Build" Version="$(MicrosoftBuildVersion)" />
@@ -30,18 +31,5 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Microsoft.SourceLink.GitWeb.UnitTests" />
     <InternalsVisibleTo Include="Microsoft.SourceLink.Git.IntegrationTests" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Update="Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
 </Project>
