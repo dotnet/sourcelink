@@ -10,13 +10,13 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 {
     public class GitDataTests
     {
-        public readonly TempRoot Temp = new TempRoot();
         private static readonly char s = Path.DirectorySeparatorChar;
 
         [Fact]
         public void MinimalGitData()
         {
-            var repoDir = Temp.CreateDirectory();
+            using var temp = new TempRoot();
+            var repoDir = temp.CreateDirectory();
 
             var gitDir = repoDir.CreateDirectory(".git");
             gitDir.CreateFile("HEAD").WriteAllText("1111111111111111111111111111111111111111");
