@@ -158,7 +158,7 @@ namespace Microsoft.Build.Tasks.Git
         internal static Uri? NormalizeUrl(GitRepository repository, string url)
         {
             // Git (v2.23.0) treats local relative URLs as relative to the working directory.
-            // This doesn't work when a relative URL is used in a config file locatede in a main .git directory 
+            // This doesn't work when a relative URL is used in a config file located in a main .git directory
             // but is resolved from a worktree that has a different working directory.
             // Currently we implement the same behavior as git.
 
@@ -244,11 +244,13 @@ namespace Microsoft.Build.Tasks.Git
             var result = new List<TaskItem>();
             var repoRoot = repository.WorkingDirectory.EndWithSeparator();
 
+            string? repositoryUrl = null;
+
             var revisionId = repository.GetHeadCommitSha();
             if (revisionId != null)
             {
                 // Don't report a warning since it has already been reported by GetRepositoryUrl task.
-                string? repositoryUrl = GetRepositoryUrl(repository, remoteName, logWarning: null);
+                repositoryUrl = GetRepositoryUrl(repository, remoteName, logWarning: null);
 
                 // Item metadata are stored msbuild-escaped. GetMetadata unescapes, SetMetadata stores the value as specified.
                 // Escape msbuild special characters so that URL escapes in the URL are preserved when the URL is read by GetMetadata.
@@ -276,7 +278,9 @@ namespace Microsoft.Build.Tasks.Git
                 }
 
                 // https://git-scm.com/docs/git-submodule
-                var submoduleUri = NormalizeUrl(repository, submodule.Url);
+                // GH-576: The plain NormalizeUrl normalizes against the working directory, but that is not what
+                //         Git does for the submodule URLs. Those are relative to the root's remote URL.
+                var submoduleUri = NormalizeUrl(ApplyInsteadOfUrlMapping(repository.Config, submodule.Url), repositoryUrl ?? repository.WorkingDirectory);
                 if (submoduleUri == null)
                 {
                     logWarning(Resources.SourceCodeWontBeAvailableViaSourceLink,
