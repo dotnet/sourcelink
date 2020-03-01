@@ -228,7 +228,7 @@ relative paths of all submodules:
   path = submodule-path
 ```
 
-The `.git/config` file must contain the URL of all initialized submodules:
+The `.git/config` file must contain URLs of all initialized submodules:
 
 ```
 [submodule "submodule-name"]
