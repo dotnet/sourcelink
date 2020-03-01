@@ -18,6 +18,7 @@ namespace Microsoft.Build.Tasks.Git
 
         private const string SourceControlName = "git";
         private const string RemoteSectionName = "remote";
+        private const string SubmoduleSectionName = "submodule";
         private const string RemoteOriginName = "origin";
         private const string UrlSectionName = "url";
         private const string UrlVariableName = "url";
@@ -275,12 +276,22 @@ namespace Microsoft.Build.Tasks.Git
                     continue;
                 }
 
-                // https://git-scm.com/docs/git-submodule
-                var submoduleUri = NormalizeUrl(repository, submodule.Url);
+                // submodule.<name>.url specifies where to find the submodule.
+                // This variable is calculated based on the entry in .gitmodules by git submodule init and will be present for initialized submodules.
+                // Uninitialized modules don't have source that should be considered during the build.
+                // Relative URLs are relative to the repository directory.
+                // See https://git-scm.com/docs/gitsubmodules.
+                var submoduleConfigUrl = repository.Config.GetVariableValue(SubmoduleSectionName, submodule.Name, UrlVariableName);
+                if (submoduleConfigUrl == null)
+                {
+                    continue;
+                }
+
+                var submoduleUri = NormalizeUrl(repository, submoduleConfigUrl);
                 if (submoduleUri == null)
                 {
                     logWarning(Resources.SourceCodeWontBeAvailableViaSourceLink,
-                        new[] { string.Format(Resources.InvalidSubmoduleUrl, submodule.Name, submodule.Url) });
+                        new[] { string.Format(Resources.InvalidSubmoduleUrl, submodule.Name, submoduleConfigUrl) });
 
                     continue;
                 }
@@ -289,7 +300,7 @@ namespace Microsoft.Build.Tasks.Git
                 if (submoduleUrl == null)
                 {
                     logWarning(Resources.SourceCodeWontBeAvailableViaSourceLink,
-                       new[] { string.Format(Resources.InvalidSubmoduleUrl, submodule.Name, submodule.Url) });
+                       new[] { string.Format(Resources.InvalidSubmoduleUrl, submodule.Name, submoduleConfigUrl) });
 
                     continue;
                 }
