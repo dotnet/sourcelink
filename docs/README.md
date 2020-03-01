@@ -220,7 +220,7 @@ for Source Link to operate properly.
 
   configuration file that specifies `origin` remote URL (e.g. `[remote "origin"] url="http://server.com/repo"`)
 
-If the repository has submodules the file `.gitmodules` must be present in the repository root and must list the URLs and 
+If the repository has submodules the file `.gitmodules` must be present in the repository root and must list the 
 relative paths of all submodules.
 
 For example,
@@ -228,6 +228,14 @@ For example,
 ```
 [submodule "submodule-name"]
   path = submodule-path
+```
+
+The `.git/config` file must contain the URL of all initialized submodules:
+ 
+For example,
+
+```
+[submodule "submodule-name"]
   url = https://server.com/subrepo
 ```
 
