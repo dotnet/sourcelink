@@ -20,7 +20,12 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             var gitDir = repoDir.CreateDirectory(".git");
             gitDir.CreateFile("HEAD").WriteAllText("1111111111111111111111111111111111111111");
-            gitDir.CreateFile("config").WriteAllText(@"[remote ""origin""]url=""http://github.com/test-org/test-repo""");
+            gitDir.CreateFile("config").WriteAllText(@"
+[remote ""origin""]
+url=http://github.com/test-org/test-repo
+[submodule ""my submodule""]
+url=https://github.com/test-org/test-sub
+");
             gitDir.CreateDirectory("objects");
             gitDir.CreateDirectory("refs");
             repoDir.CreateFile(".gitignore").WriteAllText("ignore_this_*");
@@ -29,7 +34,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var gitModules = repoDir.CreateFile(".gitmodules").WriteAllText(@"
 [submodule ""my submodule""]
   path = sub
-  url = https://github.com/test-org/test-sub
+  url = xyz
 ");
             
             var subDir = repoDir.CreateDirectory("sub");

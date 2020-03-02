@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Build.Tasks.Git
 {
@@ -21,21 +20,20 @@ namespace Microsoft.Build.Tasks.Git
         public string WorkingDirectoryFullPath { get; }
 
         /// <summary>
-        /// An absolute URL or a relative path (if it starts with `./` or `../`) to the default remote of the containing repository.
+        /// An absolute URL or a relative path (if it starts with `./` or `../`) to the origin remote of the containing repository.
         /// </summary>
-        public string Url { get; }
+        public string? Url { get; }
 
         /// <summary>
         /// Head tip commit SHA. Null, if there is no commit.
         /// </summary>
         public string? HeadCommitSha { get; }
 
-        internal GitSubmodule(string name, string workingDirectoryRelativePath, string workingDirectoryFullPath, string url, string? headCommitSha)
+        internal GitSubmodule(string name, string workingDirectoryRelativePath, string workingDirectoryFullPath, string? url, string? headCommitSha)
         {
             NullableDebug.Assert(name != null);
             NullableDebug.Assert(workingDirectoryRelativePath != null);
             NullableDebug.Assert(workingDirectoryFullPath != null);
-            NullableDebug.Assert(url != null);
 
             Name = name;
             WorkingDirectoryRelativePath = workingDirectoryRelativePath;

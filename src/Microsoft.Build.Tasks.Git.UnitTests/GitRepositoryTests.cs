@@ -307,8 +307,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
               string.Format(Resources.InvalidSubmodulePath, "S2", ""),
               // Could not find a part of the path 'sub3\.git'.
               TestUtilities.GetExceptionMessage(() => File.ReadAllText(Path.Combine(workingDir.Path, "sub3", ".git"))),
-              // The URL of submodule 'S4' is missing or invalid: '   '
-              string.Format(Resources.InvalidSubmoduleUrl, "S4", "   "),
+              // Could not find a part of the path 'sub4\.git'.
+              TestUtilities.GetExceptionMessage(() => File.ReadAllText(Path.Combine(workingDir.Path, "sub4", ".git"))),
               // Could not find a part of the path 'sub5\.git'.
               TestUtilities.GetExceptionMessage(() => File.ReadAllText(Path.Combine(workingDir.Path, "sub5", ".git"))),
               // Access to the path 'sub6\.git' is denied

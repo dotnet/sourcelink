@@ -9,6 +9,8 @@ using Xunit;
 
 namespace Microsoft.Build.Tasks.Git.UnitTests
 {
+    using static KeyValuePairUtils;
+
     public class GitOperationsTests
     {
         private static readonly bool IsUnix = Path.DirectorySeparatorChar == '/';
@@ -64,11 +66,11 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
         private static GitConfig CreateConfig(params (string Name, string Value)[] variables)
             => new GitConfig(ImmutableDictionary.CreateRange(
-                variables.Select(v => new KeyValuePair<GitVariableName, ImmutableArray<string>>(CreateVariableName(v.Name), ImmutableArray.Create(v.Value)))));
+                variables.Select(v => KVP(CreateVariableName(v.Name), ImmutableArray.Create(v.Value)))));
 
         private static GitConfig CreateConfig(params (string Name, string[] Values)[] variables)
             => new GitConfig(ImmutableDictionary.CreateRange(
-                variables.Select(v => new KeyValuePair<GitVariableName, ImmutableArray<string>>(CreateVariableName(v.Name), ImmutableArray.CreateRange(v.Values)))));
+                variables.Select(v => KVP(CreateVariableName(v.Name), ImmutableArray.CreateRange(v.Values)))));
 
         [Fact]
         public void GetRepositoryUrl_NoRemotes()
@@ -179,8 +181,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         {
             var repo = CreateRepository(config: new GitConfig(ImmutableDictionary.CreateRange(new[]
             {
-                new KeyValuePair<GitVariableName, ImmutableArray<string>>(new GitVariableName("remote", "origin", "url"), ImmutableArray.Create("http://?")),
-                new KeyValuePair<GitVariableName, ImmutableArray<string>>(new GitVariableName("url", "git@github.com:org/repo", "insteadOf"), ImmutableArray.Create("http://?"))
+                KVP(new GitVariableName("remote", "origin", "url"), ImmutableArray.Create("http://?")),
+                KVP(new GitVariableName("url", "git@github.com:org/repo", "insteadOf"), ImmutableArray.Create("http://?"))
             })));
 
             var warnings = new List<(string, object?[])>();
@@ -206,7 +208,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             var repo = CreateRepository(config: new GitConfig(ImmutableDictionary.CreateRange(new[]
             {
-                new KeyValuePair<GitVariableName, ImmutableArray<string>>(new GitVariableName("remote", "origin", "url"),
+                KVP(new GitVariableName("remote", "origin", "url"),
                     ImmutableArray.Create(useFileUrl ? new Uri(mainWorkingDir.Path).AbsolutePath : mainWorkingDir.Path)),
             })));
 
@@ -231,7 +233,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             var repo = CreateRepository(config: new GitConfig(ImmutableDictionary.CreateRange(new[]
             {
-                new KeyValuePair<GitVariableName, ImmutableArray<string>>(new GitVariableName("remote", "origin", "url"), ImmutableArray.Create(mainWorkingDir.Path)),
+                KVP(new GitVariableName("remote", "origin", "url"), ImmutableArray.Create(mainWorkingDir.Path)),
             })));
 
             var warnings = new List<(string, object?[])>();
@@ -253,7 +255,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             var repo = CreateRepository(config: new GitConfig(ImmutableDictionary.CreateRange(new[]
             {
-                new KeyValuePair<GitVariableName, ImmutableArray<string>>(new GitVariableName("remote", "origin", "url"), ImmutableArray.Create(mainWorkingDir.Path)),
+                KVP(new GitVariableName("remote", "origin", "url"), ImmutableArray.Create(mainWorkingDir.Path)),
             })));
 
             var warnings = new List<(string, object?[])>();
@@ -281,7 +283,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             var repo = CreateRepository(config: new GitConfig(ImmutableDictionary.CreateRange(new[]
             {
-                new KeyValuePair<GitVariableName, ImmutableArray<string>>(new GitVariableName("remote", "origin", "url"), ImmutableArray.Create(gitDir2.Path)),
+                KVP(new GitVariableName("remote", "origin", "url"), ImmutableArray.Create(gitDir2.Path)),
             })));
 
             var warnings = new List<(string, object?[])>();
@@ -302,7 +304,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             var repo = CreateRepository(config: new GitConfig(ImmutableDictionary.CreateRange(new[]
             {
-                new KeyValuePair<GitVariableName, ImmutableArray<string>>(new GitVariableName("remote", "origin", "url"), ImmutableArray.Create(mainWorkingDir.Path)),
+                KVP(new GitVariableName("remote", "origin", "url"), ImmutableArray.Create(mainWorkingDir.Path)),
             })));
 
             var warnings = new List<(string, object?[])>();
@@ -322,7 +324,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             var repo = CreateRepository(config: new GitConfig(ImmutableDictionary.CreateRange(new[]
             {
-                new KeyValuePair<GitVariableName, ImmutableArray<string>>(new GitVariableName("remote", "origin", "url"),
+                KVP(new GitVariableName("remote", "origin", "url"),
                     ImmutableArray.Create(mainWorkingDir.Path)),
             })));
 
@@ -461,21 +463,37 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         {
             var repo = CreateRepository(
                 commitSha: null,
-                config: CreateConfig(("url.ssh://.insteadOf", "http://")),
+                config: CreateConfig(
+                    ("url.ssh://.insteadOf", "http://"),
+                    ("submodule.sub1.url", "http://github.com/sub-1"),
+                    ("submodule.sub3.url", "https://github.com/sub-3"),
+                    ("submodule.sub4.url", "https:///"),
+                    ("submodule.sub6.url", "https://github.com/sub-6")),
                 submodules: ImmutableArray.Create(
-                    CreateSubmodule("1", "sub/1", "http://1.com", "1111111111111111111111111111111111111111"),
-                    CreateSubmodule("1", "sub/2", "http://2.com", "2222222222222222222222222222222222222222"))); ;
+                    CreateSubmodule("sub1", "sub/1", "http://1.com", "1111111111111111111111111111111111111111"),
+                    CreateSubmodule("sub2", "sub/2", "http://2.com", "2222222222222222222222222222222222222222"),
+                    CreateSubmodule("sub3", "sub/3", "http://3.com", "3333333333333333333333333333333333333333"),
+                    CreateSubmodule("sub4", "sub/4", "http://4.com", "4444444444444444444444444444444444444444"),
+                    CreateSubmodule("sub5", "sub/5", "http:///", "5555555555555555555555555555555555555555"),
+                    CreateSubmodule("sub6", "sub/6", "", "6666666666666666666666666666666666666666")));
 
             var warnings = new List<(string, object?[])>();
             var items = GitOperations.GetSourceRoots(repo, remoteName: null, (message, args) => warnings.Add((message, args)));
 
+            // Module without a configuration entry is not initialized.
+            // URLs listed in .submodules are ignored (they are used by git submodule initialize to generate URLs stored in config).
             AssertEx.Equal(new[]
             {
-                $@"'{_workingDir}{s}sub{s}1{s}' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/1/' ContainingRoot='{_workingDir}{s}' ScmRepositoryUrl='ssh://1.com/'",
-                $@"'{_workingDir}{s}sub{s}2{s}' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='{_workingDir}{s}' ScmRepositoryUrl='ssh://2.com/'",
+                $@"'{_workingDir}{s}sub{s}1{s}' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/1/' ContainingRoot='{_workingDir}{s}' ScmRepositoryUrl='ssh://github.com/sub-1'",
+                $@"'{_workingDir}{s}sub{s}3{s}' SourceControl='git' RevisionId='3333333333333333333333333333333333333333' NestedRoot='sub/3/' ContainingRoot='{_workingDir}{s}' ScmRepositoryUrl='https://github.com/sub-3'",
+                $@"'{_workingDir}{s}sub{s}6{s}' SourceControl='git' RevisionId='6666666666666666666666666666666666666666' NestedRoot='sub/6/' ContainingRoot='{_workingDir}{s}' ScmRepositoryUrl='https://github.com/sub-6'",
             }, items.Select(TestUtilities.InspectSourceRoot));
 
-            AssertEx.Equal(new[] { Resources.RepositoryHasNoCommit }, warnings.Select(TestUtilities.InspectDiagnostic));
+            AssertEx.Equal(new[]
+            {
+                Resources.RepositoryHasNoCommit,
+                string.Format(Resources.SourceCodeWontBeAvailableViaSourceLink, string.Format(Resources.InvalidSubmoduleUrl, "sub4", "https:///"))
+            }, warnings.Select(TestUtilities.InspectDiagnostic)); ;
         }
 
         [Fact]
@@ -483,9 +501,12 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         {
             var repo = CreateRepository(
                 commitSha: "0000000000000000000000000000000000000000",
+                config: CreateConfig(
+                    ("submodule.1.url", "http://github.com/sub-1"),
+                    ("submodule.2.url", "http://github.com/sub-2")),
                 submodules: ImmutableArray.Create(
                     CreateSubmodule("1", "sub/1", "http://1.com", headCommitSha: null),
-                    CreateSubmodule("1", "sub/2", "http://2.com", "2222222222222222222222222222222222222222")));
+                    CreateSubmodule("2", "sub/2", "http://2.com", "2222222222222222222222222222222222222222")));
 
             var warnings = new List<(string, object?[])>();
             var items = GitOperations.GetSourceRoots(repo, remoteName: null, (message, args) => warnings.Add((message, args)));
@@ -493,7 +514,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             AssertEx.Equal(new[]
             {
                 $@"'{_workingDir}{s}' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
-                $@"'{_workingDir}{s}sub{s}2{s}' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='{_workingDir}{s}' ScmRepositoryUrl='http://2.com/'",
+                $@"'{_workingDir}{s}sub{s}2{s}' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='{_workingDir}{s}' ScmRepositoryUrl='http://github.com/sub-2'",
             }, items.Select(TestUtilities.InspectSourceRoot));
 
             AssertEx.Equal(new[] { string.Format(Resources.SourceCodeWontBeAvailableViaSourceLink, string.Format(Resources.SubmoduleWithoutCommit, "1")) }, 
@@ -501,7 +522,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         }
 
         [Fact]
-        public void GetSourceRoots_RelativeSubmodulePaths()
+        public void GetSourceRoots_RelativeSubmodulePath()
         {
             using var temp = new TempRoot();
 
@@ -518,8 +539,10 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var repo = CreateRepository(
                 workingDir: repoDir.Path,
                 commitSha: "0000000000000000000000000000000000000000",
+                config: CreateConfig(
+                    ("submodule.1.url", "../1")),
                 submodules: ImmutableArray.Create(
-                    CreateSubmodule("1", "sub/1", "../1", "1111111111111111111111111111111111111111", containingRepositoryWorkingDir: repoDir.Path)));
+                    CreateSubmodule("1", "sub/1", "---", "1111111111111111111111111111111111111111", containingRepositoryWorkingDir: repoDir.Path)));
 
             var warnings = new List<(string, object?[])>();
             var items = GitOperations.GetSourceRoots(repo, remoteName: null, (message, args) => warnings.Add((message, args)));
@@ -532,32 +555,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             Assert.Empty(warnings);
         }
-
-        [Fact]
-        public void GetSourceRoots_InvalidSubmoduleUrl()
-        {
-            var repo = CreateRepository(
-                commitSha: "0000000000000000000000000000000000000000",
-                submodules: ImmutableArray.Create(
-                    CreateSubmodule("1", "sub/1", "http:///", "1111111111111111111111111111111111111111"),
-                    CreateSubmodule("3", "sub/3", "http://3.com", "3333333333333333333333333333333333333333")));
-
-            var warnings = new List<(string, object?[])>();
-            var items = GitOperations.GetSourceRoots(repo, remoteName: null, (message, args) => warnings.Add((message, args)));
-
-            AssertEx.Equal(new[]
-            {
-                $@"'{s_root}{s}' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
-                $@"'{s_root}{s}sub{s}3{s}' SourceControl='git' RevisionId='3333333333333333333333333333333333333333' NestedRoot='sub/3/' ContainingRoot='{s_root}{s}' ScmRepositoryUrl='http://3.com/'",
-            }, items.Select(TestUtilities.InspectSourceRoot));
-
-            AssertEx.Equal(new[] 
-            {
-                string.Format(Resources.SourceCodeWontBeAvailableViaSourceLink, string.Format(Resources.InvalidSubmoduleUrl, "1", "http:///")),
-            }, warnings.Select(TestUtilities.InspectDiagnostic));
-        }
-
-        private static GitOperations.DirectoryNode CreateNode(string name, string? submoduleWorkingDirectory, List<GitOperations.DirectoryNode>? children = null)
+		
+		private static GitOperations.DirectoryNode CreateNode(string name, string? submoduleWorkingDirectory, List<GitOperations.DirectoryNode>? children = null)
             => new GitOperations.DirectoryNode(name, children ?? new List<GitOperations.DirectoryNode>())
             {
                 Matcher = (submoduleWorkingDirectory != null) ? new Lazy<GitIgnore.Matcher?>(() =>

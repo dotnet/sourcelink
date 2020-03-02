@@ -261,11 +261,7 @@ namespace Microsoft.Build.Tasks.Git
                     continue;
                 }
 
-                if (NullableString.IsNullOrWhiteSpace(url))
-                {
-                    reportDiagnostic(string.Format(Resources.InvalidSubmoduleUrl, name, url));
-                    continue;
-                }
+                // Ignore unspecified URL - Source Link doesn't use it.
 
                 string fullPath;
                 try
