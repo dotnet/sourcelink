@@ -295,8 +295,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             {
                 "S10: 'sub10' 'http://github.com'",
                 "S11: 'sub11' 'http://github.com'",
-                "S9: 'sub9' 'http://github.com'",
-                "S4: 'sub4' '   '"
+                "S9: 'sub9' 'http://github.com'"
             }, submodules.Select(s => $"{s.Name}: '{s.WorkingDirectoryRelativePath}' '{s.Url}'"));
 
             var diagnostics = repository.GetSubmoduleDiagnostics();
@@ -308,6 +307,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
               string.Format(Resources.InvalidSubmodulePath, "S2", ""),
               // Could not find a part of the path 'sub3\.git'.
               TestUtilities.GetExceptionMessage(() => File.ReadAllText(Path.Combine(workingDir.Path, "sub3", ".git"))),
+              // Could not find a part of the path 'sub4\.git'.
+              TestUtilities.GetExceptionMessage(() => File.ReadAllText(Path.Combine(workingDir.Path, "sub4", ".git"))),
               // Could not find a part of the path 'sub5\.git'.
               TestUtilities.GetExceptionMessage(() => File.ReadAllText(Path.Combine(workingDir.Path, "sub5", ".git"))),
               // Access to the path 'sub6\.git' is denied
