@@ -2,7 +2,7 @@
 <Project>
   <!--
     Default values for properties initialized from Standard CI environment variables.
-    See https://github.com/dotnet/designs/blob/master/accepted/build/standard-ci-env-variables.md.
+    See https://github.com/dotnet/sourcelink/tree/master/docs/StandardCI.
 
     Build servers that comply with Standard CI specification set STANDARD_CI_* variables.
     
