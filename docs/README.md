@@ -1,10 +1,10 @@
 ## Source Control and Source Link Packages
 
 MSBuild has no built-in knowledge of any source control system or provider. In order to retrieve information from the source control the project needs to include 
-a package reference to the appropriate source control package. Microsoft provides source control packages for Git and TFVC managers (currently as pre-release packages):
+a package reference to the appropriate source control package. Microsoft provides source control packages for Git and TFVC managers:
 
- - Microsoft.Build.Tasks.Git
- - Microsoft.Build.Tasks.Tfvc
+ - Microsoft.Build.Tasks.Git (release)
+ - Microsoft.Build.Tasks.Tfvc (experimental)
   
 These packages implement a protocol defined by MSBuild that allows extraction of necessary information from the source control system during build.
 This protocol can be implemented by third party packages in order to support other source control systems.
@@ -22,18 +22,22 @@ Having this information available enables the following features:
 
 To generate Source Link having just the source control package is not sufficient, since various source control providers (hosts) 
 differ in the way how they expose the content of the hosted repositories. A package specific to the provider is needed. 
-The following Source Link pre-release packages are currently available:
+The following Source Link packages have been released by Microsoft:
 
 - Microsoft.SourceLink.GitHub (depends on Microsoft.Build.Tasks.Git package)
+- Microsoft.SourceLink.AzureRepos.Git (depends on Microsoft.Build.Tasks.Git package)
+- Microsoft.SourceLink.AzureDevOpsServer.Git (depends on Microsoft.Build.Tasks.Git package)
 - Microsoft.SourceLink.GitLab (depends on Microsoft.Build.Tasks.Git package)
-- Microsoft.SourceLink.Vsts.Git (depends on Microsoft.Build.Tasks.Git package)
-- Microsoft.SourceLink.Vsts.Tfvc (depends on Microsoft.Build.Tasks.Tfvc package)
+- Microsoft.SourceLink.Bitbucket.Git (depends on Microsoft.Build.Tasks.Git package)
+
+In addition an experimental package is available for TFVC server:
+- Microsoft.SourceLink.AzureRepos.Tfvc (depends on experimental Microsoft.Build.Tasks.Tfvc package)
 
 The system is extensible and custom packages that handle other source control providers can be developed and used. See [Custom Source Link packages](#creating-custom-sourcelink-packages) for details.
 
 Each Source Link package depends on the corresponding source control package. Referencing a Source Link package makes the dependent source control package also referenced, thus providing the other source control features to the project.
 
-Note that it is possible and supported to reference multiple Source Link packages in a single project provided they depend on the same source control package. This is necessary when the project sources are stored in mutliple submodules hosted by different providers (e.g. VSTS repository containing a GitHub submodule). See [Configuring Projects with Multiple Source Link Providers](#configuring-projects-with-multiple-sourcelink-providers) for details.
+Note that it is possible and supported to reference multiple Source Link packages in a single project provided they depend on the same source control package. This is necessary when the project sources are stored in mutliple submodules hosted by different providers (e.g. Azure Repos repository containing a GitHub submodule). See [Configuring Projects with Multiple Source Link Providers](#configuring-projects-with-multiple-sourcelink-providers) for details.
 
 ## Basic Settings
 
@@ -110,15 +114,16 @@ Each package defines an msbuild item group named `SourceLink{provider}Host`, whe
 
 *Content URL* is the URL where the raw source files can be downloaded from. Items of `SourceLink*Host` item group allow to specify the content URL if necessary. The content URL doesn't need to be specified in most cases as it is inferred from the domain.
 
-The default content URLs for each package is listed below:
+The default content URLs for each package is listed below ([GetSourceLinkUrlGitTask.GetDefaultContentUriFromHostUri](https://github.com/dotnet/sourcelink/blob/master/src/Common/GetSourceLinkUrlGitTask.cs#L50) API):
 
-|            | content URL        |
-|:----------:|:------------------:|
-|**GitLab**  |https://{domain}    |
-|**GitHub**  |https://{domain}/raw|
-|**Vsts.Git**|https://{domain}    |
+|                  | content URL        |
+|:----------------:|:------------------:|
+|**GitLab**        |https://{domain}    |
+|**GitHub**        |https://{domain}/raw|
+|**AzureRepos.Git**|https://{domain}    |
+|**BitBucket**     |https://{domain}    |
 
-To override the above defaults specify `ContentUrl` metadata on the item. For example, GitHub.com server provides content on a CDN domain `raw.githubusercontent.com`:
+To override the above defaults specify `ContentUrl` metadata on the item in [`build/*.props`](https://github.com/dotnet/sourcelink/blob/master/src/SourceLink.GitHub/build/Microsoft.SourceLink.GitHub.props) in the Source Link package. For example, GitHub.com server provides content on a CDN domain `raw.githubusercontent.com`:
  
 ```xml
 <ItemGroup>
