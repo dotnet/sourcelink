@@ -33,11 +33,11 @@ The following Source Link packages have been released by Microsoft:
 In addition an experimental package is available for TFVC server:
 - Microsoft.SourceLink.AzureRepos.Tfvc (depends on experimental Microsoft.Build.Tasks.Tfvc package)
 
-The system is extensible and custom packages that handle other source control providers can be developed and used. See [Custom Source Link packages](#creating-custom-sourcelink-packages) for details.
+The system is extensible and custom packages that handle other source control providers can be developed and used. See [Custom Source Link packages](#creating-custom-source-link-packages) for details.
 
 Each Source Link package depends on the corresponding source control package. Referencing a Source Link package makes the dependent source control package also referenced, thus providing the other source control features to the project.
 
-Note that it is possible and supported to reference multiple Source Link packages in a single project provided they depend on the same source control package. This is necessary when the project sources are stored in mutliple submodules hosted by different providers (e.g. Azure Repos repository containing a GitHub submodule). See [Configuring Projects with Multiple Source Link Providers](#configuring-projects-with-multiple-sourcelink-providers) for details.
+Note that it is possible and supported to reference multiple Source Link packages in a single project provided they depend on the same source control package. This is necessary when the project sources are stored in mutliple submodules hosted by different providers (e.g. Azure Repos repository containing a GitHub submodule). See [Configuring Projects with Multiple Source Link Providers](#configuring-projects-with-multiple-source-link-providers) for details.
 
 ## Basic Settings
 
@@ -123,7 +123,7 @@ The default content URLs for each package is listed below ([GetSourceLinkUrlGitT
 |**AzureRepos.Git**|https://{domain}    |
 |**BitBucket**     |https://{domain}    |
 
-To override the above defaults specify `ContentUrl` metadata on the item in [`build/*.props`](https://github.com/dotnet/sourcelink/blob/master/src/SourceLink.GitHub/build/Microsoft.SourceLink.GitHub.props) in the Source Link package. For example, GitHub.com server provides content on a CDN domain `raw.githubusercontent.com`:
+To override the above defaults specify `ContentUrl` metadata on the item in [`build/{PackageName}.props`](https://github.com/dotnet/sourcelink/blob/master/src/SourceLink.GitHub/build/Microsoft.SourceLink.GitHub.props) in the Source Link package. For example, GitHub.com server provides content on a CDN domain `raw.githubusercontent.com`:
  
 ```xml
 <ItemGroup>
