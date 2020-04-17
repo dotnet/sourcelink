@@ -186,8 +186,6 @@ Pre-release builds are available from Azure DevOps public feed: `https://pkgs.de
 
 [![Build Status](https://dnceng.visualstudio.com/public/_apis/build/status/SourceLink%20PR?branchName=master)](https://dnceng.visualstudio.com/public/_build/latest?definitionId=297?branchName=master)
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
-
 ## Experience in Visual Studio
 
 The following screenshot demonstrates debugging a NuGet package referenced by an application, with source automatically downloaded from GitHub and used by Visual Studio 2017.
