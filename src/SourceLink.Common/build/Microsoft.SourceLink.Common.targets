@@ -4,6 +4,7 @@
   <Import Project="InitializeSourceControlInformation.targets"/>
   
   <UsingTask TaskName="Microsoft.SourceLink.Common.GenerateSourceLinkFile" AssemblyFile="$(_MicrosoftSourceLinkCommonAssemblyFile)"/>
+  <UsingTask TaskName="Microsoft.SourceLink.Common.MergeSourceLinkFiles" AssemblyFile="$(_MicrosoftSourceLinkCommonAssemblyFile)"/>
 
   <Target Name="_SetSourceLinkFilePath">
     <PropertyGroup>
@@ -29,9 +30,17 @@
           Condition="'$(SourceRootMappedPathsFeatureSupported)' == 'true'"/>
 
   <!-- 
+    Add compiler targets: C++ generates sourcelink file only for static libs.
+  -->
+  <PropertyGroup Condition="'$(Language)' == 'C++' and $(ConfigurationType) == 'StaticLibrary'">
+    <_GenerateSourceLinkFileBeforeTargets>BeforeClCompile</_GenerateSourceLinkFileBeforeTargets>
+    <_GenerateSourceLinkFileDependsOnTargets/>
+  </PropertyGroup>
+
+  <!-- 
     Add compiler targets: C++ generates PDB with SourceLink in Link phase.
   -->
-  <PropertyGroup Condition="'$(Language)' == 'C++'">
+  <PropertyGroup Condition="'$(Language)' == 'C++' and $(ConfigurationType) != 'StaticLibrary'">
     <_GenerateSourceLinkFileBeforeTargets>Link</_GenerateSourceLinkFileBeforeTargets>
     <_GenerateSourceLinkFileDependsOnTargets>ComputeLinkSwitches</_GenerateSourceLinkFileDependsOnTargets>
   </PropertyGroup>
@@ -46,26 +55,37 @@
     This target shall initialize SourceLinkUrl of all items that don't have it initialized yet and belong to the source control provider.
   -->
   <Target Name="_GenerateSourceLinkFile"
-          DependsOnTargets="_SetSourceLinkFilePath;$(_GenerateSourceLinkFileDependsOnTargets);_InitializeSourceRootMappedPathsOpt;$(SourceLinkUrlInitializerTargets)"
+          DependsOnTargets="_SetSourceLinkFilePath;$(_GenerateSourceLinkFileDependsOnTargets); _InitializeSourceRootMappedPathsOpt;$(SourceLinkUrlInitializerTargets)"
           Condition="'$(EnableSourceLink)' == 'true' and '$(DebugType)' != 'none'"
           Outputs="$(SourceLink)">
-  
+
     <Microsoft.SourceLink.Common.GenerateSourceLinkFile SourceRoots="@(SourceRoot)" OutputFile="$(SourceLink)" />
 
     <ItemGroup>
       <FileWrites Include="$(SourceLink)" />
     </ItemGroup>
 
-    <!-- C++ Link task currently doesn't recognize SourceLink property -->
-    <ItemGroup Condition="'$(Language)' == 'C++'">
+    <!-- C++ Link task currently doesn't recognize SourceLink property only add this for non-static libs since lib doesn't
+         understand /sourcelink 
+    -->
+    <ItemGroup Condition="'$(Language)' == 'C++' and $(ConfigurationType) != 'StaticLibrary'">
       <Link Update="@(Link)">
         <AdditionalOptions>%(Link.AdditionalOptions) /sourcelink:"$(SourceLink)"</AdditionalOptions>
       </Link>
     </ItemGroup>
   </Target>
 
+  <!-- Before we link run the MergeSourceLinkFiles task to merge the sourcelink files associated with the libs together
+       with the sourcelink file generated in this build for the exe/dll
+  -->
+  <Target Name="_MergeSourceLinkFiles"
+          DependsOnTargets="_GenerateSourceLinkFile"
+          Condition="'$(Language)' == 'C++' and $(ConfigurationType) != 'StaticLibrary'">
+    <Microsoft.SourceLink.Common.MergeSourceLinkFiles SourceLinkFile="$(SourceLink)" AdditionalLibraryDirectories="%(Link.AdditionalLibraryDirectories)" AdditionalDependencies="%(Link.AdditionalDependencies)" ImportLibraries="@(ProjectReferenceToLink)"/>
+  </Target>
+
   <Target Name="GenerateSourceLinkFile"
-          DependsOnTargets="InitializeSourceControlInformation;_GenerateSourceLinkFile"
+          DependsOnTargets="InitializeSourceControlInformation;_GenerateSourceLinkFile;_MergeSourceLinkFiles"
           Condition="'$(SourceControlInformationFeatureSupported)' == 'true'"
           BeforeTargets="$(_GenerateSourceLinkFileBeforeTargets)"/>
   
