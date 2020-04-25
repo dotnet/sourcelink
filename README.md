@@ -114,6 +114,16 @@ If your project is hosted by Bitbucket Server or Bitbucket Data Center older tha
 The item group `SourceLinkBitbucketGitHost` specifies the domain of the Bitbucket host and the version of Bitbucket.
 The version is important since URL format for accessing files changes with version 4.7. By default Source Link assumes new format (version 4.7+).
 
+### gitweb (pre-release)
+
+For projects hosted on-prem via [gitweb](https://git-scm.com/docs/gitweb) reference [Microsoft.SourceLink.GitWeb](https://www.nuget.org/packages/Microsoft.SourceLink.GitWeb) package: 
+
+```xml
+<ItemGroup>
+  <PackageReference Include="Microsoft.SourceLink.GitWeb" Version="1.1.0-beta-20204-02" PrivateAssets="All"/>
+</ItemGroup>
+```
+
 ### Multiple providers, repositories with submodules
 
 If your repository contains submodules hosted by other git providers reference packages of all these providers. For example, projects in a repository hosted by Azure Repos that links a GitHub repository via a submodule should reference both [Microsoft.SourceLink.AzureRepos.Git](https://www.nuget.org/packages/Microsoft.SourceLink.AzureRepos.Git) and [Microsoft.SourceLink.GitHub](https://www.nuget.org/packages/Microsoft.SourceLink.GitHub) packages. [Additional configuration](https://github.com/dotnet/sourcelink/blob/master/docs/README.md#configuring-projects-with-multiple-sourcelink-providers) might be needed if multiple Source Link packages are used in the project.
