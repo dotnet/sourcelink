@@ -3,7 +3,7 @@
   <Import Project="InitializeSourceControlInformation.targets"/>
   
   <UsingTask TaskName="Microsoft.SourceLink.Common.GenerateSourceLinkFile" AssemblyFile="$(_MicrosoftSourceLinkCommonAssemblyFile)"/>
-  <UsingTask TaskName="Microsoft.SourceLink.Common.MergeSourceLinkFiles" AssemblyFile="$(_MicrosoftSourceLinkCommonAssemblyFile)"/>
+  <UsingTask TaskName="Microsoft.SourceLink.Common.FindAdditionalSourceLinkFiles" AssemblyFile="$(_MicrosoftSourceLinkCommonAssemblyFile)"/>
 
   <Target Name="_SetSourceLinkFilePath">
     <PropertyGroup>
@@ -64,27 +64,23 @@
       <FileWrites Include="$(SourceLink)" />
     </ItemGroup>
 
+    <!-- Locate any additional sourcelink files associated with static libs -->
+    <Microsoft.SourceLink.Common.FindAdditionalSourceLinkFiles SourceLinkFile="$(SourceLink)" AdditionalLibraryDirectories="%(Link.AdditionalLibraryDirectories)" AdditionalDependencies="%(Link.AdditionalDependencies)" ImportLibraries="@(ProjectReferenceToLink)">
+      <Output TaskParameter="AllSourceLinkFiles" ItemName="SourceLinks" />
+    </Microsoft.SourceLink.Common.FindAdditionalSourceLinkFiles>
+
     <!-- C++ Link task currently doesn't recognize SourceLink property only add this for non-static libs since lib doesn't
          understand /sourcelink 
     -->
     <ItemGroup Condition="'$(Language)' == 'C++' and $(ConfigurationType) != 'StaticLibrary'">
       <Link Update="@(Link)">
-        <AdditionalOptions>%(Link.AdditionalOptions) /sourcelink:"$(SourceLink)"</AdditionalOptions>
+        <AdditionalOptions>%(Link.AdditionalOptions) @(SourceLinks->'/sourcelink:&quot;%(Identity)&quot;', ' ')</AdditionalOptions>
       </Link>
     </ItemGroup>
   </Target>
 
-  <!-- Before we link run the MergeSourceLinkFiles task to merge the sourcelink files associated with the libs together
-       with the sourcelink file generated in this build for the exe/dll
-  -->
-  <Target Name="_MergeSourceLinkFiles"
-          DependsOnTargets="_GenerateSourceLinkFile"
-          Condition="'$(Language)' == 'C++' and $(ConfigurationType) != 'StaticLibrary'">
-    <Microsoft.SourceLink.Common.MergeSourceLinkFiles SourceLinkFile="$(SourceLink)" AdditionalLibraryDirectories="%(Link.AdditionalLibraryDirectories)" AdditionalDependencies="%(Link.AdditionalDependencies)" ImportLibraries="@(ProjectReferenceToLink)"/>
-  </Target>
-
   <Target Name="GenerateSourceLinkFile"
-          DependsOnTargets="InitializeSourceControlInformation;_GenerateSourceLinkFile;_MergeSourceLinkFiles"
+          DependsOnTargets="InitializeSourceControlInformation;_GenerateSourceLinkFile"
           Condition="'$(SourceControlInformationFeatureSupported)' == 'true'"
           BeforeTargets="$(_GenerateSourceLinkFileBeforeTargets)"/>
   

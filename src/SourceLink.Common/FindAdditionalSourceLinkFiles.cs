@@ -5,23 +5,11 @@ using System.IO;
 using System.Collections.Generic;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
 using System;
 
 namespace Microsoft.SourceLink.Common
 {
-    /// <summary>
-    /// Used for serialization of the sourcelink files. Only supports the basic elements generated in this project.
-    /// </summary>
-    [DataContract]
-    public class SourceLinks
-    {
-        [DataMember]
-        public Dictionary<string, string> documents = new Dictionary<string, string>();
-    }
-
-    public sealed class MergeSourceLinkFiles : Task
+    public sealed class FindAdditionalSourceLinkFiles : Task
     {
         /// <summary>
         /// The name/path of the sourcelink file that we will merge into.
@@ -47,15 +35,16 @@ namespace Microsoft.SourceLink.Common
         [Required, NotNull]
         public string[]? ImportLibraries { get; set; }
 
+        [Output]
+        public string[]? AllSourceLinkFiles { get; set; }
+
         public override bool Execute()
         {
+            List<string> allSourceLinkFiles = new List<string>();
+            allSourceLinkFiles.Add(SourceLinkFile);
+
             try
             {
-                var additionalSourceLinks = new List<SourceLinks>();
-
-                // Read the original sourcelink file
-                var sourceLink = ReadSourceLinkFile(SourceLinkFile);
-
                 //// Throughout we expect that the sourcelink files for a lib is alongside
                 //// the lib with the extension sourcelink.json instead of lib.
 
@@ -68,7 +57,7 @@ namespace Microsoft.SourceLink.Common
                     if (File.Exists(sourceLinkName))
                     {
                         Log.LogMessage("Found additional sourcelink file '{0}'", sourceLinkName);
-                        additionalSourceLinks.Add(ReadSourceLinkFile(sourceLinkName));
+                        allSourceLinkFiles.Add(sourceLinkName);
                     }
                 }
 
@@ -83,7 +72,7 @@ namespace Microsoft.SourceLink.Common
                         if (File.Exists(sourceLinkName))
                         {
                             Log.LogMessage("Found additional sourcelink file '{0}'", sourceLinkName);
-                            additionalSourceLinks.Add(ReadSourceLinkFile(sourceLinkName));
+                            allSourceLinkFiles.Add(sourceLinkName);
                         }
                     }
                     else
@@ -96,72 +85,22 @@ namespace Microsoft.SourceLink.Common
                             if (File.Exists(potentialPath))
                             {
                                 Log.LogMessage("Found additional sourcelink file '{0}'", potentialPath);
-                                additionalSourceLinks.Add(ReadSourceLinkFile(potentialPath));
+                                allSourceLinkFiles.Add(potentialPath);
                                 break;
                             }
                         }
                     }
                 }
 
-                // Merge all the sourcelinks together and write back to the original sourcelink file path
-                MergeSourceLinks(sourceLink, additionalSourceLinks);
-                WriteSourceLinkFile(sourceLink, SourceLinkFile);
+                AllSourceLinkFiles = allSourceLinkFiles.ToArray();
                 return true;
             }
             catch (Exception ex)
             {
-                Log.LogError("Failed to merge sourcelink files for libs with dll/exe sourcelink file - {0}", ex.Message);
+                Log.LogError("Failed to find sourcelink files for libs with dll/exe sourcelink file - {0}", ex.Message);
             }
 
             return false;
-        }
-
-        private void MergeSourceLinks(SourceLinks sourceLink, List<SourceLinks> additionalSourceLinks)
-        {
-            foreach (var additionalSourceLink in additionalSourceLinks)
-            {
-                foreach (var document in additionalSourceLink.documents)
-                {
-                    if ( !sourceLink.documents.ContainsKey(document.Key))
-                    {
-                        sourceLink.documents.Add(document.Key, document.Value);
-                        Log.LogMessage("Additional sourcelink document {0}: {1}", document.Key, document.Value);
-                    }
-                    else
-                    {
-                        Log.LogMessage("Sourcelink document {0} already exists", document.Key);
-                    }
-                }
-            }
-        }
-
-        private static SourceLinks ReadSourceLinkFile(string path)
-        {
-            DataContractJsonSerializerSettings settings = new DataContractJsonSerializerSettings
-            {
-                UseSimpleDictionaryFormat = true
-            };
-
-            var sourceLink = new SourceLinks();
-            using (var fileStream = File.OpenRead(path))
-            {
-                var serializer = new DataContractJsonSerializer(typeof(SourceLinks), settings);
-                return (SourceLinks)serializer.ReadObject(fileStream);
-            }
-        }
-
-        private static void WriteSourceLinkFile(SourceLinks sourceLink, string path)
-        {
-            DataContractJsonSerializerSettings settings = new DataContractJsonSerializerSettings
-            {
-                UseSimpleDictionaryFormat = true
-            };
-
-            using (var fileStream = File.OpenWrite(path))
-            {
-                var serializer = new DataContractJsonSerializer(typeof(SourceLinks), settings);
-                serializer.WriteObject(fileStream, sourceLink);
-            }
         }
     }
 }
