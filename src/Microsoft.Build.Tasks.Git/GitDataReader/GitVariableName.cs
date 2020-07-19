@@ -40,7 +40,7 @@ namespace Microsoft.Build.Tasks.Git
                SubsectionNameEquals(other.SubsectionName) &&
                VariableNameEquals(other.VariableName);
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
             => obj is GitVariableName other && Equals(other);
 
         public override int GetHashCode()

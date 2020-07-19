@@ -21,7 +21,7 @@ namespace TestUtilities
 
         public readonly TempRoot Temp = new TempRoot();
 
-        private static readonly string? s_dotnetExeName;
+        private static readonly string s_dotnetExeName;
         private static readonly string? s_dotnetInstallDir;
         private static readonly BuildInfoAttribute s_buildInfo;
         private static readonly string? s_dotnetSdkPath;
@@ -80,15 +80,15 @@ $@"<?xml version=""1.0"" encoding=""utf-8""?>
         static DotNetSdkTestBase()
         {
             s_dotnetExeName = "dotnet" + (Path.DirectorySeparatorChar == '/' ? "" : ".exe");
-            s_buildInfo = typeof(DotNetSdkTestBase).Assembly.GetCustomAttribute<BuildInfoAttribute>();
+            s_buildInfo = typeof(DotNetSdkTestBase).Assembly!.GetCustomAttribute<BuildInfoAttribute>()!;
 
             var minSdkVersion = SemanticVersion.Parse(s_buildInfo.SdkVersion);
 
-            static bool isDotNetInstallDirectory(string dir)
+            static bool isDotNetInstallDirectory(string? dir)
                 => dir != null && File.Exists(Path.Combine(dir, s_dotnetExeName));
 
             var dotnetInstallDir =
-                new[] { Environment.GetEnvironmentVariable("DOTNET_INSTALL_DIR") }.Concat(Environment.GetEnvironmentVariable("PATH").Split(Path.PathSeparator)).
+                new[] { Environment.GetEnvironmentVariable("DOTNET_INSTALL_DIR") }.Concat(Environment.GetEnvironmentVariable("PATH")!.Split(Path.PathSeparator)).
                 FirstOrDefault(isDotNetInstallDirectory);
 
             if (dotnetInstallDir != null)
@@ -157,9 +157,9 @@ $@"<Project>
         {
             Assert.True(s_dotnetInstallDir != null, $"SDK not found. Use {nameof(ConditionalFactAttribute)}(typeof({nameof(DotNetSdkAvailable)})) to skip the test if the SDK is not found.");
 
-            DotNetPath = Path.Combine(s_dotnetInstallDir, s_dotnetExeName);
+            DotNetPath = Path.Combine(s_dotnetInstallDir!, s_dotnetExeName);
             var testBinDirectory = Path.GetDirectoryName(typeof(DotNetSdkTestBase).Assembly.Location);
-            var sdksDir = Path.Combine(s_dotnetSdkPath, "Sdks");
+            var sdksDir = Path.Combine(s_dotnetSdkPath!, "Sdks");
 
             ProjectName = "test";
             ProjectFileName = ProjectName + ".csproj";
@@ -208,7 +208,7 @@ $@"<Project>
             string[]? expectedWarnings = null,
             string? additionalCommandLineArgs = null,
             string buildVerbosity = "minimal",
-            Func<string, bool>? expectedBuildOutputFilter = null)
+            Predicate<string>? expectedBuildOutputFilter = null)
         {
             NullableDebug.Assert(targets != null);
             NullableDebug.Assert(expressions != null);
@@ -248,7 +248,7 @@ $@"<Project>
                         where match.Success
                         select match.Groups[1].Value).ToArray();
 
-                bool diagnosticsEqual(string expected, string actual)
+                static bool diagnosticsEqual(string expected, string actual)
                 {
                     string ellipsis = "...";
                     int index = expected.IndexOf(ellipsis);
@@ -280,7 +280,7 @@ $@"<Project>
 
                 if (expectedBuildOutputFilter != null)
                 {
-                    Assert.True(outputLines.Any(expectedBuildOutputFilter));
+                    Assert.Contains(outputLines, expectedBuildOutputFilter);
                 }
 
                 success = true;

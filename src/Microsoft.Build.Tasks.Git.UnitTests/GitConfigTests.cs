@@ -61,7 +61,7 @@ a =
 
             TextReader openFile(string path)
             {
-                Assert.Equal(gitDirectory, PathUtils.EnsureTrailingSlash(PathUtils.ToPosixPath(Path.GetDirectoryName(path))));
+                Assert.Equal(gitDirectory, PathUtils.EnsureTrailingSlash(PathUtils.ToPosixPath(Path.GetDirectoryName(path)!)));
 
                 return new StringReader(Path.GetFileName(path) switch
                 {
@@ -182,7 +182,7 @@ a =
 
             TextReader openFile(string path)
             {
-                Assert.Equal(gitDirectory, PathUtils.EnsureTrailingSlash(PathUtils.ToPosixPath(Path.GetDirectoryName(path))));
+                Assert.Equal(gitDirectory, PathUtils.EnsureTrailingSlash(PathUtils.ToPosixPath(Path.GetDirectoryName(path)!)));
 
                 return new StringReader(Path.GetFileName(path) switch
                 {

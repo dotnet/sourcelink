@@ -376,9 +376,10 @@ namespace Microsoft.Build.Tasks.Git
         /// <returns>False if no git repository can be found that contains the specified path.</returns>
         public static bool TryFindRepository(string directory, out GitRepositoryLocation location)
         {
+            var dir = directory;
             try
             {
-                directory = Path.GetFullPath(directory);
+                dir = Path.GetFullPath(dir);
             }
             catch
             {
@@ -386,16 +387,16 @@ namespace Microsoft.Build.Tasks.Git
                 return false;
             }
 
-            while (directory != null)
+            while (dir != null)
             {
-                if (TryGetRepositoryLocationImpl(directory, out location))
+                if (TryGetRepositoryLocationImpl(dir, out location))
                 {
                     return true;
                 }
 
                 // TODO: https://github.com/dotnet/sourcelink/issues/302
                 // stop on device boundary
-                directory = Path.GetDirectoryName(directory);
+                dir = Path.GetDirectoryName(dir);
             }
 
             location = default;
@@ -463,7 +464,7 @@ namespace Microsoft.Build.Tasks.Git
             try
             {
                 // link is relative to the directory containing the file:
-                return Path.GetFullPath(Path.Combine(Path.GetDirectoryName(path), link));
+                return Path.GetFullPath(Path.Combine(Path.GetDirectoryName(path)!, link));
             }
             catch
             {

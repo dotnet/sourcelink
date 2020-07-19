@@ -8,7 +8,7 @@ namespace Microsoft.Build.Tasks.SourceControl
 {
     internal static class UriUtilities
     {
-        public static bool TryParseAuthority(string value, out Uri uri)
+        public static bool TryParseAuthority(string value, [NotNullWhen(true)] out Uri? uri)
             => Uri.TryCreate("unknown://" + value, UriKind.Absolute, out uri) && 
                uri.Scheme == "unknown" && uri.Host != "" && uri.UserInfo == "" && uri.PathAndQuery == "/";
 
@@ -36,7 +36,7 @@ namespace Microsoft.Build.Tasks.SourceControl
             return url.StartsWith(prefix, StringComparison.Ordinal);
         }
 
-        public static bool TrySplitRelativeUrl(string relativeUrl, [NotNullWhen(true)]out string[]? parts)
+        public static bool TrySplitRelativeUrl(string relativeUrl, [NotNullWhen(true)] out string[]? parts)
         {
             // required leading slash:
             if (relativeUrl.Length == 0 || relativeUrl == "/")
