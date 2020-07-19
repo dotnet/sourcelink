@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Build.Tasks.SourceControl
 {
@@ -33,7 +34,11 @@ namespace Microsoft.Build.Tasks.SourceControl
             return leftLength.CompareTo(rightLength);
         }
 
-        public int Compare(T[] left, T[] right)
-            => Compare(left, left.Length, right, right.Length);
+        public int Compare([AllowNull] T[] left, [AllowNull] T[] right)
+        {
+            left ??= Array.Empty<T>();
+            right ??= Array.Empty<T>();
+            return Compare(left, left.Length, right, right.Length);
+        }
     }
 }

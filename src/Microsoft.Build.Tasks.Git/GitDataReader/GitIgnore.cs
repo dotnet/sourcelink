@@ -117,14 +117,14 @@ namespace Microsoft.Build.Tasks.Git
 
             var reusableBuffer = new StringBuilder();
 
-            var directory = PathUtils.ToPosixDirectoryPath(Path.GetFullPath(Path.GetDirectoryName(path)));
+            var directory = PathUtils.ToPosixDirectoryPath(Path.GetFullPath(Path.GetDirectoryName(path)!));
             var patterns = ImmutableArray.CreateBuilder<Pattern>();
 
             using (reader)
             {
                 while (true)
                 {
-                    string line = reader.ReadLine();
+                    var line = reader.ReadLine();
                     if (line == null)
                     {
                         break;

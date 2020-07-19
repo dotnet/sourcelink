@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -45,7 +46,7 @@ namespace TestUtilities
                 return s_instance.Equals(left, right);
             }
 
-            bool IEqualityComparer<T>.Equals(T x, T y)
+            bool IEqualityComparer<T>.Equals([AllowNull] T x, [AllowNull] T y)
             {
                 if (CanBeNull())
                 {
@@ -282,12 +283,12 @@ namespace TestUtilities
             }
         }
 
-        public static string ToString(object? o)
+        public static string? ToString(object? o)
         {
             return Convert.ToString(o);
         }
 
-        public static string ToString<T>(IEnumerable<T> list, string separator = ", ", Func<T, string>? itemInspector = null)
+        public static string ToString<T>(IEnumerable<T> list, string separator = ", ", Func<T, string?>? itemInspector = null)
         {
             if (itemInspector == null)
             {
@@ -410,7 +411,7 @@ namespace TestUtilities
 
         public static string GetAssertMessage<T>(IEnumerable<T> expected, IEnumerable<T> actual, bool escapeQuotes)
         {
-            Func<T, string>? itemInspector = escapeQuotes ? new Func<T, string>(t => t?.ToString().Replace("\"", "\"\"") ?? "null") : null;
+            Func<T, string>? itemInspector = escapeQuotes ? new Func<T, string>(t => t?.ToString()?.Replace("\"", "\"\"") ?? "null") : null;
             return GetAssertMessage(expected, actual, itemInspector: itemInspector, itemSeparator: "\r\n");
         }
 
@@ -429,7 +430,7 @@ namespace TestUtilities
                 }
                 else
                 {
-                    itemInspector = new Func<T, string>(obj => (obj != null) ? obj.ToString() : "<null>");
+                    itemInspector = new Func<T, string>(obj => obj?.ToString() ?? "<null>");
                 }
             }
 

@@ -12,7 +12,7 @@ namespace TestUtilities
         {
             foreach (var skipCondition in skipConditions)
             {
-                ExecutionCondition condition = (ExecutionCondition)Activator.CreateInstance(skipCondition);
+                ExecutionCondition condition = (ExecutionCondition)Activator.CreateInstance(skipCondition)!;
                 if (condition.ShouldSkip)
                 {
                     Skip = condition.SkipReason;
@@ -28,7 +28,7 @@ namespace TestUtilities
         {
             foreach (var skipCondition in skipConditions)
             {
-                ExecutionCondition condition = (ExecutionCondition)Activator.CreateInstance(skipCondition);
+                ExecutionCondition condition = (ExecutionCondition)Activator.CreateInstance(skipCondition)!;
                 if (condition.ShouldSkip)
                 {
                     Skip = condition.SkipReason;

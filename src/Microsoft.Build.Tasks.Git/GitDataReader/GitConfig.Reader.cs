@@ -243,7 +243,7 @@ namespace Microsoft.Build.Tasks.Git
                 }
                 else
                 {
-                    root = Path.GetDirectoryName(basePath);
+                    root = Path.GetDirectoryName(basePath) ?? "";
                 }
 
                 try
@@ -294,7 +294,7 @@ namespace Microsoft.Build.Tasks.Git
                     if (pattern.Length >= 2 && pattern[0] == '.' && pattern[1] == '/')
                     {
                         // leading './' is substituted with the path to the directory containing the current config file.
-                        pattern = PathUtils.CombinePosixPaths(PathUtils.ToPosixPath(Path.GetDirectoryName(configFilePath)), pattern.Substring(2));
+                        pattern = PathUtils.CombinePosixPaths(PathUtils.ToPosixPath(Path.GetDirectoryName(configFilePath)!), pattern.Substring(2));
                     }
                     else if (pattern.Length >= 2 && pattern[0] == '~' && pattern[1] == '/')
                     {

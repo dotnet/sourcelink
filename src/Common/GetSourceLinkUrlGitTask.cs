@@ -164,7 +164,7 @@ namespace Microsoft.Build.Tasks.SourceControl
                         continue;
                     }
 
-                    Uri contentUri;
+                    Uri? contentUri;
                     string contentUrl = item.GetMetadata(ContentUrlMetadataName);
                     bool hasDefaultContentUri = string.IsNullOrEmpty(contentUrl);
                     if (hasDefaultContentUri)
