@@ -2,7 +2,7 @@
 <Project>
   <PropertyGroup>
     <_SourceLinkBitbucketAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)..\tools\net461\Microsoft.SourceLink.Bitbucket.Git.dll</_SourceLinkBitbucketAssemblyFile>
-    <_SourceLinkBitbucketAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\netcoreapp2.0\Microsoft.SourceLink.Bitbucket.Git.dll</_SourceLinkBitbucketAssemblyFile>
+    <_SourceLinkBitbucketAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\netcoreapp3.1\Microsoft.SourceLink.Bitbucket.Git.dll</_SourceLinkBitbucketAssemblyFile>
   </PropertyGroup>
 
   <UsingTask TaskName="Microsoft.SourceLink.Bitbucket.Git.GetSourceLinkUrl" AssemblyFile="$(_SourceLinkBitbucketAssemblyFile)"/>
