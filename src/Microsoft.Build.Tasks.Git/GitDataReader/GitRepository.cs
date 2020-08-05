@@ -209,6 +209,15 @@ namespace Microsoft.Build.Tasks.Git
         /// <returns>Null if the HEAD tip reference can't be resolved.</returns>
         internal string? ReadSubmoduleHeadCommitSha(string submoduleWorkingDirectoryFullPath)
         {
+            // submodules don't usually have their own .git directories but can when Arcade uberclone
+            // was used.  Handle this case first since the other case throws.
+            var dotGitPath = Path.Combine(submoduleWorkingDirectoryFullPath, GitDirName);
+            if (IsGitDirectory(dotGitPath, out var directSubmoduleGitDirectory))
+            {
+                var submoduleGitDirResolver = new GitReferenceResolver(directSubmoduleGitDirectory, submoduleWorkingDirectoryFullPath);
+                return submoduleGitDirResolver.ResolveHeadReference();
+            }
+
             var gitDirectory = ReadDotGitFile(Path.Combine(submoduleWorkingDirectoryFullPath, GitDirName));
             if (!IsGitDirectory(gitDirectory, out var commonDirectory))
             {
