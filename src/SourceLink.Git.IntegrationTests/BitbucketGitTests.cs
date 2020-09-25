@@ -43,6 +43,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expectedResults: new[]
                 {
+                    NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://api.bitbucket.org/2.0/repositories/test-org/{repoName}/src/{commitSha}/*",
                     s_relativeSourceLinkJsonPath,
@@ -101,6 +102,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expectedResults: new[]
                 {
+                    NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://bitbucket.domain.com/projects/test-org/repos/{repoName}/raw/*?at={commitSha}",
                     s_relativeSourceLinkJsonPath,
@@ -157,6 +159,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expectedResults: new[]
                 {
+                    NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://bitbucket.domain.com/projects/test-org/repos/{repoName}/raw/*?at={commitSha}",
                     s_relativeSourceLinkJsonPath,
@@ -215,6 +218,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expectedResults: new[]
                 {
+                    NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://bitbucket.domain.com/projects/test-org/repos/{repoName}/raw/*?at={commitSha}",
                     s_relativeSourceLinkJsonPath,
@@ -272,6 +276,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expectedResults: new[]
                 {
+                    NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://bitbucket.domain.com/projects/test-org/repos/{repoName}/browse/*?at={commitSha}&raw",
                     s_relativeSourceLinkJsonPath,
@@ -329,6 +334,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expectedResults: new[]
                 {
+                    NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://api.噸.com/2.0/repositories/test-org/{repoName}/src/{commitSha}/*",
                     s_relativeSourceLinkJsonPath,
@@ -386,6 +392,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expectedResults: new[]
                 {
+                    NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://噸.com/projects/test-org/repos/{repoName}/browse/*?at={commitSha}&raw",
                     s_relativeSourceLinkJsonPath,
@@ -443,6 +450,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expectedResults: new[]
                 {
+                    NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://噸.com/projects/test-org/repos/{repoName}/raw/*?at={commitSha}",
                     s_relativeSourceLinkJsonPath,

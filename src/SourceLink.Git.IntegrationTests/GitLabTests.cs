@@ -47,6 +47,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expectedResults: new[]
                 {
+                    NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://噸.com/test-org/{repoName}/raw/{commitSha}/*",
                     s_relativeSourceLinkJsonPath,
@@ -104,6 +105,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expectedResults: new[]
                 {
+                    NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://噸.com/test-org/{repoName}/raw/{commitSha}/*",
                     s_relativeSourceLinkJsonPath,

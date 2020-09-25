@@ -66,6 +66,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expectedResults: new[]
                 {
+                    NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://raw.githubusercontent.com/test-org/{repoName}/{commitSha}/*",
                     s_relativeSourceLinkJsonPath,
@@ -122,6 +123,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expectedResults: new[]
                 {
+                    NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://test.{host}/test-org/_apis/git/repositories/{repoName}/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*",
                     s_relativeSourceLinkJsonPath,
@@ -163,6 +165,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expectedResults: new[]
                 {
+                    NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://{host}/test/test-org/_apis/git/repositories/{repoName}/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*",
                     s_relativeSourceLinkJsonPath,
@@ -188,11 +191,12 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expressions: new[]
                 {
-                    "@(SourceRoot->'%(SourceLinkUrl)')",
+                    "@(SourceRoot->'%(Identity):%(SourceLinkUrl)')",
                 },
                 expectedResults: new[]
                 {
-                    "",
+                    NuGetPackageFolders + ":",
+                    EnsureTrailingDirectorySeparator(ProjectDir.Path) + ":",
                 },
                 expectedWarnings: new[]
                 {

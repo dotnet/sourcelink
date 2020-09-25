@@ -50,6 +50,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expectedResults: new[]
                 {
+                    NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://噸.com/gitweb/?p={repoName};a=blob_plain;hb={commitSha};f=*",
                     s_relativeSourceLinkJsonPath,
