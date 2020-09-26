@@ -38,7 +38,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expectedResults: new[]
                 {
-                    ""
+                    NuGetPackageFolders
                 },
                 expectedWarnings: new[]
                 {
@@ -99,6 +99,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expectedResults: new[]
                 {
+                    NuGetPackageFolders,
                     SourceRoot,
                     $"https://raw.githubusercontent.com/test-org/test-repo2/{commitSha}/*",
                     s_relativeSourceLinkJsonPath,
@@ -240,6 +241,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expectedResults: new[]
                 {
+                    NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://raw.githubusercontent.com/test-org/{repoName}/{commitSha}/*",
                     s_relativeSourceLinkJsonPath,
@@ -295,6 +297,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expectedResults: new[]
                 {
+                    NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://raw.githubusercontent.com/test-org/{repoName}/{commitSha}/*",
                     s_relativeSourceLinkJsonPath,

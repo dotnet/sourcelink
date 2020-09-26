@@ -59,6 +59,7 @@ $@"<?xml version=""1.0"" encoding=""utf-8""?>
         protected readonly TempDirectory ProjectDir;
         protected readonly TempDirectory ProjectObjDir;
         protected readonly TempDirectory NuGetCacheDir;
+        protected readonly string NuGetPackageFolders;
         protected readonly TempDirectory ProjectOutDir;
         protected readonly TempFile Project;
         protected readonly string SourceRoot;
@@ -168,6 +169,7 @@ $@"<Project>
 
             RootDir = Temp.CreateDirectory();
             NuGetCacheDir = RootDir.CreateDirectory(".packages");
+            NuGetPackageFolders = EnsureTrailingDirectorySeparator(NuGetCacheDir.Path);
 
             RootDir.CreateFile("Directory.Build.props").WriteAllText(
 $@"<Project>
@@ -186,7 +188,8 @@ $@"<Project>
             {
                 { "MSBuildSDKsPath", sdksDir },
                 { "DOTNET_MSBUILD_SDK_RESOLVER_SDKS_DIR", sdksDir },
-                { "NUGET_PACKAGES", NuGetCacheDir.Path }
+                { "NUGET_PACKAGES", NuGetCacheDir.Path },
+                { "NuGetPackageFolders", NuGetPackageFolders }
             };
 
             ProjectDir = RootDir.CreateDirectory(ProjectName);
@@ -197,6 +200,9 @@ $@"<Project>
             Project = ProjectDir.CreateFile(ProjectFileName).WriteAllText(s_projectSource);
             ProjectDir.CreateFile("TestClass.cs").WriteAllText(s_classSource);
         }
+
+        public static string EnsureTrailingDirectorySeparator(string path)
+            => (path.LastOrDefault() == Path.DirectorySeparatorChar) ? path : path + Path.DirectorySeparatorChar;
 
         protected void VerifyValues(
             string customProps, 
