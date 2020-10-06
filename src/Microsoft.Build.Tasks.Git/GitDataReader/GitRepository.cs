@@ -215,7 +215,7 @@ namespace Microsoft.Build.Tasks.Git
             var dotGitPath = Path.Combine(submoduleWorkingDirectoryFullPath, GitDirName);
             if (IsGitDirectory(dotGitPath, out var directSubmoduleGitDirectory))
             {
-                var submoduleGitDirResolver = new GitReferenceResolver(directSubmoduleGitDirectory, submoduleWorkingDirectoryFullPath);
+                var submoduleGitDirResolver = new GitReferenceResolver(directSubmoduleGitDirectory, directSubmoduleGitDirectory);
                 return submoduleGitDirResolver.ResolveHeadReference();
             }
 
