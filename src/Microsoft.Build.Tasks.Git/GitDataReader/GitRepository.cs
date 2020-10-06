@@ -209,8 +209,10 @@ namespace Microsoft.Build.Tasks.Git
         /// <returns>Null if the HEAD tip reference can't be resolved.</returns>
         internal string? ReadSubmoduleHeadCommitSha(string submoduleWorkingDirectoryFullPath)
         {
-            // submodules don't usually have their own .git directories but this is still legal.
-            // see https://git-scm.com/docs/gitsubmodules#_forms for more details.
+            // Submodules don't usually have their own .git directories but this is still legal.
+            // This can occur with older versions of Git or other tools, or when a user clones one
+            // repo into another's source tree (but it was not yet registered as a submodule).
+            // See https://git-scm.com/docs/gitsubmodules#_forms for more details.
             // Handle this case first since the other case throws.
             var dotGitPath = Path.Combine(submoduleWorkingDirectoryFullPath, GitDirName);
             if (IsGitDirectory(dotGitPath, out var directSubmoduleGitDirectory))
