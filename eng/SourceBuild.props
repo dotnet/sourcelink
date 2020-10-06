@@ -1,0 +1,15 @@
+<Project>
+
+  <PropertyGroup>
+    <GitHubRepositoryName>sourcelink</GitHubRepositoryName>
+    <SourceBuildManagedOnly>true</SourceBuildManagedOnly>
+  </PropertyGroup>
+
+  <Target Name="GetRepoSourceBuildCommandConfiguration"
+          BeforeTargets="GetSourceBuildCommandConfiguration">
+    <PropertyGroup>
+      <InnerBuildArgs>$(InnerBuildArgs) /p:Pack=true</InnerBuildArgs>
+    </PropertyGroup>
+  </Target>
+
+</Project>
