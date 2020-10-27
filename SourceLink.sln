@@ -58,7 +58,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.GitWeb
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.GitWeb.UnitTests", "src\SourceLink.GitWeb.UnitTests\Microsoft.SourceLink.GitWeb.UnitTests.csproj", "{50503A43-08C0-493B-B8CC-F368983644C1}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Microsoft.SourceLink.Tools", "src\SourceLink.Tools\Microsoft.SourceLink.Tools.shproj", "{5DF76CC2-5F0E-45A6-AD56-6BBBCCBC1A78}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.Tools.Package", "src\SourceLink.Tools\Microsoft.SourceLink.Tools.Package.csproj", "{141E6850-B424-47AD-884A-CED362027382}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.Tools.UnitTests", "src\SourceLink.Tools.UnitTests\Microsoft.SourceLink.Tools.UnitTests.csproj", "{99D113A9-24EC-471D-9F74-D2AC2F16220B}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		src\SourceLink.Tools\Microsoft.SourceLink.Tools.projitems*{5df76cc2-5f0e-45a6-ad56-6bbbccbc1a78}*SharedItemsImports = 13
+		src\SourceLink.Tools\Microsoft.SourceLink.Tools.projitems*{99d113a9-24ec-471d-9f74-d2ac2f16220b}*SharedItemsImports = 5
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -148,6 +158,14 @@ Global
 		{50503A43-08C0-493B-B8CC-F368983644C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50503A43-08C0-493B-B8CC-F368983644C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50503A43-08C0-493B-B8CC-F368983644C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{141E6850-B424-47AD-884A-CED362027382}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{141E6850-B424-47AD-884A-CED362027382}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{141E6850-B424-47AD-884A-CED362027382}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{141E6850-B424-47AD-884A-CED362027382}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99D113A9-24EC-471D-9F74-D2AC2F16220B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99D113A9-24EC-471D-9F74-D2AC2F16220B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99D113A9-24EC-471D-9F74-D2AC2F16220B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99D113A9-24EC-471D-9F74-D2AC2F16220B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
