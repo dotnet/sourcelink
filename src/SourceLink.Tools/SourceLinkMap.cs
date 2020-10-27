@@ -183,12 +183,12 @@ namespace Microsoft.SourceLink.Tools
         /// Maps specified <paramref name="path"/> to the corresponding URL.
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="path"/> is null.</exception>
-        public bool TryGetUrl(
+        public bool TryGetUri(
             string path,
 #if NETCOREAPP
             [NotNullWhen(true)]
 #endif
-            out string? url)
+            out string? uri)
         {
             if (path == null)
             {
@@ -197,32 +197,32 @@ namespace Microsoft.SourceLink.Tools
 
             if (path.IndexOf('*') >= 0)
             {
-                url = null;
+                uri = null;
                 return false;
             }
 
             // Note: the mapping function is case-insensitive.
 
-            foreach (var (file, mappedUrl) in _entries)
+            foreach (var (file, mappedUri) in _entries)
             {
                 if (file.IsPrefix)
                 {
                     if (path.StartsWith(file.Path, StringComparison.OrdinalIgnoreCase))
                     {
                         var escapedPath = string.Join("/", path.Substring(file.Path.Length).Split(new[] { '/', '\\' }).Select(Uri.EscapeDataString));
-                        url = mappedUrl.Prefix + escapedPath + mappedUrl.Suffix;
+                        uri = mappedUri.Prefix + escapedPath + mappedUri.Suffix;
                         return true;
                     }
                 }
                 else if (string.Equals(path, file.Path, StringComparison.OrdinalIgnoreCase))
                 {
-                    Debug.Assert(mappedUrl.Suffix.Length == 0);
-                    url = mappedUrl.Prefix;
+                    Debug.Assert(mappedUri.Suffix.Length == 0);
+                    uri = mappedUri.Prefix;
                     return true;
                 }
             }
 
-            url = null;
+            uri = null;
             return false;
         } 
     }

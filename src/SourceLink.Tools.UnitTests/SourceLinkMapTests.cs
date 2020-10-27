@@ -63,16 +63,16 @@ namespace Microsoft.SourceLink.Tools.UnitTests
                 @"('C:\b', ) -> ('http://b', '')"
             }, Inspect(map));
 
-            Assert.True(map.TryGetUrl(@"C:\a", out var url));
+            Assert.True(map.TryGetUri(@"C:\a", out var url));
             Assert.Equal("http://server/[]", url);
 
-            Assert.True(map.TryGetUrl(@"C:\a\b\c\d\e", out url));
+            Assert.True(map.TryGetUri(@"C:\a\b\c\d\e", out url));
             Assert.Equal("http://server/[/b/c/d/e]", url);
 
-            Assert.True(map.TryGetUrl(@"C:\b", out url));
+            Assert.True(map.TryGetUri(@"C:\b", out url));
             Assert.Equal("http://b", url);
 
-            Assert.False(map.TryGetUrl(@"C:\b\c", out _));
+            Assert.False(map.TryGetUri(@"C:\b\c", out _));
         }
 
         [Fact]
@@ -95,16 +95,16 @@ namespace Microsoft.SourceLink.Tools.UnitTests
             }, Inspect(map));
 
             string? url;
-            Assert.True(map.TryGetUrl(@"C:\a\b\c\d\e", out url));
+            Assert.True(map.TryGetUri(@"C:\a\b\c\d\e", out url));
             Assert.Equal("1:/d/e", url);
 
-            Assert.True(map.TryGetUrl(@"C:\a\b\", out url));
+            Assert.True(map.TryGetUri(@"C:\a\b\", out url));
             Assert.Equal("2:/", url);
 
-            Assert.True(map.TryGetUrl(@"C:\a\x", out url));
+            Assert.True(map.TryGetUri(@"C:\a\x", out url));
             Assert.Equal("3:/x", url);
 
-            Assert.False(map.TryGetUrl(@"D:\x", out _));
+            Assert.False(map.TryGetUri(@"D:\x", out _));
         }
 
         [Fact]
@@ -125,30 +125,30 @@ namespace Microsoft.SourceLink.Tools.UnitTests
             }, Inspect(map));
 
             string? url;
-            Assert.True(map.TryGetUrl(@"C:\aaa\bbbb", out url));
+            Assert.True(map.TryGetUri(@"C:\aaa\bbbb", out url));
             Assert.Equal("1:b", url);
 
-            Assert.True(map.TryGetUrl(@"C:\aaa\bbb", out url));
+            Assert.True(map.TryGetUri(@"C:\aaa\bbb", out url));
             Assert.Equal("1:", url);
 
-            Assert.True(map.TryGetUrl(@"C:\aaa\bb", out url));
+            Assert.True(map.TryGetUri(@"C:\aaa\bb", out url));
             Assert.Equal("2:", url);
 
-            Assert.False(map.TryGetUrl(@"C:\aaa\b", out _));
+            Assert.False(map.TryGetUri(@"C:\aaa\b", out _));
         }
 
         [Fact]
         public void TryGetUrl_Star()
         {
             var map = SourceLinkMap.Parse(@"{""documents"":{}}");
-            Assert.False(map.TryGetUrl("path*", out _));
+            Assert.False(map.TryGetUri("path*", out _));
         }
 
         [Fact]
         public void TryGetUrl_InvalidArgument()
         {
             var map = SourceLinkMap.Parse(@"{""documents"":{}}");
-            Assert.Throws<ArgumentNullException>(() => map.TryGetUrl(null!, out _));
+            Assert.Throws<ArgumentNullException>(() => map.TryGetUri(null!, out _));
         }
 
         [Theory]
