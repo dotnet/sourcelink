@@ -21,6 +21,7 @@
     <MicrosoftDotNetPlatformAbstractionsVersion>2.1.0</MicrosoftDotNetPlatformAbstractionsVersion>
     <NuGetVersioningVersion>4.9.2</NuGetVersioningVersion>
     <SystemValueTupleVersion>4.5.0</SystemValueTupleVersion>
+    <SystemTextJsonVersion>4.7.2</SystemTextJsonVersion>
     <!-- libgit2 used for integration tests -->
     <LibGit2SharpVersion>0.26.0-preview-0070</LibGit2SharpVersion>
   </PropertyGroup>
