@@ -5,21 +5,18 @@
     <VersionPrefix>1.1.0</VersionPrefix>
     <PreReleaseVersionLabel>beta</PreReleaseVersionLabel>
     <SemanticVersioningV1>true</SemanticVersioningV1>
+
     <!-- Opt-in repo features -->
     <UsingToolNetFrameworkReferenceAssemblies>true</UsingToolNetFrameworkReferenceAssemblies>
     <UsingToolSymbolUploader>true</UsingToolSymbolUploader>
+
     <XUnitVersion>2.4.1</XUnitVersion>
-    <!-- 
-      MSBuild: Keep the version at 15.7 until we can target net472.
-      Newer packages cause netstandard2.0 dependencies to flow to SourceLink projects 
-      when targeting net461 (due to System.Collections.Immutable), which is causing 
-      build issues. See https://github.com/Microsoft/msbuild/issues/2527.
-    -->
-    <MicrosoftBuildVersion>15.7.179</MicrosoftBuildVersion>
-    <MicrosoftBuildTasksCore>15.7.179</MicrosoftBuildTasksCore>
-    <MicrosoftTeamFoundationServerExtendedClientVersion>15.112.1</MicrosoftTeamFoundationServerExtendedClientVersion>
-    <MicrosoftDotNetPlatformAbstractionsVersion>2.1.0</MicrosoftDotNetPlatformAbstractionsVersion>
-    <NuGetVersioningVersion>4.9.2</NuGetVersioningVersion>
+    <MicrosoftBuildVersion>16.7.0</MicrosoftBuildVersion>
+    <MicrosoftBuildTasksCore>16.7.0</MicrosoftBuildTasksCore>
+    <MicrosoftTeamFoundationServerExtendedClientVersion>16.153.0</MicrosoftTeamFoundationServerExtendedClientVersion>
+    <MicrosoftDotNetPlatformAbstractionsVersion>3.1.6</MicrosoftDotNetPlatformAbstractionsVersion>
+    <NuGetVersioningVersion>5.7.0</NuGetVersioningVersion>
+    <NuGetPackagingVersion>5.7.0</NuGetPackagingVersion>
     <SystemValueTupleVersion>4.5.0</SystemValueTupleVersion>
     <SystemTextJsonVersion>4.7.2</SystemTextJsonVersion>
     <!-- libgit2 used for integration tests -->
