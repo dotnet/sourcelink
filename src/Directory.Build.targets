@@ -17,7 +17,11 @@
     <ImplicitlyExpandNETStandardFacades Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework'">false</ImplicitlyExpandNETStandardFacades>
   </PropertyGroup>
 
-  <Target Name="_UpdatePackageId" BeforeTargets="$(PackDependsOn)" >
+  <!--
+     Workaround for cyclic package reference. PackageId is set to ain invalid value above (in evaluation phase to be picked up by Restore),
+     then updated to the actual value before Pack target and SourceLink source package generation target.
+  -->
+  <Target Name="_UpdatePackageId" BeforeTargets="$(PackDependsOn);InitializeSourceControlInformation" >
     <PropertyGroup>
       <PackageId>$(_ProjectDefinedPackageId)</PackageId>
       <PackageId Condition="'$(PackageId)' == ''">$(AssemblyName)</PackageId>
