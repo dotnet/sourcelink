@@ -182,7 +182,7 @@ namespace Microsoft.SourceLink.Tools
         /// <summary>
         /// Maps specified <paramref name="path"/> to the corresponding URL.
         /// </summary>
-        /// <exception cref="ArgumentNullException"><paramref name="json"/> is null.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="path"/> is null.</exception>
         public bool TryGetUrl(
             string path,
 #if NETCOREAPP
