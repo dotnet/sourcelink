@@ -49,7 +49,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 "ftp://account@contoso.com:123/a/b?x=y",
                 "ssh://account@contoso.com:123/a/b?x=y",
                 "ssh://account@contoso2.com:123/a/b?x=y"
-            }, task.TranslatedSourceRoots.Select(r => r.GetMetadata("ScmRepositoryUrl")));
+            }, task.TranslatedSourceRoots?.Select(r => r.GetMetadata("ScmRepositoryUrl")));
 
             Assert.True(result);
         }

@@ -109,7 +109,7 @@ namespace Microsoft.SourceLink.Tools
                 foreach (var documentsEntry in rootEntry.Value.EnumerateObject())
                 {
                     if (documentsEntry.Value.ValueKind != JsonValueKind.String ||
-                        !TryParseEntry(documentsEntry.Name, documentsEntry.Value.GetString(), out var entry))
+                        !TryParseEntry(documentsEntry.Name, documentsEntry.Value.GetString()!, out var entry))
                     {
                         throw new InvalidDataException();
                     }

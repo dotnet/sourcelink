@@ -47,7 +47,7 @@ namespace Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests
                 "ssh://account@mytfs.com/tfs/project/team/_ssh/repo",
                 "ssh://account@contoso2.com:22/tfs/project/team/_ssh/repo",
                 "ssh://account@contoso.com:22/tfs/project/team/ZZZ/repo"
-            }, task.TranslatedSourceRoots.Select(r => r.GetMetadata("ScmRepositoryUrl")));
+            }, task.TranslatedSourceRoots?.Select(r => r.GetMetadata("ScmRepositoryUrl")));
 
             Assert.True(result);
         }

@@ -42,7 +42,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
                 "ssh://bitbucket1.org/a/b",
                 "https://bitbucket1.org/a/b",
                 "ssh://bitbucket2.org/a/b"
-            }, task.TranslatedSourceRoots.Select(r => r.GetMetadata("ScmRepositoryUrl")));
+            }, task.TranslatedSourceRoots?.Select(r => r.GetMetadata("ScmRepositoryUrl")));
 
             Assert.True(result);
         }

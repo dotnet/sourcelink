@@ -20,15 +20,14 @@ namespace Microsoft.SourceLink.IntegrationTests
 
         public static void ValidateNuSpecRepository(string nuspecPath, string type, string commit, string url)
         {
-            using (var archive = new ZipArchive(File.OpenRead(nuspecPath)))
-            using (var nuspecStream = archive.GetEntry("test.nuspec").Open())
-            {
-                var nuspec = XDocument.Load(nuspecStream);
-                var repositoryNode = nuspec.Descendants(XName.Get("repository", "http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd"));
-                AssertEx.AreEqual(type, repositoryNode.Attributes("type").Single().Value);
-                AssertEx.AreEqual(commit, repositoryNode.Attributes("commit").Single().Value);
-                AssertEx.AreEqual(url, repositoryNode.Attributes("url").Single().Value);
-            }
+            using var archive = new ZipArchive(File.OpenRead(nuspecPath));
+            using var nuspecStream = archive.GetEntry("test.nuspec")!.Open();
+
+            var nuspec = XDocument.Load(nuspecStream);
+            var repositoryNode = nuspec.Descendants(XName.Get("repository", "http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd"));
+            AssertEx.AreEqual(type, repositoryNode.Attributes("type").Single().Value);
+            AssertEx.AreEqual(commit, repositoryNode.Attributes("commit").Single().Value);
+            AssertEx.AreEqual(url, repositoryNode.Attributes("url").Single().Value);
         }
     }
 }
