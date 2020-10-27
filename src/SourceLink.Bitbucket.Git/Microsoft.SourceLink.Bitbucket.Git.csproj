@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net461;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net472;net5.0</TargetFrameworks>
     <AutoGenerateAssemblyVersion>true</AutoGenerateAssemblyVersion>
 
     <!-- Using an explicit nuspec file since NuGet Pack target currently doesn't support including dependencies in tools packages -->

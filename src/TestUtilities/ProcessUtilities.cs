@@ -16,7 +16,7 @@ namespace TestUtilities
         public static ProcessResult Run(
             string fileName,
             string arguments,
-            string? workingDirectory = null,
+            string workingDirectory = "",
             IEnumerable<KeyValuePair<string, string>>? additionalEnvironmentVars = null,
             string? stdInput = null)
         {
@@ -88,7 +88,7 @@ namespace TestUtilities
         /// Launch a process, and return Process object. The process continues to run asynchronously.
         /// You cannot capture the output.
         /// </summary>
-        public static Process StartProcess(string fileName, string arguments, string? workingDirectory = null)
+        public static Process StartProcess(string fileName, string arguments, string workingDirectory = "")
         {
             if (fileName == null)
             {
@@ -129,12 +129,12 @@ namespace TestUtilities
                 startInfo.WorkingDirectory = startFolder;
             }
 
-            using (var process = System.Diagnostics.Process.Start(startInfo))
+            using (var process = Process.Start(startInfo))
             {
                 // Do not wait for the child process to exit before reading to the end of its
                 // redirected stream. Read the output stream first and then wait. Doing otherwise
                 // might cause a deadlock.
-                result = process.StandardOutput.ReadToEnd();
+                result = process!.StandardOutput.ReadToEnd();
                 process.WaitForExit();
                 Assert.True(expectedRetCode == process.ExitCode, $"Unexpected exit code: {process.ExitCode} (expecting {expectedRetCode}). Process output: {result}");
             }

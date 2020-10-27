@@ -42,7 +42,7 @@ namespace Microsoft.SourceLink.GitLab.UnitTests
                 "ssh://gitlab1.com/a/b",
                 "https://gitlab1.com/a/b",
                 "ssh://gitlab2.com/a/b"
-            }, task.TranslatedSourceRoots.Select(r => r.GetMetadata("ScmRepositoryUrl")));
+            }, task.TranslatedSourceRoots?.Select(r => r.GetMetadata("ScmRepositoryUrl")));
 
             Assert.True(result);
         }

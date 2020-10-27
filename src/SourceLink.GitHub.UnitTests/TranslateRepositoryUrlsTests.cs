@@ -42,7 +42,7 @@ namespace Microsoft.SourceLink.GitHub.UnitTests
                 "ssh://github1.com/a/b",
                 "https://github1.com/a/b",
                 "ssh://github2.com/a/b"
-            }, task.TranslatedSourceRoots.Select(r => r.GetMetadata("ScmRepositoryUrl")));
+            }, task.TranslatedSourceRoots?.Select(r => r.GetMetadata("ScmRepositoryUrl")));
 
             Assert.True(result);
         }

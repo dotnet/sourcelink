@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
   <PropertyGroup>
-    <_SourceLinkGitWebAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)..\tools\net461\Microsoft.SourceLink.GitWeb.dll</_SourceLinkGitWebAssemblyFile>
-    <_SourceLinkGitWebAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\netcoreapp3.1\Microsoft.SourceLink.GitWeb.dll</_SourceLinkGitWebAssemblyFile>
+    <_SourceLinkGitWebAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)..\tools\net472\Microsoft.SourceLink.GitWeb.dll</_SourceLinkGitWebAssemblyFile>
+    <_SourceLinkGitWebAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\net5.0\Microsoft.SourceLink.GitWeb.dll</_SourceLinkGitWebAssemblyFile>
   </PropertyGroup>
 
   <UsingTask TaskName="Microsoft.SourceLink.GitWeb.GetSourceLinkUrl" AssemblyFile="$(_SourceLinkGitWebAssemblyFile)" />

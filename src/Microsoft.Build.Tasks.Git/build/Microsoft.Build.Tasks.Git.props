@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
   <PropertyGroup>
-    <MicrosoftBuildTasksGitAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)..\tools\net461\Microsoft.Build.Tasks.Git.dll</MicrosoftBuildTasksGitAssemblyFile>
-    <MicrosoftBuildTasksGitAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\netcoreapp3.1\Microsoft.Build.Tasks.Git.dll</MicrosoftBuildTasksGitAssemblyFile>
+    <MicrosoftBuildTasksGitAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)..\tools\net472\Microsoft.Build.Tasks.Git.dll</MicrosoftBuildTasksGitAssemblyFile>
+    <MicrosoftBuildTasksGitAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\net5.0\Microsoft.Build.Tasks.Git.dll</MicrosoftBuildTasksGitAssemblyFile>
   </PropertyGroup>
 </Project>

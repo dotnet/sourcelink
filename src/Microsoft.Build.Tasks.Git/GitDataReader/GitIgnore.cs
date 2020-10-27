@@ -108,7 +108,7 @@ namespace Microsoft.Build.Tasks.Git
             StreamReader reader;
             try
             {
-                reader = File.OpenText(path);
+                reader = File.OpenText(path!);
             }
             catch (Exception e) when (e is FileNotFoundException || e is DirectoryNotFoundException)
             {

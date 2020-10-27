@@ -109,7 +109,7 @@ namespace Microsoft.SourceLink.Tools
                 foreach (var documentsEntry in rootEntry.Value.EnumerateObject())
                 {
                     if (documentsEntry.Value.ValueKind != JsonValueKind.String ||
-                        !TryParseEntry(documentsEntry.Name, documentsEntry.Value.GetString(), out var entry))
+                        !TryParseEntry(documentsEntry.Name, documentsEntry.Value.GetString()!, out var entry))
                     {
                         throw new InvalidDataException();
                     }
@@ -182,7 +182,7 @@ namespace Microsoft.SourceLink.Tools
         /// <summary>
         /// Maps specified <paramref name="path"/> to the corresponding URL.
         /// </summary>
-        /// <exception cref="ArgumentNullException"><paramref name="json"/> is null.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="path"/> is null.</exception>
         public bool TryGetUrl(
             string path,
 #if NETCOREAPP

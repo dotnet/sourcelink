@@ -56,7 +56,7 @@ namespace Microsoft.SourceLink.AzureRepos.Git.UnitTests
                 "ssh://account@vs-ssh.contoso.com:22/project/team/_ssh/repo",
                 "ssh://account@vs-ssh.contoso2.com:22/project/team/_ssh/repo",
                 "ssh://account@vs-ssh.contoso.com:22/project/team/ZZZ/repo"
-            }, task.TranslatedSourceRoots.Select(r => r.GetMetadata("ScmRepositoryUrl")));
+            }, task.TranslatedSourceRoots?.Select(r => r.GetMetadata("ScmRepositoryUrl")));
 
             Assert.True(result);
         }

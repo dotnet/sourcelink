@@ -43,7 +43,7 @@ namespace Microsoft.SourceLink.GitWeb.UnitTests
                  "ssh://git@src.intranet.company1.com/root_dir_name/sub_dirs/reponame.git",
                  "ssh://git@src.intranet.company1.com/root_dir_name/sub_dirs/reponame.git",
                  "ssh://git@src.intranet.company2.com/root_dir_name/sub_dirs/reponame.git",
-            }, task.TranslatedSourceRoots.Select(r => r.GetMetadata("ScmRepositoryUrl")));
+            }, task.TranslatedSourceRoots?.Select(r => r.GetMetadata("ScmRepositoryUrl")));
 
             Assert.True(result);
         }
