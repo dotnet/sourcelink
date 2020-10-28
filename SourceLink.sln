@@ -68,8 +68,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.Gitea"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.Gitea.UnitTests", "src\SourceLink.Gitea.UnitTests\Microsoft.SourceLink.Gitea.UnitTests.csproj", "{04C95AC8-E3A4-4A2B-94E6-4C62E910FD8A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dotnet-sourcelink", "src\dotnet-sourcelink\dotnet-sourcelink.csproj", "{4376B613-CD5B-4274-9071-30989769B0B2}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		src\SourceLink.Tools\Microsoft.SourceLink.Tools.projitems*{4376b613-cd5b-4274-9071-30989769b0b2}*SharedItemsImports = 5
 		src\SourceLink.Tools\Microsoft.SourceLink.Tools.projitems*{5df76cc2-5f0e-45a6-ad56-6bbbccbc1a78}*SharedItemsImports = 13
 		src\SourceLink.Tools\Microsoft.SourceLink.Tools.projitems*{99d113a9-24ec-471d-9f74-d2ac2f16220b}*SharedItemsImports = 5
 	EndGlobalSection
@@ -178,6 +181,10 @@ Global
 		{04C95AC8-E3A4-4A2B-94E6-4C62E910FD8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04C95AC8-E3A4-4A2B-94E6-4C62E910FD8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{04C95AC8-E3A4-4A2B-94E6-4C62E910FD8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4376B613-CD5B-4274-9071-30989769B0B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4376B613-CD5B-4274-9071-30989769B0B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4376B613-CD5B-4274-9071-30989769B0B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4376B613-CD5B-4274-9071-30989769B0B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
