@@ -5,11 +5,9 @@
     <VersionPrefix>1.1.0</VersionPrefix>
     <PreReleaseVersionLabel>beta</PreReleaseVersionLabel>
     <SemanticVersioningV1>true</SemanticVersioningV1>
-
     <!-- Opt-in repo features -->
     <UsingToolNetFrameworkReferenceAssemblies>true</UsingToolNetFrameworkReferenceAssemblies>
     <UsingToolSymbolUploader>true</UsingToolSymbolUploader>
-
     <XUnitVersion>2.4.1</XUnitVersion>
     <MicrosoftBuildVersion>16.7.0</MicrosoftBuildVersion>
     <MicrosoftBuildTasksCore>16.7.0</MicrosoftBuildTasksCore>
