@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
+  <file datatype="xml" source-language="en" target-language="fr" original="../Resources.resx">
+    <body>
+      <trans-unit id="AtLeastOneRepositoryHostIsRequired">
+        <source>{0} item group is empty. At least one {1} repository host is required in order to generate SourceLink.</source>
+        <target state="translated">Le groupe d'éléments {0} est vide. Au moins un hôte de dépôt {1} est nécessaire pour générer SourceLink.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="SpecifiesAnInvalidUrl">
+        <source>{0} specifies an invalid URL: '{1}'</source>
+        <target state="translated">{0} spécifie une URL non valide : '{1}'</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ValueOfWithIdentityIsInvalid">
+        <source>The value of {0} with identity '{1}' is invalid: '{2}'"</source>
+        <target state="translated">La valeur de {0} avec l'identité '{1}' n'est pas valide : '{2}'"</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ValueOfWithIdentityIsNotValidCommitHash">
+        <source>The value of {0} with identity '{1}' is not a valid commit hash: '{2}'"</source>
+        <target state="translated">La valeur de {0} avec l'identité '{1}' n'est pas un hachage de validation valide : '{2}'"</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ValuePassedToTaskParameterNotValidDomainName">
+        <source>The value passed to task parameter {0} is not a valid host name: '{1}'</source>
+        <target state="translated">La valeur passée au paramètre de tâche {0} n'est pas un nom d'hôte valide : '{1}'</target>
+        <note />
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
