@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
+  <file datatype="xml" source-language="en" target-language="ko" original="../Resources.resx">
+    <body>
+      <trans-unit id="AtLeastOneRepositoryHostIsRequired">
+        <source>{0} item group is empty. At least one {1} repository host is required in order to generate SourceLink.</source>
+        <target state="translated">{0} 항목 그룹이 비어 있습니다. SourceLink를 생성하려면 {1} 리포지토리 호스트가 하나 이상 필요합니다.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="SpecifiesAnInvalidUrl">
+        <source>{0} specifies an invalid URL: '{1}'</source>
+        <target state="translated">{0}이(가) 잘못된 URL을 지정합니다. '{1}'</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ValueOfWithIdentityIsInvalid">
+        <source>The value of {0} with identity '{1}' is invalid: '{2}'"</source>
+        <target state="translated">ID가 '{1}'인 {0}의 값이 잘못되었습니다. '{2}'"</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ValueOfWithIdentityIsNotValidCommitHash">
+        <source>The value of {0} with identity '{1}' is not a valid commit hash: '{2}'"</source>
+        <target state="translated">ID가 '{1}'인 {0}의 값이 유효한 커밋 해시가 아닙니다. '{2}'"</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ValuePassedToTaskParameterNotValidDomainName">
+        <source>The value passed to task parameter {0} is not a valid host name: '{1}'</source>
+        <target state="translated">작업 매개 변수 {0}에 전달되는 값이 유효한 호스트 이름이 아닙니다. '{1}'</target>
+        <note />
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

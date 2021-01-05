@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <_SourceLinkGiteaAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)..\tools\net472\Microsoft.SourceLink.Gitea.dll</_SourceLinkGiteaAssemblyFile>
+    <_SourceLinkGiteaAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\net5.0\Microsoft.SourceLink.Gitea.dll</_SourceLinkGiteaAssemblyFile>
+  </PropertyGroup>
+
+  <UsingTask TaskName="Microsoft.SourceLink.Gitea.GetSourceLinkUrl" AssemblyFile="$(_SourceLinkGiteaAssemblyFile)"/>
+  <UsingTask TaskName="Microsoft.SourceLink.Gitea.TranslateRepositoryUrls" AssemblyFile="$(_SourceLinkGiteaAssemblyFile)"/>
+
+  <PropertyGroup>
+    <SourceLinkUrlInitializerTargets>$(SourceLinkUrlInitializerTargets);_InitializeGiteaSourceLinkUrl</SourceLinkUrlInitializerTargets>
+    <SourceControlManagerUrlTranslationTargets>$(SourceControlManagerUrlTranslationTargets);TranslateGiteaUrlsInSourceControlInformation</SourceControlManagerUrlTranslationTargets>
+  </PropertyGroup>
+
+  <Target Name="_InitializeGiteaSourceLinkUrl" Inputs="@(SourceRoot)" Outputs="|%(Identity)|">
+    <!--
+      The task calculates SourceLink URL for a given SourceRoot.
+
+      If the SourceRoot is associated with a git repository with a recognized domain the <see cref="SourceLinkUrl"/>
+      output property is set to the content URL corresponding to the domain, otherwise it is set to string "N/A".
+
+      Recognized domains are specified via Hosts (initialized from SourceLinkGiteaHost item group).
+      In addition, if SourceLinkHasSingleProvider is true an implicit host is parsed from RepositoryUrl.
+
+      Example of SourceLinkGiteaHost items:
+
+      <ItemGroup>
+        <SourceLinkGiteaHost Include="mygitea1.com" ContentUrl="http://mygitea1.com"/>
+        <SourceLinkGiteaHost Include="mygitea2.com" />           ContentUrl defaults to https://mygitea2.com
+        <SourceLinkGiteaHost Include="mygitea3.com:8080" />      ContentUrl defaults to https://mygitea3.com:8080
+      </ItemGroup>
+
+      ContentUrl is optional. If not specified it defaults to "https://{domain}" or "http://{domain}", based on the scheme of SourceRoot.RepositoryUrl.
+    -->
+    <Microsoft.SourceLink.Gitea.GetSourceLinkUrl RepositoryUrl="$(PrivateRepositoryUrl)" SourceRoot="@(SourceRoot)" Hosts="@(SourceLinkGiteaHost)" IsSingleProvider="$(SourceLinkHasSingleProvider)">
+      <Output TaskParameter="SourceLinkUrl" PropertyName="_SourceLinkUrlToUpdate"/>
+    </Microsoft.SourceLink.Gitea.GetSourceLinkUrl>
+
+    <ItemGroup>
+      <!-- Only update the SourceLinkUrl metadata if the SourceRoot belongs to this source control -->
+      <SourceRoot Update="%(Identity)" SourceLinkUrl="$(_SourceLinkUrlToUpdate)" Condition="'$(_SourceLinkUrlToUpdate)' != 'N/A'"/>
+    </ItemGroup>
+  </Target>
+
+  <!-- 
+    We need to translate ssh URLs to https.
+  -->
+  <Target Name="TranslateGiteaUrlsInSourceControlInformation">
+
+    <ItemGroup>
+      <_TranslatedSourceRoot Remove="@(_TranslatedSourceRoot)"/>
+    </ItemGroup>
+
+    <Microsoft.SourceLink.Gitea.TranslateRepositoryUrls RepositoryUrl="$(ScmRepositoryUrl)" SourceRoots="@(SourceRoot)" Hosts="@(SourceLinkGiteaHost)" IsSingleProvider="$(SourceLinkHasSingleProvider)">
+      <Output TaskParameter="TranslatedRepositoryUrl" PropertyName="ScmRepositoryUrl"/>
+      <Output TaskParameter="TranslatedSourceRoots" ItemName="_TranslatedSourceRoot"/>
+    </Microsoft.SourceLink.Gitea.TranslateRepositoryUrls>
+
+    <ItemGroup>
+      <SourceRoot Remove="@(SourceRoot)"/>
+      <SourceRoot Include="@(_TranslatedSourceRoot)"/>
+    </ItemGroup>
+  </Target>
+
+</Project>
