@@ -120,7 +120,17 @@ For projects hosted on-prem via [gitweb](https://git-scm.com/docs/gitweb) refere
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.GitWeb" Version="1.1.0-beta-20204-02" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.GitWeb" Version="1.1.0-beta-21055-01" PrivateAssets="All"/>
+</ItemGroup>
+```
+
+### gitea (pre-release)
+
+For projects hosted on-prem via [gitea](https://gitea.io) reference [Microsoft.SourceLink.Gitea](https://www.nuget.org/packages/Microsoft.SourceLink.Gitea) package: 
+
+```xml
+<ItemGroup>
+  <PackageReference Include="Microsoft.SourceLink.Gitea" Version="1.1.0-beta-21055-01" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
