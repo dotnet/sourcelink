@@ -37,6 +37,7 @@ stages:
       enablePublishBuildAssets: true
       enablePublishUsingPipelines: $(_PublishUsingPipelines)
       enableTelemetry: true
+      enableSourceBuild: true
       helixRepo: dotnet/symreader
       jobs:
       - job: Windows
