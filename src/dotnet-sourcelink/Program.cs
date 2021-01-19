@@ -295,14 +295,14 @@ namespace Microsoft.SourceLink.Tools
             int index = 0;
             while (true)
             {
-                int lf = Array.IndexOf(content, (byte)'\r', index);
+                int lf = Array.IndexOf(content, (byte)'\n', index);
                 if (lf < 0)
                 {
                     incrementalHash.AppendData(content, index, content.Length - index);
                     return incrementalHash.GetHashAndReset();
                 }
 
-                if (index + 1 < content.Length && content[index + 1] == (byte)'\n')
+                if (index - 1 >= 0 && content[index - 1] == (byte)'\r')
                 {
                     // The file either has CRLF line endings or mixed line endings.
                     // In either case there is no need to substitute LF to CRLF.
