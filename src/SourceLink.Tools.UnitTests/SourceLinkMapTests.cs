@@ -66,11 +66,23 @@ namespace Microsoft.SourceLink.Tools.UnitTests
             Assert.True(map.TryGetUri(@"C:\a", out var url));
             Assert.Equal("http://server/[]", url);
 
+            Assert.True(map.TryGetUri(@"C:\a", out url, out var relativeFilePath));
+            Assert.Equal("http://server/[]", url);
+            Assert.Equal("", relativeFilePath);
+
             Assert.True(map.TryGetUri(@"C:\a\b\c\d\e", out url));
             Assert.Equal("http://server/[/b/c/d/e]", url);
 
+            Assert.True(map.TryGetUri(@"C:\a\b\c\d\e", out url, out relativeFilePath));
+            Assert.Equal("http://server/[/b/c/d/e]", url);
+            Assert.Equal(@"/b/c/d/e", relativeFilePath);
+
             Assert.True(map.TryGetUri(@"C:\b", out url));
             Assert.Equal("http://b", url);
+
+            Assert.True(map.TryGetUri(@"C:\b", out url, out relativeFilePath));
+            Assert.Equal("http://b", url);
+            Assert.Equal("b", relativeFilePath);
 
             Assert.False(map.TryGetUri(@"C:\b\c", out _));
         }
