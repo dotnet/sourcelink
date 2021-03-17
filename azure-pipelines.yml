@@ -3,6 +3,7 @@ pr:
   branches:
     include:
     - master
+    - main
     - release/*
   paths:
     exclude:
@@ -15,7 +16,8 @@ schedules:
   displayName: Daily Official Build
   branches:
     include:
-    - master 
+    - master
+    - main
       
 variables:
   - name: _TeamName
