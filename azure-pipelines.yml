@@ -2,7 +2,6 @@
 pr:
   branches:
     include:
-    - master
     - main
     - release/*
   paths:
@@ -16,7 +15,6 @@ schedules:
   displayName: Daily Official Build
   branches:
     include:
-    - master
     - main
       
 variables:
