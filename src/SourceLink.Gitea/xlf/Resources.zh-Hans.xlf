@@ -1,30 +1,135 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
-  <file datatype="xml" source-language="en" target-language="zh-HANS" original="../Resources.resx">
+  <file datatype="xml" source-language="en" target-language="zh-Hans" original="../Resources.resx">
     <body>
-      <trans-unit id="AtLeastOneRepositoryHostIsRequired">
-        <source>{0} item group is empty. At least one {1} repository host is required in order to generate SourceLink.</source>
-        <target state="translated">{0} 项目组为空。至少需要一个 {1} 存储库主机才能生成 SourceLink。</target>
+      <trans-unit id="ConfigurationFileRecursionExceededMaximumAllowedDepth">
+        <source>Configuration file recursion exceeded maximum allowed depth of {0}.</source>
+        <target state="translated">配置文件递归超过了允许的最大深度 {0}。</target>
         <note />
       </trans-unit>
-      <trans-unit id="SpecifiesAnInvalidUrl">
-        <source>{0} specifies an invalid URL: '{1}'</source>
-        <target state="translated">{0} 指定无效的 URL:“{1}”</target>
+      <trans-unit id="ErrorReadingGitRepositoryInformation">
+        <source>Error reading git repository information: {0}</source>
+        <target state="translated">读取 GIT 存储库信息时出错: {0}</target>
         <note />
       </trans-unit>
-      <trans-unit id="ValueOfWithIdentityIsInvalid">
-        <source>The value of {0} with identity '{1}' is invalid: '{2}'"</source>
-        <target state="translated">带有 '{1}' 标识的 {0} 的值无效: '{2}'"</target>
+      <trans-unit id="FormatOfFileIsInvalid">
+        <source>The format of the file '{0}' is invalid.</source>
+        <target state="translated">文件“{0}”的格式无效。</target>
         <note />
       </trans-unit>
-      <trans-unit id="ValueOfWithIdentityIsNotValidCommitHash">
-        <source>The value of {0} with identity '{1}' is not a valid commit hash: '{2}'"</source>
-        <target state="translated">带有 '{1}' 标识的 {0} 的值不是有效的提交哈希: '{2}'"</target>
+      <trans-unit id="HomeRelativePathsAreNotAllowed">
+        <source>Home relative paths are not allowed when {0} is '{1}': '{2}'.</source>
+        <target state="translated">当 {0} 为“{1}”时，不允许主相对路径:“{2}”。</target>
         <note />
       </trans-unit>
-      <trans-unit id="ValuePassedToTaskParameterNotValidDomainName">
-        <source>The value passed to task parameter {0} is not a valid host name: '{1}'</source>
-        <target state="translated">传递给任务参数 {0} 的值不是有效的主机名:“{1}”</target>
+      <trans-unit id="InvalidFormatOfFileAtPath">
+        <source>Repository does not have a working directory.</source>
+        <target state="translated">存储库不具有工作目录。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="InvalidModulePath">
+        <source>Invalid module path: '{0}'.</source>
+        <target state="translated">模块路径无效:“{0}”。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="InvalidReference">
+        <source>Invalid reference: '{0}'.</source>
+        <target state="translated">引用无效:“{0}”。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="InvalidRepositoryRemoteUrl">
+        <source>The URL of repository remote '{0}' is invalid: '{1}'.</source>
+        <target state="translated">远程存储库“{0}”的 URL 无效:“{1}”。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="InvalidSubmodulePath">
+        <source>The path of submodule '{0}' is missing or invalid: '{1}'.</source>
+        <target state="translated">缺少子模块“{0}”的路径或该路径无效:“{1}”。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="InvalidSubmoduleUrl">
+        <source>The URL of submodule '{0}' is missing or invalid: '{1}'.</source>
+        <target state="translated">缺少子模块“{0}”的 URL 或其无效:“{1}”。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="PathMustBeAbsolute">
+        <source>Path must be absolute.</source>
+        <target state="translated">路径必须是绝对路径。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="PathMustBeFilePath">
+        <source>Path must be a file path.</source>
+        <target state="translated">路径必须是文件路径。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="PathSpecifiedInFileIsInvalid">
+        <source>Path specified in file '{0}' is invalid: '{1}'.</source>
+        <target state="translated">在文件“{0}”中指定的路径无效:“{1}”。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="PathSpecifiedInFileIsNotAbsolute">
+        <source>Path specified in file '{0}' is not absolute: '{1}'.</source>
+        <target state="translated">在文件“{0}”指定的路径不是绝对路径:“{1}”。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RecursionDetectedWhileResolvingReference">
+        <source>Recursion detected while resolving reference: '{0}'.</source>
+        <target state="translated">解析引用时检测到递归:“{0}”。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RepositoryDoesNotHaveSpecifiedRemote">
+        <source>Repository '{0}' does not have the specified remote '{1}'; using '{2}' instead.</source>
+        <target state="translated">存储库“{0}”不具有指定的远程“{1}”；请改用“{2}”。 </target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RepositoryDoesNotHaveWorkingDirectory">
+        <source>Repository does not have a working directory.</source>
+        <target state="translated">存储库不具有工作目录。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RepositoryHasNoRemote">
+        <source>Repository '{0}' has no remote.</source>
+        <target state="translated">存储库“{0}”没有远程。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RepositoryHasNoCommit">
+        <source>Repository has no commit.</source>
+        <target state="translated">存储库没有提交。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RepositoryUrlEvaluationExceededMaximumAllowedDepth">
+        <source>Repository URL evaluation exceeded maximum allowed depth of {0} local repositories.</source>
+        <target state="translated">存储库 URL 计算超过了允许的最大深度: {0} 个本地存储库。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="SourceCodeWontBeAvailableViaSourceLink">
+        <source>{0} The source code won't be available via Source Link.</source>
+        <target state="translated">{0} 无法通过源链接获取源代码。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="SubmoduleWithoutCommit">
+        <source>Submodule '{0}' doesn't have any commit.</source>
+        <target state="translated">子模块“{0}”没有任何提交。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="UnableToLocateRepository">
+        <source>Unable to locate repository with working directory that contains directory '{0}'.</source>
+        <target state="translated">找不到具有带目录“{0}”的工作目录的存储库。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="UnsupportedRepositoryVersion">
+        <source>Unsupported repository version {0}. Only versions up to {1} are supported.</source>
+        <target state="translated">不支持存储库版本 {0}。支持的最高版本为 {1}。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ValueOfIsNotValidConfigurationScope">
+        <source>The value of {0} is not a valid configuration scope: '{1}'.</source>
+        <target state="translated">{0} 的值不是有效配置范围:“{1}”。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ValueOfIsNotValidPath">
+        <source>The value of {0} is not a valid path: '{1}'.</source>
+        <target state="translated">{0} 的值不是有效路径:“{1}”。</target>
         <note />
       </trans-unit>
     </body>
