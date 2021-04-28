@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
+  <file datatype="xml" source-language="en" target-language="zh-Hant" original="../Resources.resx">
+    <body>
+      <trans-unit id="ConfigurationFileRecursionExceededMaximumAllowedDepth">
+        <source>Configuration file recursion exceeded maximum allowed depth of {0}.</source>
+        <target state="translated">組態檔遞迴已超過最大允許深度 {0}。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ErrorReadingGitRepositoryInformation">
+        <source>Error reading git repository information: {0}</source>
+        <target state="translated">讀取 git 存放庫資訊時發生錯誤: {0}</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="FormatOfFileIsInvalid">
+        <source>The format of the file '{0}' is invalid.</source>
+        <target state="translated">檔案 '{0}' 的格式無效。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="HomeRelativePathsAreNotAllowed">
+        <source>Home relative paths are not allowed when {0} is '{1}': '{2}'.</source>
+        <target state="translated">當 {0} 為 '{1}' 時，不允許主目錄相對路徑: '{2}'。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="InvalidFormatOfFileAtPath">
+        <source>Repository does not have a working directory.</source>
+        <target state="translated">存放庫沒有工作目錄。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="InvalidModulePath">
+        <source>Invalid module path: '{0}'.</source>
+        <target state="translated">模組路徑無效: '{0}'。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="InvalidReference">
+        <source>Invalid reference: '{0}'.</source>
+        <target state="translated">參考無效: '{0}'。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="InvalidRepositoryRemoteUrl">
+        <source>The URL of repository remote '{0}' is invalid: '{1}'.</source>
+        <target state="translated">存放庫遠端 ‘{0}’ 的 URL 無效: ‘{1}’。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="InvalidSubmodulePath">
+        <source>The path of submodule '{0}' is missing or invalid: '{1}'.</source>
+        <target state="translated">缺少子模組 '{0}' 的路徑或其無效: '{1}'。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="InvalidSubmoduleUrl">
+        <source>The URL of submodule '{0}' is missing or invalid: '{1}'.</source>
+        <target state="translated">缺少子模組 '{0}' 的 URL 或其無效: '{1}'。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="PathMustBeAbsolute">
+        <source>Path must be absolute.</source>
+        <target state="translated">路徑必須是絕對路徑。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="PathMustBeFilePath">
+        <source>Path must be a file path.</source>
+        <target state="translated">路徑必須是檔案路徑。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="PathSpecifiedInFileIsInvalid">
+        <source>Path specified in file '{0}' is invalid: '{1}'.</source>
+        <target state="translated">在檔案 '{0}' 中指定的路徑無效: '{1}'。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="PathSpecifiedInFileIsNotAbsolute">
+        <source>Path specified in file '{0}' is not absolute: '{1}'.</source>
+        <target state="translated">在檔案 '{0}' 中指定的路徑不是絕對路徑: '{1}'。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RecursionDetectedWhileResolvingReference">
+        <source>Recursion detected while resolving reference: '{0}'.</source>
+        <target state="translated">解析參考時偵測到遞迴: '{0}'。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RepositoryDoesNotHaveSpecifiedRemote">
+        <source>Repository '{0}' does not have the specified remote '{1}'; using '{2}' instead.</source>
+        <target state="translated">存放庫 '{0}' 沒有指定的遠端 '{1}'; 請改用 '{2}'。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RepositoryDoesNotHaveWorkingDirectory">
+        <source>Repository does not have a working directory.</source>
+        <target state="translated">存放庫沒有工作目錄。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RepositoryHasNoRemote">
+        <source>Repository '{0}' has no remote.</source>
+        <target state="translated">存放庫 '{0}' 沒有遠端。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RepositoryHasNoCommit">
+        <source>Repository has no commit.</source>
+        <target state="translated">存放庫沒有認可。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="RepositoryUrlEvaluationExceededMaximumAllowedDepth">
+        <source>Repository URL evaluation exceeded maximum allowed depth of {0} local repositories.</source>
+        <target state="translated">存放庫 URL 評估超出允許的 {0} 個本機存放庫深度上限。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="SourceCodeWontBeAvailableViaSourceLink">
+        <source>{0} The source code won't be available via Source Link.</source>
+        <target state="translated">{0} 無法透過來源連結使用原始程式碼。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="SubmoduleWithoutCommit">
+        <source>Submodule '{0}' doesn't have any commit.</source>
+        <target state="translated">子模組 '{0}' 沒有任何認可。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="UnableToLocateRepository">
+        <source>Unable to locate repository with working directory that contains directory '{0}'.</source>
+        <target state="translated">找不到具有包含目錄 '{0}' 之工作目錄的存放庫。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="UnsupportedRepositoryVersion">
+        <source>Unsupported repository version {0}. Only versions up to {1} are supported.</source>
+        <target state="translated">不支援的存放庫版本 {0}。最大只支援版本 {1}。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ValueOfIsNotValidConfigurationScope">
+        <source>The value of {0} is not a valid configuration scope: '{1}'.</source>
+        <target state="translated">{0} 的值不是有效的組態範圍: '{1}'。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ValueOfIsNotValidPath">
+        <source>The value of {0} is not a valid path: '{1}'.</source>
+        <target state="translated">{0} 的值不是有效的路徑: '{1}'。</target>
+        <note />
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

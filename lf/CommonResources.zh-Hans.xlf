@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
+  <file datatype="xml" source-language="en" target-language="zh-Hans" original="../CommonResources.resx">
+    <body>
+      <trans-unit id="AtLeastOneRepositoryHostIsRequired">
+        <source>{0} item group is empty. At least one {1} repository host is required in order to generate SourceLink.</source>
+        <target state="translated">{0} 项目组为空。至少需要一个 {1} 存储库主机才能生成 SourceLink。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ItemOfItemGroupMustSpecifyMetadata">
+        <source>Item '{0}' of item group '{1}' must specify metadata '{2}'</source>
+        <target state="translated">项组 "{1}" 的项 "{0}" 必须指定元数据 "{2}"</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="UnableToDetermineRepositoryUrl">
+        <source>Unable to determine repository url, the source code won't be available via source link.</source>
+        <target state="translated">无法确定存储库 URL，源代码将无法通过源链接获得。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ValueOfWithIdentityIsInvalid">
+        <source>The value of {0} with identity '{1}' is invalid: '{2}'</source>
+        <target state="translated">具有标识 "{1}" 的 {0} 的值无效: "{2}"</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ValueOfWithIdentityIsNotValidCommitHash">
+        <source>The value of {0} with identity '{1}' is not a valid commit hash: '{2}'</source>
+        <target state="translated">具有标识 "{1}" 的 {0} 的值不是有效的提交哈希: "{2}"</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ValuePassedToTaskParameterNotValidDomainName">
+        <source>The value passed to task parameter {0} is not a valid domain name: '{1}'</source>
+        <target state="translated">传递给任务参数 {0} 的值不是有效的域名: '{1}'</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ValuePassedToTaskParameterNotValidHostUri">
+        <source>The value passed to task parameter {0} is not a valid host URI: '{1}'</source>
+        <target state="translated">传递给任务参数 {0} 的值不是有效的主机 URI: '{1}'</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="ValuePassedToTaskParameterNotValidUri">
+        <source>The value passed to task parameter {0} is not a valid URI: '{1}'</source>
+        <target state="translated">传递给任务参数 {0} 的值不是有效的 URI: "{1}"</target>
+        <note />
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
