@@ -190,6 +190,24 @@ namespace Microsoft.SourceLink.Tools
 #endif
             out string? uri)
         {
+            return TryGetUri(path, out uri, out _);
+        }
+
+        /// <summary>
+        /// Maps specified <paramref name="path"/> to the corresponding URL.
+        /// </summary>
+        /// <exception cref="ArgumentNullException"><paramref name="path"/> is null.</exception>
+        public bool TryGetUri(
+            string path,
+#if NETCOREAPP
+            [NotNullWhen(true)]
+#endif
+            out string? uri,
+#if NETCOREAPP
+            [NotNullWhen(true)]
+#endif
+            out string? relativeFilePath)
+        {
             if (path == null)
             {
                 throw new ArgumentNullException(nameof(path));
@@ -198,6 +216,7 @@ namespace Microsoft.SourceLink.Tools
             if (path.IndexOf('*') >= 0)
             {
                 uri = null;
+                relativeFilePath = null;
                 return false;
             }
 
@@ -209,20 +228,24 @@ namespace Microsoft.SourceLink.Tools
                 {
                     if (path.StartsWith(file.Path, StringComparison.OrdinalIgnoreCase))
                     {
-                        var escapedPath = string.Join("/", path.Substring(file.Path.Length).Split(new[] { '/', '\\' }).Select(Uri.EscapeDataString));
+                        var relativePath = path.Substring(file.Path.Length).Replace('\\', '/');
+                        var escapedPath = string.Join("/", relativePath.Split('/').Select(Uri.EscapeDataString));
                         uri = mappedUri.Prefix + escapedPath + mappedUri.Suffix;
+                        relativeFilePath = relativePath;
                         return true;
                     }
                 }
                 else if (string.Equals(path, file.Path, StringComparison.OrdinalIgnoreCase))
                 {
                     Debug.Assert(mappedUri.Suffix.Length == 0);
+                    relativeFilePath = Path.GetFileName(file.Path);
                     uri = mappedUri.Prefix;
                     return true;
                 }
             }
 
             uri = null;
+            relativeFilePath = null;
             return false;
         } 
     }
