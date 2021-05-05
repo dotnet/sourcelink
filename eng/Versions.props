@@ -15,6 +15,9 @@
     <MicrosoftDotNetPlatformAbstractionsVersion>3.1.6</MicrosoftDotNetPlatformAbstractionsVersion>
     <NuGetVersioningVersion>5.7.0</NuGetVersioningVersion>
     <NuGetPackagingVersion>5.7.0</NuGetPackagingVersion>
+    <SystemCommandLineVersion>2.0.0-beta1.20371.2</SystemCommandLineVersion>
+    <SystemCommandLineRenderingVersion>0.3.0-alpha.20371.2</SystemCommandLineRenderingVersion>
+    <SystemReflectionMetadataVersion>1.8.1</SystemReflectionMetadataVersion>
     <SystemValueTupleVersion>4.5.0</SystemValueTupleVersion>
     <SystemTextJsonVersion>4.7.2</SystemTextJsonVersion>
     <!-- libgit2 used for integration tests -->

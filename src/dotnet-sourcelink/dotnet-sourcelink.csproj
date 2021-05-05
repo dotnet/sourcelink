@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net5.0</TargetFrameworks>
+
+    <!-- NuGet -->
+    <ToolCommandName>sourcelink</ToolCommandName>
+    <PackAsTool>True</PackAsTool>
+    <Description>Command line tool for SourceLink testing.</Description>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+
+    <!--
+      These identifiers are for generating the shim'd core executables for signing. Not all options
+      from $(RoslynPortableRuntimeIdentifiers) work or make sense in this context.
+    -->
+    <PackAsToolShimRuntimeIdentifiers>win-x64;win-x86;osx-x64</PackAsToolShimRuntimeIdentifiers>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" Version="$(SystemCommandLineVersion)" />
+    <PackageReference Include="System.CommandLine.Rendering" Version="$(SystemCommandLineRenderingVersion)" />
+    <PackageReference Include="NuGet.Packaging" Version="$(NuGetPackagingVersion)" />
+    <PackageReference Include="System.Reflection.Metadata" Version="$(SystemReflectionMetadataVersion)" />
+    <PackageReference Include="System.ValueTuple" Version="$(SystemValueTupleVersion)" />
+  </ItemGroup>
+  <Import Project="..\SourceLink.Tools\Microsoft.SourceLink.Tools.projitems" Label="Shared" />
+</Project>
