@@ -2,7 +2,7 @@
 <Project>
   <PropertyGroup>
     <_SourceLinkGiteaAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)..\tools\net472\Microsoft.SourceLink.Gitea.dll</_SourceLinkGiteaAssemblyFile>
-    <_SourceLinkGiteaAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\net5.0\Microsoft.SourceLink.Gitea.dll</_SourceLinkGiteaAssemblyFile>
+    <_SourceLinkGiteaAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\net6.0\Microsoft.SourceLink.Gitea.dll</_SourceLinkGiteaAssemblyFile>
   </PropertyGroup>
 
   <UsingTask TaskName="Microsoft.SourceLink.Gitea.GetSourceLinkUrl" AssemblyFile="$(_SourceLinkGiteaAssemblyFile)"/>
