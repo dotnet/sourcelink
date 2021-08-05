@@ -344,14 +344,26 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var gitDir = temp.CreateDirectory();
             var workingDir = temp.CreateDirectory();
 
-            var basicSubmoduleGitDir = temp.CreateDirectory();
+            var submoduleGitDir = temp.CreateDirectory();
 
-            var basicSubmoduleWorkingDir = workingDir.CreateDirectory("sub").CreateDirectory("abc");
-            basicSubmoduleWorkingDir.CreateFile(".git").WriteAllText("gitdir: " + basicSubmoduleGitDir.Path + "\t \v\f\r\n\n\r");
+            var submoduleWorkingDir = workingDir.CreateDirectory("sub").CreateDirectory("abc");
+            submoduleWorkingDir.CreateFile(".git").WriteAllText("gitdir: " + submoduleGitDir.Path + "\t \v\f\r\n\n\r");
 
-            var basicSubmoduleRefsHeadsDir = basicSubmoduleGitDir.CreateDirectory("refs").CreateDirectory("heads");
-            basicSubmoduleRefsHeadsDir.CreateFile("master").WriteAllText("0000000000000000000000000000000000000000");
-            basicSubmoduleGitDir.CreateFile("HEAD").WriteAllText("ref: refs/heads/master");
+            var submoduleRefsHeadsDir = submoduleGitDir.CreateDirectory("refs").CreateDirectory("heads");
+            submoduleRefsHeadsDir.CreateFile("master").WriteAllText("0000000000000000000000000000000000000000");
+            submoduleGitDir.CreateFile("HEAD").WriteAllText("ref: refs/heads/master");
+
+            var repository = new GitRepository(GitEnvironment.Empty, GitConfig.Empty, gitDir.Path, gitDir.Path, workingDir.Path);
+            Assert.Equal("0000000000000000000000000000000000000000", repository.ReadSubmoduleHeadCommitSha(submoduleWorkingDir.Path));
+        }
+
+        [Fact]
+        public void GetOldStyleSubmoduleHeadCommitSha()
+        {
+            using var temp = new TempRoot();
+
+            var gitDir = temp.CreateDirectory();
+            var workingDir = temp.CreateDirectory();
 
             // this is a unusual but legal case which can occur with older versions of Git or other tools.
             // see https://git-scm.com/docs/gitsubmodules#_forms for more details.
@@ -362,7 +374,6 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             oldStyleSubmoduleGitDir.CreateFile("HEAD").WriteAllText("ref: refs/heads/branch1");
 
             var repository = new GitRepository(GitEnvironment.Empty, GitConfig.Empty, gitDir.Path, gitDir.Path, workingDir.Path);
-            Assert.Equal("0000000000000000000000000000000000000000", repository.ReadSubmoduleHeadCommitSha(basicSubmoduleWorkingDir.Path));
             Assert.Equal("1111111111111111111111111111111111111111", repository.ReadSubmoduleHeadCommitSha(oldStyleSubmoduleWorkingDir.Path));
         }
     }

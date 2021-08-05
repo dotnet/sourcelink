@@ -215,14 +215,13 @@ namespace Microsoft.Build.Tasks.Git
             // See https://git-scm.com/docs/gitsubmodules#_forms for more details.
             // Handle this case first since the other case throws.
             var dotGitPath = Path.Combine(submoduleWorkingDirectoryFullPath, GitDirName);
-            if (IsGitDirectory(dotGitPath, out var directSubmoduleGitDirectory))
-            {
-                var submoduleGitDirResolver = new GitReferenceResolver(directSubmoduleGitDirectory, directSubmoduleGitDirectory);
-                return submoduleGitDirResolver.ResolveHeadReference();
-            }
 
-            var gitDirectory = ReadDotGitFile(Path.Combine(submoduleWorkingDirectoryFullPath, GitDirName));
-            if (!IsGitDirectory(gitDirectory, out var commonDirectory))
+            var gitDirectory =
+                Directory.Exists(dotGitPath) ? dotGitPath :
+                File.Exists(dotGitPath) ? ReadDotGitFile(dotGitPath) :
+                null;
+
+            if (gitDirectory == null || !IsGitDirectory(gitDirectory, out var commonDirectory))
             {
                 return null;
             }
