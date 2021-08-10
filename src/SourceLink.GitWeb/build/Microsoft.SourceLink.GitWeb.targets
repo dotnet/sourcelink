@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Licensed to the .NET Foundation under one or more agreements. The .NET Foundation licenses this file to you under the MIT license. See the License.txt file in the project root for more information. -->
 <Project>
   <PropertyGroup>
     <_SourceLinkGitWebAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)..\tools\net472\Microsoft.SourceLink.GitWeb.dll</_SourceLinkGitWebAssemblyFile>
-    <_SourceLinkGitWebAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\net5.0\Microsoft.SourceLink.GitWeb.dll</_SourceLinkGitWebAssemblyFile>
+    <_SourceLinkGitWebAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\net6.0\Microsoft.SourceLink.GitWeb.dll</_SourceLinkGitWebAssemblyFile>
   </PropertyGroup>
 
   <UsingTask TaskName="Microsoft.SourceLink.GitWeb.GetSourceLinkUrl" AssemblyFile="$(_SourceLinkGitWebAssemblyFile)" />

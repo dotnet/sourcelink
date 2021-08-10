@@ -1,4 +1,4 @@
-# EditorConfig is awesome:
+﻿# EditorConfig is awesome:
 http://EditorConfig.org
 
 # top-most EditorConfig file
@@ -153,3 +153,6 @@ csharp_space_between_square_brackets = false
 csharp_preserve_single_line_blocks = true
 csharp_preserve_single_line_statements = true
 
+
+[*.{cs}]
+file_header_template = Licensed to the.NET Foundation under one or more agreements.\nThe.NET Foundation licenses this file to you under the MIT license.\nSee the License.txt file in the project root for more information.
