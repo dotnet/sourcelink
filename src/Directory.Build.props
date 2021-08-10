@@ -6,7 +6,7 @@
   <PropertyGroup>
     <LangVersion>Preview</LangVersion>
     <Nullable>enable</Nullable>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GenerateResxSource>true</GenerateResxSource>
     <UserRuntimeConfig Condition="$(TargetFramework.StartsWith('netcoreapp'))">$(RepositoryEngineeringDir)runtimeconfig.template.json</UserRuntimeConfig>
     
