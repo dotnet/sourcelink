@@ -213,15 +213,10 @@ namespace Microsoft.Build.Tasks.Git
             // This can occur with older versions of Git or other tools, or when a user clones one
             // repo into another's source tree (but it was not yet registered as a submodule).
             // See https://git-scm.com/docs/gitsubmodules#_forms for more details.
-            // Handle this case first since the other case throws.
             var dotGitPath = Path.Combine(submoduleWorkingDirectoryFullPath, GitDirName);
 
-            var gitDirectory =
-                Directory.Exists(dotGitPath) ? dotGitPath :
-                File.Exists(dotGitPath) ? ReadDotGitFile(dotGitPath) :
-                null;
-
-            if (gitDirectory == null || !IsGitDirectory(gitDirectory, out var commonDirectory))
+            var gitDirectory = Directory.Exists(dotGitPath) ? dotGitPath : ReadDotGitFile(dotGitPath);
+            if (!IsGitDirectory(gitDirectory, out var commonDirectory))
             {
                 return null;
             }
