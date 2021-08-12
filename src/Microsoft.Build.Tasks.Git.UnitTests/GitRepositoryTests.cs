@@ -297,6 +297,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             {
                 "S10: 'sub10' 'http://github.com'",
                 "S11: 'sub11' 'http://github.com'",
+                "S6: 'sub6' 'http://github.com'",
                 "S9: 'sub9' 'http://github.com'"
             }, submodules.Select(s => $"{s.Name}: '{s.WorkingDirectoryRelativePath}' '{s.Url}'"));
 
@@ -313,8 +314,6 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
               TestUtilities.GetExceptionMessage(() => File.ReadAllText(Path.Combine(workingDir.Path, "sub4", ".git"))),
               // Could not find a part of the path 'sub5\.git'.
               TestUtilities.GetExceptionMessage(() => File.ReadAllText(Path.Combine(workingDir.Path, "sub5", ".git"))),
-              // Access to the path 'sub6\.git' is denied
-              TestUtilities.GetExceptionMessage(() => File.ReadAllText(Path.Combine(workingDir.Path, "sub6", ".git"))),
               // The format of the file 'sub7\.git' is invalid.
               string.Format(Resources.FormatOfFileIsInvalid, Path.Combine(workingDir.Path, "sub7", ".git")),
               // Path specified in file 'sub8\.git' is invalid.
@@ -357,6 +356,26 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             var repository = new GitRepository(GitEnvironment.Empty, GitConfig.Empty, gitDir.Path, gitDir.Path, workingDir.Path);
             Assert.Equal("0000000000000000000000000000000000000000", repository.ReadSubmoduleHeadCommitSha(submoduleWorkingDir.Path));
+        }
+
+        [Fact]
+        public void GetOldStyleSubmoduleHeadCommitSha()
+        {
+            using var temp = new TempRoot();
+
+            var gitDir = temp.CreateDirectory();
+            var workingDir = temp.CreateDirectory();
+
+            // this is a unusual but legal case which can occur with older versions of Git or other tools.
+            // see https://git-scm.com/docs/gitsubmodules#_forms for more details.
+            var oldStyleSubmoduleWorkingDir = workingDir.CreateDirectory("old-style-submodule");
+            var oldStyleSubmoduleGitDir = oldStyleSubmoduleWorkingDir.CreateDirectory(".git");
+            var oldStyleSubmoduleRefsHeadDir = oldStyleSubmoduleGitDir.CreateDirectory("refs").CreateDirectory("heads");
+            oldStyleSubmoduleRefsHeadDir.CreateFile("branch1").WriteAllText("1111111111111111111111111111111111111111");
+            oldStyleSubmoduleGitDir.CreateFile("HEAD").WriteAllText("ref: refs/heads/branch1");
+
+            var repository = new GitRepository(GitEnvironment.Empty, GitConfig.Empty, gitDir.Path, gitDir.Path, workingDir.Path);
+            Assert.Equal("1111111111111111111111111111111111111111", repository.ReadSubmoduleHeadCommitSha(oldStyleSubmoduleWorkingDir.Path));
         }
     }
 }
