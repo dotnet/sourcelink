@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -19,7 +18,6 @@ namespace Microsoft.Build.Tasks.Git
         private const string CommonDirFileName = "commondir";
         private const string GitDirName = ".git";
         private const string GitDirPrefix = "gitdir: ";
-        private const string GitDirFileName = "gitdir";
 
         // See https://git-scm.com/docs/gitrepository-layout#Documentation/gitrepository-layout.txt-HEAD
         internal const string GitHeadFileName = "HEAD";
@@ -131,46 +129,10 @@ namespace Microsoft.Build.Tasks.Git
 
         private static string? GetWorkingDirectory(GitConfig config, GitRepositoryLocation location)
         {
-            // Working trees cannot have the same common directory and git directory.
-            // 'gitdir' file in a git directory indicates a working tree.
+            // TODO (https://github.com/dotnet/sourcelink/issues/301):
+            // GIT_WORK_TREE environment variable can also override working directory.
 
-            var gitdirFilePath = Path.Combine(location.GitDirectory, GitDirFileName);
-
-            var isLinkedWorkingTree = PathUtils.ToPosixDirectoryPath(location.CommonDirectory) != PathUtils.ToPosixDirectoryPath(location.GitDirectory) && 
-                File.Exists(gitdirFilePath);
-
-            if (isLinkedWorkingTree)
-            {
-                // https://git-scm.com/docs/gitrepository-layout#Documentation/gitrepository-layout.txt-worktreesltidgtgitdir
-
-                string workingDirectory;
-                try
-                {
-                    workingDirectory = File.ReadAllText(gitdirFilePath);
-                }
-                catch (Exception e) when (!(e is IOException))
-                {
-                    throw new IOException(e.Message, e);
-                }
-
-                workingDirectory = workingDirectory.TrimEnd(CharUtils.AsciiWhitespace);
-
-                // Path in gitdir file must be absolute.
-                if (!PathUtils.IsAbsolute(workingDirectory))
-                {
-                    throw new InvalidDataException(string.Format(Resources.PathSpecifiedInFileIsNotAbsolute, gitdirFilePath, workingDirectory));
-                }
-
-                try
-                {
-                    return Path.GetFullPath(workingDirectory);
-                }
-                catch
-                {
-                    throw new InvalidDataException(string.Format(Resources.PathSpecifiedInFileIsInvalid, gitdirFilePath, workingDirectory));
-                }
-            }
-
+            // Working directory can be overridden by a config option.
             // See https://git-scm.com/docs/git-config#Documentation/git-config.txt-coreworktree
             string? value = config.GetVariableValue("core", "worktree");
             if (value != null)

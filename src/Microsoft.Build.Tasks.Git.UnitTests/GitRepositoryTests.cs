@@ -95,12 +95,21 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             Assert.Equal(mainGitDir.Path, location.CommonDirectory);
             Assert.Null(location.WorkingDirectory);
 
+            var repository = GitRepository.OpenRepository(location, GitEnvironment.Empty);
+            Assert.Equal(location.GitDirectory, repository.GitDirectory);
+            Assert.Equal(location.CommonDirectory, repository.CommonDirectory);
+            Assert.Null(repository.WorkingDirectory);
+
             // start under worktree directory:
             Assert.True(GitRepository.TryFindRepository(worktreeSubDir.Path, out location));
-
             Assert.Equal(worktreeGitDir.Path, location.GitDirectory);
             Assert.Equal(mainGitDir.Path, location.CommonDirectory);
             Assert.Equal(worktreeDir.Path, location.WorkingDirectory);
+
+            repository = GitRepository.OpenRepository(location, GitEnvironment.Empty);
+            Assert.Equal(location.GitDirectory, repository.GitDirectory);
+            Assert.Equal(location.WorkingDirectory, repository.WorkingDirectory);
+            Assert.Equal(location.CommonDirectory, repository.CommonDirectory);
 
             // start under worktree git directory (git config works from this dir, but git status requires work dir):
             Assert.True(GitRepository.TryFindRepository(worktreeGitSubDir.Path, out location));
@@ -108,6 +117,11 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             Assert.Equal(worktreeGitDir.Path, location.GitDirectory);
             Assert.Equal(mainGitDir.Path, location.CommonDirectory);
             Assert.Null(location.WorkingDirectory);
+
+            repository = GitRepository.OpenRepository(location, GitEnvironment.Empty);
+            Assert.Equal(location.GitDirectory, repository.GitDirectory);
+            Assert.Equal(location.CommonDirectory, repository.CommonDirectory);
+            Assert.Null(repository.WorkingDirectory);
         }
 
         [Fact]
@@ -171,6 +185,31 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         }
 
         [Fact]
+        public void OpenRepository_WorkingDirectorySpecifiedInConfig()
+        {
+            using var temp = new TempRoot();
+
+            var homeDir = temp.CreateDirectory();
+
+            var workingDir = temp.CreateDirectory();
+            var workingDir2 = temp.CreateDirectory();
+            var gitDir = workingDir.CreateDirectory(".git");
+
+            gitDir.CreateFile("HEAD");
+            gitDir.CreateFile("config").WriteAllText("[core]worktree = " + workingDir2.Path.Replace(@"\", @"\\"));
+
+            Assert.True(GitRepository.TryFindRepository(gitDir.Path, out var location));
+            Assert.Equal(gitDir.Path, location.CommonDirectory);
+            Assert.Equal(gitDir.Path, location.GitDirectory);
+            Assert.Null(location.WorkingDirectory);
+
+            var repository = GitRepository.OpenRepository(location, GitEnvironment.Empty);
+            Assert.Equal(gitDir.Path, repository.CommonDirectory);
+            Assert.Equal(gitDir.Path, repository.GitDirectory);
+            Assert.Equal(workingDir2.Path, repository.WorkingDirectory);
+        }
+
+        [Fact]
         public void OpenRepository_VersionNotSupported()
         {
             using var temp = new TempRoot();
@@ -189,6 +228,72 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var src = workingDir.CreateDirectory("src");
 
             Assert.Throws<NotSupportedException>(() => GitRepository.OpenRepository(src.Path, new GitEnvironment(homeDir.Path)));
+        }
+
+        [Fact]
+        public void OpenRepository_Worktree_GitdirFileMissing()
+        {
+            using var temp = new TempRoot();
+
+            var mainWorkingDir = temp.CreateDirectory();
+            var mainGitDir = mainWorkingDir.CreateDirectory(".git");
+            mainGitDir.CreateFile("HEAD");
+
+            var worktreesDir = mainGitDir.CreateDirectory("worktrees");
+            var worktreeGitDir = worktreesDir.CreateDirectory("myworktree");
+            var worktreeDir = temp.CreateDirectory();
+            var worktreeGitFile = worktreeDir.CreateFile(".git").WriteAllText("gitdir: " + worktreeGitDir + " \r\n\t\v");
+
+            worktreeGitDir.CreateFile("HEAD");
+            worktreeGitDir.CreateFile("commondir").WriteAllText("../..\n");
+            // gitdir file that links back to the worktree working directory is missing from worktreeGitDir
+
+            Assert.True(GitRepository.TryFindRepository(worktreeDir.Path, out var location));
+            Assert.Equal(worktreeGitDir.Path, location.GitDirectory);
+            Assert.Equal(mainGitDir.Path, location.CommonDirectory);
+            Assert.Equal(worktreeDir.Path, location.WorkingDirectory);
+            
+            var repository = GitRepository.OpenRepository(location, GitEnvironment.Empty);
+            Assert.Equal(repository.GitDirectory, location.GitDirectory);
+            Assert.Equal(repository.CommonDirectory, location.CommonDirectory);
+            Assert.Equal(repository.WorkingDirectory, location.WorkingDirectory);
+        }
+
+        /// <summary>
+        /// The directory in gitdir file is ignored for the purposes of determining repository working directory.
+        /// </summary>
+        [Fact]
+        public void OpenRepository_Worktree_GitdirFileDifferentPath()
+        {
+            using var temp = new TempRoot();
+
+            var mainWorkingDir = temp.CreateDirectory();
+            var mainGitDir = mainWorkingDir.CreateDirectory(".git");
+            mainGitDir.CreateFile("HEAD");
+
+            var worktreesDir = mainGitDir.CreateDirectory("worktrees");
+            var worktreeGitDir = worktreesDir.CreateDirectory("myworktree");
+            var worktreeDir = temp.CreateDirectory();
+            var worktreeGitFile = worktreeDir.CreateFile(".git").WriteAllText("gitdir: " + worktreeGitDir + " \r\n\t\v");
+
+            var worktreeDir2 = temp.CreateDirectory();
+            var worktreeGitFile2 = worktreeDir2.CreateFile(".git").WriteAllText("gitdir: " + worktreeGitDir + " \r\n\t\v");
+
+            worktreeGitDir.CreateFile("HEAD");
+            worktreeGitDir.CreateFile("commondir").WriteAllText("../..\n");
+            worktreeGitDir.CreateFile("gitdir").WriteAllText(worktreeGitFile2.Path + " \r\n\t\v");
+
+            Assert.True(GitRepository.TryFindRepository(worktreeDir.Path, out var location));
+            Assert.Equal(worktreeGitDir.Path, location.GitDirectory);
+            Assert.Equal(mainGitDir.Path, location.CommonDirectory);
+            Assert.Equal(worktreeDir.Path, location.WorkingDirectory);
+
+            var repository = GitRepository.OpenRepository(location, GitEnvironment.Empty);
+            Assert.Equal(repository.GitDirectory, location.GitDirectory);
+            Assert.Equal(repository.CommonDirectory, location.CommonDirectory);
+            
+            // actual working dir is not affected:
+            Assert.Equal(worktreeDir.Path, location.WorkingDirectory);
         }
 
         [Fact]

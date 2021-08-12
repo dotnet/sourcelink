@@ -357,7 +357,7 @@ namespace Microsoft.Build.Tasks.Git
             public readonly string Name;
             public readonly List<DirectoryNode> OrderedChildren;
 
-            // set on nodes that represent submodule working directory:
+            // set on nodes that represent working directory of the repository or a submodule:
             public Lazy<GitIgnore.Matcher?>? Matcher;
 
             public DirectoryNode(string name, List<DirectoryNode> orderedChildren)
