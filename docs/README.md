@@ -140,7 +140,7 @@ The default value is `true`. Set to `false` to suppress publishing `SourceRevisi
 
 ### SourceRevisionId
 
-Set by target `SetSourceRevisionId` and consumed by NuGet `Pack` target and `GenerateAssemblyInfo` target. 
+Set by target `InitializeSourceControlInformationFromSourceControlManager` and consumed by NuGet `Pack` target and `GenerateAssemblyInfo` target. 
 May be used by custom targets that need this information.
 
 ### EnableSourceLink
