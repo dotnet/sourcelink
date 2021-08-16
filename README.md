@@ -101,7 +101,7 @@ If your project is hosted by GitLab older than version 12.0 you must specify `So
 </ItemGroup>
 ```
 
-The item group `SourceLinkGitLabHost` specifies the domain of the GitLab host and the version of Bitbucket.
+The item group `SourceLinkGitLabHost` specifies the domain of the GitLab host and the version of GitLab.
 The version is important since URL format for accessing files changes with version 12.0. By default Source Link assumes new format (version 12.0+).
 
 You might also consider using environment variable [`CI_SERVER_VERSION`](https://docs.gitlab.com/ee/ci/variables/predefined_variables.html) (`Version="$(CI_SERVER_VERSION)"`) if available in your build environment.
