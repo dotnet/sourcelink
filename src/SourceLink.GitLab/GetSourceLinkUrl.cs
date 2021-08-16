@@ -18,7 +18,33 @@ namespace Microsoft.SourceLink.GitLab
         protected override string HostsItemGroupName => "SourceLinkGitLabHost";
         protected override string ProviderDisplayName => "GitLab";
 
+        private const string VersionMetadataName = "Version";
+
+        // see https://gitlab.com/gitlab-org/gitlab/-/issues/28848
+        private static readonly Version s_versionWithNewUrlFormat = new Version(12, 0);
+
         protected override string? BuildSourceLinkUrl(Uri contentUri, Uri gitUri, string relativeUrl, string revisionId, ITaskItem? hostItem)
-            => UriUtilities.Combine(UriUtilities.Combine(contentUri.ToString(), relativeUrl), "raw/" + revisionId + "/*");
+        {
+            var path = GetVersion(hostItem) >= s_versionWithNewUrlFormat
+                ? "-/raw/" + revisionId + "/*"
+                : "raw/" + revisionId + "/*";
+            return UriUtilities.Combine(UriUtilities.Combine(contentUri.ToString(), relativeUrl), path);
+        }
+
+        private Version GetVersion(ITaskItem? hostItem)
+        {
+            var versionAsString = hostItem?.GetMetadata(VersionMetadataName);
+            if (!NullableString.IsNullOrEmpty(versionAsString))
+            {
+                if (Version.TryParse(versionAsString, out var version))
+                {
+                    return version;
+                }
+
+                Log.LogError(CommonResources.ItemOfItemGroupMustSpecifyMetadata, hostItem!.ItemSpec, HostsItemGroupName, VersionMetadataName);
+            }
+
+            return s_versionWithNewUrlFormat;
+        }
     }
 }
