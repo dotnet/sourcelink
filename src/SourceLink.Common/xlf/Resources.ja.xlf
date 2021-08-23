@@ -4,32 +4,32 @@
     <body>
       <trans-unit id="MustEndWithDirectorySeparator">
         <source>{0} must end with a directory separator: '{1}'</source>
-        <target state="translated">{0} の終わりは、ディレクトリの区切り記号にする必要があります: '{1}'</target>
+        <target state="new">{0} must end with a directory separator: '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="MustNotContainWildcard">
         <source>{0} must not contain wildcard '*': '{1}'</source>
-        <target state="translated">{0} にワイルドカード '*' を含めることはできません: '{1}'</target>
+        <target state="new">{0} must not contain wildcard '*': '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="MustContainSingleWildcard">
         <source>{0} must contain a single wildcard '*': '{1}'"</source>
-        <target state="translated">{0} には 1 つのワイルドカード '*' を含める必要があります: '{1}'</target>
+        <target state="new">{0} must contain a single wildcard '*': '{1}'"</target>
         <note />
       </trans-unit>
       <trans-unit id="IsEmpty">
         <source>{0} is empty: '{1}'</source>
-        <target state="translated">{0} が空です: '{1}'</target>
+        <target state="new">{0} is empty: '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="ErrorWritingToSourceLinkFile">
         <source>Error writing to source link file '{0}': {1}</source>
-        <target state="translated">ソース リンク ファイル '{0}' への書き込みエラー: {1}</target>
+        <target state="new">Error writing to source link file '{0}': {1}</target>
         <note />
       </trans-unit>
       <trans-unit id="SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty">
         <source>Source control information is not available - the generated source link is empty.</source>
-        <target state="translated">ソース コントロール情報は利用できません。 生成されたソース リンクが空です。</target>
+        <target state="new">Source control information is not available - the generated source link is empty.</target>
         <note />
       </trans-unit>
     </body>

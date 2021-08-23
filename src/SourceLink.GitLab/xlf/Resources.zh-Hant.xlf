@@ -4,27 +4,27 @@
     <body>
       <trans-unit id="AtLeastOneRepositoryHostIsRequired">
         <source>{0} item group is empty. At least one {1} repository host is required in order to generate SourceLink.</source>
-        <target state="translated">{0} 項目群組是空的。至少需要一個 {1} 存放庫主機，才可產生 SourceLink。</target>
+        <target state="new">{0} item group is empty. At least one {1} repository host is required in order to generate SourceLink.</target>
         <note />
       </trans-unit>
       <trans-unit id="SpecifiesAnInvalidUrl">
         <source>{0} specifies an invalid URL: '{1}'</source>
-        <target state="translated">{0} 指定的 URL 無效: '{1}'</target>
+        <target state="new">{0} specifies an invalid URL: '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsInvalid">
         <source>The value of {0} with identity '{1}' is invalid: '{2}'"</source>
-        <target state="translated">識別為 {1} 之 {0} 的值無效: '{2}'"</target>
+        <target state="new">The value of {0} with identity '{1}' is invalid: '{2}'"</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsNotValidCommitHash">
         <source>The value of {0} with identity '{1}' is not a valid commit hash: '{2}'"</source>
-        <target state="translated">識別為 {1} 之 {0} 的值不是有效的認可雜湊: '{2}'"</target>
+        <target state="new">The value of {0} with identity '{1}' is not a valid commit hash: '{2}'"</target>
         <note />
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidDomainName">
         <source>The value passed to task parameter {0} is not a valid host name: '{1}'</source>
-        <target state="translated">傳遞給工作參數 {0} 的值並非有效的主機名稱: '{1}'</target>
+        <target state="new">The value passed to task parameter {0} is not a valid host name: '{1}'</target>
         <note />
       </trans-unit>
     </body>

@@ -4,32 +4,32 @@
     <body>
       <trans-unit id="MustEndWithDirectorySeparator">
         <source>{0} must end with a directory separator: '{1}'</source>
-        <target state="translated">{0} doit se terminer par un séparateur de répertoire : '{1}'</target>
+        <target state="new">{0} must end with a directory separator: '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="MustNotContainWildcard">
         <source>{0} must not contain wildcard '*': '{1}'</source>
-        <target state="translated">{0} ne doit pas contenir le caractère générique '*' : '{1}'</target>
+        <target state="new">{0} must not contain wildcard '*': '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="MustContainSingleWildcard">
         <source>{0} must contain a single wildcard '*': '{1}'"</source>
-        <target state="translated">{0} doit contenir un seul caractère générique '*' : '{1}'"</target>
+        <target state="new">{0} must contain a single wildcard '*': '{1}'"</target>
         <note />
       </trans-unit>
       <trans-unit id="IsEmpty">
         <source>{0} is empty: '{1}'</source>
-        <target state="translated">{0} est vide : '{1}'</target>
+        <target state="new">{0} is empty: '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="ErrorWritingToSourceLinkFile">
         <source>Error writing to source link file '{0}': {1}</source>
-        <target state="translated">Erreur d'écriture dans le fichier de liaison source '{0}' : {1}</target>
+        <target state="new">Error writing to source link file '{0}': {1}</target>
         <note />
       </trans-unit>
       <trans-unit id="SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty">
         <source>Source control information is not available - the generated source link is empty.</source>
-        <target state="translated">Les informations de contrôle de code source ne sont pas disponibles - le lien source généré est vide.</target>
+        <target state="new">Source control information is not available - the generated source link is empty.</target>
         <note />
       </trans-unit>
     </body>

@@ -4,132 +4,132 @@
     <body>
       <trans-unit id="ConfigurationFileRecursionExceededMaximumAllowedDepth">
         <source>Configuration file recursion exceeded maximum allowed depth of {0}.</source>
-        <target state="translated">Для рекурсии файла конфигурации превышена максимально допустимая глубина {0}.</target>
+        <target state="new">Configuration file recursion exceeded maximum allowed depth of {0}.</target>
         <note />
       </trans-unit>
       <trans-unit id="ErrorReadingGitRepositoryInformation">
         <source>Error reading git repository information: {0}</source>
-        <target state="translated">Ошибка при чтении сведений о репозитории Git: {0}</target>
+        <target state="new">Error reading git repository information: {0}</target>
         <note />
       </trans-unit>
       <trans-unit id="FormatOfFileIsInvalid">
         <source>The format of the file '{0}' is invalid.</source>
-        <target state="translated">Формат файла "{0}" является недопустимым.</target>
+        <target state="new">The format of the file '{0}' is invalid.</target>
         <note />
       </trans-unit>
       <trans-unit id="HomeRelativePathsAreNotAllowed">
         <source>Home relative paths are not allowed when {0} is '{1}': '{2}'.</source>
-        <target state="translated">Относительные пути к домашнему каталогу не допускаются, если {0} имеет значение "{1}": "{2}".</target>
+        <target state="new">Home relative paths are not allowed when {0} is '{1}': '{2}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidFormatOfFileAtPath">
         <source>Repository does not have a working directory.</source>
-        <target state="translated">Репозиторий не содержит рабочего каталога.</target>
+        <target state="new">Repository does not have a working directory.</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidModulePath">
         <source>Invalid module path: '{0}'.</source>
-        <target state="translated">Недопустимый путь к модулю: "{0}".</target>
+        <target state="new">Invalid module path: '{0}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidReference">
         <source>Invalid reference: '{0}'.</source>
-        <target state="translated">Недопустимая ссылка: "{0}".</target>
+        <target state="new">Invalid reference: '{0}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidRepositoryRemoteUrl">
         <source>The URL of repository remote '{0}' is invalid: '{1}'.</source>
-        <target state="translated">URL-адрес удаленного репозитория "{0}" является недопустимым: "{1}".</target>
+        <target state="new">The URL of repository remote '{0}' is invalid: '{1}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidSubmodulePath">
         <source>The path of submodule '{0}' is missing or invalid: '{1}'.</source>
-        <target state="translated">Путь к подмодулю "{0}" отсутствует или является недопустимым: "{1}".</target>
+        <target state="new">The path of submodule '{0}' is missing or invalid: '{1}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidSubmoduleUrl">
         <source>The URL of submodule '{0}' is missing or invalid: '{1}'.</source>
-        <target state="translated">URL-адрес подмодуля "{0}" отсутствует или является недопустимым: "{1}".</target>
+        <target state="new">The URL of submodule '{0}' is missing or invalid: '{1}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="PathMustBeAbsolute">
         <source>Path must be absolute.</source>
-        <target state="translated">Путь должен быть абсолютным.</target>
+        <target state="new">Path must be absolute.</target>
         <note />
       </trans-unit>
       <trans-unit id="PathMustBeFilePath">
         <source>Path must be a file path.</source>
-        <target state="translated">Необходимо указать путь к файлу.</target>
+        <target state="new">Path must be a file path.</target>
         <note />
       </trans-unit>
       <trans-unit id="PathSpecifiedInFileIsInvalid">
         <source>Path specified in file '{0}' is invalid: '{1}'.</source>
-        <target state="translated">В файле "{0}" указан недопустимый путь: "{1}".</target>
+        <target state="new">Path specified in file '{0}' is invalid: '{1}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="PathSpecifiedInFileIsNotAbsolute">
         <source>Path specified in file '{0}' is not absolute: '{1}'.</source>
-        <target state="translated">Путь, указанный в файле "{0}", не является абсолютным: "{1}".</target>
+        <target state="new">Path specified in file '{0}' is not absolute: '{1}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="RecursionDetectedWhileResolvingReference">
         <source>Recursion detected while resolving reference: '{0}'.</source>
-        <target state="translated">Обнаружена рекурсия при разрешении ссылки: "{0}".</target>
+        <target state="new">Recursion detected while resolving reference: '{0}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryDoesNotHaveSpecifiedRemote">
         <source>Repository '{0}' does not have the specified remote '{1}'; using '{2}' instead.</source>
-        <target state="translated">Репозиторий "{0}" не содержит указанный удаленный репозиторий "{1}"; вместо него будет использован репозиторий "{2}".</target>
+        <target state="new">Repository '{0}' does not have the specified remote '{1}'; using '{2}' instead.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryDoesNotHaveWorkingDirectory">
         <source>Repository does not have a working directory.</source>
-        <target state="translated">Репозиторий не содержит рабочего каталога.</target>
+        <target state="new">Repository does not have a working directory.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryHasNoRemote">
         <source>Repository '{0}' has no remote.</source>
-        <target state="translated">Отсутствует удаленный репозиторий для репозитория "{0}".</target>
+        <target state="new">Repository '{0}' has no remote.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryHasNoCommit">
         <source>Repository has no commit.</source>
-        <target state="translated">Хранилище не содержит фиксаций.</target>
+        <target state="new">Repository has no commit.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryUrlEvaluationExceededMaximumAllowedDepth">
         <source>Repository URL evaluation exceeded maximum allowed depth of {0} local repositories.</source>
-        <target state="translated">При определении URL-адреса репозитория была превышена максимально допустимая глубина локальных репозиториев: {0}.</target>
+        <target state="new">Repository URL evaluation exceeded maximum allowed depth of {0} local repositories.</target>
         <note />
       </trans-unit>
       <trans-unit id="SourceCodeWontBeAvailableViaSourceLink">
         <source>{0} The source code won't be available via Source Link.</source>
-        <target state="translated">{0} Исходный код не будет доступен по ссылке.</target>
+        <target state="new">{0} The source code won't be available via Source Link.</target>
         <note />
       </trans-unit>
       <trans-unit id="SubmoduleWithoutCommit">
         <source>Submodule '{0}' doesn't have any commit.</source>
-        <target state="translated">Подмодуль "{0}" не содержит фиксаций.</target>
+        <target state="new">Submodule '{0}' doesn't have any commit.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnableToLocateRepository">
         <source>Unable to locate repository with working directory that contains directory '{0}'.</source>
-        <target state="translated">Не удается найти репозиторий с рабочим каталогом, содержащим каталог "{0}".</target>
+        <target state="new">Unable to locate repository with working directory that contains directory '{0}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnsupportedRepositoryVersion">
         <source>Unsupported repository version {0}. Only versions up to {1} are supported.</source>
-        <target state="translated">Неподдерживаемая версия репозитория {0}. Поддерживаются только версии до {1}.</target>
+        <target state="new">Unsupported repository version {0}. Only versions up to {1} are supported.</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfIsNotValidConfigurationScope">
         <source>The value of {0} is not a valid configuration scope: '{1}'.</source>
-        <target state="translated">Значение {0} не является допустимой областью конфигурации: "{1}".</target>
+        <target state="new">The value of {0} is not a valid configuration scope: '{1}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfIsNotValidPath">
         <source>The value of {0} is not a valid path: '{1}'.</source>
-        <target state="translated">Значение {0} не является допустимым путем: "{1}".</target>
+        <target state="new">The value of {0} is not a valid path: '{1}'.</target>
         <note />
       </trans-unit>
     </body>
