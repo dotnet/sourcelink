@@ -4,32 +4,32 @@
     <body>
       <trans-unit id="MustEndWithDirectorySeparator">
         <source>{0} must end with a directory separator: '{1}'</source>
-        <target state="translated">{0} bir dizin ayırıcısı ile sonlanmalıdır: '{1}'</target>
+        <target state="new">{0} must end with a directory separator: '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="MustNotContainWildcard">
         <source>{0} must not contain wildcard '*': '{1}'</source>
-        <target state="translated">{0}, '*' joker karakterini içeremez: '{1}'</target>
+        <target state="new">{0} must not contain wildcard '*': '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="MustContainSingleWildcard">
         <source>{0} must contain a single wildcard '*': '{1}'"</source>
-        <target state="translated">{0} tek bir '*' joker karakterini içermelidir: '{1}'</target>
+        <target state="new">{0} must contain a single wildcard '*': '{1}'"</target>
         <note />
       </trans-unit>
       <trans-unit id="IsEmpty">
         <source>{0} is empty: '{1}'</source>
-        <target state="translated">{0} boş: '{1}'</target>
+        <target state="new">{0} is empty: '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="ErrorWritingToSourceLinkFile">
         <source>Error writing to source link file '{0}': {1}</source>
-        <target state="translated">'{0}' kaynak bağlantı dosyasına yazılırken bir hata oluştu: {1}</target>
+        <target state="new">Error writing to source link file '{0}': {1}</target>
         <note />
       </trans-unit>
       <trans-unit id="SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty">
         <source>Source control information is not available - the generated source link is empty.</source>
-        <target state="translated">Kaynak denetimi bilgileri kullanılamıyor. Oluşturulan kaynak bağlantısı boş.</target>
+        <target state="new">Source control information is not available - the generated source link is empty.</target>
         <note />
       </trans-unit>
     </body>

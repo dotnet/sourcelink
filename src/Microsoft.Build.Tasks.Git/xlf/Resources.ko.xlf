@@ -4,132 +4,132 @@
     <body>
       <trans-unit id="ConfigurationFileRecursionExceededMaximumAllowedDepth">
         <source>Configuration file recursion exceeded maximum allowed depth of {0}.</source>
-        <target state="translated">구성 파일 재귀가 허용되는 최대 깊이 {0}을(를) 초과했습니다.</target>
+        <target state="new">Configuration file recursion exceeded maximum allowed depth of {0}.</target>
         <note />
       </trans-unit>
       <trans-unit id="ErrorReadingGitRepositoryInformation">
         <source>Error reading git repository information: {0}</source>
-        <target state="translated">Git 리포지토리 정보를 읽는 동안 오류가 발생했습니다. {0}</target>
+        <target state="new">Error reading git repository information: {0}</target>
         <note />
       </trans-unit>
       <trans-unit id="FormatOfFileIsInvalid">
         <source>The format of the file '{0}' is invalid.</source>
-        <target state="translated">'{0}' 파일의 형식이 잘못되었습니다.</target>
+        <target state="new">The format of the file '{0}' is invalid.</target>
         <note />
       </trans-unit>
       <trans-unit id="HomeRelativePathsAreNotAllowed">
         <source>Home relative paths are not allowed when {0} is '{1}': '{2}'.</source>
-        <target state="translated">{0}이(가) '{1}': '{2}'인 경우에는 홈 상대 경로를 사용할 수 없습니다.</target>
+        <target state="new">Home relative paths are not allowed when {0} is '{1}': '{2}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidFormatOfFileAtPath">
         <source>Repository does not have a working directory.</source>
-        <target state="translated">리포지토리에 작업 디렉터리가 없습니다.</target>
+        <target state="new">Repository does not have a working directory.</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidModulePath">
         <source>Invalid module path: '{0}'.</source>
-        <target state="translated">모듈 경로 '{0}'이(가) 잘못되었습니다.</target>
+        <target state="new">Invalid module path: '{0}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidReference">
         <source>Invalid reference: '{0}'.</source>
-        <target state="translated">'{0}' 참조가 잘못되었습니다.</target>
+        <target state="new">Invalid reference: '{0}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidRepositoryRemoteUrl">
         <source>The URL of repository remote '{0}' is invalid: '{1}'.</source>
-        <target state="translated">리포지토리 원격 '{0}'의 URL이 잘못되었습니다. '{1}'.</target>
+        <target state="new">The URL of repository remote '{0}' is invalid: '{1}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidSubmodulePath">
         <source>The path of submodule '{0}' is missing or invalid: '{1}'.</source>
-        <target state="translated">'{0}' 하위 모듈의 경로가 없거나 잘못되었습니다. '{1}'</target>
+        <target state="new">The path of submodule '{0}' is missing or invalid: '{1}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidSubmoduleUrl">
         <source>The URL of submodule '{0}' is missing or invalid: '{1}'.</source>
-        <target state="translated">'{0}' 하위 모듈의 URL이 없거나 잘못되었습니다. '{1}'</target>
+        <target state="new">The URL of submodule '{0}' is missing or invalid: '{1}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="PathMustBeAbsolute">
         <source>Path must be absolute.</source>
-        <target state="translated">경로는 절대 경로여야 합니다.</target>
+        <target state="new">Path must be absolute.</target>
         <note />
       </trans-unit>
       <trans-unit id="PathMustBeFilePath">
         <source>Path must be a file path.</source>
-        <target state="translated">경로는 파일 경로여야 합니다.</target>
+        <target state="new">Path must be a file path.</target>
         <note />
       </trans-unit>
       <trans-unit id="PathSpecifiedInFileIsInvalid">
         <source>Path specified in file '{0}' is invalid: '{1}'.</source>
-        <target state="translated">'{0}' 파일에 지정된 경로가 잘못되었습니다. '{1}'</target>
+        <target state="new">Path specified in file '{0}' is invalid: '{1}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="PathSpecifiedInFileIsNotAbsolute">
         <source>Path specified in file '{0}' is not absolute: '{1}'.</source>
-        <target state="translated">'{0}' 파일에 지정된 경로는 절대 경로가 아닙니다. '{1}'</target>
+        <target state="new">Path specified in file '{0}' is not absolute: '{1}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="RecursionDetectedWhileResolvingReference">
         <source>Recursion detected while resolving reference: '{0}'.</source>
-        <target state="translated">'{0}' 참조를 확인하는 동안 재귀가 검색되었습니다.</target>
+        <target state="new">Recursion detected while resolving reference: '{0}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryDoesNotHaveSpecifiedRemote">
         <source>Repository '{0}' does not have the specified remote '{1}'; using '{2}' instead.</source>
-        <target state="translated">리포지토리 '{0}'에 지정한 원격 리포지토리 '{1}'이(가) 없습니다. 대신 '{2}'을(를) 사용합니다.</target>
+        <target state="new">Repository '{0}' does not have the specified remote '{1}'; using '{2}' instead.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryDoesNotHaveWorkingDirectory">
         <source>Repository does not have a working directory.</source>
-        <target state="translated">리포지토리에 작업 디렉터리가 없습니다.</target>
+        <target state="new">Repository does not have a working directory.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryHasNoRemote">
         <source>Repository '{0}' has no remote.</source>
-        <target state="translated">리포지토리 '{0}'에 원격 리포지토리가 없습니다.</target>
+        <target state="new">Repository '{0}' has no remote.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryHasNoCommit">
         <source>Repository has no commit.</source>
-        <target state="translated">저장소에 커밋 내역이 없습니다.</target>
+        <target state="new">Repository has no commit.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryUrlEvaluationExceededMaximumAllowedDepth">
         <source>Repository URL evaluation exceeded maximum allowed depth of {0} local repositories.</source>
-        <target state="translated">리포지토리 URL 평가가 허용되는 최대 깊이인 {0}개 로컬 리포지토리를 초과했습니다.</target>
+        <target state="new">Repository URL evaluation exceeded maximum allowed depth of {0} local repositories.</target>
         <note />
       </trans-unit>
       <trans-unit id="SourceCodeWontBeAvailableViaSourceLink">
         <source>{0} The source code won't be available via Source Link.</source>
-        <target state="translated">{0} 소스 링크를 통해 소스 코드를 사용할 수 없습니다.</target>
+        <target state="new">{0} The source code won't be available via Source Link.</target>
         <note />
       </trans-unit>
       <trans-unit id="SubmoduleWithoutCommit">
         <source>Submodule '{0}' doesn't have any commit.</source>
-        <target state="translated">'{0}' 하위 모듈에 커밋이 없습니다.</target>
+        <target state="new">Submodule '{0}' doesn't have any commit.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnableToLocateRepository">
         <source>Unable to locate repository with working directory that contains directory '{0}'.</source>
-        <target state="translated">디렉터리 '{0}'이(가) 포함된 작업 디렉터리로 리포지토리를 찾을 수 없습니다.</target>
+        <target state="new">Unable to locate repository with working directory that contains directory '{0}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnsupportedRepositoryVersion">
         <source>Unsupported repository version {0}. Only versions up to {1} are supported.</source>
-        <target state="translated">{0}은(는) 지원되지 않는 리포지토리 버전입니다. 버전은 최대 {1}까지만 지원됩니다.</target>
+        <target state="new">Unsupported repository version {0}. Only versions up to {1} are supported.</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfIsNotValidConfigurationScope">
         <source>The value of {0} is not a valid configuration scope: '{1}'.</source>
-        <target state="translated">{0}의 값이 유효한 구성 범위 '{1}'이(가) 아닙니다.</target>
+        <target state="new">The value of {0} is not a valid configuration scope: '{1}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfIsNotValidPath">
         <source>The value of {0} is not a valid path: '{1}'.</source>
-        <target state="translated">{0}의 값이 유효한 경로 '{1}'이(가) 아닙니다.</target>
+        <target state="new">The value of {0} is not a valid path: '{1}'.</target>
         <note />
       </trans-unit>
     </body>
