@@ -1,15 +1,14 @@
 // Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using Microsoft.Build.Framework;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Collections.Generic;
-using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
-using System;
 
 namespace Microsoft.SourceLink.Common
 {
-    public sealed class FindAdditionalSourceLinkFiles : Task
+    public sealed class FindAdditionalSourceLinkFiles : Build.Utilities.Task
     {
         /// <summary>
         /// The name/path of the sourcelink file that we will merge into.
@@ -45,7 +44,7 @@ namespace Microsoft.SourceLink.Common
 
             try
             {
-                //// Throughout we expect that the sourcelink files for a lib is alongside
+                //// Throughout we expect that the sourcelink file for a lib is alongside
                 //// the lib with the extension sourcelink.json instead of lib.
 
                 // For import libraries we always have the full path to the lib. This shouldn't be needed since
@@ -56,7 +55,11 @@ namespace Microsoft.SourceLink.Common
                     string sourceLinkName = Path.ChangeExtension(importLib, "sourcelink.json");
                     if (File.Exists(sourceLinkName))
                     {
-                        Log.LogMessage("Found additional sourcelink file '{0}'", sourceLinkName);
+                        if (BuildEngine != null)
+                        {
+                            Log.LogMessage("Found additional sourcelink file '{0}'", sourceLinkName);
+                        }
+
                         allSourceLinkFiles.Add(sourceLinkName);
                     }
                 }
@@ -71,7 +74,11 @@ namespace Microsoft.SourceLink.Common
                         // on that path.
                         if (File.Exists(sourceLinkName))
                         {
-                            Log.LogMessage("Found additional sourcelink file '{0}'", sourceLinkName);
+                            if (BuildEngine != null)
+                            {
+                                Log.LogMessage("Found additional sourcelink file '{0}'", sourceLinkName);
+                            }
+
                             allSourceLinkFiles.Add(sourceLinkName);
                         }
                     }
@@ -84,7 +91,11 @@ namespace Microsoft.SourceLink.Common
                             string potentialPath = Path.Combine(libDir, sourceLinkName);
                             if (File.Exists(potentialPath))
                             {
-                                Log.LogMessage("Found additional sourcelink file '{0}'", potentialPath);
+                                if (BuildEngine != null)
+                                {
+                                    Log.LogMessage("Found additional sourcelink file '{0}'", potentialPath);
+                                }
+
                                 allSourceLinkFiles.Add(potentialPath);
                                 break;
                             }
@@ -97,7 +108,11 @@ namespace Microsoft.SourceLink.Common
             }
             catch (Exception ex)
             {
-                Log.LogError("Failed to find sourcelink files for libs with dll/exe sourcelink file - {0}", ex.Message);
+                AllSourceLinkFiles = new string[] { };
+                if (BuildEngine != null)
+                {
+                    Log.LogError("Failed to find sourcelink files for libs with dll/exe sourcelink file - {0}", ex.Message);
+                }
             }
 
             return false;

@@ -9,11 +9,10 @@ using System.Linq;
 using System.Text;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Tasks.SourceControl;
-using Microsoft.Build.Utilities;
 
 namespace Microsoft.SourceLink.Common
 {
-    public sealed class GenerateSourceLinkFile : Task
+    public sealed class GenerateSourceLinkFile : Build.Utilities.Task
     {
         [Required, NotNull]
         public ITaskItem[]? SourceRoots { get; set; }

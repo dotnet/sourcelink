@@ -7,11 +7,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
 using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
 
 namespace Microsoft.Build.Tasks.Git
 {
-    public abstract class RepositoryTask : Task
+    public abstract class RepositoryTask : Utilities.Task
     {
         // Include the assembly version in the key to avoid conflicts with other SourceLink versions.
         private static readonly string s_cacheKeyPrefix = $"3AE29AB7-AE6B-48BA-9851-98A15ED51C94:{typeof(RepositoryTask).Assembly.GetName().Version}:";
