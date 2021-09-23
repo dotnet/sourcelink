@@ -93,6 +93,19 @@ For projects hosted by [GitLab](https://gitlab.com) reference [Microsoft.SourceL
 </ItemGroup>
 ```
 
+If your project is hosted by GitLab older than version 12.0 you must specify `SourceLinkGitLabHost` item group in addition to the package reference:
+
+```xml
+<ItemGroup>
+  <SourceLinkGitLabHost Include="gitlab.yourdomain.com" Version="11.0"/>
+</ItemGroup>
+```
+
+The item group `SourceLinkGitLabHost` specifies the domain of the GitLab host and the version of GitLab.
+The version is important since URL format for accessing files changes with version 12.0. By default Source Link assumes new format (version 12.0+).
+
+You might also consider using environment variable [`CI_SERVER_VERSION`](https://docs.gitlab.com/ee/ci/variables/predefined_variables.html) (`Version="$(CI_SERVER_VERSION)"`) if available in your build environment.
+ 
 ### Bitbucket
 
 For projects in git repositories hosted on [Bitbucket.org](https://bitbucket.org) or hosted on an on-prem Bitbucket server reference [Microsoft.SourceLink.Bitbucket.Git](https://www.nuget.org/packages/Microsoft.SourceLink.Bitbucket.Git) package:
