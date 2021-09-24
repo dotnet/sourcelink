@@ -93,6 +93,7 @@ For projects hosted by [GitLab](https://gitlab.com) reference [Microsoft.SourceL
 </ItemGroup>
 ```
 
+Starting with version 1.1.0-beta-21470-02, Microsoft.SourceLink.GitLab assumes GitLab version 12.0+ by default.
 If your project is hosted by GitLab older than version 12.0 you must specify `SourceLinkGitLabHost` item group in addition to the package reference:
 
 ```xml
