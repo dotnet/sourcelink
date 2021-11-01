@@ -4,32 +4,32 @@
     <body>
       <trans-unit id="MustEndWithDirectorySeparator">
         <source>{0} must end with a directory separator: '{1}'</source>
-        <target state="new">{0} must end with a directory separator: '{1}'</target>
+        <target state="translated">В конце {0} должен быть разделитель каталогов: "{1}"</target>
         <note />
       </trans-unit>
       <trans-unit id="MustNotContainWildcard">
         <source>{0} must not contain wildcard '*': '{1}'</source>
-        <target state="new">{0} must not contain wildcard '*': '{1}'</target>
+        <target state="translated">В {0} не должно быть подстановочного знака "*": "{1}"</target>
         <note />
       </trans-unit>
       <trans-unit id="MustContainSingleWildcard">
         <source>{0} must contain a single wildcard '*': '{1}'"</source>
-        <target state="new">{0} must contain a single wildcard '*': '{1}'"</target>
+        <target state="translated">В {0} должен быть один подстановочный знак "*": "{1}"</target>
         <note />
       </trans-unit>
       <trans-unit id="IsEmpty">
         <source>{0} is empty: '{1}'</source>
-        <target state="new">{0} is empty: '{1}'</target>
+        <target state="translated">В {0} пусто: "{1}"</target>
         <note />
       </trans-unit>
       <trans-unit id="ErrorWritingToSourceLinkFile">
         <source>Error writing to source link file '{0}': {1}</source>
-        <target state="new">Error writing to source link file '{0}': {1}</target>
+        <target state="translated">Ошибка при записи в исходный файл ссылок '{0}': {1}</target>
         <note />
       </trans-unit>
       <trans-unit id="SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty">
         <source>Source control information is not available - the generated source link is empty.</source>
-        <target state="new">Source control information is not available - the generated source link is empty.</target>
+        <target state="translated">Информация о системе управления версиями недоступна — созданная ссылка на исходные файлы является пустой.</target>
         <note />
       </trans-unit>
     </body>

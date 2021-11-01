@@ -4,42 +4,42 @@
     <body>
       <trans-unit id="AtLeastOneRepositoryHostIsRequired">
         <source>{0} item group is empty. At least one {1} repository host is required in order to generate SourceLink.</source>
-        <target state="new">{0} item group is empty. At least one {1} repository host is required in order to generate SourceLink.</target>
+        <target state="translated">Skupina položek {0} je prázdná. Kvůli generování zdrojového odkazu se vyžaduje alespoň jeden hostitel úložiště {1}.</target>
         <note />
       </trans-unit>
       <trans-unit id="ItemOfItemGroupMustSpecifyMetadata">
         <source>Item '{0}' of item group '{1}' must specify metadata '{2}'</source>
-        <target state="new">Item '{0}' of item group '{1}' must specify metadata '{2}'</target>
+        <target state="translated">Položka {0} ve skupině položek {1} musí uvádět metadata {2}.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnableToDetermineRepositoryUrl">
         <source>Unable to determine repository url, the source code won't be available via source link.</source>
-        <target state="new">Unable to determine repository url, the source code won't be available via source link.</target>
+        <target state="translated">Nejde určit adresu URL úložiště. Zdrojový kód nebude k dispozici přes zdrojový odkaz.</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsInvalid">
         <source>The value of {0} with identity '{1}' is invalid: '{2}'</source>
-        <target state="new">The value of {0} with identity '{1}' is invalid: '{2}'</target>
+        <target state="translated">Hodnota {0} s identitou {1} je neplatná: {2}</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsNotValidCommitHash">
         <source>The value of {0} with identity '{1}' is not a valid commit hash: '{2}'</source>
-        <target state="new">The value of {0} with identity '{1}' is not a valid commit hash: '{2}'</target>
+        <target state="translated">Hodnota {0} s identitou {1} nepředstavuje platnou potvrzovací hodnotu hash: {2}</target>
         <note />
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidDomainName">
         <source>The value passed to task parameter {0} is not a valid domain name: '{1}'</source>
-        <target state="new">The value passed to task parameter {0} is not a valid domain name: '{1}'</target>
+        <target state="translated">Hodnota předaná parametru úlohy {0} není platný název domény: {1}</target>
         <note />
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidHostUri">
         <source>The value passed to task parameter {0} is not a valid host URI: '{1}'</source>
-        <target state="new">The value passed to task parameter {0} is not a valid host URI: '{1}'</target>
+        <target state="translated">Hodnota předaná parametru úlohy {0} není platný identifikátor URI hostitele: {1}</target>
         <note />
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidUri">
         <source>The value passed to task parameter {0} is not a valid URI: '{1}'</source>
-        <target state="new">The value passed to task parameter {0} is not a valid URI: '{1}'</target>
+        <target state="translated">Hodnota předaná do parametru úlohy {0} nepředstavuje platný identifikátor URI: {1}</target>
         <note />
       </trans-unit>
     </body>

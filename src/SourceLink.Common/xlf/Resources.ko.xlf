@@ -4,32 +4,32 @@
     <body>
       <trans-unit id="MustEndWithDirectorySeparator">
         <source>{0} must end with a directory separator: '{1}'</source>
-        <target state="new">{0} must end with a directory separator: '{1}'</target>
+        <target state="translated">{0}은(는) 디렉터리 구분 기호로 끝나야 합니다. '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="MustNotContainWildcard">
         <source>{0} must not contain wildcard '*': '{1}'</source>
-        <target state="new">{0} must not contain wildcard '*': '{1}'</target>
+        <target state="translated">{0}에는 와일드카드 '*'를 포함할 수 없습니다. '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="MustContainSingleWildcard">
         <source>{0} must contain a single wildcard '*': '{1}'"</source>
-        <target state="new">{0} must contain a single wildcard '*': '{1}'"</target>
+        <target state="translated">{0}에는 단일 와일드카드 '*'가 포함되어야 합니다. '{1}'"</target>
         <note />
       </trans-unit>
       <trans-unit id="IsEmpty">
         <source>{0} is empty: '{1}'</source>
-        <target state="new">{0} is empty: '{1}'</target>
+        <target state="translated">{0}이(가) 비어 있습니다. '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="ErrorWritingToSourceLinkFile">
         <source>Error writing to source link file '{0}': {1}</source>
-        <target state="new">Error writing to source link file '{0}': {1}</target>
+        <target state="translated">소스 링크 파일 '{0}'에 쓰는 동안 오류가 발생했습니다. {1}</target>
         <note />
       </trans-unit>
       <trans-unit id="SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty">
         <source>Source control information is not available - the generated source link is empty.</source>
-        <target state="new">Source control information is not available - the generated source link is empty.</target>
+        <target state="translated">소스 제어 정보를 사용할 수 없습니다. 생성된 소스 링크가 비어 있습니다.</target>
         <note />
       </trans-unit>
     </body>

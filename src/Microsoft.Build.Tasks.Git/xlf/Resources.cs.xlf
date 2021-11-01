@@ -4,132 +4,132 @@
     <body>
       <trans-unit id="ConfigurationFileRecursionExceededMaximumAllowedDepth">
         <source>Configuration file recursion exceeded maximum allowed depth of {0}.</source>
-        <target state="new">Configuration file recursion exceeded maximum allowed depth of {0}.</target>
+        <target state="translated">Rekurze konfiguračního souboru překročila maximální povolenou hloubku {0}.</target>
         <note />
       </trans-unit>
       <trans-unit id="ErrorReadingGitRepositoryInformation">
         <source>Error reading git repository information: {0}</source>
-        <target state="new">Error reading git repository information: {0}</target>
+        <target state="translated">Chyba při čtení informací o úložišti Git: {0}</target>
         <note />
       </trans-unit>
       <trans-unit id="FormatOfFileIsInvalid">
         <source>The format of the file '{0}' is invalid.</source>
-        <target state="new">The format of the file '{0}' is invalid.</target>
+        <target state="translated">Formát souboru {0} není platný.</target>
         <note />
       </trans-unit>
       <trans-unit id="HomeRelativePathsAreNotAllowed">
         <source>Home relative paths are not allowed when {0} is '{1}': '{2}'.</source>
-        <target state="new">Home relative paths are not allowed when {0} is '{1}': '{2}'.</target>
+        <target state="translated">Když je {0} nastavené na {1}, cesty relativní vzhledem k domovské složce se nepovolují: {2}</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidFormatOfFileAtPath">
         <source>Repository does not have a working directory.</source>
-        <target state="new">Repository does not have a working directory.</target>
+        <target state="translated">Úložiště nemá pracovní adresář.</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidModulePath">
         <source>Invalid module path: '{0}'.</source>
-        <target state="new">Invalid module path: '{0}'.</target>
+        <target state="translated">Neplatná cesta k modulu: {0}</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidReference">
         <source>Invalid reference: '{0}'.</source>
-        <target state="new">Invalid reference: '{0}'.</target>
+        <target state="translated">Neplatný odkaz: {0}</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidRepositoryRemoteUrl">
         <source>The URL of repository remote '{0}' is invalid: '{1}'.</source>
-        <target state="new">The URL of repository remote '{0}' is invalid: '{1}'.</target>
+        <target state="translated">Adresa URL vzdáleného úložiště {0} je neplatná: {1}.</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidSubmodulePath">
         <source>The path of submodule '{0}' is missing or invalid: '{1}'.</source>
-        <target state="new">The path of submodule '{0}' is missing or invalid: '{1}'.</target>
+        <target state="translated">Cesta k dílčímu modulu {0} chybí nebo není platná: {1}</target>
         <note />
       </trans-unit>
       <trans-unit id="InvalidSubmoduleUrl">
         <source>The URL of submodule '{0}' is missing or invalid: '{1}'.</source>
-        <target state="new">The URL of submodule '{0}' is missing or invalid: '{1}'.</target>
+        <target state="translated">Adresa URL dílčího modulu {0} chybí nebo není platná: {1}</target>
         <note />
       </trans-unit>
       <trans-unit id="PathMustBeAbsolute">
         <source>Path must be absolute.</source>
-        <target state="new">Path must be absolute.</target>
+        <target state="translated">Cesta musí být absolutní.</target>
         <note />
       </trans-unit>
       <trans-unit id="PathMustBeFilePath">
         <source>Path must be a file path.</source>
-        <target state="new">Path must be a file path.</target>
+        <target state="translated">Cesta musí představovat cestu k souboru.</target>
         <note />
       </trans-unit>
       <trans-unit id="PathSpecifiedInFileIsInvalid">
         <source>Path specified in file '{0}' is invalid: '{1}'.</source>
-        <target state="new">Path specified in file '{0}' is invalid: '{1}'.</target>
+        <target state="translated">Cesta zadaná v souboru {0} není platná: {1}</target>
         <note />
       </trans-unit>
       <trans-unit id="PathSpecifiedInFileIsNotAbsolute">
         <source>Path specified in file '{0}' is not absolute: '{1}'.</source>
-        <target state="new">Path specified in file '{0}' is not absolute: '{1}'.</target>
+        <target state="translated">Cesta zadaná v souboru {0} není absolutní: {1}</target>
         <note />
       </trans-unit>
       <trans-unit id="RecursionDetectedWhileResolvingReference">
         <source>Recursion detected while resolving reference: '{0}'.</source>
-        <target state="new">Recursion detected while resolving reference: '{0}'.</target>
+        <target state="translated">Při překladu odkazu se zjistila rekurze: {0}.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryDoesNotHaveSpecifiedRemote">
         <source>Repository '{0}' does not have the specified remote '{1}'; using '{2}' instead.</source>
-        <target state="new">Repository '{0}' does not have the specified remote '{1}'; using '{2}' instead.</target>
+        <target state="translated">Úložiště {0} nemá zadané vzdálené úložiště {1}. Místo toho se použije {2}.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryDoesNotHaveWorkingDirectory">
         <source>Repository does not have a working directory.</source>
-        <target state="new">Repository does not have a working directory.</target>
+        <target state="translated">Úložiště nemá pracovní adresář.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryHasNoRemote">
         <source>Repository '{0}' has no remote.</source>
-        <target state="new">Repository '{0}' has no remote.</target>
+        <target state="translated">Úložiště {0} nemá žádné vzdálené úložiště.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryHasNoCommit">
         <source>Repository has no commit.</source>
-        <target state="new">Repository has no commit.</target>
+        <target state="translated">Úložiště nemá žádné potvrzení.</target>
         <note />
       </trans-unit>
       <trans-unit id="RepositoryUrlEvaluationExceededMaximumAllowedDepth">
         <source>Repository URL evaluation exceeded maximum allowed depth of {0} local repositories.</source>
-        <target state="new">Repository URL evaluation exceeded maximum allowed depth of {0} local repositories.</target>
+        <target state="translated">Vyhodnocení adresy URL úložiště překročilo maximální povolenou hloubku {0} místních úložišť.</target>
         <note />
       </trans-unit>
       <trans-unit id="SourceCodeWontBeAvailableViaSourceLink">
         <source>{0} The source code won't be available via Source Link.</source>
-        <target state="new">{0} The source code won't be available via Source Link.</target>
+        <target state="translated">{0} Zdrojový kód nebude k dispozici přes Source Link.</target>
         <note />
       </trans-unit>
       <trans-unit id="SubmoduleWithoutCommit">
         <source>Submodule '{0}' doesn't have any commit.</source>
-        <target state="new">Submodule '{0}' doesn't have any commit.</target>
+        <target state="translated">Dílčí modul {0} nemá žádný zápis.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnableToLocateRepository">
         <source>Unable to locate repository with working directory that contains directory '{0}'.</source>
-        <target state="new">Unable to locate repository with working directory that contains directory '{0}'.</target>
+        <target state="translated">Nejde najít úložiště s pracovním adresářem, který obsahuje adresář {0}.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnsupportedRepositoryVersion">
         <source>Unsupported repository version {0}. Only versions up to {1} are supported.</source>
-        <target state="new">Unsupported repository version {0}. Only versions up to {1} are supported.</target>
+        <target state="translated">Nepodporovaná verze úložiště: {0}. Podporují se jenom verze do {1}.</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfIsNotValidConfigurationScope">
         <source>The value of {0} is not a valid configuration scope: '{1}'.</source>
-        <target state="new">The value of {0} is not a valid configuration scope: '{1}'.</target>
+        <target state="translated">Hodnota {0} není platný obor konfigurace: {1}</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfIsNotValidPath">
         <source>The value of {0} is not a valid path: '{1}'.</source>
-        <target state="new">The value of {0} is not a valid path: '{1}'.</target>
+        <target state="translated">Hodnota {0} není platná cesta: {1}.</target>
         <note />
       </trans-unit>
     </body>

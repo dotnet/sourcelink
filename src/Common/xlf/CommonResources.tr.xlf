@@ -4,42 +4,42 @@
     <body>
       <trans-unit id="AtLeastOneRepositoryHostIsRequired">
         <source>{0} item group is empty. At least one {1} repository host is required in order to generate SourceLink.</source>
-        <target state="new">{0} item group is empty. At least one {1} repository host is required in order to generate SourceLink.</target>
+        <target state="translated">{0} öğe grubu boş. SourceLink oluşturmak için en az bir {1} depo konağı gereklidir.</target>
         <note />
       </trans-unit>
       <trans-unit id="ItemOfItemGroupMustSpecifyMetadata">
         <source>Item '{0}' of item group '{1}' must specify metadata '{2}'</source>
-        <target state="new">Item '{0}' of item group '{1}' must specify metadata '{2}'</target>
+        <target state="translated">'{1}' öğe grubunun '{0}' öğesi, '{2}' meta verilerini belirtmelidir</target>
         <note />
       </trans-unit>
       <trans-unit id="UnableToDetermineRepositoryUrl">
         <source>Unable to determine repository url, the source code won't be available via source link.</source>
-        <target state="new">Unable to determine repository url, the source code won't be available via source link.</target>
+        <target state="translated">Depo URL'si belirlenemiyor. Kaynak kod, kaynak bağlantısı aracılığıyla kullanılamayacak.</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsInvalid">
         <source>The value of {0} with identity '{1}' is invalid: '{2}'</source>
-        <target state="new">The value of {0} with identity '{1}' is invalid: '{2}'</target>
+        <target state="translated">{1} kimliğine sahip {0} değeri geçerli değil: '{2}'</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsNotValidCommitHash">
         <source>The value of {0} with identity '{1}' is not a valid commit hash: '{2}'</source>
-        <target state="new">The value of {0} with identity '{1}' is not a valid commit hash: '{2}'</target>
+        <target state="translated">'{1}' kimliğine sahip olan {0} değeri, geçerli bir işleme karması değil: '{2}'</target>
         <note />
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidDomainName">
         <source>The value passed to task parameter {0} is not a valid domain name: '{1}'</source>
-        <target state="new">The value passed to task parameter {0} is not a valid domain name: '{1}'</target>
+        <target state="translated">{0} görev parametresine geçirilen değer geçerli bir etki alanı adı değil: '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidHostUri">
         <source>The value passed to task parameter {0} is not a valid host URI: '{1}'</source>
-        <target state="new">The value passed to task parameter {0} is not a valid host URI: '{1}'</target>
+        <target state="translated">{0} görev parametresine geçirilen değer geçerli bir konak URI’si değil: '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidUri">
         <source>The value passed to task parameter {0} is not a valid URI: '{1}'</source>
-        <target state="new">The value passed to task parameter {0} is not a valid URI: '{1}'</target>
+        <target state="translated">{0} görev parametresine geçirilen değer, geçerli bir URI değil: '{1}'</target>
         <note />
       </trans-unit>
     </body>

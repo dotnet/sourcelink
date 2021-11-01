@@ -4,7 +4,7 @@
     <body>
       <trans-unit id="RepositoryUrlIsNotSupportedByProvider">
         <source>The Microsoft.SourceLink.GitWeb provider does not support translating the '{0}' protocol to content URLs.</source>
-        <target state="new">The Microsoft.SourceLink.GitWeb provider does not support translating the '{0}' protocol to content URLs.</target>
+        <target state="translated">Microsoft.SourceLink.GitWeb 提供程序不支持将“{0}”协议翻译为内容 URL。</target>
         <note />
       </trans-unit>
     </body>
