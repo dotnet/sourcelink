@@ -3,6 +3,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net472;net6.0</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(DotNetBuildFromSource)' == 'true' ">net6.0</TargetFrameworks>
     <AutoGenerateAssemblyVersion>true</AutoGenerateAssemblyVersion>
 
     <!-- Using an explicit nuspec file due to https://github.com/NuGet/Home/issues/6754 -->
