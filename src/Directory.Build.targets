@@ -3,6 +3,12 @@
 <Project>
   <Import Project="Sdk.targets" Sdk="Microsoft.DotNet.Arcade.Sdk" />
 
+  <ItemGroup>
+    <NuspecProperty Include="DesktopTfm=net472"/>
+    <NuspecProperty Include="CoreTfm=net6.0" Condition="'$(DotNetBuildFromSource)' == 'true'"/>
+    <NuspecProperty Include="CoreTfm=netcoreapp3.1" Condition="'$(DotNetBuildFromSource)' != 'true'"/>
+  </ItemGroup>
+
   <!-- 
     Workaround for https://github.com/NuGet/Home/issues/6754: cyclic dependency.
   -->

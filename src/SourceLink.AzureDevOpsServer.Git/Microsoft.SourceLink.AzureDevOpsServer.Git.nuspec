@@ -9,7 +9,8 @@
   </metadata>
   <files>
     $CommonFileElements$
-    <file src="**\Microsoft.SourceLink.AzureDevOpsServer.Git.*" target="tools" />
+    <file src="$DesktopTfm$\**\Microsoft.SourceLink.AzureDevOpsServer.Git.*" exclude="**\*.config" target="tools\netframework" />
+    <file src="$CoreTfm$\**\Microsoft.SourceLink.AzureDevOpsServer.Git.*" target="tools\net" />
 
     <file src="$ProjectDirectory$\build\*.*" target="build" />
     <file src="$ProjectDirectory$\buildMultiTargeting\*.*" target="buildMultiTargeting" />

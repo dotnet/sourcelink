@@ -4,16 +4,16 @@
     $CommonMetadataElements$
   </metadata>
   <files>
-    $CommonMetadataFiles$
-    <file src="net461\Microsoft.Build.Tasks.Tfvc.*" target="tools\net461" />
-    <file src="net461\Microsoft.TeamFoundation.Client.dll" target="tools\net461" />
-    <file src="net461\Microsoft.TeamFoundation.Common.dll" target="tools\net461" />
-    <file src="net461\Microsoft.TeamFoundation.Core.WebApi.dll" target="tools\net461" />
-    <file src="net461\Microsoft.TeamFoundation.VersionControl.Client.dll" target="tools\net461" />
-    <file src="net461\Microsoft.TeamFoundation.VersionControl.Common.dll" target="tools\net461" />
-    <file src="net461\Microsoft.VisualStudio.Services.Client.Interactive.dll" target="tools\net461" />
-    <file src="net461\Microsoft.VisualStudio.Services.Common.dll" target="tools\net46" />
-    <file src="net461\Microsoft.VisualStudio.Services.WebApi.dll" target="tools\net46" />
+    $CommonFileElements$
+    <file src="$DesktopTfm$\**\Microsoft.Build.Tasks.Tfvc.*" exclude="**\*.config" target="tools\netframework" />
+    <file src="$DesktopTfm$\**\Microsoft.TeamFoundation.Client.*" target="tools\netframework" />
+    <file src="$DesktopTfm$\**\Microsoft.TeamFoundation.Common.*" target="tools\netframework" />
+    <file src="$DesktopTfm$\**\Microsoft.TeamFoundation.Core.WebApi.*" target="tools\netframework" />
+    <file src="$DesktopTfm$\**\Microsoft.TeamFoundation.VersionControl.Client.*" target="tools\netframework" />
+    <file src="$DesktopTfm$\**\Microsoft.TeamFoundation.VersionControl.Common.*" target="tools\netframework" />
+    <file src="$DesktopTfm$\**\Microsoft.VisualStudio.Services.Client.Interactive.*" target="tools\netframework" />
+    <file src="$DesktopTfm$\**\Microsoft.VisualStudio.Services.Common.*" target="tools\netframework" />
+    <file src="$DesktopTfm$\**\Microsoft.VisualStudio.Services.WebApi.*" target="tools\netframework" />
 
     <file src="$ProjectDirectory$\build\*.*" target="build" />
     <file src="$ProjectDirectory$\build\*.*" target="buildMultiTargeting" />
