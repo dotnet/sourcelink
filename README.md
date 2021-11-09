@@ -48,7 +48,7 @@ For projects hosted by [GitHub](http://github.com) or [GitHub Enterprise](https:
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.0" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
@@ -58,7 +58,7 @@ For projects hosted by [Azure Repos](https://azure.microsoft.com/en-us/services/
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.AzureRepos.Git" Version="1.0.0" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.AzureRepos.Git" Version="1.1.0" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
@@ -69,7 +69,7 @@ For projects hosted by on-prem [Azure DevOps Server](https://azure.microsoft.com
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.AzureDevOpsServer.Git" Version="1.0.0" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.AzureDevOpsServer.Git" Version="1.1.0" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
@@ -89,11 +89,11 @@ For projects hosted by [GitLab](https://gitlab.com) reference [Microsoft.SourceL
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.GitLab" Version="1.0.0" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.GitLab" Version="1.1.0" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
-Starting with version 1.1.0-beta-21470-02, Microsoft.SourceLink.GitLab assumes GitLab version 12.0+ by default.
+Starting with version 1.1.0, Microsoft.SourceLink.GitLab assumes GitLab version 12.0+ by default.
 If your project is hosted by GitLab older than version 12.0 you must specify `SourceLinkGitLabHost` item group in addition to the package reference:
 
 ```xml
@@ -113,7 +113,7 @@ For projects in git repositories hosted on [Bitbucket.org](https://bitbucket.org
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.Bitbucket.Git" Version="1.0.0" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.Bitbucket.Git" Version="1.1.0" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
@@ -128,23 +128,23 @@ If your project is hosted by Bitbucket Server or Bitbucket Data Center older tha
 The item group `SourceLinkBitbucketGitHost` specifies the domain of the Bitbucket host and the version of Bitbucket.
 The version is important since URL format for accessing files changes with version 4.7. By default Source Link assumes new format (version 4.7+).
 
-### gitweb (pre-release)
+### gitweb
 
 For projects hosted on-prem via [gitweb](https://git-scm.com/docs/gitweb) reference [Microsoft.SourceLink.GitWeb](https://www.nuget.org/packages/Microsoft.SourceLink.GitWeb) package: 
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.GitWeb" Version="1.1.0-beta-21055-01" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.GitWeb" Version="1.1.0" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
-### gitea (pre-release)
+### gitea
 
 For projects hosted on-prem via [gitea](https://gitea.io) reference [Microsoft.SourceLink.Gitea](https://www.nuget.org/packages/Microsoft.SourceLink.Gitea) package: 
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.Gitea" Version="1.1.0-beta-21055-01" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.Gitea" Version="1.1.0" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
@@ -160,9 +160,9 @@ To add Source Link support to your native project add package references corresp
 
 ```xml
 <packages>
-  <package id="Microsoft.Build.Tasks.Git" version="1.0.0" targetFramework="native" developmentDependency="true" />
-  <package id="Microsoft.SourceLink.Common" version="1.0.0" targetFramework="native" developmentDependency="true" />
-  <package id="Microsoft.SourceLink.GitHub" version="1.0.0" targetFramework="native" developmentDependency="true" />
+  <package id="Microsoft.Build.Tasks.Git" version="1.1.0" targetFramework="native" developmentDependency="true" />
+  <package id="Microsoft.SourceLink.Common" version="1.1.0" targetFramework="native" developmentDependency="true" />
+  <package id="Microsoft.SourceLink.GitHub" version="1.1.0" targetFramework="native" developmentDependency="true" />
 </packages>
 ```
 
