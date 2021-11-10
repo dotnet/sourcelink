@@ -9,8 +9,8 @@
   </metadata>
   <files>
     $CommonFileElements$
-    <file src="$DesktopTfm$\**\Microsoft.SourceLink.GitHub.*" exclude="**\*.config" target="tools\netframework" />
-    <file src="$CoreTfm$\**\Microsoft.SourceLink.GitHub.*" target="tools\net" />
+    <file src="$DesktopTfm$*\**\Microsoft.SourceLink.GitHub.*" exclude="**\*.config" target="tools" />
+    <file src="$CoreTfm$\**\Microsoft.SourceLink.GitHub.*" target="tools\core" />
 
     <file src="$ProjectDirectory$\build\*.*" target="build" />
     <file src="$ProjectDirectory$\buildMultiTargeting\*.*" target="buildMultiTargeting" />

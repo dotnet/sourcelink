@@ -2,8 +2,8 @@
 <!-- Licensed to the .NET Foundation under one or more agreements. The .NET Foundation licenses this file to you under the MIT license. See the License.txt file in the project root for more information. -->
 <Project>
   <PropertyGroup>
-    <_SourceLinkGiteaAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)..\tools\netframework\Microsoft.SourceLink.Gitea.dll</_SourceLinkGiteaAssemblyFile>
-    <_SourceLinkGiteaAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\net\Microsoft.SourceLink.Gitea.dll</_SourceLinkGiteaAssemblyFile>
+    <_SourceLinkGiteaAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)..\tools\net472\Microsoft.SourceLink.Gitea.dll</_SourceLinkGiteaAssemblyFile>
+    <_SourceLinkGiteaAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\core\Microsoft.SourceLink.Gitea.dll</_SourceLinkGiteaAssemblyFile>
   </PropertyGroup>
 
   <UsingTask TaskName="Microsoft.SourceLink.Gitea.GetSourceLinkUrl" AssemblyFile="$(_SourceLinkGiteaAssemblyFile)"/>

@@ -5,15 +5,15 @@
   </metadata>
   <files>
     $CommonFileElements$
-    <file src="$DesktopTfm$\**\Microsoft.Build.Tasks.Tfvc.*" exclude="**\*.config" target="tools\netframework" />
-    <file src="$DesktopTfm$\**\Microsoft.TeamFoundation.Client.*" target="tools\netframework" />
-    <file src="$DesktopTfm$\**\Microsoft.TeamFoundation.Common.*" target="tools\netframework" />
-    <file src="$DesktopTfm$\**\Microsoft.TeamFoundation.Core.WebApi.*" target="tools\netframework" />
-    <file src="$DesktopTfm$\**\Microsoft.TeamFoundation.VersionControl.Client.*" target="tools\netframework" />
-    <file src="$DesktopTfm$\**\Microsoft.TeamFoundation.VersionControl.Common.*" target="tools\netframework" />
-    <file src="$DesktopTfm$\**\Microsoft.VisualStudio.Services.Client.Interactive.*" target="tools\netframework" />
-    <file src="$DesktopTfm$\**\Microsoft.VisualStudio.Services.Common.*" target="tools\netframework" />
-    <file src="$DesktopTfm$\**\Microsoft.VisualStudio.Services.WebApi.*" target="tools\netframework" />
+    <file src="$DesktopTfm$*\**\Microsoft.Build.Tasks.Tfvc.*" exclude="**\*.config" target="tools" />
+    <file src="$DesktopTfm$*\**\Microsoft.TeamFoundation.Client.*" target="tools" />
+    <file src="$DesktopTfm$*\**\Microsoft.TeamFoundation.Common.*" target="tools" />
+    <file src="$DesktopTfm$*\**\Microsoft.TeamFoundation.Core.WebApi.*" target="tools" />
+    <file src="$DesktopTfm$*\**\Microsoft.TeamFoundation.VersionControl.Client.*" target="tools" />
+    <file src="$DesktopTfm$*\**\Microsoft.TeamFoundation.VersionControl.Common.*" target="tools" />
+    <file src="$DesktopTfm$*\**\Microsoft.VisualStudio.Services.Client.Interactive.*" target="tools" />
+    <file src="$DesktopTfm$*\**\Microsoft.VisualStudio.Services.Common.*" target="tools" />
+    <file src="$DesktopTfm$*\**\Microsoft.VisualStudio.Services.WebApi.*" target="tools" />
 
     <file src="$ProjectDirectory$\build\*.*" target="build" />
     <file src="$ProjectDirectory$\build\*.*" target="buildMultiTargeting" />

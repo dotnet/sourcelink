@@ -9,7 +9,7 @@
   </metadata>
   <files>
     $CommonFileElements$
-    <file src="$DesktopTfm$\**\Microsoft.SourceLink.AzureRepos.Tfvc.*" exclude="**\*.config" target="tools\netframework" />
+    <file src="$DesktopTfm$*\**\Microsoft.SourceLink.AzureRepos.Tfvc.*" exclude="**\*.config" target="tools" />
 
     <file src="$ProjectDirectory$\build\*.*" target="build" />
   </files>
