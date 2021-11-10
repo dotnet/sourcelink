@@ -3,7 +3,7 @@
 <Project>
   <PropertyGroup>
     <_SourceLinkAzureReposTfvcAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)..\tools\net472\Microsoft.SourceLink.AzureRepos.Tfvc.dll</_SourceLinkAzureReposTfvcAssemblyFile>
-    <_SourceLinkAzureReposTfvcAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\net6.0\Microsoft.SourceLink.AzureRepos.Tfvc.dll</_SourceLinkAzureReposTfvcAssemblyFile>
+    <_SourceLinkAzureReposTfvcAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\core\Microsoft.SourceLink.AzureRepos.Tfvc.dll</_SourceLinkAzureReposTfvcAssemblyFile>
   </PropertyGroup>
 
   <UsingTask TaskName="Microsoft.SourceLink.AzureRepos.Tfvc.GetSourceLinkUrl" AssemblyFile="$(_SourceLinkAzureReposTfvcAssemblyFile)"/>
