@@ -2,18 +2,24 @@
 <!-- Licensed to the .NET Foundation under one or more agreements. The .NET Foundation licenses this file to you under the MIT license. See the License.txt file in the project root for more information. -->
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net472;net6.0</TargetFrameworks>
+    <TargetFrameworks>net472;netcoreapp3.1;net6.0</TargetFrameworks>
     <TargetFrameworks Condition=" '$(DotNetBuildFromSource)' == 'true' ">net6.0</TargetFrameworks>
     <AutoGenerateAssemblyVersion>true</AutoGenerateAssemblyVersion>
 
-    <!-- NuGet -->
+    <!-- NuGet: Using an explicit nuspec file to customize TFM directory -->
+    <IsPackable>true</IsPackable>
+    <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
+    <NuspecBasePath>$(OutputPath)</NuspecBasePath>
+
     <PackageDescription>MSBuild tasks providing git repository information.</PackageDescription>
     <PackageTags>MSBuild Tasks source control git</PackageTags>
     <DevelopmentDependency>true</DevelopmentDependency>
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
-
-    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_GetTfmSpecificFilesToPackage</TargetsForTfmSpecificContentInPackage>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build" Version="$(MicrosoftBuildVersion)" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="$(MicrosoftBuildTasksCore)" PrivateAssets="all" />
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Common\NullableAttributes.cs" Link="Common\NullableAttributes.cs" />
     <Compile Include="..\Common\Names.cs" Link="Common\Names.cs" />
@@ -26,12 +32,4 @@
     <InternalsVisibleTo Include="Microsoft.Build.Tasks.Git.UnitTests" />
     <InternalsVisibleTo Include="Microsoft.SourceLink.Git.IntegrationTests" />
   </ItemGroup>
-
-  <Target Name="_GetTfmSpecificFilesToPackage" Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework'">
-    <ItemGroup>
-      <TfmSpecificPackageFile Include="$(TargetDir)System.Collections.Immutable.dll" PackagePath="tools/$(TargetFramework)"/>
-    </ItemGroup>
-  </Target>
-
-  <Import Project="$(RepositoryEngineeringDir)BuildTask.targets"/>
 </Project>

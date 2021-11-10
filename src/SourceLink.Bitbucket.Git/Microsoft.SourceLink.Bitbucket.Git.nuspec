@@ -9,8 +9,9 @@
   </metadata>
   <files>
     $CommonFileElements$
-    <file src="**\Microsoft.SourceLink.BitBucket.Git.*" target="tools" />
-
+    <file src="$DesktopTfm$*\**\Microsoft.SourceLink.BitBucket.Git.*" exclude="**\*.config" target="tools" />
+    <file src="$CoreTfm$\**\Microsoft.SourceLink.BitBucket.Git.*" target="tools\core" />
+    
     <file src="$ProjectDirectory$\build\*.*" target="build" />
     <file src="$ProjectDirectory$\buildMultiTargeting\*.*" target="buildMultiTargeting" />
   </files>
