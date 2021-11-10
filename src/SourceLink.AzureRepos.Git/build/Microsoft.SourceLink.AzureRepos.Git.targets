@@ -3,7 +3,7 @@
 <Project>
   <PropertyGroup>
     <_SourceLinkAzureReposGitAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)..\tools\net472\Microsoft.SourceLink.AzureRepos.Git.dll</_SourceLinkAzureReposGitAssemblyFile>
-    <_SourceLinkAzureReposGitAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\net6.0\Microsoft.SourceLink.AzureRepos.Git.dll</_SourceLinkAzureReposGitAssemblyFile>
+    <_SourceLinkAzureReposGitAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\core\Microsoft.SourceLink.AzureRepos.Git.dll</_SourceLinkAzureReposGitAssemblyFile>
   </PropertyGroup>
 
   <UsingTask TaskName="Microsoft.SourceLink.AzureRepos.Git.GetSourceLinkUrl" AssemblyFile="$(_SourceLinkAzureReposGitAssemblyFile)"/>

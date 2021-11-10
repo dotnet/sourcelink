@@ -3,6 +3,6 @@
 <Project>
   <PropertyGroup>
     <MicrosoftBuildTasksGitAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)..\tools\net472\Microsoft.Build.Tasks.Git.dll</MicrosoftBuildTasksGitAssemblyFile>
-    <MicrosoftBuildTasksGitAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\net6.0\Microsoft.Build.Tasks.Git.dll</MicrosoftBuildTasksGitAssemblyFile>
+    <MicrosoftBuildTasksGitAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\core\Microsoft.Build.Tasks.Git.dll</MicrosoftBuildTasksGitAssemblyFile>
   </PropertyGroup>
 </Project>

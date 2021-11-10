@@ -3,7 +3,7 @@
 <Project>
   <PropertyGroup>
     <!-- This repo version -->
-    <VersionPrefix>1.1.0</VersionPrefix>
+    <VersionPrefix>1.1.1</VersionPrefix>
     <PreReleaseVersionLabel>beta</PreReleaseVersionLabel>
     <SemanticVersioningV1>true</SemanticVersioningV1>
     <!-- Opt-in repo features -->

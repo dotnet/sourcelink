@@ -9,7 +9,8 @@
   </metadata>
   <files>
     $CommonFileElements$
-    <file src="**\Microsoft.SourceLink.Gitea.*" target="tools" />
+    <file src="$DesktopTfm$*\**\Microsoft.SourceLink.Gitea.*" exclude="**\*.config" target="tools" />
+    <file src="$CoreTfm$\**\Microsoft.SourceLink.Gitea.*" target="tools\core" />
 
     <file src="$ProjectDirectory$\build\*.*" target="build" />
     <file src="$ProjectDirectory$\buildMultiTargeting\*.*" target="buildMultiTargeting" />

@@ -7,14 +7,20 @@
     <ExcludeFromSourceBuild>true</ExcludeFromSourceBuild>
     <SuppressFinalPackageVersion>true</SuppressFinalPackageVersion>
 
-    <!-- Using an explicit nuspec file since NuGet Pack target currently doesn't support including dependencies in tools packages -->
+    <!-- NuGet: Using an explicit nuspec file to customize TFM directory -->
+    <IsPackable>true</IsPackable>
+    <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
+    <NuspecBasePath>$(OutputPath)</NuspecBasePath>
+    
     <PackageDescription>MSBuild tasks providing TFVC repository information.</PackageDescription>
     <PackageTags>MSBuild Tasks TFVC source link</PackageTags>
     <DevelopmentDependency>true</DevelopmentDependency>
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
-
-    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_GetTfmSpecificFilesToPackage</TargetsForTfmSpecificContentInPackage>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build" Version="$(MicrosoftBuildVersion)" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="$(MicrosoftBuildTasksCore)" PrivateAssets="all" />
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Common\NullableAttributes.cs" Link="Common\NullableAttributes.cs" />
     <Compile Include="..\Common\PathUtilities.cs" Link="Common\PathUtilities.cs" />
@@ -25,19 +31,4 @@
     <PackageReference Include="Microsoft.Build.Tasks.Core" Version="$(MicrosoftBuildTasksCore)" />
     <PackageReference Include="Microsoft.TeamFoundationServer.ExtendedClient" Version="$(MicrosoftTeamFoundationServerExtendedClientVersion)" />
   </ItemGroup>
-
-  <Target Name="_GetTfmSpecificFilesToPackage">
-    <ItemGroup>
-      <TfmSpecificPackageFile Include="$(TargetDir)Microsoft.TeamFoundation.Client.dll" PackagePath="tools\$(TargetFramework)" />
-      <TfmSpecificPackageFile Include="$(TargetDir)Microsoft.TeamFoundation.Common.dll" PackagePath="tools\$(TargetFramework)" />
-      <TfmSpecificPackageFile Include="$(TargetDir)Microsoft.TeamFoundation.Core.WebApi.dll" PackagePath="tools\$(TargetFramework)" />
-      <TfmSpecificPackageFile Include="$(TargetDir)Microsoft.TeamFoundation.VersionControl.Client.dll" PackagePath="tools\$(TargetFramework)" />
-      <TfmSpecificPackageFile Include="$(TargetDir)Microsoft.TeamFoundation.VersionControl.Common.dll" PackagePath="tools\$(TargetFramework)" />
-      <TfmSpecificPackageFile Include="$(TargetDir)Microsoft.VisualStudio.Services.Client.Interactive.dll" PackagePath="tools\$(TargetFramework)" />
-      <TfmSpecificPackageFile Include="$(TargetDir)Microsoft.VisualStudio.Services.Common.dll" PackagePath="tools\$(TargetFramework)" />
-      <TfmSpecificPackageFile Include="$(TargetDir)Microsoft.VisualStudio.Services.WebApi.dll" PackagePath="tools\$(TargetFramework)" />
-    </ItemGroup>
-  </Target>
-
-  <Import Project="$(RepositoryEngineeringDir)BuildTask.targets" />
 </Project>
