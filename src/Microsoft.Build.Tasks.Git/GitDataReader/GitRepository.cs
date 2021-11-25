@@ -13,7 +13,7 @@ namespace Microsoft.Build.Tasks.Git
 {
     internal sealed class GitRepository
     {
-        private const int SupportedGitRepoFormatVersion = 0;
+        private const int SupportedGitRepoFormatVersion = 1;
 
         private const string CommonDirFileName = "commondir";
         private const string GitDirName = ".git";
@@ -23,6 +23,8 @@ namespace Microsoft.Build.Tasks.Git
         internal const string GitHeadFileName = "HEAD";
 
         private const string GitModulesFileName = ".gitmodules";
+        private static readonly string[] KnownExtensions = new[] { "noop", "preciousObjects", "partialclone", "worktreeConfig" };
+
 
         public GitConfig Config { get; }
 
@@ -122,6 +124,22 @@ namespace Microsoft.Build.Tasks.Git
             if (GitConfig.TryParseInt64Value(versionStr, out var version) && version > SupportedGitRepoFormatVersion)
             {
                 throw new NotSupportedException(string.Format(Resources.UnsupportedRepositoryVersion, versionStr, SupportedGitRepoFormatVersion));
+            }
+
+            if (version == 1)
+            {
+                // When reading the core.repositoryformatversion variable, a git implementation which supports version 1 MUST
+                // also read any configuration keys found in the extensions section of the configuration file.
+                //
+                // If a version-1 repository specifies any extensions.* keys that the running git has not implemented, the operation MUST NOT proceed.
+                // Similarly, if the value of any known key is not understood by the implementation,the operation MUST NOT proceed.
+                foreach (var variable in config.Variables)
+                {
+                    if (variable.Key.SectionNameEquals("extensions") && !KnownExtensions.Contains(variable.Key.VariableName, StringComparer.OrdinalIgnoreCase))
+                    {
+                        throw new NotSupportedException(string.Format(Resources.UnsupportedRepositoryExtension, variable.Key.VariableName, string.Join(", ", KnownExtensions)));
+                    }
+                }
             }
 
             return new GitRepository(environment, config, location.GitDirectory, location.CommonDirectory, workingDirectory);
