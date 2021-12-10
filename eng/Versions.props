@@ -19,6 +19,6 @@
     <SystemValueTupleVersion>4.5.0</SystemValueTupleVersion>
     <SystemTextJsonVersion>4.7.2</SystemTextJsonVersion>
     <!-- libgit2 used for integration tests -->
-    <LibGit2SharpVersion>0.26.0-preview-0070</LibGit2SharpVersion>
+    <LibGit2SharpVersion>0.26.2</LibGit2SharpVersion>
   </PropertyGroup>
 </Project>
