@@ -48,12 +48,7 @@ stages:
       jobs:
       - job: Windows
         pool:
-          ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
-            name: NetCore1ESPool-Public
-            demands: ImageOverride -equals Build.Windows.10.Amd64.VS2017.Open
-          ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-            name: NetCore1ESPool-Internal
-            demands: ImageOverride -equals Build.Windows.10.Amd64.VS2017
+          vmImage: 'windows-latest'
         variables:
         # Only enable publishing in official builds
         - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
@@ -108,7 +103,8 @@ stages:
 
       - job: MacOS
         displayName: 'MacOS'
-        pool: 'macOS-latest'
+        pool:
+          vmImage: 'macOS-latest'
         strategy:
           matrix:
             Debug:
@@ -127,7 +123,8 @@ stages:
 
       - job: Linux
         displayName: 'Linux'
-        pool: 'ubuntu-latest'
+        pool:
+          vmImage: 'ubuntu-latest'
         strategy:
           matrix:
             Debug:
