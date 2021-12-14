@@ -49,8 +49,7 @@ stages:
       - job: Windows
         pool:
           ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
-            name: NetCore1ESPool-Public
-            demands: ImageOverride -equals Build.Windows.10.Amd64.VS2017.Open
+            vmImage: 'windows-latest'
           ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
             name: NetCore1ESPool-Internal
             demands: ImageOverride -equals Build.Windows.10.Amd64.VS2017
@@ -108,7 +107,8 @@ stages:
 
       - job: MacOS
         displayName: 'MacOS'
-        pool: Hosted macOS
+        pool:
+          vmImage: 'macOS-latest'
         strategy:
           matrix:
             Debug:
@@ -128,12 +128,7 @@ stages:
       - job: Linux
         displayName: 'Linux'
         pool:
-          ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
-            name: NetCore1ESPool-Public
-            demands: ImageOverride -equals Build.Ubuntu.1604.Amd64.Open
-          ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-            name: NetCore1ESPool-Internal
-            demands: ImageOverride -equals Build.Ubuntu.1604.Amd64
+          vmImage: 'ubuntu-latest'
         strategy:
           matrix:
             Debug:
