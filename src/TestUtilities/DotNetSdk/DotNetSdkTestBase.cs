@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 using NuGet.Versioning;
 using Xunit;
@@ -191,7 +192,7 @@ $@"<Project>
                 { "MSBuildSDKsPath", sdksDir },
                 { "DOTNET_MSBUILD_SDK_RESOLVER_SDKS_DIR", sdksDir },
                 { "NUGET_PACKAGES", NuGetCacheDir.Path },
-                { "NuGetPackageFolders", NuGetPackageFolders }
+                { "NuGetPackageFolders", NuGetPackageFolders },
             };
 
             ProjectDir = RootDir.CreateDirectory(ProjectName);
@@ -241,8 +242,11 @@ $@"<Project>
                     Assert.True(restoreResult.ExitCode == 0, $"Failed with exit code {restoreResult.ExitCode}: {restoreResult.Output}");
 
                     Assert.True(File.Exists(Path.Combine(ProjectObjDir.Path, "project.assets.json")));
-                    Assert.True(File.Exists(Path.Combine(ProjectObjDir.Path, ProjectFileName + ".nuget.g.props")));
+                    var generatedPropsFilePath = Path.Combine(ProjectObjDir.Path, ProjectFileName + ".nuget.g.props");
+                    Assert.True(File.Exists(generatedPropsFilePath));
                     Assert.True(File.Exists(Path.Combine(ProjectObjDir.Path, ProjectFileName + ".nuget.g.targets")));
+
+                    FixupGeneratedPropsFilePath(generatedPropsFilePath);
 
                     _projectRestored = true;
                 }
@@ -300,6 +304,16 @@ $@"<Project>
                     try { File.Copy(buildLog, Path.Combine(s_buildInfo.LogDirectory, "test_build_" + Path.GetFileName(RootDir.Path) + ".binlog"), overwrite: true); } catch { }
                 }
             }
+        }
+
+        // Workaround for https://github.com/NuGet/Home/issues/11455
+        private void FixupGeneratedPropsFilePath(string generatedPropsFilePath)
+        {
+            var content = File.ReadAllText(generatedPropsFilePath, Encoding.UTF8);
+            int i = 0;
+            content = Regex.Replace(content, "<SourceRoot Include=\"(.*)\" */>",
+                match => (i++ == 0) ? $"<SourceRoot Include=\"{NuGetPackageFolders}\" />" : "");
+            File.WriteAllText(generatedPropsFilePath, content, Encoding.UTF8);
         }
     }
 }
