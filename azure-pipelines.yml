@@ -105,45 +105,46 @@ stages:
             ArtifactName: 'Packages'
           condition: succeeded()
 
-      - job: MacOS
-        displayName: 'MacOS'
-        pool:
-          vmImage: 'macOS-latest'
-        strategy:
-          matrix:
-            Debug:
-              _BuildConfig: Debug
-              _SignType: none
-              _DotNetPublishToBlobFeed : false
-            Release:
-              _BuildConfig: Release
-              _SignType: none
-              _DotNetPublishToBlobFeed : false
-        steps:
-        - checkout: self
-          clean: true
-        - script: eng/cibuild.sh --configuration $(_BuildConfig) --prepareMachine
-          displayName: Build and Test
+      - ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
+        - job: MacOS
+          displayName: 'MacOS'
+          pool:
+            vmImage: 'macOS-latest'
+          strategy:
+            matrix:
+              Debug:
+                _BuildConfig: Debug
+                _SignType: none
+                _DotNetPublishToBlobFeed : false
+              Release:
+                _BuildConfig: Release
+                _SignType: none
+                _DotNetPublishToBlobFeed : false
+          steps:
+          - checkout: self
+            clean: true
+          - script: eng/cibuild.sh --configuration $(_BuildConfig) --prepareMachine
+            displayName: Build and Test
 
-      - job: Linux
-        displayName: 'Linux'
-        pool:
-          vmImage: 'ubuntu-latest'
-        strategy:
-          matrix:
-            Debug:
-              _BuildConfig: Debug
-              _SignType: none
-              _DotNetPublishToBlobFeed : false
-            Release:
-              _BuildConfig: Release
-              _SignType: none
-              _DotNetPublishToBlobFeed : false
-        steps:
-        - checkout: self
-          clean: true
-        - script: eng/cibuild.sh --configuration $(_BuildConfig) --prepareMachine
-          displayName: Build and Test
+        - job: Linux
+          displayName: 'Linux'
+          pool:
+            vmImage: 'ubuntu-latest'
+          strategy:
+            matrix:
+              Debug:
+                _BuildConfig: Debug
+                _SignType: none
+                _DotNetPublishToBlobFeed : false
+              Release:
+                _BuildConfig: Release
+                _SignType: none
+                _DotNetPublishToBlobFeed : false
+          steps:
+          - checkout: self
+            clean: true
+          - script: eng/cibuild.sh --configuration $(_BuildConfig) --prepareMachine
+            displayName: Build and Test
 
 - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
   - template: eng\common\templates\post-build\post-build.yml
