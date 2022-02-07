@@ -75,7 +75,7 @@ stages:
             value: ''
         strategy:
           matrix:
-            ${{ if and(ne(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
+            ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
               Debug:
                 _BuildConfig: Debug
                 _SignType: test
