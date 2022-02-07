@@ -16,7 +16,7 @@ schedules:
   branches:
     include:
     - main
-      
+
 variables:
   - name: _TeamName
     value: Roslyn
@@ -52,7 +52,7 @@ stages:
             vmImage: 'windows-latest'
           ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
             name: NetCore1ESPool-Internal
-            demands: ImageOverride -equals Build.Windows.10.Amd64.VS2017
+            demands: ImageOverride -equals Build.Windows.10.Amd64.VS2019
         variables:
         # Only enable publishing in official builds
         - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
@@ -61,7 +61,7 @@ stages:
           - group: DotNet-Blob-Feed
           - group: Publish-Build-Assets
           - name: _OfficialBuildArgs
-            value: /p:DotNetSignType=$(_SignType) 
+            value: /p:DotNetSignType=$(_SignType)
                   /p:TeamName=$(_TeamName)
                   /p:DotNetPublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
                   /p:DotNetPublishBlobFeedUrl=https://dotnetfeed.blob.core.windows.net/dotnet-core/index.json
@@ -75,11 +75,12 @@ stages:
             value: ''
         strategy:
           matrix:
-            Debug:
-              _BuildConfig: Debug
-              _SignType: test
-              _DotNetPublishToBlobFeed: false
-              _BuildArgs: ''
+            ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
+              Debug:
+                _BuildConfig: Debug
+                _SignType: test
+                _DotNetPublishToBlobFeed: false
+                _BuildArgs: ''
             Release:
               _BuildConfig: Release
               # PRs or external builds are not signed.
