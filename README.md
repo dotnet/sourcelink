@@ -125,6 +125,14 @@ If your project is hosted by Bitbucket Server or Bitbucket Data Center older tha
 </ItemGroup>
 ```
 
+If your project is hosted by Bitbucket Server or Bitbucket Data Center, but not on the default port, you must specify `SourceLinkBitbucketGitHost` item group in addition to the package reference:
+
+```xml
+<ItemGroup>
+  <SourceLinkBitbucketGitHost Include="bitbucket.yourdomain.com" ContentUrl="https://bitbucket.yourdomain.com:8443"/>
+</ItemGroup>
+```
+
 The item group `SourceLinkBitbucketGitHost` specifies the domain of the Bitbucket host and the version of Bitbucket.
 The version is important since URL format for accessing files changes with version 4.7. By default Source Link assumes new format (version 4.7+).
 
