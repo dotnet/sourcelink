@@ -5,7 +5,7 @@
 
   <ItemGroup>
     <NuspecProperty Include="DesktopTfm=net472"/>
-    <NuspecProperty Include="CoreTfm=net6.0" Condition="'$(DotNetBuildFromSource)' == 'true'"/>
+    <NuspecProperty Include="CoreTfm=net7.0" Condition="'$(DotNetBuildFromSource)' == 'true'"/>
     <NuspecProperty Include="CoreTfm=netcoreapp3.1" Condition="'$(DotNetBuildFromSource)' != 'true'"/>
   </ItemGroup>
 
