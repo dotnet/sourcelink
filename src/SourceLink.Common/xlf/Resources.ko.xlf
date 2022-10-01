@@ -24,7 +24,7 @@
       </trans-unit>
       <trans-unit id="ErrorWritingToSourceLinkFile">
         <source>Error writing to source link file '{0}': {1}</source>
-        <target state="translated">소스 링크 파일 '{0}'에 쓰는 동안 오류가 발생했습니다. {1}</target>
+        <target state="translated">소스 링크 파일 '{0}'에 쓰는 동안 오류 발생: {1}</target>
         <note />
       </trans-unit>
       <trans-unit id="SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty">

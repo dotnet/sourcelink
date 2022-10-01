@@ -24,7 +24,7 @@
       </trans-unit>
       <trans-unit id="ErrorWritingToSourceLinkFile">
         <source>Error writing to source link file '{0}': {1}</source>
-        <target state="translated">Erreur d'écriture dans le fichier de liaison source '{0}' : {1}</target>
+        <target state="translated">Erreur d'écriture dans le fichier Source Link '{0}' : {1}</target>
         <note />
       </trans-unit>
       <trans-unit id="SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty">
