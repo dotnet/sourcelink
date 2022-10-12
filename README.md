@@ -73,15 +73,23 @@ For projects hosted by on-prem [Azure DevOps Server](https://azure.microsoft.com
 </ItemGroup>
 ```
 
-If your server is configurated with non-empty IIS [Virtual Directory](docs/TfsVirtualDirectory/README.md), specify this directory in `SourceLinkAzureDevOpsServerGitHost` item like so:
+You also need to provide the hostname of your DevOps server:
+ 
+```xml
+<ItemGroup>
+  <SourceLinkAzureDevOpsServerGitHost Include="server-name"/>
+</ItemGroup>
+```
+ 
+The `Include` attribute specifies the domain and optionally the port of the server (e.g. `server-name` or `server-name:8080`).
+
+If your server is configured with a non-empty IIS [virtual directory](docs/TfsVirtualDirectory/README.md), specify this directory like so:
 
 ```xml
 <ItemGroup>
   <SourceLinkAzureDevOpsServerGitHost Include="server-name" VirtualDirectory="tfs"/>
 </ItemGroup>
 ```
-
-The `Include` attribute specifies the domain and optionally the port of the server (e.g. `server-name` or `server-name:8080`).
 
 ### GitLab
 
