@@ -7,9 +7,9 @@
       <Uri>https://github.com/dotnet/arcade</Uri>
       <Sha>7e27c0ab0fc92ec636c26442fd1663dc5714aa4b</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.SourceBuild.Intermediate.source-build-reference-packages" Version="8.0.0-alpha.1.22517.1">
+    <Dependency Name="Microsoft.SourceBuild.Intermediate.source-build-reference-packages" Version="8.0.0-alpha.1.22525.1">
       <Uri>https://github.com/dotnet/source-build-reference-packages</Uri>
-      <Sha>ec4fdcded4dd6152c9c05291759c1a97b24f52e5</Sha>
+      <Sha>328a67c872579620f27c722c30f5cdb123b32051</Sha>
       <SourceBuild RepoName="source-build-reference-packages" ManagedOnly="true" />
     </Dependency>
   </ToolsetDependencies>
