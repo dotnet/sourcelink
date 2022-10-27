@@ -18,7 +18,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using NuGet.Packaging;
 
 namespace Microsoft.SourceLink.Tools
 {
@@ -197,14 +196,7 @@ namespace Microsoft.SourceLink.Tools
         private async Task<int> TestAsync(string path, AuthenticationHeaderValue? authenticationHeader, CancellationToken cancellationToken)
         {
             var documents = new List<DocumentInfo>();
-            if (string.Equals(Path.GetExtension(path), ".nupkg", StringComparison.OrdinalIgnoreCase))
-            {
-                await ReadAndResolveDocumentsFromPackageAsync(path, documents, cancellationToken).ConfigureAwait(false);
-            }
-            else
-            {
-                ReadAndResolveDocuments(path, documents);
-            }
+            ReadAndResolveDocuments(path, documents);
 
             if (documents.Count == 0)
             {
@@ -490,27 +482,6 @@ namespace Microsoft.SourceLink.Tools
             {
                 ReportError($"Symbol information not found for '{path}'.");
             };
-        }
-
-        private async Task ReadAndResolveDocumentsFromPackageAsync(string packagePath, List<DocumentInfo> documents, CancellationToken cancellationToken)
-        {
-            using var packageReader = new PackageArchiveReader(File.OpenRead(packagePath));
-
-            var files = await packageReader.GetFilesAsync(cancellationToken).ConfigureAwait(false);
-
-            foreach (var file in files)
-            {
-                var extension = Path.GetExtension(file);
-                if (string.Equals(extension, ".dll", StringComparison.OrdinalIgnoreCase) && !file.EndsWith(".resources.dll", StringComparison.OrdinalIgnoreCase) ||
-                    string.Equals(extension, ".exe", StringComparison.OrdinalIgnoreCase) ||
-                    string.Equals(extension, ".pdb", StringComparison.OrdinalIgnoreCase))
-                {
-                    // TODO:
-                    ReadAndResolveDocuments(file, documents);
-                }
-
-                cancellationToken.ThrowIfCancellationRequested();
-            }
         }
 
         private static bool HasCustomDebugInformation(MetadataReader metadataReader, EntityHandle handle, Guid kind)
