@@ -70,6 +70,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.Gitea.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dotnet-sourcelink", "src\dotnet-sourcelink\dotnet-sourcelink.csproj", "{4376B613-CD5B-4274-9071-30989769B0B2}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.Gitee", "src\SourceLink.Gitee\Microsoft.SourceLink.Gitee.csproj", "{EBB5B478-BD04-4E82-9C06-BE8C24EEB55F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.Gitee.UnitTests", "src\SourceLink.Gitee.UnitTests\Microsoft.SourceLink.Gitee.UnitTests.csproj", "{D647294C-40C0-4624-A76B-C4C276233609}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\SourceLink.Tools\Microsoft.SourceLink.Tools.projitems*{4376b613-cd5b-4274-9071-30989769b0b2}*SharedItemsImports = 5
@@ -185,6 +189,14 @@ Global
 		{4376B613-CD5B-4274-9071-30989769B0B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4376B613-CD5B-4274-9071-30989769B0B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4376B613-CD5B-4274-9071-30989769B0B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBB5B478-BD04-4E82-9C06-BE8C24EEB55F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBB5B478-BD04-4E82-9C06-BE8C24EEB55F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBB5B478-BD04-4E82-9C06-BE8C24EEB55F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBB5B478-BD04-4E82-9C06-BE8C24EEB55F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D647294C-40C0-4624-A76B-C4C276233609}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D647294C-40C0-4624-A76B-C4C276233609}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D647294C-40C0-4624-A76B-C4C276233609}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D647294C-40C0-4624-A76B-C4C276233609}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
