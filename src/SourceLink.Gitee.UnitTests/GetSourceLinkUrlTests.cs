@@ -50,7 +50,7 @@ namespace Microsoft.SourceLink.Gitee.UnitTests
 
             bool result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
-            AssertEx.AreEqual("https://domain.com/x/y/raw/a/b/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
+            AssertEx.AreEqual("https://domain.com/x/y/a/b/raw/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
             Assert.True(result);
         }
     }
