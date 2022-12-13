@@ -42,7 +42,7 @@ namespace Microsoft.SourceLink.Gitee.UnitTests
             {
                 "https://gitee.com/a/b",
                 "ssh://gitee1.com/a/b",
-                "https://github1.com/a/b",
+                "https://gitee1.com/a/b",
                 "ssh://gitee2.com/a/b"
             }, task.TranslatedSourceRoots?.Select(r => r.GetMetadata("ScmRepositoryUrl")));
 
