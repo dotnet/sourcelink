@@ -23,8 +23,9 @@ namespace Microsoft.Build.Tasks.Git
         internal const string GitHeadFileName = "HEAD";
 
         private const string GitModulesFileName = ".gitmodules";
-        private static readonly string[] KnownExtensions = new[] { "noop", "preciousObjects", "partialclone", "worktreeConfig" };
 
+        private static readonly ImmutableArray<string> s_knownExtensions =
+            ImmutableArray.Create("noop", "preciousObjects", "partialclone", "worktreeConfig");
 
         public GitConfig Config { get; }
 
@@ -128,16 +129,13 @@ namespace Microsoft.Build.Tasks.Git
 
             if (version == 1)
             {
-                // When reading the core.repositoryformatversion variable, a git implementation which supports version 1 MUST
-                // also read any configuration keys found in the extensions section of the configuration file.
-                //
-                // If a version-1 repository specifies any extensions.* keys that the running git has not implemented, the operation MUST NOT proceed.
-                // Similarly, if the value of any known key is not understood by the implementation,the operation MUST NOT proceed.
+                // All variables defined under extensions section must be known, otherwise a git implementation is not allowed to proced.
                 foreach (var variable in config.Variables)
                 {
-                    if (variable.Key.SectionNameEquals("extensions") && !KnownExtensions.Contains(variable.Key.VariableName, StringComparer.OrdinalIgnoreCase))
+                    if (variable.Key.SectionNameEquals("extensions") && !s_knownExtensions.Contains(variable.Key.VariableName, StringComparer.OrdinalIgnoreCase))
                     {
-                        throw new NotSupportedException(string.Format(Resources.UnsupportedRepositoryExtension, variable.Key.VariableName, string.Join(", ", KnownExtensions)));
+                        throw new NotSupportedException(string.Format(
+                            Resources.UnsupportedRepositoryExtension, variable.Key.VariableName, string.Join(", ", s_knownExtensions)));
                     }
                 }
             }
