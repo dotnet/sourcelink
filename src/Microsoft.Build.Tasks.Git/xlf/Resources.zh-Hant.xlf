@@ -104,7 +104,7 @@
       </trans-unit>
       <trans-unit id="SourceCodeWontBeAvailableViaSourceLink">
         <source>{0} The source code won't be available via Source Link.</source>
-        <target state="translated">{0} 無法透過來源連結使用原始程式碼。</target>
+        <target state="translated">{0} 無法透過 Source Link 使用原始程式碼。</target>
         <note />
       </trans-unit>
       <trans-unit id="SubmoduleWithoutCommit">
