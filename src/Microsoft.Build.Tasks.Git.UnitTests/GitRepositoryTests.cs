@@ -210,7 +210,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         }
 
         [Fact]
-        public void OpenRepository_SparseV2()
+        public void OpenRepository_Version1_Extensions()
         {
             using var temp = new TempRoot();
 
@@ -222,7 +222,11 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 [core]
 	repositoryformatversion = 1
 [extensions]
-	worktreeConfig = true");
+    noop = 1
+    preciousObjects = true
+    partialClone = promisor_remote
+    worktreeConfig = true
+");
 
             Assert.True(GitRepository.TryFindRepository(gitDir.Path, out var location));
             Assert.Equal(gitDir.Path, location.CommonDirectory);
@@ -236,28 +240,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         }
 
         [Fact]
-        public void OpenRepository_VersionNotSupported()
-        {
-            using var temp = new TempRoot();
-
-            var homeDir = temp.CreateDirectory();
-
-            var workingDir = temp.CreateDirectory();
-            var gitDir = workingDir.CreateDirectory(".git");
-
-            gitDir.CreateFile("HEAD").WriteAllText("ref: refs/heads/master");
-            gitDir.CreateDirectory("refs").CreateDirectory("heads").CreateFile("master").WriteAllText("0000000000000000000000000000000000000000");
-            gitDir.CreateDirectory("objects");
-
-            gitDir.CreateFile("config").WriteAllText("[core]repositoryformatversion = 2");
-
-            var src = workingDir.CreateDirectory("src");
-
-            Assert.Throws<NotSupportedException>(() => GitRepository.OpenRepository(src.Path, new GitEnvironment(homeDir.Path)));
-        }
-
-        [Fact]
-        public void OpenRepository_V2ExtensionNotSupported()
+        public void OpenRepository_Version1_UnknownExtension()
         {
             using var temp = new TempRoot();
 
@@ -275,6 +258,27 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 	repositoryformatversion = 1
 [extensions]
 	newExtension = true");
+
+            var src = workingDir.CreateDirectory("src");
+
+            Assert.Throws<NotSupportedException>(() => GitRepository.OpenRepository(src.Path, new GitEnvironment(homeDir.Path)));
+        }
+
+        [Fact]
+        public void OpenRepository_VersionNotSupported()
+        {
+            using var temp = new TempRoot();
+
+            var homeDir = temp.CreateDirectory();
+
+            var workingDir = temp.CreateDirectory();
+            var gitDir = workingDir.CreateDirectory(".git");
+
+            gitDir.CreateFile("HEAD").WriteAllText("ref: refs/heads/master");
+            gitDir.CreateDirectory("refs").CreateDirectory("heads").CreateFile("master").WriteAllText("0000000000000000000000000000000000000000");
+            gitDir.CreateDirectory("objects");
+
+            gitDir.CreateFile("config").WriteAllText("[core]repositoryformatversion = 2");
 
             var src = workingDir.CreateDirectory("src");
 
