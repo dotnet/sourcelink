@@ -112,7 +112,7 @@ namespace Microsoft.Build.Tasks.Git
             {
                 reader = File.OpenText(path!);
             }
-            catch (Exception e) when (e is FileNotFoundException || e is DirectoryNotFoundException)
+            catch (Exception e) when (e is FileNotFoundException or DirectoryNotFoundException)
             {
                 return null;
             }

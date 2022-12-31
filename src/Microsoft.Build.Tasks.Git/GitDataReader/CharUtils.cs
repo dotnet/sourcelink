@@ -12,6 +12,6 @@ namespace Microsoft.Build.Tasks.Git
         public static char[] WhitespaceSeparators = { ' ', '\t', '\f', '\v' };
 
         public static bool IsHexadecimalDigit(char c)
-            => c >= '0' && c <= '9' || c >= 'A' && c <= 'F' || c >= 'a' && c <= 'f';
+            => c is >= '0' and <= '9' or >= 'A' and <= 'F' or >= 'a' and <= 'f';
     }
 }

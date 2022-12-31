@@ -221,7 +221,7 @@ namespace Microsoft.SourceLink
 
         private static bool TryParseRepositoryName(string[] parts, out int teamNameIndex, string? type, [NotNullWhen(true)]out string? repositoryName)
         {
-            Debug.Assert(type == "_git" || type == "_ssh" || type == null);
+            Debug.Assert(type is "_git" or "_ssh" or null);
 
             // {type}/{"_full"|"_optimized"|""}/{repositoryName}
 
@@ -242,7 +242,7 @@ namespace Microsoft.SourceLink
                 return false;
             }
 
-            if (parts[i] == "_full" || parts[i] == "_optimized")
+            if (parts[i] is "_full" or "_optimized")
             {
                 i--;
 
@@ -262,7 +262,7 @@ namespace Microsoft.SourceLink
             }
             else
             {
-                if (parts[i] == "_ssh" || parts[i] == "_git")
+                if (parts[i] is "_ssh" or "_git")
                 {
                     return false;
                 }

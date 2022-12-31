@@ -73,7 +73,7 @@ namespace Microsoft.Build.Tasks.Git
 
                 Execute(repository);
             }
-            catch (Exception e) when (e is IOException || e is InvalidDataException || e is NotSupportedException)
+            catch (Exception e) when (e is IOException or InvalidDataException or NotSupportedException)
             {
                 Log.LogError(Resources.ErrorReadingGitRepositoryInformation, e.Message);
             }
@@ -112,7 +112,7 @@ namespace Microsoft.Build.Tasks.Git
             {
                 repository = GitRepository.OpenRepository(location, GitEnvironment.Create(ConfigurationScope));
             }
-            catch (Exception e) when (e is IOException || e is InvalidDataException || e is NotSupportedException)
+            catch (Exception e) when (e is IOException or InvalidDataException or NotSupportedException)
             {
                 Log.LogError(Resources.ErrorReadingGitRepositoryInformation, e.Message);
                 repository = null;

@@ -195,7 +195,7 @@ namespace Microsoft.Build.Tasks.Git
                 {
                     content = ReadReferenceFromFile(path);
                 }
-                catch (Exception e) when (e is ArgumentException || e is FileNotFoundException || e is DirectoryNotFoundException)
+                catch (Exception e) when (e is ArgumentException or FileNotFoundException or DirectoryNotFoundException)
                 {
                     // invalid path or file doesn't exist:
                     return ResolvePackedReference(symRef);
@@ -227,7 +227,7 @@ namespace Microsoft.Build.Tasks.Git
             {
                 return File.ReadAllText(path).TrimEnd(CharUtils.AsciiWhitespace);
             }
-            catch (Exception e) when (!(e is ArgumentException) && !(e is IOException))
+            catch (Exception e) when (e is not ArgumentException and not IOException)
             {
                 throw new IOException(e.Message, e);
             }
