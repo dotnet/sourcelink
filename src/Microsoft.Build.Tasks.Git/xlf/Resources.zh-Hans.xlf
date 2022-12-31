@@ -117,6 +117,11 @@
         <target state="translated">找不到具有带目录“{0}”的工作目录的存储库。</target>
         <note />
       </trans-unit>
+      <trans-unit id="UnsupportedRepositoryExtension">
+        <source>Unsupported repository extension {0}. Only {1} are supported.</source>
+        <target state="new">Unsupported repository extension {0}. Only {1} are supported.</target>
+        <note />
+      </trans-unit>
       <trans-unit id="UnsupportedRepositoryVersion">
         <source>Unsupported repository version {0}. Only versions up to {1} are supported.</source>
         <target state="translated">不支持存储库版本 {0}。支持的最高版本为 {1}。</target>
