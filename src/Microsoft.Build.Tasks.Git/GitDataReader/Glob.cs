@@ -205,7 +205,7 @@ namespace Microsoft.Build.Tasks.Git
             bool isMatching = false;
 
             var c = pattern[patternIndex];
-            if (c == '!' || c == '^')
+            if (c is '!' or '^')
             {
                 negate = true;
                 patternIndex++;

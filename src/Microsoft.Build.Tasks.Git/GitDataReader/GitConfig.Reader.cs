@@ -175,11 +175,11 @@ namespace Microsoft.Build.Tasks.Git
                 {
                     reader = _fileOpener(path);
                 }
-                catch (Exception e) when (e is FileNotFoundException || e is DirectoryNotFoundException)
+                catch (Exception e) when (e is FileNotFoundException or DirectoryNotFoundException)
                 {
                     return;
                 }
-                catch (Exception e) when (!(e is IOException))
+                catch (Exception e) when (e is not IOException)
                 {
                     throw new IOException(e.Message, e);
                 }
@@ -608,22 +608,22 @@ namespace Microsoft.Build.Tasks.Git
             }
 
             private static bool IsCommentStart(int c)
-                => c == ';' || c == '#';
+                => c is ';' or '#';
 
             private static bool IsAlphabetic(int c)
-                => c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z';
+                => c is >= 'a' and <= 'z' or >= 'A' and <= 'Z';
 
             private static bool IsNumeric(int c)
-                => c >= '0' && c <= '9';
+                => c is >= '0' and <= '9';
 
             private static bool IsAlphaNumeric(int c)
                 => IsAlphabetic(c) || IsNumeric(c);
 
             private static bool IsWhitespace(int c)
-                => c == ' ' || c == '\t' || c == '\f' || c == '\v';
+                => c is ' ' or '\t' or '\f' or '\v';
 
             private static bool IsEndOfLine(int c)
-                => c == '\r' || c == '\n';
+                => c is '\r' or '\n';
 
             private static bool IsWhitespaceOrEndOfLine(int c)
                 => IsWhitespace(c) || IsEndOfLine(c);

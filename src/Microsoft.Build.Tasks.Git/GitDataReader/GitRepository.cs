@@ -265,7 +265,7 @@ namespace Microsoft.Build.Tasks.Git
                 {
                     headCommitSha = ReadSubmoduleHeadCommitSha(fullPath);
                 }
-                catch (Exception e) when (e is IOException || e is InvalidDataException)
+                catch (Exception e) when (e is IOException or InvalidDataException)
                 {
                     reportDiagnostic(e.Message);
                     continue;
@@ -435,7 +435,7 @@ namespace Microsoft.Build.Tasks.Git
             {
                 content = File.ReadAllText(path);
             }
-            catch (Exception e) when (!(e is IOException))
+            catch (Exception e) when (e is not IOException)
             {
                 throw new IOException(e.Message, e);
             }
