@@ -129,6 +129,9 @@
   <data name="UnsupportedRepositoryVersion" xml:space="preserve">
     <value>Unsupported repository version {0}. Only versions up to {1} are supported.</value>
   </data>
+  <data name="UnsupportedRepositoryExtension" xml:space="preserve">
+    <value>Unsupported repository extension {0}. Only {1} are supported.</value>
+  </data>
   <data name="PathSpecifiedInFileIsNotAbsolute" xml:space="preserve">
     <value>Path specified in file '{0}' is not absolute: '{1}'.</value>
   </data>
