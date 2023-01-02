@@ -104,7 +104,7 @@
       </trans-unit>
       <trans-unit id="SourceCodeWontBeAvailableViaSourceLink">
         <source>{0} The source code won't be available via Source Link.</source>
-        <target state="translated">{0} 無法透過來源連結使用原始程式碼。</target>
+        <target state="translated">{0} 無法透過 Source Link 使用原始程式碼。</target>
         <note />
       </trans-unit>
       <trans-unit id="SubmoduleWithoutCommit">
@@ -115,6 +115,11 @@
       <trans-unit id="UnableToLocateRepository">
         <source>Unable to locate repository with working directory that contains directory '{0}'.</source>
         <target state="translated">找不到具有包含目錄 '{0}' 之工作目錄的存放庫。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="UnsupportedRepositoryExtension">
+        <source>Unsupported repository extension '{0}'. Only {1} are supported.</source>
+        <target state="new">Unsupported repository extension '{0}'. Only {1} are supported.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnsupportedRepositoryVersion">

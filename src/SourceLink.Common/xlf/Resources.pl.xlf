@@ -24,12 +24,12 @@
       </trans-unit>
       <trans-unit id="ErrorWritingToSourceLinkFile">
         <source>Error writing to source link file '{0}': {1}</source>
-        <target state="translated">Błąd podczas zapisywania do pliku linku źródłowego „{0}”: {1}</target>
+        <target state="translated">Błąd podczas zapisywania do pliku linku do źródła „{0}”: {1}</target>
         <note />
       </trans-unit>
       <trans-unit id="SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty">
         <source>Source control information is not available - the generated source link is empty.</source>
-        <target state="translated">Informacje o kontroli źródła są niedostępne — wygenerowany link źródła jest pusty.</target>
+        <target state="translated">Informacje o kontroli źródła są niedostępne — wygenerowany link do źródła jest pusty.</target>
         <note />
       </trans-unit>
     </body>

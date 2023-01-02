@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    $CommonMetadataElements$
+  </metadata>
+  <files>
+    $CommonFileElements$
+    <file src="$DesktopTfm$*\**\Microsoft.SourceLink.Common.*" exclude="**\*.config" target="tools" />
+    <file src="$CoreTfm$\**\Microsoft.SourceLink.Common.*" target="tools\core" />
+
+    <file src="$ProjectDirectory$\build\*.*" target="build" />
+    <file src="$ProjectDirectory$\buildMultiTargeting\*.*" target="buildMultiTargeting" />
+  </files>
+</package>

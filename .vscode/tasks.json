@@ -1,0 +1,44 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Restore projects",
+      "type": "shell",
+      "command": "./restore.sh",
+      "windows": {
+        "command": ".\\restore.cmd"
+      },
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Build entire repository",
+      "type": "shell",
+      "command": "./build.sh",
+      "windows": {
+        "command": ".\\build.cmd"
+      },
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Run all test projects",
+      "type": "shell",
+      "command": "./test.sh",
+      "windows": {
+        "command": ".\\test.cmd"
+      },
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+  ]
+}

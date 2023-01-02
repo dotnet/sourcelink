@@ -13,7 +13,7 @@ namespace Microsoft.Build.Tasks.Git
 {
     internal sealed class GitRepository
     {
-        private const int SupportedGitRepoFormatVersion = 0;
+        private const int SupportedGitRepoFormatVersion = 1;
 
         private const string CommonDirFileName = "commondir";
         private const string GitDirName = ".git";
@@ -23,6 +23,9 @@ namespace Microsoft.Build.Tasks.Git
         internal const string GitHeadFileName = "HEAD";
 
         private const string GitModulesFileName = ".gitmodules";
+
+        private static readonly ImmutableArray<string> s_knownExtensions =
+            ImmutableArray.Create("noop", "preciousObjects", "partialclone", "worktreeConfig");
 
         public GitConfig Config { get; }
 
@@ -122,6 +125,19 @@ namespace Microsoft.Build.Tasks.Git
             if (GitConfig.TryParseInt64Value(versionStr, out var version) && version > SupportedGitRepoFormatVersion)
             {
                 throw new NotSupportedException(string.Format(Resources.UnsupportedRepositoryVersion, versionStr, SupportedGitRepoFormatVersion));
+            }
+
+            if (version == 1)
+            {
+                // All variables defined under extensions section must be known, otherwise a git implementation is not allowed to proced.
+                foreach (var variable in config.Variables)
+                {
+                    if (variable.Key.SectionNameEquals("extensions") && !s_knownExtensions.Contains(variable.Key.VariableName, StringComparer.OrdinalIgnoreCase))
+                    {
+                        throw new NotSupportedException(string.Format(
+                            Resources.UnsupportedRepositoryExtension, variable.Key.VariableName, string.Join(", ", s_knownExtensions)));
+                    }
+                }
             }
 
             return new GitRepository(environment, config, location.GitDirectory, location.CommonDirectory, workingDirectory);
@@ -249,7 +265,7 @@ namespace Microsoft.Build.Tasks.Git
                 {
                     headCommitSha = ReadSubmoduleHeadCommitSha(fullPath);
                 }
-                catch (Exception e) when (e is IOException || e is InvalidDataException)
+                catch (Exception e) when (e is IOException or InvalidDataException)
                 {
                     reportDiagnostic(e.Message);
                     continue;
@@ -419,7 +435,7 @@ namespace Microsoft.Build.Tasks.Git
             {
                 content = File.ReadAllText(path);
             }
-            catch (Exception e) when (!(e is IOException))
+            catch (Exception e) when (e is not IOException)
             {
                 throw new IOException(e.Message, e);
             }
