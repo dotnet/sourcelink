@@ -145,7 +145,7 @@ stages:
           steps:
           - checkout: self
             clean: true
-          - script: eng/cibuild.sh --configuration $(_BuildConfig) --prepareMachine
+          - script: eng/cibuild.sh --configuration $(_BuildConfig) --prepareMachine /p:SourceBuildIntermediateNupkgRid='linux-x64'
             displayName: Build and Test
 
 - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:

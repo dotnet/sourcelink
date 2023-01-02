@@ -4,6 +4,7 @@
     <TargetFrameworks>$(NetCurrent)</TargetFrameworks>
     <!-- Allow tool to roll forward to a newer major version. -->
     <RollForward>Major</RollForward>
+    <ExcludeFromSourceBuild>true</ExcludeFromSourceBuild>
 
     <!-- NuGet -->
     <IsPackable>true</IsPackable>
