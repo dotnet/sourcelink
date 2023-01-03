@@ -17,12 +17,12 @@
       <Sha>a6f84d42529494b3539684ed993fa554281215b7</Sha>
       <SourceBuild RepoName="runtime" ManagedOnly="false" />
     </Dependency>
-    <Dependency Name="Microsoft.Build" Version="17.5.0-preview-22620-02">
+    <!-- MSBuild versions starting from 16.10.0 do not target NET Core -->
+    <Dependency Name="Microsoft.Build" Version="16.8.0">
       <Uri>https://github.com/dotnet/msbuild</Uri>
       <Sha>a6f6699d1f70bf79db82030938d2c5e52d1e4d2e</Sha>
-      <SourceBuild RepoName="msbuild" ManagedOnly="true" />
     </Dependency>
-    <Dependency Name="Microsoft.Build.Tasks.Core" Version="17.5.0-preview-22620-02">
+    <Dependency Name="Microsoft.Build.Tasks.Core" Version="16.8.0">
       <Uri>https://github.com/dotnet/msbuild</Uri>
       <Sha>a6f6699d1f70bf79db82030938d2c5e52d1e4d2e</Sha>
     </Dependency>
