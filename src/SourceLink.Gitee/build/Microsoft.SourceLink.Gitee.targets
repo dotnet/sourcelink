@@ -6,8 +6,8 @@
     <_SourceLinkGiteeAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\core\Microsoft.SourceLink.Gitee.dll</_SourceLinkGiteeAssemblyFile>
   </PropertyGroup>
 
-  <UsingTask TaskName="Microsoft.SourceLink.Gitee.GetSourceLinkUrl" AssemblyFile="$(_SourceLinkGitHubAssemblyFile)"/>
-  <UsingTask TaskName="Microsoft.SourceLink.Gitee.TranslateRepositoryUrls" AssemblyFile="$(_SourceLinkGitHubAssemblyFile)"/>
+  <UsingTask TaskName="Microsoft.SourceLink.Gitee.GetSourceLinkUrl" AssemblyFile="$(_SourceLinkGiteeAssemblyFile)"/>
+  <UsingTask TaskName="Microsoft.SourceLink.Gitee.TranslateRepositoryUrls" AssemblyFile="$(_SourceLinkGiteeAssemblyFile)"/>
 
   <PropertyGroup>
     <SourceLinkUrlInitializerTargets>$(SourceLinkUrlInitializerTargets);_InitializeGiteeSourceLinkUrl</SourceLinkUrlInitializerTargets>
