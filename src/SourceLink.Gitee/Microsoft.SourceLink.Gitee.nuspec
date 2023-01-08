@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    $CommonMetadataElements$
+    <dependencies>
+      <dependency id="Microsoft.SourceLink.Common" version="$Version$" />
+      <dependency id="Microsoft.Build.Tasks.Git" version="$Version$" />
+    </dependencies>
+  </metadata>
+  <files>
+    $CommonFileElements$
+    <file src="$DesktopTfm$*\**\Microsoft.SourceLink.Gitee.*" exclude="**\*.config" target="tools" />
+    <file src="$CoreTfm$\**\Microsoft.SourceLink.Gitee.*" target="tools\core" />
+
+    <file src="$ProjectDirectory$\build\*.*" target="build" />
+    <file src="$ProjectDirectory$\buildMultiTargeting\*.*" target="buildMultiTargeting" />
+  </files>
+</package>
