@@ -13,4 +13,5 @@ while [[ -h $source ]]; do
 done
 scriptroot="$( cd -P "$( dirname "$source" )" && pwd )"
 
-. "$scriptroot/common/build.sh" --restore --build --test --pack --integrationTest --publish --ci $@
+# SourceBuildIntermediateNupkgRid indicates to source-build that portable intermediates should be restored (required for runtime dependency)
+. "$scriptroot/common/build.sh" --restore --build --test --pack --integrationTest --publish --ci /p:SourceBuildIntermediateNupkgRid="linux-x64" "$@"
