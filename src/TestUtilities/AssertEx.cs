@@ -394,7 +394,7 @@ namespace TestUtilities
                 var trimmedLine = line.Trim();
                 if (trimmedLine.Length > 0)
                 {
-                    if (!(trimmedLine[0] == '{' || trimmedLine[0] == '}'))
+                    if (trimmedLine[0] is not ('{' or '}'))
                     {
                         output.Append("  ");
                     }

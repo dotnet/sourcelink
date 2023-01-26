@@ -24,7 +24,7 @@
       </trans-unit>
       <trans-unit id="ErrorWritingToSourceLinkFile">
         <source>Error writing to source link file '{0}': {1}</source>
-        <target state="translated">'{0}' kaynak bağlantı dosyasına yazılırken bir hata oluştu: {1}</target>
+        <target state="translated">'{0}' kaynak bağlantısı dosyasına yazılırken bir hata oluştu: {1}</target>
         <note />
       </trans-unit>
       <trans-unit id="SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty">

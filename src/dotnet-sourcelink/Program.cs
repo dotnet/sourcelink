@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.CommandLine;
 using System.CommandLine.Invocation;
+using System.CommandLine.NamingConventionBinder;
 using System.CommandLine.Parsing;
 using System.IO;
 using System.Linq;
@@ -63,47 +64,17 @@ namespace Microsoft.SourceLink.Tools
 
         private static RootCommand GetRootCommand()
         {
-            var authEncodingArg = new Argument<Encoding>(
-                name: "encoding-name",
-                parse: arg => Encoding.GetEncoding(arg.Tokens.Single().Value))
-            {
-                Arity = ArgumentArity.ExactlyOne
-            };
-            
-            authEncodingArg.AddValidator(arg =>
-            {
-                var name = arg.Tokens.Single().Value;
-
-                try
-                {
-                    _ = Encoding.GetEncoding(name);
-                    return null;
-                }
-                catch
-                {
-                    return $"Encoding '{name}' not supported";
-                }
-            });
+            var authArg = new Option<string>(new[] { "--auth", "-a" }, "Authentication method").FromAmong(AuthenticationMethod.Basic);
+            var userArg = new Option<string>(new[] { "--user", "-u" }, "Username to use to authenticate") { Arity = ArgumentArity.ExactlyOne };
+            var passwordArg = new Option<string>(new[] { "--password", "-p" }, "Password to use to authenticate") { Arity = ArgumentArity.ExactlyOne };
 
             var test = new Command("test", "TODO")
             {
                 new Argument<string>("path", "Path to an assembly or .pdb"),
-                new Option(new[] { "--auth", "-a" }, "Authentication method")
-                {
-                    Argument = new Argument<string>(name: "method", () => AuthenticationMethod.Basic) { Arity = ArgumentArity.ExactlyOne }.FromAmong(AuthenticationMethod.Basic)
-                },
-                new Option(new[] { "--auth-encoding", "-e" }, "Encoding to use for authentication value")
-                {
-                    Argument = authEncodingArg,
-                },
-                new Option(new[] { "--user", "-u" }, "Username to use to authenticate")
-                {
-                    Argument = new Argument<string?>(name: "user-name") { Arity = ArgumentArity.ExactlyOne }
-                },
-                new Option(new[] { "--password", "-p" }, "Password to use to authenticate")
-                {
-                    Argument = new Argument<string?>() { Arity = ArgumentArity.ExactlyOne }
-                },
+                authArg,
+                new Option<Encoding>(new[] { "--auth-encoding", "-e" }, (arg) => Encoding.GetEncoding(arg.Tokens.Single().Value), false, "Encoding to use for authentication value"),
+                userArg,
+                passwordArg,
             };
             test.Handler = CommandHandler.Create<string, string?, Encoding?, string?, string?, IConsole>(TestAsync);
             
@@ -137,15 +108,13 @@ namespace Microsoft.SourceLink.Tools
 
             root.AddValidator(commandResult =>
             {
-                if (commandResult.OptionResult("--auth") != null)
+                if (commandResult.FindResultFor(authArg) != null)
                 {
-                    if (commandResult.OptionResult("--user") == null || commandResult.OptionResult("--password") == null)
+                    if (commandResult.FindResultFor(userArg) == null || commandResult.FindResultFor(passwordArg) == null)
                     {
-                        return "Specify --user and --password options";
+                        commandResult.ErrorMessage = "Specify --user and --password options";
                     }
                 }
-
-                return null;
             });
 
             return root;

@@ -104,7 +104,7 @@
       </trans-unit>
       <trans-unit id="SourceCodeWontBeAvailableViaSourceLink">
         <source>{0} The source code won't be available via Source Link.</source>
-        <target state="translated">{0}: Der Quellcode ist nicht über SourceLink verfügbar.</target>
+        <target state="translated">{0}: Der Quellcode ist nicht über Source Link verfügbar.</target>
         <note />
       </trans-unit>
       <trans-unit id="SubmoduleWithoutCommit">
@@ -115,6 +115,11 @@
       <trans-unit id="UnableToLocateRepository">
         <source>Unable to locate repository with working directory that contains directory '{0}'.</source>
         <target state="translated">Das Repository mit dem Arbeitsverzeichnis, welches das Verzeichnis "{0}" enthält, wurde nicht gefunden.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="UnsupportedRepositoryExtension">
+        <source>Unsupported repository extension '{0}'. Only {1} are supported.</source>
+        <target state="new">Unsupported repository extension '{0}'. Only {1} are supported.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnsupportedRepositoryVersion">

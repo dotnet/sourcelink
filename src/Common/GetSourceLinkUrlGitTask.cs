@@ -106,7 +106,7 @@ namespace Microsoft.Build.Tasks.SourceControl
             }
 
             static bool isHexDigit(char c)
-                => c >= '0' && c <= '9' || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F';
+                => c is >= '0' and <= '9' or >= 'a' and <= 'f' or >= 'A' and <= 'F';
 
             string revisionId = SourceRoot.GetMetadata(Names.SourceRoot.RevisionId);
             if (revisionId == null || revisionId.Length != 40 || !revisionId.All(isHexDigit))

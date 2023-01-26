@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Licensed to the .NET Foundation under one or more agreements. The .NET Foundation licenses this file to you under the MIT license. See the License.txt file in the project root for more information. -->
+<Project>
+  <PropertyGroup>
+    <_SourceLinkGiteeAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)..\tools\net472\Microsoft.SourceLink.Gitee.dll</_SourceLinkGiteeAssemblyFile>
+    <_SourceLinkGiteeAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\core\Microsoft.SourceLink.Gitee.dll</_SourceLinkGiteeAssemblyFile>
+  </PropertyGroup>
+
+  <UsingTask TaskName="Microsoft.SourceLink.Gitee.GetSourceLinkUrl" AssemblyFile="$(_SourceLinkGiteeAssemblyFile)"/>
+  <UsingTask TaskName="Microsoft.SourceLink.Gitee.TranslateRepositoryUrls" AssemblyFile="$(_SourceLinkGiteeAssemblyFile)"/>
+
+  <PropertyGroup>
+    <SourceLinkUrlInitializerTargets>$(SourceLinkUrlInitializerTargets);_InitializeGiteeSourceLinkUrl</SourceLinkUrlInitializerTargets>
+    <SourceControlManagerUrlTranslationTargets>$(SourceControlManagerUrlTranslationTargets);TranslateGiteeUrlsInSourceControlInformation</SourceControlManagerUrlTranslationTargets>
+  </PropertyGroup>
+
+  <Target Name="_InitializeGiteeSourceLinkUrl" Inputs="@(SourceRoot)" Outputs="|%(Identity)|">
+    <!--
+      The task calculates SourceLink URL for a given SourceRoot.
+
+      If the SourceRoot is associated with a git repository with a recognized domain the <see cref="SourceLinkUrl"/>
+      output property is set to the content URL corresponding to the domain, otherwise it is set to string "N/A".
+
+      Recognized domains are specified via Hosts (initialized from SourceLinkGiteeHost item group).
+      In addition, if SourceLinkHasSingleProvider is true an implicit host is parsed from RepositoryUrl.
+
+      Example of SourceLinkGiteeHost items:
+
+      <ItemGroup>
+        <SourceLinkGiteeHost Include="gitee.com" ContentUrl="https://gitee.com"/>
+        <SourceLinkGiteeHost Include="mygitee1.com" />           ContentUrl defaults to https://mygitee1.com/
+        <SourceLinkGiteeHost Include="mygitee2.com:8080" />      ContentUrl defaults to https://mygitee2.com:8080/
+      </ItemGroup>
+
+      ContentUrl is optional. If not specified it defaults to "https://{domain}".
+    -->
+    <Microsoft.SourceLink.Gitee.GetSourceLinkUrl RepositoryUrl="$(PrivateRepositoryUrl)" SourceRoot="@(SourceRoot)" Hosts="@(SourceLinkGiteeHost)" IsSingleProvider="$(SourceLinkHasSingleProvider)">
+      <Output TaskParameter="SourceLinkUrl" PropertyName="_SourceLinkUrlToUpdate"/>
+    </Microsoft.SourceLink.Gitee.GetSourceLinkUrl>
+
+    <ItemGroup>
+      <!-- Only update the SourceLinkUrl metadata if the SourceRoot belongs to this source control -->
+      <SourceRoot Update="%(Identity)" SourceLinkUrl="$(_SourceLinkUrlToUpdate)" Condition="'$(_SourceLinkUrlToUpdate)' != 'N/A'"/>
+    </ItemGroup>
+  </Target>
+
+  <!-- 
+    We need to translate ssh URLs to https.
+  -->
+  <Target Name="TranslateGiteeUrlsInSourceControlInformation">
+
+    <ItemGroup>
+      <_TranslatedSourceRoot Remove="@(_TranslatedSourceRoot)"/>
+    </ItemGroup>
+
+    <Microsoft.SourceLink.Gitee.TranslateRepositoryUrls RepositoryUrl="$(ScmRepositoryUrl)" SourceRoots="@(SourceRoot)" Hosts="@(SourceLinkGiteeHost)" IsSingleProvider="$(SourceLinkHasSingleProvider)">
+      <Output TaskParameter="TranslatedRepositoryUrl" PropertyName="ScmRepositoryUrl"/>
+      <Output TaskParameter="TranslatedSourceRoots" ItemName="_TranslatedSourceRoot"/>
+    </Microsoft.SourceLink.Gitee.TranslateRepositoryUrls>
+
+    <ItemGroup>
+      <SourceRoot Remove="@(SourceRoot)"/>
+      <SourceRoot Include="@(_TranslatedSourceRoot)"/>
+    </ItemGroup>
+  
+</Target>
+
+</Project>

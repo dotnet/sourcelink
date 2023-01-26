@@ -24,12 +24,12 @@
       </trans-unit>
       <trans-unit id="ErrorWritingToSourceLinkFile">
         <source>Error writing to source link file '{0}': {1}</source>
-        <target state="translated">Ошибка при записи в исходный файл ссылок '{0}': {1}</target>
+        <target state="translated">Ошибка при записи в файл исходных ссылок '{0}': {1}</target>
         <note />
       </trans-unit>
       <trans-unit id="SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty">
         <source>Source control information is not available - the generated source link is empty.</source>
-        <target state="translated">Информация о системе управления версиями недоступна — созданная ссылка на исходные файлы является пустой.</target>
+        <target state="translated">Информация о системе управления версиями недоступна — созданная исходная ссылка является пустой.</target>
         <note />
       </trans-unit>
     </body>
