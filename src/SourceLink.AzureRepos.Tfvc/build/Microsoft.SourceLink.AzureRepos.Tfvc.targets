@@ -12,7 +12,7 @@
     <SourceLinkUrlInitializerTargets>$(SourceLinkUrlInitializerTargets);_InitializeAzureReposTfvcSourceLinkUrl</SourceLinkUrlInitializerTargets>
   </PropertyGroup>
 
-  <Target Name="_InitializeAzureReposTfvcSourceLinkUrl" Inputs="@(SourceRoot)" Outputs="|%(Identity)|">
+  <Target Name="_InitializeAzureReposTfvcSourceLinkUrl" Outputs="%(SourceRoot.Identity)">
     <Microsoft.SourceLink.AzureRepos.Tfvc.GetSourceLinkUrl SourceRoot="@(SourceRoot)">
       <Output TaskParameter="SourceLinkUrl" PropertyName="_SourceLinkUrlToUpdate"/>
     </Microsoft.SourceLink.AzureRepos.Tfvc.GetSourceLinkUrl>

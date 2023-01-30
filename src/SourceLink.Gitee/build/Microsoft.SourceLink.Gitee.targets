@@ -14,7 +14,7 @@
     <SourceControlManagerUrlTranslationTargets>$(SourceControlManagerUrlTranslationTargets);TranslateGiteeUrlsInSourceControlInformation</SourceControlManagerUrlTranslationTargets>
   </PropertyGroup>
 
-  <Target Name="_InitializeGiteeSourceLinkUrl" Inputs="@(SourceRoot)" Outputs="|%(Identity)|">
+  <Target Name="_InitializeGiteeSourceLinkUrl" Outputs="%(SourceRoot.Identity)">
     <!--
       The task calculates SourceLink URL for a given SourceRoot.
 

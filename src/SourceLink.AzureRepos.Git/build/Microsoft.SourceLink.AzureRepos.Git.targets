@@ -14,7 +14,7 @@
     <SourceControlManagerUrlTranslationTargets>$(SourceControlManagerUrlTranslationTargets);TranslateAzureReposGitUrlsInSourceControlInformation</SourceControlManagerUrlTranslationTargets>
   </PropertyGroup>
   
-  <Target Name="_InitializeAzureReposGitSourceLinkUrl" Inputs="@(SourceRoot)" Outputs="|%(Identity)|">
+  <Target Name="_InitializeAzureReposGitSourceLinkUrl" Outputs="%(SourceRoot.Identity)">
     <!--
       The task calculates SourceLink URL for a given SourceRoot.
 

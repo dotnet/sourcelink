@@ -14,7 +14,7 @@
     <SourceControlManagerUrlTranslationTargets>$(SourceControlManagerUrlTranslationTargets);TranslateGitHubUrlsInSourceControlInformation</SourceControlManagerUrlTranslationTargets>
   </PropertyGroup>
 
-  <Target Name="_InitializeGitHubSourceLinkUrl" Inputs="@(SourceRoot)" Outputs="|%(Identity)|">
+  <Target Name="_InitializeGitHubSourceLinkUrl" Outputs="%(SourceRoot.Identity)">
     <!--
       The task calculates SourceLink URL for a given SourceRoot.
 
