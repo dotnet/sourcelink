@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Dependencies>
   <ProductDependencies>
+    <Dependency Name="System.CommandLine" Version="2.0.0-beta4.22272.1">
+      <Uri>https://github.com/dotnet/command-line-api</Uri>
+      <Sha>209b724a3c843253d3071e8348c353b297b0b8b5</Sha>
+    </Dependency>
+    <Dependency Name="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1">
+      <Uri>https://github.com/dotnet/command-line-api</Uri>
+      <Sha>209b724a3c843253d3071e8348c353b297b0b8b5</Sha>
+    </Dependency>
+    <Dependency Name="System.CommandLine.Rendering" Version="0.4.0-alpha.22272.1">
+      <Uri>https://github.com/dotnet/command-line-api</Uri>
+      <Sha>209b724a3c843253d3071e8348c353b297b0b8b5</Sha>
+    </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
     <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="8.0.0-beta.22630.1">
