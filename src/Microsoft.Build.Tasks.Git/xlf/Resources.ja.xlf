@@ -119,7 +119,7 @@
       </trans-unit>
       <trans-unit id="UnsupportedRepositoryExtension">
         <source>Unsupported repository extension '{0}'. Only {1} are supported.</source>
-        <target state="new">Unsupported repository extension '{0}'. Only {1} are supported.</target>
+        <target state="translated">サポートされていないリポジトリ拡張機能 '{0}'。{1} のみがサポートされています。</target>
         <note />
       </trans-unit>
       <trans-unit id="UnsupportedRepositoryVersion">
