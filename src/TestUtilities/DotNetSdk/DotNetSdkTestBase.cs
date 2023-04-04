@@ -174,10 +174,13 @@ $@"<Project>
             NuGetCacheDir = RootDir.CreateDirectory(".packages");
             NuGetPackageFolders = EnsureTrailingDirectorySeparator(NuGetCacheDir.Path);
 
+            // {info-version} = {package-version}+{commit-sha}
+            var packageVersion = typeof(DotNetSdkTestBase).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion.Split('+')[0];
+
             RootDir.CreateFile("Directory.Build.props").WriteAllText(
 $@"<Project>
   <ItemGroup>
-    {string.Join(Environment.NewLine, packages.Select(packageName => $"<PackageReference Include='{packageName}' Version='1.0.0-*' PrivateAssets='all' />"))}
+    {string.Join(Environment.NewLine, packages.Select(packageName => $"<PackageReference Include='{packageName}' Version='{packageVersion}' PrivateAssets='all' />"))}
   </ItemGroup>
 </Project>
 ");
