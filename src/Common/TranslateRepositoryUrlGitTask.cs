@@ -6,11 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
 
 namespace Microsoft.Build.Tasks.SourceControl
 {
-    public class TranslateRepositoryUrlsGitTask : Task
+    public class TranslateRepositoryUrlsGitTask : Utilities.Task
     {
         private const string SourceControlName = "git";
 

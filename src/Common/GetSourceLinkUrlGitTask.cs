@@ -4,15 +4,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
 
 namespace Microsoft.Build.Tasks.SourceControl
 {
-    public abstract class GetSourceLinkUrlGitTask : Task
+    public abstract class GetSourceLinkUrlGitTask : Utilities.Task
     {
         private const string SourceControlName = "git";
         protected const string NotApplicableValue = "N/A";

@@ -4,11 +4,10 @@
 
 using System;
 using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
 
 namespace Microsoft.SourceLink.Common
 {
-    public sealed class SourceLinkHasSingleProvider : Task
+    public sealed class SourceLinkHasSingleProvider : Build.Utilities.Task
     {
         public string? ProviderTargets { get; set; }
 
