@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net7.0</TargetFrameworks>
+    <TargetFrameworks>$(NetCurrent)</TargetFrameworks>
 
     <!-- NuGet -->
     <IsPackable>true</IsPackable>
