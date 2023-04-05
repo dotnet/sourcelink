@@ -141,4 +141,10 @@
   <data name="UnableToDetermineRepositoryUrl" xml:space="preserve">
     <value>Unable to determine repository url, the source code won't be available via source link.</value>
   </data>
+  <data name="NoWellFormedHostUrisSpecified" xml:space="preserve">
+    <value>No well-formed host URIs specified: {0}.</value>
+  </data>
+  <data name="IgnoringInvalidHostName" xml:space="preserve">
+    <value>Ignoring invalid host name: '{0}' -- expected 'domain[:port]'.</value>
+  </data>
 </root>

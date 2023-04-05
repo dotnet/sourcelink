@@ -7,9 +7,19 @@
         <target state="translated">{0} 項目グループが空です。SourceLink を生成するには、少なくとも 1 つの {1} リポジトリ ホストが必要です。</target>
         <note />
       </trans-unit>
+      <trans-unit id="IgnoringInvalidHostName">
+        <source>Ignoring invalid host name: '{0}' -- expected 'domain[:port]'.</source>
+        <target state="new">Ignoring invalid host name: '{0}' -- expected 'domain[:port]'.</target>
+        <note />
+      </trans-unit>
       <trans-unit id="ItemOfItemGroupMustSpecifyMetadata">
         <source>Item '{0}' of item group '{1}' must specify metadata '{2}'</source>
         <target state="translated">項目グループ '{1}' の項目 '{0}' には、メタデータ '{2}' を指定する必要があります</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="NoWellFormedHostUrisSpecified">
+        <source>No well-formed host URIs specified: {0}.</source>
+        <target state="new">No well-formed host URIs specified: {0}.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnableToDetermineRepositoryUrl">

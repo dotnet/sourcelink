@@ -11,6 +11,20 @@ namespace Microsoft.SourceLink.Common.UnitTests
 {
     public class GetSourceLinkUrlTests
     {
+        [Fact]
+        public void NoSourceRoot()
+        {
+            var engine = new MockEngine();
+
+            var task = new MockGetSourceLinkUrlGitTask()
+            {
+                BuildEngine = engine,
+            };
+
+            Assert.True(task.Execute());
+            Assert.Null(task.SourceLinkUrl);
+        }
+
         [Theory]
         [InlineData("contoso*.com")]
         [InlineData("contoso.com/a?x=2")]

@@ -2,16 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the License.txt file in the project root for more information.
 
-using System;
 using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Reflection;
-using System.Xml.Linq;
 using LibGit2Sharp;
 using Microsoft.Build.Tasks.Git;
 using TestUtilities;
-using Xunit;
 
 namespace Microsoft.SourceLink.IntegrationTests
 {

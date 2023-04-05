@@ -43,9 +43,13 @@ namespace Microsoft.Build.Tasks.SourceControl
 
         private void ExecuteImpl()
         {
+            // Assign translated roots even when the task fails (or no Hosts were specified) to avoid cascading errors.
+            TranslatedSourceRoots = SourceRoots;
+
             var hostUris = GetHostUris().ToArray();
             if (hostUris.Length == 0)
             {
+                Log.LogMessage(CommonResources.NoWellFormedHostUrisSpecified, "'" + string.Join("','", (Hosts ?? Array.Empty<ITaskItem>()).Select(h => h.ItemSpec)) + "'");
                 return;
             }
 
@@ -77,8 +81,6 @@ namespace Microsoft.Build.Tasks.SourceControl
                 Log.LogError(e.Message);
                 return;
             }
-
-            TranslatedSourceRoots = SourceRoots;
 
             if (TranslatedSourceRoots != null)
             {
@@ -119,6 +121,10 @@ namespace Microsoft.Build.Tasks.SourceControl
                     if (UriUtilities.TryParseAuthority(item.ItemSpec, out var hostUri))
                     {
                         yield return hostUri;
+                    }
+                    else
+                    {
+                        Log.LogWarning(CommonResources.IgnoringInvalidHostName, item.ItemSpec);
                     }
                 }
             }

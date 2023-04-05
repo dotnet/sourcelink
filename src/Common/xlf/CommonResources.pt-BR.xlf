@@ -7,9 +7,19 @@
         <target state="translated">O grupo de itens {0} está vazio. Pelo menos um host de repositório {1} é necessário para gerar o SourceLink.</target>
         <note />
       </trans-unit>
+      <trans-unit id="IgnoringInvalidHostName">
+        <source>Ignoring invalid host name: '{0}' -- expected 'domain[:port]'.</source>
+        <target state="new">Ignoring invalid host name: '{0}' -- expected 'domain[:port]'.</target>
+        <note />
+      </trans-unit>
       <trans-unit id="ItemOfItemGroupMustSpecifyMetadata">
         <source>Item '{0}' of item group '{1}' must specify metadata '{2}'</source>
         <target state="translated">Item '{0}' do grupo de item '{1}' deve especificar metadados '{2}'</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="NoWellFormedHostUrisSpecified">
+        <source>No well-formed host URIs specified: {0}.</source>
+        <target state="new">No well-formed host URIs specified: {0}.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnableToDetermineRepositoryUrl">
