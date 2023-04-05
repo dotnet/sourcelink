@@ -21,6 +21,7 @@
     <SystemReflectionMetadataVersion>1.8.1</SystemReflectionMetadataVersion>
     <SystemValueTupleVersion>4.5.0</SystemValueTupleVersion>
     <SystemTextJsonVersion>4.7.2</SystemTextJsonVersion>
+    <XunitCombinatorialVersion>1.5.25</XunitCombinatorialVersion>
     <!-- libgit2 used for integration tests -->
     <LibGit2SharpVersion>0.27.0-preview-0119</LibGit2SharpVersion>
   </PropertyGroup>

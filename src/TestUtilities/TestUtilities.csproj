@@ -12,6 +12,7 @@
     <PackageReference Include="Microsoft.Build.Tasks.Core" Version="$(MicrosoftBuildTasksCore)" />
     <PackageReference Include="xunit.core" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.assert" Version="$(XunitVersion)" />
+    <PackageReference Include="xunit.Combinatorial" version="$(XunitCombinatorialVersion)" />
   </ItemGroup>
 
   <PropertyGroup>
