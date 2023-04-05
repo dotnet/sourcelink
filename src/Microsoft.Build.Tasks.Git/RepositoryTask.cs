@@ -32,7 +32,7 @@ namespace Microsoft.Build.Tasks.Git
         /// <summary>
         /// True to report a warning when the repository can't be located.
         /// </summary>
-        public bool WarnOnMissingRepository { get; set; }
+        public bool NoWarnOnMissingRepository { get; set; }
 
         public sealed override bool Execute()
         {
@@ -103,7 +103,7 @@ namespace Microsoft.Build.Tasks.Git
 
             if (!GitRepository.TryFindRepository(initialPath, out var location))
             {
-                if (WarnOnMissingRepository)
+                if (!NoWarnOnMissingRepository)
                 {
                     Log.LogWarning(Resources.UnableToLocateRepository, initialPath);
                 }
@@ -129,7 +129,7 @@ namespace Microsoft.Build.Tasks.Git
 
             if (repository?.WorkingDirectory == null)
             {
-                if (WarnOnMissingRepository)
+                if (!NoWarnOnMissingRepository)
                 {
                     Log.LogWarning(Resources.UnableToLocateRepository, initialPath);
                 }

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the License.txt file in the project root for more information.
 
+using System;
 using System.IO;
 using TestUtilities;
 using Xunit;
@@ -23,7 +24,7 @@ namespace Microsoft.SourceLink.IntegrationTests
         }
 
         [ConditionalFact(typeof(DotNetSdkAvailable))]
-        public void NoRepository()
+        public void NoRepository_Warnings()
         {
             VerifyValues(
                 customProps: "",
@@ -44,6 +45,31 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     string.Format(Build.Tasks.Git.Resources.UnableToLocateRepository, ProjectDir.Path),
                     string.Format(Common.Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty),
+                });
+        }
+
+        [ConditionalFact(typeof(DotNetSdkAvailable))]
+        public void NoRepository_NoWarnings()
+        {
+            VerifyValues(
+                customProps: """
+                <PropertyGroup>
+                  <PkgMicrosoft_Build_Tasks_Git></PkgMicrosoft_Build_Tasks_Git>
+                  <PkgMicrosoft_SourceLink_Common></PkgMicrosoft_SourceLink_Common>
+                </PropertyGroup>
+                """,
+                customTargets: "",
+                targets: new[]
+                {
+                    "Build"
+                },
+                expressions: new[]
+                {
+                    "@(SourceRoot)",
+                },
+                expectedResults: new[]
+                {
+                    NuGetPackageFolders
                 });
         }
 

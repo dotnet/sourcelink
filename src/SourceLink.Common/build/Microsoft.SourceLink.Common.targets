@@ -53,7 +53,7 @@
     <!--- Suppress warning if targets are imported from an SDK without a package reference. -->
     <Microsoft.SourceLink.Common.GenerateSourceLinkFile
       SourceRoots="@(SourceRoot)"
-      WarnOnMissingSourceControlInformation="'$(PkgMicrosoft_SourceLink_Common)' != ''"
+      NoWarnOnMissingSourceControlInformation="$(PkgMicrosoft_SourceLink_Common.Equals(''))"
       OutputFile="$(SourceLink)" />
 
     <ItemGroup>
