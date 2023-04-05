@@ -18,6 +18,9 @@ namespace Microsoft.Build.Tasks.SourceControl
         protected const string NotApplicableValue = "N/A";
         private const string ContentUrlMetadataName = "ContentUrl";
 
+        /// <summary>
+        /// Optional, but null is elimated when the task starts executing.
+        /// </summary>
         public ITaskItem? SourceRoot { get; set; }
 
         /// <summary>

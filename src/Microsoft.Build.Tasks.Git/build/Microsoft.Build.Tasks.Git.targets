@@ -17,16 +17,18 @@
     -->
     <GitRepositoryConfigurationScope Condition="'$(GitRepositoryConfigurationScope)' == '' and '$(ContinuousIntegrationBuild)' == 'true'">local</GitRepositoryConfigurationScope>
   </PropertyGroup>
-  
+
   <Target Name="InitializeSourceControlInformationFromSourceControlManager">
     <!--
-      Reports a warning if the given project doesn't belong to a repository under source control.
+      Reports a warning if the given project doesn't belong to a repository under source control,
+      unless the targets were implicily imported from an SDK without a package reference.
     -->
     <Microsoft.Build.Tasks.Git.LocateRepository 
       Path="$(MSBuildProjectDirectory)"
       RemoteName="$(GitRepositoryRemoteName)"
-      ConfigurationScope="$(GitRepositoryConfigurationScope)" >
-      
+      ConfigurationScope="$(GitRepositoryConfigurationScope)"
+      WarnOnMissingRepository="'$(PkgMicrosoft_Build_Tasks_Git)' != ''">
+
       <Output TaskParameter="RepositoryId" PropertyName="_GitRepositoryId" />
       <Output TaskParameter="Url" PropertyName="ScmRepositoryUrl" />
       <Output TaskParameter="Roots" ItemName="SourceRoot" />
@@ -37,7 +39,7 @@
       <RepositoryType Condition="'$(RepositoryType)' == ''">git</RepositoryType>
     </PropertyGroup>
   </Target>
-  
+
   <!--
     Embed files to the PDB that either do not belong to any of the SourceRoot directories
     or belong to the source repository, but are explicitly ignored (excluded) from source control.
@@ -50,7 +52,7 @@
       ConfigurationScope="$(GitRepositoryConfigurationScope)"
       ProjectDirectory="$(MSBuildProjectDirectory)"
       Files="@(Compile)">
-      
+
       <Output TaskParameter="UntrackedFiles" ItemName="EmbeddedFiles" />
     </Microsoft.Build.Tasks.Git.GetUntrackedFiles>
   </Target>

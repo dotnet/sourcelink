@@ -41,7 +41,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git
                 return BuildSourceLinkUrlForEnterpriseEdition(contentUri, relativeBaseUrl, projectName, repositoryName, revisionId, version);
             }
 
-            Log.LogError(CommonResources.ValueOfWithIdentityIsInvalid, Names.SourceRoot.RepositoryUrlFullName, SourceRoot.ItemSpec, gitUri);
+            Log.LogError(CommonResources.ValueOfWithIdentityIsInvalid, Names.SourceRoot.RepositoryUrlFullName, SourceRoot!.ItemSpec, gitUri);
             return null;
         }
 
