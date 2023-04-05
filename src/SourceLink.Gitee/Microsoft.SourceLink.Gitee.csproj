@@ -2,8 +2,8 @@
 <!-- Licensed to the .NET Foundation under one or more agreements. The .NET Foundation licenses this file to you under the MIT license. See the License.txt file in the project root for more information. -->
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net472;netcoreapp3.1;$(CurrentNet)</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(DotNetBuildFromSource)' == 'true' ">$(CurrentNet)</TargetFrameworks>
+    <TargetFrameworks>net472;netcoreapp3.1;$(NetCurrent)</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(DotNetBuildFromSource)' == 'true' ">$(NetCurrent)</TargetFrameworks>
     <AutoGenerateAssemblyVersion>true</AutoGenerateAssemblyVersion>
 
     <!-- Using an explicit nuspec file due to https://github.com/NuGet/Home/issues/6754 -->
