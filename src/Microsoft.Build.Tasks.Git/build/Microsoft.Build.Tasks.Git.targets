@@ -51,7 +51,8 @@
       RepositoryId="$(_GitRepositoryId)"
       ConfigurationScope="$(GitRepositoryConfigurationScope)"
       ProjectDirectory="$(MSBuildProjectDirectory)"
-      Files="@(Compile)">
+      Files="@(Compile)"
+      Condition="'$(_GitRepositoryId)' != ''">
 
       <Output TaskParameter="UntrackedFiles" ItemName="EmbeddedFiles" />
     </Microsoft.Build.Tasks.Git.GetUntrackedFiles>

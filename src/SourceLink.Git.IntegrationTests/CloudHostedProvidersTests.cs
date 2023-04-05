@@ -26,6 +26,8 @@ namespace Microsoft.SourceLink.IntegrationTests
         [ConditionalFact(typeof(DotNetSdkAvailable))]
         public void NoRepository_Warnings()
         {
+            var sourceLinkFilePath = Path.Combine(ProjectObjDir.Path, Configuration, TargetFramework, "test.sourcelink.json");
+
             VerifyValues(
                 customProps: "",
                 customTargets: "",
@@ -36,21 +38,27 @@ namespace Microsoft.SourceLink.IntegrationTests
                 expressions: new[]
                 {
                     "@(SourceRoot)",
+                    "$(SourceLink)",
                 },
                 expectedResults: new[]
                 {
-                    NuGetPackageFolders
+                    NuGetPackageFolders,
+                    "",
                 },
                 expectedWarnings: new[]
                 {
                     string.Format(Build.Tasks.Git.Resources.UnableToLocateRepository, ProjectDir.Path),
                     string.Format(Common.Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty),
                 });
+
+            Assert.False(File.Exists(sourceLinkFilePath));
         }
 
         [ConditionalFact(typeof(DotNetSdkAvailable))]
         public void NoRepository_NoWarnings()
         {
+            var sourceLinkFilePath = Path.Combine(ProjectObjDir.Path, Configuration, TargetFramework, "test.sourcelink.json");
+
             VerifyValues(
                 customProps: """
                 <PropertyGroup>
@@ -66,11 +74,15 @@ namespace Microsoft.SourceLink.IntegrationTests
                 expressions: new[]
                 {
                     "@(SourceRoot)",
+                    "$(SourceLink)",
                 },
                 expectedResults: new[]
                 {
-                    NuGetPackageFolders
+                    NuGetPackageFolders,
+                    "",
                 });
+
+            Assert.False(File.Exists(sourceLinkFilePath));
         }
 
         [ConditionalFact(typeof(DotNetSdkAvailable))]

@@ -60,6 +60,14 @@ namespace Microsoft.Build.Tasks.Git
             return !Log.HasLoggedErrors;
         }
 
+        private void ReportMissingRepositoryWarning(string initialPath)
+        {
+            if (!NoWarnOnMissingRepository)
+            {
+                Log.LogWarning(Resources.UnableToLocateRepository, initialPath);
+            }
+        }
+
         private protected abstract void Execute(GitRepository repository);
 
         protected abstract string? GetRepositoryId();
@@ -103,11 +111,7 @@ namespace Microsoft.Build.Tasks.Git
 
             if (!GitRepository.TryFindRepository(initialPath, out var location))
             {
-                if (!NoWarnOnMissingRepository)
-                {
-                    Log.LogWarning(Resources.UnableToLocateRepository, initialPath);
-                }
-
+                ReportMissingRepositoryWarning(initialPath);
                 return null;
             }
 
@@ -129,11 +133,7 @@ namespace Microsoft.Build.Tasks.Git
 
             if (repository?.WorkingDirectory == null)
             {
-                if (!NoWarnOnMissingRepository)
-                {
-                    Log.LogWarning(Resources.UnableToLocateRepository, initialPath);
-                }
-
+                ReportMissingRepositoryWarning(initialPath);
                 repository = null;
             }
 

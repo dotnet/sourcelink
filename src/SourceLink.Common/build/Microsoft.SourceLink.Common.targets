@@ -7,7 +7,7 @@
 
   <Target Name="_SetSourceLinkFilePath">
     <PropertyGroup>
-      <SourceLink>$(IntermediateOutputPath)$(MSBuildProjectName).sourcelink.json</SourceLink>
+      <_SourceLinkFilePath>$(IntermediateOutputPath)$(MSBuildProjectName).sourcelink.json</_SourceLinkFilePath>
     </PropertyGroup>
   </Target>
 
@@ -48,20 +48,23 @@
   <Target Name="_GenerateSourceLinkFile"
           DependsOnTargets="_SetSourceLinkFilePath;$(_GenerateSourceLinkFileDependsOnTargets);_InitializeSourceRootMappedPathsOpt;$(SourceLinkUrlInitializerTargets)"
           Condition="'$(EnableSourceLink)' == 'true' and '$(DebugType)' != 'none'"
-          Outputs="$(SourceLink)">
+          Outputs="$(_SourceLinkFilePath)">
 
     <!--- Suppress warning if targets are imported from an SDK without a package reference. -->
     <Microsoft.SourceLink.Common.GenerateSourceLinkFile
       SourceRoots="@(SourceRoot)"
       NoWarnOnMissingSourceControlInformation="$(PkgMicrosoft_SourceLink_Common.Equals(''))"
-      OutputFile="$(SourceLink)" />
+      OutputFile="$(_SourceLinkFilePath)">
 
-    <ItemGroup>
-      <FileWrites Include="$(SourceLink)" />
-    </ItemGroup>
+      <!-- Set SourceLink property passed to compilers -->
+      <Output TaskParameter="SourceLink" PropertyName="SourceLink" />
+
+      <!-- Log file write if the content of the file has been updated -->
+      <Output TaskParameter="FileWrite" ItemName="FileWrites" />
+    </Microsoft.SourceLink.Common.GenerateSourceLinkFile>
 
     <!-- C++ Link task currently doesn't recognize SourceLink property -->
-    <ItemGroup Condition="'$(Language)' == 'C++'">
+    <ItemGroup Condition="'$(Language)' == 'C++' and '$(SourceLink)' != ''">
       <Link Update="@(Link)">
         <AdditionalOptions>%(Link.AdditionalOptions) /sourcelink:"$(SourceLink)"</AdditionalOptions>
       </Link>

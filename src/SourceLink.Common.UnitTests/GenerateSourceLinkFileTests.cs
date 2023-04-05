@@ -3,6 +3,7 @@
 // See the License.txt file in the project root for more information.
 using System;
 using System.IO;
+using System.Text;
 using Xunit;
 using TestUtilities;
 using static TestUtilities.KeyValuePairUtils;
@@ -14,23 +15,56 @@ namespace Microsoft.SourceLink.Common.UnitTests
         private static string AdjustSeparatorsInJson(string json)
             => Path.DirectorySeparatorChar == '/' ? json.Replace(@"\\", "/") : json;
 
-        [Fact]
-        public void Empty()
+        [Theory]
+        [CombinatorialData]
+        public void Empty(bool noWarning)
         {
+            var sourceLinkFilePath = Path.Combine(TempRoot.Root, Guid.NewGuid().ToString());
+
             var engine = new MockEngine();
 
             var task = new GenerateSourceLinkFile()
             {
                 BuildEngine = engine,
+                OutputFile = sourceLinkFilePath,
                 SourceRoots = new MockItem[0],
+                NoWarnOnMissingSourceControlInformation = noWarning,
             };
 
-            var content = task.GenerateSourceLinkContent();
+            Assert.True(task.Execute());
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
-                "WARNING : " + string.Format(Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty), engine.Log);
+                noWarning ? "" : "WARNING : " + string.Format(Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty),
+                engine.Log);
 
-            AssertEx.AreEqual(@"{""documents"":{}}", content);
+            Assert.Null(task.SourceLink);
+            Assert.Null(task.FileWrite);
+        }
+
+        [Fact]
+        public void Empty_DeleteExistingFile()
+        {
+            using var tempRoot = new TempRoot();
+
+            var sourceLinkFile = tempRoot.CreateFile();
+            sourceLinkFile.WriteAllText("XYZ");
+
+            var engine = new MockEngine();
+
+            var task = new GenerateSourceLinkFile()
+            {
+                BuildEngine = engine,
+                OutputFile = sourceLinkFile.Path,
+                SourceRoots = new MockItem[0],
+                NoWarnOnMissingSourceControlInformation = true,
+            };
+
+            Assert.True(task.Execute());
+
+            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+
+            Assert.Null(task.SourceLink);
+            Assert.Equal(sourceLinkFile.Path, task.FileWrite);
         }
 
         [Fact]
@@ -145,7 +179,9 @@ namespace Microsoft.SourceLink.Common.UnitTests
         {
             using var temp = new TempRoot();
             var tempFile = temp.CreateFile();
-            
+
+            tempFile.WriteAllText("XYZ");
+
             var engine = new MockEngine();
             var task = new GenerateSourceLinkFile()
             {
@@ -160,6 +196,10 @@ namespace Microsoft.SourceLink.Common.UnitTests
             var result = task.Execute();
 
             var beforeWriteTime = File.GetLastWriteTime(tempFile.Path);
+
+            Assert.Equal(@"{""documents"":{""/_\""_/*"":""https://raw.githubusercontent.com/repo/*""}}", File.ReadAllText(tempFile.Path, Encoding.UTF8));
+            Assert.Equal(tempFile.Path, task.SourceLink);
+            Assert.Equal(tempFile.Path, task.FileWrite);
 
             result = task.Execute();
 
