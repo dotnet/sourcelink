@@ -7,9 +7,19 @@
         <target state="translated">{0} 항목 그룹이 비어 있습니다. SourceLink를 생성하려면 {1} 리포지토리 호스트가 하나 이상 필요합니다.</target>
         <note />
       </trans-unit>
+      <trans-unit id="IgnoringInvalidHostName">
+        <source>Ignoring invalid host name: '{0}' -- expected 'domain[:port]'.</source>
+        <target state="new">Ignoring invalid host name: '{0}' -- expected 'domain[:port]'.</target>
+        <note />
+      </trans-unit>
       <trans-unit id="ItemOfItemGroupMustSpecifyMetadata">
         <source>Item '{0}' of item group '{1}' must specify metadata '{2}'</source>
         <target state="translated">항목 그룹 '{1}'의 '{0}' 항목은 '{2}' 메타데이터를 지정해야 합니다.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="NoWellFormedHostUrisSpecified">
+        <source>No well-formed host URIs specified: {0}.</source>
+        <target state="new">No well-formed host URIs specified: {0}.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnableToDetermineRepositoryUrl">

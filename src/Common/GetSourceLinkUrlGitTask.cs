@@ -18,7 +18,6 @@ namespace Microsoft.Build.Tasks.SourceControl
         protected const string NotApplicableValue = "N/A";
         private const string ContentUrlMetadataName = "ContentUrl";
 
-        [Required, NotNull]
         public ITaskItem? SourceRoot { get; set; }
 
         /// <summary>
@@ -65,6 +64,12 @@ namespace Microsoft.Build.Tasks.SourceControl
 
         private void ExecuteImpl()
         {
+            // Avoid errors when no SourceRoot is specified, _InitializeXyzGitSourceLinkUrl target will simply not update any SourceRoots.
+            if (SourceRoot == null)
+            {
+                return;
+            }
+
             // skip SourceRoot that already has SourceLinkUrl set, or its SourceControl is not "git":
             if (!string.IsNullOrEmpty(SourceRoot.GetMetadata(Names.SourceRoot.SourceLinkUrl)) ||
                 !string.Equals(SourceRoot.GetMetadata(Names.SourceRoot.SourceControl), SourceControlName, StringComparison.OrdinalIgnoreCase))

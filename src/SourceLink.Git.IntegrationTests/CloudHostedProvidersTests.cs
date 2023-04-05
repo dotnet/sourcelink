@@ -3,17 +3,48 @@
 // See the License.txt file in the project root for more information.
 
 using System.IO;
-using Microsoft.SourceLink.Common;
 using TestUtilities;
 using Xunit;
 
 namespace Microsoft.SourceLink.IntegrationTests
 {
-    public class AzureReposAndGitHubTests : DotNetSdkTestBase
+    /// <summary>
+    /// Tests projects with all providers that have cloud-hosted repos.
+    /// These providers are included in the SDK.
+    /// </summary>
+    public class CloudHostedProvidersTests : DotNetSdkTestBase
     {
-        public AzureReposAndGitHubTests() 
-            : base("Microsoft.SourceLink.AzureRepos.Git", "Microsoft.SourceLink.GitHub")
+        public CloudHostedProvidersTests() 
+            : base("Microsoft.SourceLink.AzureRepos.Git",
+                   "Microsoft.SourceLink.GitHub",
+                   "Microsoft.SourceLink.GitLab",
+                   "Microsoft.SourceLink.Bitbucket.Git")
         {
+        }
+
+        [ConditionalFact(typeof(DotNetSdkAvailable))]
+        public void NoRepository()
+        {
+            VerifyValues(
+                customProps: "",
+                customTargets: "",
+                targets: new[]
+                {
+                    "Build"
+                },
+                expressions: new[]
+                {
+                    "@(SourceRoot)",
+                },
+                expectedResults: new[]
+                {
+                    NuGetPackageFolders
+                },
+                expectedWarnings: new[]
+                {
+                    string.Format(Build.Tasks.Git.Resources.UnableToLocateRepository, ProjectDir.Path),
+                    string.Format(Common.Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty),
+                });
         }
 
         [ConditionalFact(typeof(DotNetSdkAvailable))]
@@ -202,7 +233,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expectedWarnings: new[]
                 {
-                    string.Format(Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty)
+                    string.Format(Common.Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty)
                 });
         }
     }

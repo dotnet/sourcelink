@@ -7,9 +7,19 @@
         <target state="translated">Grupa elementów {0} jest pusta. Wymagany jest co najmniej jeden host repozytorium {1} w celu wygenerowania elementu SourceLink.</target>
         <note />
       </trans-unit>
+      <trans-unit id="IgnoringInvalidHostName">
+        <source>Ignoring invalid host name: '{0}' -- expected 'domain[:port]'.</source>
+        <target state="new">Ignoring invalid host name: '{0}' -- expected 'domain[:port]'.</target>
+        <note />
+      </trans-unit>
       <trans-unit id="ItemOfItemGroupMustSpecifyMetadata">
         <source>Item '{0}' of item group '{1}' must specify metadata '{2}'</source>
         <target state="translated">Element „{0}” grupy elementów „{1}” musi określać metadane „{2}”.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="NoWellFormedHostUrisSpecified">
+        <source>No well-formed host URIs specified: {0}.</source>
+        <target state="new">No well-formed host URIs specified: {0}.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnableToDetermineRepositoryUrl">
