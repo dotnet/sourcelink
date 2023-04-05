@@ -27,7 +27,7 @@
       Path="$(MSBuildProjectDirectory)"
       RemoteName="$(GitRepositoryRemoteName)"
       ConfigurationScope="$(GitRepositoryConfigurationScope)"
-      WarnOnMissingRepository="'$(PkgMicrosoft_Build_Tasks_Git)' != ''">
+      NoWarnOnMissingRepository="$(PkgMicrosoft_Build_Tasks_Git.Equals(''))">
 
       <Output TaskParameter="RepositoryId" PropertyName="_GitRepositoryId" />
       <Output TaskParameter="Url" PropertyName="ScmRepositoryUrl" />
