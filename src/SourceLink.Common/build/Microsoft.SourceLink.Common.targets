@@ -49,8 +49,12 @@
           DependsOnTargets="_SetSourceLinkFilePath;$(_GenerateSourceLinkFileDependsOnTargets);_InitializeSourceRootMappedPathsOpt;$(SourceLinkUrlInitializerTargets)"
           Condition="'$(EnableSourceLink)' == 'true' and '$(DebugType)' != 'none'"
           Outputs="$(SourceLink)">
-  
-    <Microsoft.SourceLink.Common.GenerateSourceLinkFile SourceRoots="@(SourceRoot)" OutputFile="$(SourceLink)" />
+
+    <!--- Suppress warning if targets are imported from an SDK without a package reference. -->
+    <Microsoft.SourceLink.Common.GenerateSourceLinkFile
+      SourceRoots="@(SourceRoot)"
+      WarnOnMissingSourceControlInformation="'$(PkgMicrosoft_SourceLink_Common)' != ''"
+      OutputFile="$(SourceLink)" />
 
     <ItemGroup>
       <FileWrites Include="$(SourceLink)" />

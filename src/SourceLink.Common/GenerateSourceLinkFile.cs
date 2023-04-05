@@ -21,6 +21,8 @@ namespace Microsoft.SourceLink.Common
         [Required, NotNull]
         public string? OutputFile { get; set; }
 
+        public bool WarnOnMissingSourceControlInformation { get; set; }
+
         public override bool Execute()
         {
             var content = GenerateSourceLinkContent();
@@ -103,7 +105,7 @@ namespace Microsoft.SourceLink.Common
                 return null;
             }
 
-            if (first)
+            if (first && WarnOnMissingSourceControlInformation)
             {
                 Log.LogWarning(Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty);
             }

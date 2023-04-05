@@ -34,7 +34,7 @@ namespace Microsoft.SourceLink.AzureRepos.Git
         {
             if (!AzureDevOpsUrlParser.TryParseHostedHttp(gitUri.GetHost(), relativeUrl, out var projectPath, out var repositoryName))
             {
-                Log.LogError(CommonResources.ValueOfWithIdentityIsInvalid, Names.SourceRoot.RepositoryUrlFullName, SourceRoot.ItemSpec, gitUri);
+                Log.LogError(CommonResources.ValueOfWithIdentityIsInvalid, Names.SourceRoot.RepositoryUrlFullName, SourceRoot!.ItemSpec, gitUri);
                 return null;
             }
 

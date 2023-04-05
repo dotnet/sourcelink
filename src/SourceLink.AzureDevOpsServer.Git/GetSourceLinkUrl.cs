@@ -26,7 +26,7 @@ namespace Microsoft.SourceLink.AzureDevOpsServer.Git
             var virtualDirectory = hostItem?.GetMetadata(VirtualDirectoryMetadataName) ?? "";
             if (!AzureDevOpsUrlParser.TryParseOnPremHttp(relativeUrl, virtualDirectory, out var projectPath, out var repositoryName))
             {
-                Log.LogError(CommonResources.ValueOfWithIdentityIsInvalid, Names.SourceRoot.RepositoryUrlFullName, SourceRoot.ItemSpec, gitUri);
+                Log.LogError(CommonResources.ValueOfWithIdentityIsInvalid, Names.SourceRoot.RepositoryUrlFullName, SourceRoot!.ItemSpec, gitUri);
                 return null;
             }
 
