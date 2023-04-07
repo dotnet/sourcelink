@@ -5,6 +5,7 @@
 *.suo
 *.user
 .vs/
+.vscode/
 
 # Build results
 artifacts/
