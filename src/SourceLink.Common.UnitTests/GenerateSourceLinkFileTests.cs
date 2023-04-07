@@ -33,9 +33,11 @@ namespace Microsoft.SourceLink.Common.UnitTests
 
             Assert.True(task.Execute());
 
-            AssertEx.AssertEqualToleratingWhitespaceDifferences(
-                noWarning ? "" : "WARNING : " + string.Format(Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty),
-                engine.Log);
+            var expectedOutput = 
+                (noWarning ? "" : "WARNING : " + string.Format(Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty) + Environment.NewLine) +
+                string.Format(Resources.SourceLinkEmptyNoExistingFile, sourceLinkFilePath);
+
+            AssertEx.AssertEqualToleratingWhitespaceDifferences(expectedOutput, engine.Log);
 
             Assert.Null(task.SourceLink);
             Assert.Null(task.FileWrite);
@@ -64,9 +66,11 @@ namespace Microsoft.SourceLink.Common.UnitTests
 
             Assert.True(task.Execute());
 
-            AssertEx.AssertEqualToleratingWhitespaceDifferences(
-                noWarning ? "" : "WARNING : " + string.Format(Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty),
-                engine.Log);
+            var expectedOutput = 
+                (noWarning ? "" : "WARNING : " + string.Format(Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty) + Environment.NewLine) +
+                string.Format(Resources.SourceLinkEmptyNoExistingFile, sourceLinkFilePath);
+
+            AssertEx.AssertEqualToleratingWhitespaceDifferences(expectedOutput, engine.Log);
 
             Assert.Null(task.SourceLink);
             Assert.Null(task.FileWrite);
@@ -92,7 +96,8 @@ namespace Microsoft.SourceLink.Common.UnitTests
 
             Assert.True(task.Execute());
 
-            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            AssertEx.AssertEqualToleratingWhitespaceDifferences(
+                string.Format(Resources.SourceLinkEmptyDeletingExistingFile, sourceLinkFile.Path), engine.Log);
 
             Assert.Null(task.SourceLink);
             Assert.Equal(sourceLinkFile.Path, task.FileWrite);
