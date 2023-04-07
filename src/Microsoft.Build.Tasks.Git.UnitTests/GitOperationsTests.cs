@@ -472,7 +472,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             AssertEx.Equal(new[]
             {
-                @"'C:\src\' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
+                $@"'{_workingDir}{s}' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
             }, items.Select(TestUtilities.InspectSourceRoot));
 
             Assert.Empty(warnings.Select(TestUtilities.InspectDiagnostic));
@@ -491,7 +491,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             AssertEx.Equal(new[]
             {
-                @"'C:\src\' SourceControl='git' RevisionId='0000000000000000000000000000000000000000' ScmRepositoryUrl='http://github.com/abc'",
+                $@"'{_workingDir}{s}' SourceControl='git' RevisionId='0000000000000000000000000000000000000000' ScmRepositoryUrl='http://github.com/abc'",
             }, items.Select(TestUtilities.InspectSourceRoot));
 
             Assert.Empty(warnings.Select(TestUtilities.InspectDiagnostic));
