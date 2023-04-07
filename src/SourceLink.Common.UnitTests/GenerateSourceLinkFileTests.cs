@@ -57,9 +57,9 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 OutputFile = sourceLinkFilePath,
                 SourceRoots = new[]
                 {
-                    new MockItem(@"C:\src1\", KVP("MappedPath", @"C:\src1\")),
-                    new MockItem(@"C:\src2\", KVP("MappedPath", @"C:\src2\"), KVP("RevisionId", "f3dbcdfdd5b1f75613c7692f969d8df121fc3731"), KVP("SourceControl", "git")),
-                    new MockItem(@"C:\src3\", KVP("MappedPath", @"C:\src3\"), KVP("RevisionId", "f3dbcdfdd5b1f75613c7692f969d8df121fc3731"), KVP("SourceControl", "git"), KVP("RepositoryUrl", "")),
+                    new MockItem("/1/", KVP("MappedPath", "/1/")),
+                    new MockItem("/2/", KVP("MappedPath", "/2/"), KVP("RevisionId", "f3dbcdfdd5b1f75613c7692f969d8df121fc3731"), KVP("SourceControl", "git")),
+                    new MockItem("/3/", KVP("MappedPath", "/3/"), KVP("RevisionId", "f3dbcdfdd5b1f75613c7692f969d8df121fc3731"), KVP("SourceControl", "git"), KVP("RepositoryUrl", "")),
                 },
                 NoWarnOnMissingSourceControlInformation = noWarning,
             };
