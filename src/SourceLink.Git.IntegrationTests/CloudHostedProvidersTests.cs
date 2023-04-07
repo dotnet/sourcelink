@@ -4,6 +4,8 @@
 
 using System;
 using System.IO;
+using LibGit2Sharp;
+using Microsoft.Build.Tasks.Git;
 using TestUtilities;
 using Xunit;
 
@@ -47,7 +49,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expectedWarnings: new[]
                 {
-                    string.Format(Build.Tasks.Git.Resources.UnableToLocateRepository, ProjectDir.Path),
+                    string.Format(Resources.UnableToLocateRepository, ProjectDir.Path),
                     string.Format(Common.Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty),
                 });
 
@@ -86,6 +88,127 @@ namespace Microsoft.SourceLink.IntegrationTests
         }
 
         [ConditionalFact(typeof(DotNetSdkAvailable))]
+        public void NoCommit_NoRemote_Warnings()
+        {
+            Repository.Init(workingDirectoryPath: ProjectDir.Path, gitDirectoryPath: Path.Combine(ProjectDir.Path, ".git"));
+
+            VerifyValues(
+                customProps: "",
+                customTargets: "",
+                targets: new[]
+                {
+                    "Build"
+                },
+                expressions: new[]
+                {
+                    "@(SourceRoot)",
+                },
+                expectedResults: new[]
+                {
+                    NuGetPackageFolders
+                },
+                expectedWarnings: new[]
+                {
+                    // Repository has no remote.
+                    string.Format(Resources.RepositoryHasNoRemote, ProjectDir.Path),
+
+                    // Repository doesn't have any commit.
+                    string.Format(Resources.RepositoryHasNoCommit, ProjectDir.Path),
+
+                    // No SourceRoot items specified - the generated source link is empty.
+                    string.Format(Common.Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty),
+                });
+        }
+
+        [ConditionalFact(typeof(DotNetSdkAvailable))]
+        public void NoCommit_NoRemote_NoWarnings()
+        {
+            Repository.Init(workingDirectoryPath: ProjectDir.Path, gitDirectoryPath: Path.Combine(ProjectDir.Path, ".git"));
+
+            VerifyValues(
+                customProps: """
+                <PropertyGroup>
+                  <PkgMicrosoft_Build_Tasks_Git></PkgMicrosoft_Build_Tasks_Git>
+                  <PkgMicrosoft_SourceLink_Common></PkgMicrosoft_SourceLink_Common>
+                </PropertyGroup>
+                """,
+                customTargets: "",
+                targets: new[]
+                {
+                    "Build"
+                },
+                expressions: new[]
+                {
+                    "@(SourceRoot)",
+                    "$(SourceLink)",
+                },
+                expectedResults: new[]
+                {
+                    NuGetPackageFolders,
+                    "",
+                });
+        }
+
+        [ConditionalFact(typeof(DotNetSdkAvailable))]
+        public void Commit_NoRemote_NoWarnings()
+        {
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, originUrl: null);
+
+            VerifyValues(
+                customProps: """
+                <PropertyGroup>
+                  <PkgMicrosoft_Build_Tasks_Git></PkgMicrosoft_Build_Tasks_Git>
+                  <PkgMicrosoft_SourceLink_Common></PkgMicrosoft_SourceLink_Common>
+                </PropertyGroup>
+                """,
+                customTargets: "",
+                targets: new[]
+                {
+                    "Build"
+                },
+                expressions: new[]
+                {
+                    "@(SourceRoot)",
+                    "$(SourceLink)",
+                },
+                expectedResults: new[]
+                {
+                    NuGetPackageFolders,
+                    ProjectSourceRoot,
+                    "",
+                });
+        }
+
+        [ConditionalFact(typeof(DotNetSdkAvailable))]
+        public void NoCommit_Remote_NoWarnings()
+        {
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, commitFileNames: null, originUrl: "https://github.com/org/repo");
+
+            VerifyValues(
+                customProps: """
+                <PropertyGroup>
+                  <PkgMicrosoft_Build_Tasks_Git></PkgMicrosoft_Build_Tasks_Git>
+                  <PkgMicrosoft_SourceLink_Common></PkgMicrosoft_SourceLink_Common>
+                </PropertyGroup>
+                """,
+                customTargets: "",
+                targets: new[]
+                {
+                    "Build"
+                },
+                expressions: new[]
+                {
+                    "@(SourceRoot)",
+                    "$(SourceLink)",
+                },
+                expectedResults: new[]
+                {
+                    NuGetPackageFolders,
+                    "",
+                });
+        }
+
+        [ConditionalFact(typeof(DotNetSdkAvailable))]
         public void CustomTranslation()
         {
             // Test non-ascii characters and escapes in the URL.
@@ -93,7 +216,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             var repoUrl = "ssh://test@vs-ssh.visualstudio.com:22/test-org/_ssh/test-%72epo\u1234%24%2572%2F";
             var repoName = "test-repo\u1234%24%2572%2F";
 
-            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -170,7 +293,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             var repoUrl = $"https://test.{host}/test-org/_git/test-%72epo\u1234%24%2572%2F";
             var repoName = "test-repo\u1234%24%2572%2F";
 
-            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -212,7 +335,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             var repoUrl = $"https://{host}/test/test-org/_git/test-%72epo\u1234%24%2572%2F";
             var repoName = "test-repo\u1234%24%2572%2F";
 
-            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -251,7 +374,7 @@ namespace Microsoft.SourceLink.IntegrationTests
         {
             var repoUrl = $"https://contoso.com/test/test-org/_git/test-repo";
 
-            GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
 
             VerifyValues(
                 customProps: "",

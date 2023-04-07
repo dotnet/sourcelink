@@ -17,39 +17,6 @@ namespace Microsoft.SourceLink.IntegrationTests
         }
 
         [ConditionalFact(typeof(DotNetSdkAvailable))]
-        public void EmptyRepository()
-        {
-            Repository.Init(workingDirectoryPath: ProjectDir.Path, gitDirectoryPath: Path.Combine(ProjectDir.Path, ".git"));
-
-            VerifyValues(
-                customProps:  "",
-                customTargets: "",
-                targets: new[]
-                {
-                    "Build"
-                },
-                expressions: new[] 
-                {
-                    "@(SourceRoot)",
-                },
-                expectedResults: new[]
-                {
-                    NuGetPackageFolders
-                },
-                expectedWarnings: new[]
-                {
-                    // Repository has no remote.
-                    string.Format(Resources.RepositoryHasNoRemote, ProjectDir.Path),
-
-                    // Repository doesn't have any commit.
-                    string.Format(Resources.RepositoryHasNoCommit, ProjectDir.Path),
-
-                    // No SourceRoot items specified - the generated source link is empty.
-                    string.Format(Common.Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty),
-                });
-        }
-
-        [ConditionalFact(typeof(DotNetSdkAvailable))]
         public void MutlipleProjects()
         {
             var projectName2 = "Project2";
@@ -63,7 +30,7 @@ namespace Microsoft.SourceLink.IntegrationTests
 </Project>
 ");
 
-            using var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(
+            using var repo = GitUtilities.CreateGitRepository(
                 RootDir.Path, 
                 new[] { Path.Combine(ProjectName, ProjectFileName), Path.Combine(projectName2, projectFileName2) },
                 "http://github.com/test-org/test-repo1");
@@ -140,7 +107,7 @@ namespace Microsoft.SourceLink.IntegrationTests
         [ConditionalFact(typeof(DotNetSdkAvailable))]
         public void Environment_Enabled()
         {
-            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, "http://github.com/test-org/test-repo1");
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, "http://github.com/test-org/test-repo1");
             var commitSha = repo.Head.Tip.Sha;
 
             PrepareTestEnvironment();
@@ -172,7 +139,7 @@ namespace Microsoft.SourceLink.IntegrationTests
         [ConditionalFact(typeof(DotNetSdkAvailable))]
         public void Environment_Disabled()
         {
-            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, "http://github.com/test-org/test-repo1");
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, "http://github.com/test-org/test-repo1");
             var commitSha = repo.Head.Tip.Sha;
 
             PrepareTestEnvironment();
@@ -213,7 +180,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             var repoUrl = "http://github.com/test-org/test-%72epo\u1234%24%2572%2F";
             var repoName = "test-repo\u1234%24%2572%2F";
 
-            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -269,7 +236,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             var repoUrl = "ssh://github.com/test-org/test-%72epo\u1234%24%2572%2F";
             var repoName = "test-repo\u1234%24%2572%2F";
 
-            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(

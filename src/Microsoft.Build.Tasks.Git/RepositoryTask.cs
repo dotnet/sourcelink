@@ -30,9 +30,9 @@ namespace Microsoft.Build.Tasks.Git
 #endif
 
         /// <summary>
-        /// True to report a warning when the repository can't be located.
+        /// True to report a warning when the repository can't be located, it's missing remote or a commit.
         /// </summary>
-        public bool NoWarnOnMissingRepository { get; set; }
+        public bool NoWarnOnMissingInfo { get; set; }
 
         public sealed override bool Execute()
         {
@@ -62,7 +62,7 @@ namespace Microsoft.Build.Tasks.Git
 
         private void ReportMissingRepositoryWarning(string initialPath)
         {
-            if (!NoWarnOnMissingRepository)
+            if (!NoWarnOnMissingInfo)
             {
                 Log.LogWarning(Resources.UnableToLocateRepository, initialPath);
             }

@@ -124,6 +124,8 @@ namespace Microsoft.SourceLink.Common
                 {
                     if (content == null)
                     {
+                        Log.LogMessage(Resources.SourceLinkEmptyDeletingExistingFile, OutputFile);
+
                         File.Delete(OutputFile);
                         FileWrite = OutputFile;
                         return;
@@ -133,6 +135,8 @@ namespace Microsoft.SourceLink.Common
                     if (originalContent == content)
                     {
                         // Don't rewrite the file if the contents is the same, just pass it to the compiler.
+                        Log.LogMessage(Resources.SourceLinkFileUpToDate, OutputFile);
+
                         SourceLink = OutputFile;
                         return;
                     }
@@ -141,9 +145,11 @@ namespace Microsoft.SourceLink.Common
                 {
                     // File doesn't exist and the output is empty:
                     // Do not write the file and don't pass it to the compiler.
+                    Log.LogMessage(Resources.SourceLinkEmptyNoExistingFile, OutputFile);
                     return;
                 }
 
+                Log.LogMessage(Resources.SourceLinkFileUpdated, OutputFile);
                 File.WriteAllText(OutputFile, content);
                 FileWrite = SourceLink = OutputFile;
             }

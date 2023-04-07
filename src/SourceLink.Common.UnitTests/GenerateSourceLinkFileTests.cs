@@ -33,9 +33,44 @@ namespace Microsoft.SourceLink.Common.UnitTests
 
             Assert.True(task.Execute());
 
-            AssertEx.AssertEqualToleratingWhitespaceDifferences(
-                noWarning ? "" : "WARNING : " + string.Format(Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty),
-                engine.Log);
+            var expectedOutput = 
+                (noWarning ? "" : "WARNING : " + string.Format(Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty) + Environment.NewLine) +
+                string.Format(Resources.SourceLinkEmptyNoExistingFile, sourceLinkFilePath);
+
+            AssertEx.AssertEqualToleratingWhitespaceDifferences(expectedOutput, engine.Log);
+
+            Assert.Null(task.SourceLink);
+            Assert.Null(task.FileWrite);
+        }
+
+        [Theory]
+        [CombinatorialData]
+        public void NoRepositoryUrl(bool noWarning)
+        {
+            var sourceLinkFilePath = Path.Combine(TempRoot.Root, Guid.NewGuid().ToString());
+
+            var engine = new MockEngine();
+
+            var task = new GenerateSourceLinkFile()
+            {
+                BuildEngine = engine,
+                OutputFile = sourceLinkFilePath,
+                SourceRoots = new[]
+                {
+                    new MockItem("/1/", KVP("MappedPath", "/1/")),
+                    new MockItem("/2/", KVP("MappedPath", "/2/"), KVP("RevisionId", "f3dbcdfdd5b1f75613c7692f969d8df121fc3731"), KVP("SourceControl", "git")),
+                    new MockItem("/3/", KVP("MappedPath", "/3/"), KVP("RevisionId", "f3dbcdfdd5b1f75613c7692f969d8df121fc3731"), KVP("SourceControl", "git"), KVP("RepositoryUrl", "")),
+                },
+                NoWarnOnMissingSourceControlInformation = noWarning,
+            };
+
+            Assert.True(task.Execute());
+
+            var expectedOutput = 
+                (noWarning ? "" : "WARNING : " + string.Format(Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty) + Environment.NewLine) +
+                string.Format(Resources.SourceLinkEmptyNoExistingFile, sourceLinkFilePath);
+
+            AssertEx.AssertEqualToleratingWhitespaceDifferences(expectedOutput, engine.Log);
 
             Assert.Null(task.SourceLink);
             Assert.Null(task.FileWrite);
@@ -61,7 +96,8 @@ namespace Microsoft.SourceLink.Common.UnitTests
 
             Assert.True(task.Execute());
 
-            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            AssertEx.AssertEqualToleratingWhitespaceDifferences(
+                string.Format(Resources.SourceLinkEmptyDeletingExistingFile, sourceLinkFile.Path), engine.Log);
 
             Assert.Null(task.SourceLink);
             Assert.Equal(sourceLinkFile.Path, task.FileWrite);

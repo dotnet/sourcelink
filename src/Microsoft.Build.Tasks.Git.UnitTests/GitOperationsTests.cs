@@ -448,16 +448,53 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             Assert.Equal("A.com", actualMappedUrl);
         }
 
-        [Fact]
-        public void GetSourceRoots_RepoWithoutCommits()
+        [Theory]
+        [CombinatorialData]
+        public void GetSourceRoots_RepoWithoutCommits(bool warnOnMissingCommit)
         {
             var repo = CreateRepository();
 
             var warnings = new List<(string, object?[])>();
-            var items = GitOperations.GetSourceRoots(repo, remoteName: null, (message, args) => warnings.Add((message, args)));
+            var items = GitOperations.GetSourceRoots(repo, remoteName: null, warnOnMissingCommit, (message, args) => warnings.Add((message, args)));
 
             Assert.Empty(items);
-            AssertEx.Equal(new[] { Resources.RepositoryHasNoCommit }, warnings.Select(TestUtilities.InspectDiagnostic));
+            AssertEx.Equal(warnOnMissingCommit ? new[] { Resources.RepositoryHasNoCommit } : Array.Empty<string>(), warnings.Select(TestUtilities.InspectDiagnostic));
+        }
+
+        [Fact]
+        public void GetSourceRoots_RepoWithCommits_WithoutUrl()
+        {
+            var repo = CreateRepository(
+                commitSha: "0000000000000000000000000000000000000000");
+
+            var warnings = new List<(string, object?[])>();
+            var items = GitOperations.GetSourceRoots(repo, remoteName: null, warnOnMissingCommit: true, (message, args) => warnings.Add((message, args)));
+
+            AssertEx.Equal(new[]
+            {
+                $@"'{_workingDir}{s}' SourceControl='git' RevisionId='0000000000000000000000000000000000000000'",
+            }, items.Select(TestUtilities.InspectSourceRoot));
+
+            Assert.Empty(warnings.Select(TestUtilities.InspectDiagnostic));
+        }
+
+        [Fact]
+        public void GetSourceRoots_RepoWithCommits_WithUrl()
+        {
+            var repo = CreateRepository(
+                commitSha: "0000000000000000000000000000000000000000",
+                config: CreateConfig(
+                    ("remote.origin.url", "http://github.com/abc")));
+
+            var warnings = new List<(string, object?[])>();
+            var items = GitOperations.GetSourceRoots(repo, remoteName: null, warnOnMissingCommit: true, (message, args) => warnings.Add((message, args)));
+
+            AssertEx.Equal(new[]
+            {
+                $@"'{_workingDir}{s}' SourceControl='git' RevisionId='0000000000000000000000000000000000000000' ScmRepositoryUrl='http://github.com/abc'",
+            }, items.Select(TestUtilities.InspectSourceRoot));
+
+            Assert.Empty(warnings.Select(TestUtilities.InspectDiagnostic));
         }
 
         [Fact]
@@ -480,7 +517,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     CreateSubmodule("sub6", "sub/6", "", "6666666666666666666666666666666666666666")));
 
             var warnings = new List<(string, object?[])>();
-            var items = GitOperations.GetSourceRoots(repo, remoteName: null, (message, args) => warnings.Add((message, args)));
+            var items = GitOperations.GetSourceRoots(repo, remoteName: null, warnOnMissingCommit: false, (message, args) => warnings.Add((message, args)));
 
             // Module without a configuration entry is not initialized.
             // URLs listed in .submodules are ignored (they are used by git submodule initialize to generate URLs stored in config).
@@ -493,9 +530,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             AssertEx.Equal(new[]
             {
-                Resources.RepositoryHasNoCommit,
                 string.Format(Resources.SourceCodeWontBeAvailableViaSourceLink, string.Format(Resources.InvalidSubmoduleUrl, "sub4", "https:///"))
-            }, warnings.Select(TestUtilities.InspectDiagnostic)); ;
+            }, warnings.Select(TestUtilities.InspectDiagnostic));
         }
 
         [Fact]
@@ -511,7 +547,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     CreateSubmodule("2", "sub/2", "http://2.com", "2222222222222222222222222222222222222222")));
 
             var warnings = new List<(string, object?[])>();
-            var items = GitOperations.GetSourceRoots(repo, remoteName: null, (message, args) => warnings.Add((message, args)));
+            var items = GitOperations.GetSourceRoots(repo, remoteName: null, warnOnMissingCommit: false, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
             {
@@ -547,7 +583,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     CreateSubmodule("1", "sub/1", "---", "1111111111111111111111111111111111111111", containingRepositoryWorkingDir: repoDir.Path)));
 
             var warnings = new List<(string, object?[])>();
-            var items = GitOperations.GetSourceRoots(repo, remoteName: null, (message, args) => warnings.Add((message, args)));
+            var items = GitOperations.GetSourceRoots(repo, remoteName: null, warnOnMissingCommit: false, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
             {

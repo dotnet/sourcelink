@@ -32,6 +32,26 @@
         <target state="translated">Informacje o kontroli źródła są niedostępne — wygenerowany link do źródła jest pusty.</target>
         <note />
       </trans-unit>
+      <trans-unit id="SourceLinkEmptyDeletingExistingFile">
+        <source>Source Link is empty, deleting existing file: '{0}'.</source>
+        <target state="new">Source Link is empty, deleting existing file: '{0}'.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="SourceLinkEmptyNoExistingFile">
+        <source>Source Link is empty, file '{0}' does not exist.</source>
+        <target state="new">Source Link is empty, file '{0}' does not exist.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="SourceLinkFileUpToDate">
+        <source>Source Link file '{0}' is up-to-date.</source>
+        <target state="new">Source Link file '{0}' is up-to-date.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="SourceLinkFileUpdated">
+        <source>Updating Source Link file '{0}'.</source>
+        <target state="new">Updating Source Link file '{0}'.</target>
+        <note />
+      </trans-unit>
     </body>
   </file>
 </xliff>

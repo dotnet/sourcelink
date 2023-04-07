@@ -24,7 +24,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             var repoUrl = $"ssh://git@噸.com/test-%72epo\u1234%24%2572%2F.git";
             var repoName = "test-repo\u1234%24%2572%2F.git";
 
-            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -78,7 +78,7 @@ namespace Microsoft.SourceLink.IntegrationTests
         public void Issues_error_on_git_url()
         {
             var repoUrl = "git://噸.com/invalid_url_protocol.git";
-            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -105,7 +105,7 @@ namespace Microsoft.SourceLink.IntegrationTests
         public void Issues_error_on_https_url()
         {
             var repoUrl = "https://噸.com/invalid_url_protocol.git";
-            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
