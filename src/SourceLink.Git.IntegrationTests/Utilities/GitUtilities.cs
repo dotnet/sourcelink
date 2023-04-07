@@ -12,18 +12,25 @@ namespace Microsoft.SourceLink.IntegrationTests
     {
         private static readonly Signature s_signature = new Signature("test", "test@test.com", DateTimeOffset.Now);
 
-        public static Repository CreateGitRepositoryWithSingleCommit(string directory, string[] commitFileNames, string originUrl)
+        public static Repository CreateGitRepository(string directory, string[]? commitFileNames, string? originUrl)
         {
             var repository = new Repository(Repository.Init(workingDirectoryPath: directory, gitDirectoryPath: Path.Combine(directory, ".git")));
-            repository.Network.Remotes.Add("origin", originUrl);
 
-            foreach (var fileName in commitFileNames)
+            if (originUrl != null)
             {
-                repository.Index.Add(fileName);
+                repository.Network.Remotes.Add("origin", originUrl);
             }
 
-            repository.Index.Write();
-            repository.Commit("First commit", s_signature, s_signature);
+            if (commitFileNames != null)
+            {
+                foreach (var fileName in commitFileNames)
+                {
+                    repository.Index.Add(fileName);
+                }
+
+                repository.Index.Write();
+                repository.Commit("First commit", s_signature, s_signature);
+            }
 
             return repository;
         }

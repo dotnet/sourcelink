@@ -25,14 +25,14 @@ namespace Microsoft.Build.Tasks.Git
         private const string UrlSectionName = "url";
         private const string UrlVariableName = "url";
 
-        public static string? GetRepositoryUrl(GitRepository repository, string? remoteName, Action<string, object?[]>? logWarning = null)
-            => GetRepositoryUrl(repository, remoteName, recursionDepth: 0, logWarning);
+        public static string? GetRepositoryUrl(GitRepository repository, string? remoteName, bool warnOnMissingRemote = true, Action<string, object?[]>? logWarning = null)
+            => GetRepositoryUrl(repository, remoteName, recursionDepth: 0, warnOnMissingRemote, logWarning);
 
-        private static string? GetRepositoryUrl(GitRepository repository, string? remoteName, int recursionDepth, Action<string, object?[]>? logWarning = null)
+        private static string? GetRepositoryUrl(GitRepository repository, string? remoteName, int recursionDepth, bool warnOnMissingRemote, Action<string, object?[]>? logWarning)
         {
             NullableDebug.Assert(repository.WorkingDirectory != null);
             
-            var remoteUrl = GetRemoteUrl(repository, ref remoteName, logWarning);
+            var remoteUrl = GetRemoteUrl(repository, ref remoteName, warnOnMissingRemote, logWarning);
             if (remoteUrl == null)
             {
                 return null;
@@ -45,10 +45,10 @@ namespace Microsoft.Build.Tasks.Git
                 return null;
             }
 
-            return ResolveUrl(uri, repository.Environment, remoteName, recursionDepth, logWarning);
+            return ResolveUrl(uri, repository.Environment, remoteName, recursionDepth, warnOnMissingRemote, logWarning);
         }
 
-        private static string? GetRemoteUrl(GitRepository repository, ref string? remoteName, Action<string, object?[]>? logWarning)
+        private static string? GetRemoteUrl(GitRepository repository, ref string? remoteName, bool warnOnMissingRemote, Action<string, object?[]>? logWarning)
         {
             string? unknownRemoteName = null;
             string? remoteUrl = null;
@@ -63,7 +63,11 @@ namespace Microsoft.Build.Tasks.Git
 
             if (remoteUrl == null && !TryGetRemote(repository.Config, out remoteName, out remoteUrl))
             {
-                logWarning?.Invoke(Resources.RepositoryHasNoRemote, new[] { repository.WorkingDirectory });
+                if (warnOnMissingRemote)
+                {
+                    logWarning?.Invoke(Resources.RepositoryHasNoRemote, new[] { repository.WorkingDirectory });
+                }
+
                 return null;
             }
 
@@ -75,7 +79,7 @@ namespace Microsoft.Build.Tasks.Git
             return remoteUrl;
         }
 
-        private static string? ResolveUrl(Uri uri, GitEnvironment environment, string? remoteName, int recursionDepth, Action<string, object?[]>? logWarning)
+        private static string? ResolveUrl(Uri uri, GitEnvironment environment, string? remoteName, int recursionDepth, bool warnOnMissingRemote, Action<string, object?[]>? logWarning)
         {
             if (!uri.IsFile)
             {
@@ -85,7 +89,11 @@ namespace Microsoft.Build.Tasks.Git
             var repositoryPath = uri.LocalPath;
             if (!GitRepository.TryGetRepositoryLocation(repositoryPath, out var remoteRepositoryLocation))
             {
-                logWarning?.Invoke(Resources.RepositoryHasNoRemote, new[] { repositoryPath });
+                if (warnOnMissingRemote)
+                {
+                    logWarning?.Invoke(Resources.RepositoryHasNoRemote, new[] { repositoryPath });
+                }
+
                 return uri.AbsoluteUri;
             }
 
@@ -102,7 +110,7 @@ namespace Microsoft.Build.Tasks.Git
                 return null;
             }
 
-            return GetRepositoryUrl(remoteRepository, remoteName, recursionDepth + 1, logWarning) ?? uri.AbsoluteUri;
+            return GetRepositoryUrl(remoteRepository, remoteName, recursionDepth + 1, warnOnMissingRemote, logWarning) ?? uri.AbsoluteUri;
         }
 
         private static bool TryGetRemote(GitConfig config, [NotNullWhen(true)]out string? remoteName, [NotNullWhen(true)]out string? remoteUrl)
@@ -239,7 +247,7 @@ namespace Microsoft.Build.Tasks.Git
             return Uri.TryCreate(url, UriKind.Absolute, out uri);
         }
 
-        public static ITaskItem[] GetSourceRoots(GitRepository repository, string? remoteName, Action<string, object?[]> logWarning)
+        public static ITaskItem[] GetSourceRoots(GitRepository repository, string? remoteName, bool warnOnMissingCommit, Action<string, object?[]> logWarning)
         {
             // Not supported for repositories without a working directory.
             NullableDebug.Assert(repository.WorkingDirectory != null);
@@ -262,7 +270,7 @@ namespace Microsoft.Build.Tasks.Git
                 item.SetMetadata(Names.SourceRoot.RevisionId, revisionId);
                 result.Add(item);
             }
-            else
+            else if (warnOnMissingCommit)
             {
                 logWarning(Resources.RepositoryHasNoCommit, Array.Empty<object>());
             }
@@ -298,7 +306,7 @@ namespace Microsoft.Build.Tasks.Git
                     continue;
                 }
 
-                var submoduleUrl = ResolveUrl(submoduleUri, repository.Environment, remoteName, recursionDepth: 0, logWarning);
+                var submoduleUrl = ResolveUrl(submoduleUri, repository.Environment, remoteName, recursionDepth: 0, warnOnMissingRemote: true, logWarning);
                 if (submoduleUrl == null)
                 {
                     logWarning(Resources.SourceCodeWontBeAvailableViaSourceLink,

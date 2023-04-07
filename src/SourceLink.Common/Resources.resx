@@ -129,6 +129,18 @@
   <data name="SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty" xml:space="preserve">
     <value>Source control information is not available - the generated source link is empty.</value>
   </data>
+  <data name="SourceLinkEmptyDeletingExistingFile" xml:space="preserve">
+    <value>Source Link is empty, deleting existing file: '{0}'.</value>
+  </data>
+  <data name="SourceLinkEmptyNoExistingFile" xml:space="preserve">
+    <value>Source Link is empty, file '{0}' does not exist.</value>
+  </data>
+  <data name="SourceLinkFileUpToDate" xml:space="preserve">
+    <value>Source Link file '{0}' is up-to-date.</value>
+  </data>
+  <data name="SourceLinkFileUpdated" xml:space="preserve">
+    <value>Updating Source Link file '{0}'.</value>
+  </data>
   <data name="IsEmpty" xml:space="preserve">
     <value>{0} is empty: '{1}'</value>
   </data>

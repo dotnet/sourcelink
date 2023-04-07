@@ -85,7 +85,15 @@ namespace Microsoft.Build.Tasks.SourceControl
             if (string.IsNullOrEmpty(gitUrl))
             {
                 SourceLinkUrl = NotApplicableValue;
-                Log.LogWarning(CommonResources.UnableToDetermineRepositoryUrl);
+
+                // If SourceRoot has commit sha but not repository URL the source control info is available,
+                // but the remote for the repo has not been defined yet. We already reported missing remote in that case
+                // (unless suppressed).
+                if (string.IsNullOrEmpty(SourceRoot.GetMetadata(Names.SourceRoot.RevisionId)))
+                {
+                    Log.LogWarning(CommonResources.UnableToDetermineRepositoryUrl);
+                }
+
                 return;
             }
 

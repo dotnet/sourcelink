@@ -22,7 +22,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             var repoUrl = "https://test-user@bitbucket.org/test-org/test-%72epo\u1234%24%2572%2F";
             var repoName = "test-repo\u1234%24%2572%2F";
 
-            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -76,7 +76,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             var repoUrl = "https://bitbucket.domain.com/scm/test-org/test-%72epo\u1234%24%2572%2F";
             var repoName = "test-repo\u1234%24%2572%2F";
 
-            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] {ProjectFileName},
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] {ProjectFileName},
                 repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
@@ -133,7 +133,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             var repoUrl = "https://user_name%40domain.com:Bitbucket_personaltoken@bitbucket.domain.com/scm/test-org/project1.git";
             var repoName = "project1";
 
-            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName },
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName },
                 repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
@@ -192,7 +192,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             var repoUrl = "https://bitbucket.domain.com/scm/test-org/test-%72epo\u1234%24%2572%2F";
             var repoName = "test-repo\u1234%24%2572%2F";
 
-            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName },
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName },
                 repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
@@ -251,7 +251,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             var repoUrl = "https://bitbucket.domain.com/scm/test-org/test-%72epo\u1234%24%2572%2F";
             var repoName = "test-repo\u1234%24%2572%2F";
 
-            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -309,7 +309,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             var repoUrl = "test-user@噸.com:test-org/test-%72epo\u1234%24%2572%2F";
             var repoName = "test-repo\u1234%24%2572%2F";
 
-            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -367,7 +367,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             var repoUrl = "test-user@噸.com:test-org/test-%72epo\u1234%24%2572%2F";
             var repoName = "test-repo\u1234%24%2572%2F";
 
-            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -425,7 +425,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             var repoUrl = "test-user@噸.com:test-org/test-%72epo\u1234%24%2572%2F";
             var repoName = "test-repo\u1234%24%2572%2F";
 
-            var repo = GitUtilities.CreateGitRepositoryWithSingleCommit(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
