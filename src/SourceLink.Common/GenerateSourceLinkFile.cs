@@ -22,12 +22,6 @@ namespace Microsoft.SourceLink.Common
         public string? OutputFile { get; set; }
 
         /// <summary>
-        /// Set to <see cref="OutputFile"/> if the output file was written to, null otherwise.
-        /// </summary>
-        [Output]
-        public string? FileWrite { get; set; }
-
-        /// <summary>
         /// Set to <see cref="OutputFile"/> if the output Source Link file should be passed to the compiler.
         /// </summary>
         [Output]
@@ -60,14 +54,14 @@ namespace Microsoft.SourceLink.Common
 
                 if (!localPath.EndsWithSeparator())
                 {
-                    Log.LogError(Resources.MustEndWithDirectorySeparator, (isMapped ? Names.SourceRoot.MappedPathFullName : Names.SourceRoot.Name), localPath);
+                    Log.LogError(Resources.MustEndWithDirectorySeparator, isMapped ? Names.SourceRoot.MappedPathFullName : Names.SourceRoot.Name, localPath);
                     success = false;
                     continue;
                 }
 
                 if (localPath.Contains('*'))
                 {
-                    Log.LogError(Resources.MustNotContainWildcard, (isMapped ? Names.SourceRoot.MappedPathFullName : Names.SourceRoot.Name), localPath);
+                    Log.LogError(Resources.MustNotContainWildcard, isMapped ? Names.SourceRoot.MappedPathFullName : Names.SourceRoot.Name, localPath);
                     success = false;
                     continue;
                 }
@@ -127,7 +121,6 @@ namespace Microsoft.SourceLink.Common
                         Log.LogMessage(Resources.SourceLinkEmptyDeletingExistingFile, OutputFile);
 
                         File.Delete(OutputFile);
-                        FileWrite = OutputFile;
                         return;
                     }
 
@@ -151,14 +144,11 @@ namespace Microsoft.SourceLink.Common
 
                 Log.LogMessage(Resources.SourceLinkFileUpdated, OutputFile);
                 File.WriteAllText(OutputFile, content);
-                FileWrite = SourceLink = OutputFile;
+                SourceLink = OutputFile;
             }
             catch (Exception e)
             {
                 Log.LogError(Resources.ErrorWritingToSourceLinkFile, OutputFile, e.Message);
-
-                // Part of the file might have been written.
-                FileWrite = OutputFile;
             }
         }
     }

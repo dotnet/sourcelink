@@ -131,6 +131,11 @@ namespace Microsoft.SourceLink.IntegrationTests
                   <PkgMicrosoft_Build_Tasks_Git></PkgMicrosoft_Build_Tasks_Git>
                   <PkgMicrosoft_SourceLink_Common></PkgMicrosoft_SourceLink_Common>
                 </PropertyGroup>
+                <Target Name="_CaptureFileWrites" DependsOnTargets="GenerateSourceLinkFile" BeforeTargets="AfterBuild">
+                  <ItemGroup>
+                    <_SourceLinkFileWrites Include="@(FileWrites)" Condition="$([MSBuild]::ValueOrDefault('%(Identity)', '').EndsWith('sourcelink.json'))"/>
+                  </ItemGroup>
+                </Target>
                 """,
                 customTargets: "",
                 targets: new[]
@@ -141,10 +146,12 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     "@(SourceRoot)",
                     "$(SourceLink)",
+                    "@(_SourceLinkFileWrites)",
                 },
                 expectedResults: new[]
                 {
                     NuGetPackageFolders,
+                    "",
                     "",
                 });
         }
@@ -160,6 +167,11 @@ namespace Microsoft.SourceLink.IntegrationTests
                   <PkgMicrosoft_Build_Tasks_Git></PkgMicrosoft_Build_Tasks_Git>
                   <PkgMicrosoft_SourceLink_Common></PkgMicrosoft_SourceLink_Common>
                 </PropertyGroup>
+                <Target Name="_CaptureFileWrites" DependsOnTargets="GenerateSourceLinkFile" BeforeTargets="AfterBuild">
+                  <ItemGroup>
+                    <_SourceLinkFileWrites Include="@(FileWrites)" Condition="$([MSBuild]::ValueOrDefault('%(Identity)', '').EndsWith('sourcelink.json'))"/>
+                  </ItemGroup>
+                </Target>
                 """,
                 customTargets: "",
                 targets: new[]
@@ -170,11 +182,13 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     "@(SourceRoot)",
                     "$(SourceLink)",
+                    "@(_SourceLinkFileWrites)",
                 },
                 expectedResults: new[]
                 {
                     NuGetPackageFolders,
                     ProjectSourceRoot,
+                    "",
                     "",
                 });
         }
@@ -190,6 +204,11 @@ namespace Microsoft.SourceLink.IntegrationTests
                   <PkgMicrosoft_Build_Tasks_Git></PkgMicrosoft_Build_Tasks_Git>
                   <PkgMicrosoft_SourceLink_Common></PkgMicrosoft_SourceLink_Common>
                 </PropertyGroup>
+                <Target Name="_CaptureFileWrites" DependsOnTargets="GenerateSourceLinkFile" BeforeTargets="AfterBuild">
+                  <ItemGroup>
+                    <_SourceLinkFileWrites Include="@(FileWrites)" Condition="$([MSBuild]::ValueOrDefault('%(Identity)', '').EndsWith('sourcelink.json'))"/>
+                  </ItemGroup>
+                </Target>
                 """,
                 customTargets: "",
                 targets: new[]
@@ -200,10 +219,12 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     "@(SourceRoot)",
                     "$(SourceLink)",
+                    "@(_SourceLinkFileWrites)",
                 },
                 expectedResults: new[]
                 {
                     NuGetPackageFolders,
+                    "",
                     "",
                 });
         }
@@ -230,21 +251,27 @@ namespace Microsoft.SourceLink.IntegrationTests
         DependsOnTargets=""$(SourceControlManagerUrlTranslationTargets)""
         BeforeTargets=""SourceControlManagerPublishTranslatedUrls"">
 
-    <PropertyGroup>
-      <_Pattern>https://([^.]+)[.]visualstudio.com/([^/]+)/_git/([^/]+)</_Pattern>
-      <_Replacement>https://github.com/$2/$3</_Replacement>
-    </PropertyGroup>
+  <PropertyGroup>
+    <_Pattern>https://([^.]+)[.]visualstudio.com/([^/]+)/_git/([^/]+)</_Pattern>
+    <_Replacement>https://github.com/$2/$3</_Replacement>
+  </PropertyGroup>
 
-    <PropertyGroup>
-      <ScmRepositoryUrl>$([System.Text.RegularExpressions.Regex]::Replace($(ScmRepositoryUrl), $(_Pattern), $(_Replacement)))</ScmRepositoryUrl>
-    </PropertyGroup>
+  <PropertyGroup>
+    <ScmRepositoryUrl>$([System.Text.RegularExpressions.Regex]::Replace($(ScmRepositoryUrl), $(_Pattern), $(_Replacement)))</ScmRepositoryUrl>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <SourceRoot Update=""@(SourceRoot)"">
-        <ScmRepositoryUrl>$([System.Text.RegularExpressions.Regex]::Replace(%(SourceRoot.ScmRepositoryUrl), $(_Pattern), $(_Replacement)))</ScmRepositoryUrl>
-      </SourceRoot>
-    </ItemGroup>
-  </Target>
+  <ItemGroup>
+    <SourceRoot Update=""@(SourceRoot)"">
+      <ScmRepositoryUrl>$([System.Text.RegularExpressions.Regex]::Replace(%(SourceRoot.ScmRepositoryUrl), $(_Pattern), $(_Replacement)))</ScmRepositoryUrl>
+    </SourceRoot>
+  </ItemGroup>
+</Target>
+
+<Target Name=""_CaptureFileWrites"" DependsOnTargets=""GenerateSourceLinkFile"" BeforeTargets=""AfterBuild"">
+  <ItemGroup>
+    <_SourceLinkFileWrites Include=""@(FileWrites)"" Condition=""$([MSBuild]::ValueOrDefault('%(Identity)', '').EndsWith('sourcelink.json'))""/>
+  </ItemGroup>
+</Target>
 ",
                 targets: new[]
                 {
@@ -256,7 +283,8 @@ namespace Microsoft.SourceLink.IntegrationTests
                     "@(SourceRoot->'%(SourceLinkUrl)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
-                    "$(RepositoryUrl)"
+                    "$(RepositoryUrl)",
+                    "@(_SourceLinkFileWrites)",
                 },
                 expectedResults: new[]
                 {
@@ -266,6 +294,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     s_relativeSourceLinkJsonPath,
                     $"https://github.com/test-org/{repoName}",
                     $"https://github.com/test-org/{repoName}",
+                    s_relativeSourceLinkJsonPath
                 });
 
             AssertEx.AreEqual(
