@@ -58,10 +58,15 @@
 
       <!-- Set SourceLink property passed to compilers -->
       <Output TaskParameter="SourceLink" PropertyName="SourceLink" />
-
-      <!-- Log file write if the content of the file has been updated -->
-      <Output TaskParameter="FileWrite" ItemName="FileWrites" />
     </Microsoft.SourceLink.Common.GenerateSourceLinkFile>
+
+    <!--
+      Include the output file whenever it exists, even if it hasn't been written to (it was up-to-date).
+      This is needed so that incremental clean doesn't delete the file.
+    -->
+    <ItemGroup Condition="'$(SourceLink)' != ''">
+      <FileWrites Include="$(SourceLink)" />
+    </ItemGroup>
 
     <!-- C++ Link task currently doesn't recognize SourceLink property -->
     <ItemGroup Condition="'$(Language)' == 'C++' and '$(SourceLink)' != ''">

@@ -40,7 +40,6 @@ namespace Microsoft.SourceLink.Common.UnitTests
             AssertEx.AssertEqualToleratingWhitespaceDifferences(expectedOutput, engine.Log);
 
             Assert.Null(task.SourceLink);
-            Assert.Null(task.FileWrite);
         }
 
         [Theory]
@@ -73,7 +72,6 @@ namespace Microsoft.SourceLink.Common.UnitTests
             AssertEx.AssertEqualToleratingWhitespaceDifferences(expectedOutput, engine.Log);
 
             Assert.Null(task.SourceLink);
-            Assert.Null(task.FileWrite);
         }
 
         [Fact]
@@ -100,7 +98,6 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 string.Format(Resources.SourceLinkEmptyDeletingExistingFile, sourceLinkFile.Path), engine.Log);
 
             Assert.Null(task.SourceLink);
-            Assert.Equal(sourceLinkFile.Path, task.FileWrite);
         }
 
         [Fact]
@@ -235,7 +232,6 @@ namespace Microsoft.SourceLink.Common.UnitTests
 
             Assert.Equal(@"{""documents"":{""/_\""_/*"":""https://raw.githubusercontent.com/repo/*""}}", File.ReadAllText(tempFile.Path, Encoding.UTF8));
             Assert.Equal(tempFile.Path, task.SourceLink);
-            Assert.Equal(tempFile.Path, task.FileWrite);
 
             result = task.Execute();
 
