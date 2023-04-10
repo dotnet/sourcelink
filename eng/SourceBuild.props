@@ -5,6 +5,7 @@
   <PropertyGroup>
     <GitHubRepositoryName>sourcelink</GitHubRepositoryName>
     <SourceBuildManagedOnly>true</SourceBuildManagedOnly>
+    <SourceBuildTrimNetFrameworkTargets>true</SourceBuildTrimNetFrameworkTargets>
   </PropertyGroup>
 
   <Target Name="GetRepoSourceBuildCommandConfiguration"
