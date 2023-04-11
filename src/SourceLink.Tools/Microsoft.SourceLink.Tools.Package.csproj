@@ -4,8 +4,6 @@
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <DebugType>none</DebugType>
     <GenerateDependencyFile>false</GenerateDependencyFile>
-    <!-- For System.Text.Json 8.x.y reference. Caused and should be removed by https://github.com/dotnet/sourcelink/issues/938-->
-    <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
 
     <!-- NuGet -->
     <IsPackable>true</IsPackable>

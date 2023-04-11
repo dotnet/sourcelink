@@ -1,6 +1,11 @@
-<!-- Additional documentation on pre-built detection can be found at https://aka.ms/source-build/pre-built -->
+<!-- See aka.ms/dotnet/prebuilts for guidance on what pre-builts are and how to eliminate them. -->
 <UsageData>
   <IgnorePatterns>
     <UsagePattern IdentityGlob="Microsoft.SourceBuild.Intermediate.*" />
   </IgnorePatterns>
+  <Usages>
+    <!-- MSBuild versions starting from 16.10.0 do not target NET Core -->
+    <!-- and fail the non-source-build -->
+    <Usage Id="Microsoft.Build" Version="16.8.0" IsDirectDependency="true" />
+  </Usages>
 </UsageData>

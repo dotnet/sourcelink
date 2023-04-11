@@ -12,12 +12,16 @@
     <Dependency Name="System.CommandLine.Rendering" Version="0.4.0-alpha.22272.1">
       <Uri>https://github.com/dotnet/command-line-api</Uri>
       <Sha>209b724a3c843253d3071e8348c353b297b0b8b5</Sha>
-    <Dependency Name="System.Text.Json" Version="8.0.0-alpha.1.22631.1">
+    </Dependency>
+    <Dependency Name="Microsoft.SourceBuild.Intermediate.command-line-api" Version="0.1.327201">
+      <Uri>https://github.com/dotnet/command-line-api</Uri>
+      <Sha>209b724a3c843253d3071e8348c353b297b0b8b5</Sha>
+    </Dependency>
+    <Dependency Name="System.Text.Json" Version="8.0.0-preview.4.23210.22">
       <Uri>https://github.com/dotnet/runtime</Uri>
-      <Sha>a6f84d42529494b3539684ed993fa554281215b7</Sha>
+      <Sha>7ebb8886920be7ed2e5f1c8784e4cea516d118d7</Sha>
       <SourceBuild RepoName="runtime" ManagedOnly="false" />
     </Dependency>
-    <!-- MSBuild versions starting from 16.10.0 do not target NET Core -->
     <Dependency Name="Microsoft.Build" Version="16.8.0">
       <Uri>https://github.com/dotnet/msbuild</Uri>
       <Sha>a6f6699d1f70bf79db82030938d2c5e52d1e4d2e</Sha>
@@ -26,9 +30,9 @@
       <Uri>https://github.com/dotnet/msbuild</Uri>
       <Sha>a6f6699d1f70bf79db82030938d2c5e52d1e4d2e</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.SourceBuild.Intermediate.source-build-reference-packages" Version="8.0.0-alpha.1.23055.1">
+    <Dependency Name="Microsoft.SourceBuild.Intermediate.source-build-reference-packages" Version="8.0.0-alpha.1.23211.2">
       <Uri>https://github.com/dotnet/source-build-reference-packages</Uri>
-      <Sha>a7d9aec195d309a8d25022553a43561441a599a8</Sha>
+      <Sha>c053ca210364dfa4904006b811249f14743e853e</Sha>
       <SourceBuild RepoName="source-build-reference-packages" ManagedOnly="true" />
     </Dependency>
   </ProductDependencies>
@@ -43,14 +47,14 @@
       <Sha>d76c30028584fb1d02d9b27dc48e65ad87f4ecfe</Sha>
       <SourceBuild RepoName="source-build-reference-packages" ManagedOnly="true" />
     </Dependency>
-    <Dependency Name="Microsoft.SourceLink.GitHub" Version="1.2.0-beta-22518-02" CoherentParentDependency="Microsoft.DotNet.Arcade.Sdk">
+    <Dependency Name="Microsoft.SourceLink.GitHub" Version="1.2.0-beta-23117-02" CoherentParentDependency="Microsoft.DotNet.Arcade.Sdk">
       <Uri>https://github.com/dotnet/sourcelink</Uri>
-      <Sha>d047202874ad79d72c75b6354c0f8a9a12d1b054</Sha>
+      <Sha>955e79b0b955a9f57078b2399a782fcde44a9261</Sha>
       <SourceBuild RepoName="sourcelink" ManagedOnly="true" />
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.XliffTasks" Version="1.0.0-beta.22627.1" CoherentParentDependency="Microsoft.DotNet.Arcade.Sdk">
+    <Dependency Name="Microsoft.DotNet.XliffTasks" Version="1.0.0-beta.23116.1" CoherentParentDependency="Microsoft.DotNet.Arcade.Sdk">
       <Uri>https://github.com/dotnet/xliff-tasks</Uri>
-      <Sha>c9b8a539c59158e189e4a6b9ebcf29b748dcb843</Sha>
+      <Sha>69157952aba0f08738249af4454b045b553614c4</Sha>
       <SourceBuild RepoName="xliff-tasks" ManagedOnly="true" />
     </Dependency>
   </ToolsetDependencies>
