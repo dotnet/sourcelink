@@ -5,7 +5,9 @@
     <TargetFrameworks>net472;$(NetCurrent)</TargetFrameworks>
     <IsShipping>false</IsShipping>
     <ExcludeFromSourceBuild>true</ExcludeFromSourceBuild>
+    <IsTestProject>false</IsTestProject>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="NuGet.Versioning" Version="$(NuGetVersioningVersion)" />
     <PackageReference Include="Microsoft.Build" Version="$(MicrosoftBuildVersion)" />
@@ -13,6 +15,8 @@
     <PackageReference Include="xunit.core" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.assert" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.Combinatorial" version="$(XunitCombinatorialVersion)" />
+    <!-- Upgrade the NETStandard.Library transitive xunit dependency to avoid transitive 1.x NS dependencies. -->
+    <PackageReference Include="NETStandard.Library" Version="2.0.3" Condition="'$(TargetFrameworkIdentifier)' != '.NETStandard'" />
   </ItemGroup>
 
   <PropertyGroup>

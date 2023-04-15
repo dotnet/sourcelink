@@ -11,12 +11,12 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <PackAsToolShimRuntimeIdentifiers>win-x64;win-x86;osx-x64</PackAsToolShimRuntimeIdentifiers>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="System.CommandLine" Version="$(SystemCommandLineVersion)" />
     <PackageReference Include="System.CommandLine.NamingConventionBinder" Version="$(SystemCommandLineNamingConventionBinderVersion)" />
     <PackageReference Include="System.CommandLine.Rendering" Version="$(SystemCommandLineRenderingVersion)" />
-    <PackageReference Include="System.Reflection.Metadata" Version="$(SystemReflectionMetadataVersion)" />
-    <PackageReference Include="System.ValueTuple" Version="$(SystemValueTupleVersion)" />
   </ItemGroup>
+
   <Import Project="..\SourceLink.Tools\Microsoft.SourceLink.Tools.projitems" Label="Shared" />
 </Project>
