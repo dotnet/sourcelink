@@ -6,20 +6,20 @@
     <VersionPrefix>8.0.0</VersionPrefix>
     <PreReleaseVersionLabel>beta</PreReleaseVersionLabel>
     <!-- Opt-in repo features -->
-    <UsingToolNetFrameworkReferenceAssemblies>true</UsingToolNetFrameworkReferenceAssemblies>
     <UsingToolSymbolUploader>true</UsingToolSymbolUploader>
-    <MicrosoftBuildVersion>16.7.0</MicrosoftBuildVersion>
-    <MicrosoftBuildTasksCore>16.7.0</MicrosoftBuildTasksCore>
+    <MicrosoftBuildVersion>17.3.2</MicrosoftBuildVersion>
+    <MicrosoftBuildTasksCore>17.3.2</MicrosoftBuildTasksCore>
+
+    <!-- TODO: Remove after https://github.com/dotnet/arcade/pull/13178 is consumed. -->
+    <MicrosoftNETTestSdkVersion>17.5.0</MicrosoftNETTestSdkVersion>
+
     <MicrosoftTeamFoundationServerExtendedClientVersion>19.210.0-preview</MicrosoftTeamFoundationServerExtendedClientVersion>
-    <MicrosoftDotNetPlatformAbstractionsVersion>3.1.6</MicrosoftDotNetPlatformAbstractionsVersion>
     <NuGetVersioningVersion>5.7.0</NuGetVersioningVersion>
     <NuGetPackagingVersion>5.7.0</NuGetPackagingVersion>
     <SystemCommandLineVersion>2.0.0-beta4.22272.1</SystemCommandLineVersion>
     <SystemCommandLineNamingConventionBinderVersion>2.0.0-beta4.22272.1</SystemCommandLineNamingConventionBinderVersion>
     <SystemCommandLineRenderingVersion>0.4.0-alpha.22272.1</SystemCommandLineRenderingVersion>
-    <SystemReflectionMetadataVersion>1.8.1</SystemReflectionMetadataVersion>
-    <SystemValueTupleVersion>4.5.0</SystemValueTupleVersion>
-    <SystemTextJsonVersion>4.7.2</SystemTextJsonVersion>
+    <SystemTextJsonVersion>7.0.2</SystemTextJsonVersion>
     <XunitCombinatorialVersion>1.5.25</XunitCombinatorialVersion>
     <!-- libgit2 used for integration tests -->
     <LibGit2SharpVersion>0.27.0-preview-0119</LibGit2SharpVersion>

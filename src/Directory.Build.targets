@@ -3,10 +3,15 @@
 <Project>
   <Import Project="Sdk.targets" Sdk="Microsoft.DotNet.Arcade.Sdk" />
 
+  <ItemGroup Condition="'$(IsTestProject)' == 'true'">
+    <!-- Upgrade the NETStandard.Library transitive xunit dependency to avoid transitive 1.x NS dependencies. -->
+    <PackageReference Include="NETStandard.Library" Version="2.0.3" Condition="'$(TargetFrameworkIdentifier)' != '.NETStandard'" />
+  </ItemGroup>
+
   <ItemGroup>
     <NuspecProperty Include="DesktopTfm=net472"/>
     <NuspecProperty Include="CoreTfm=$(NetCurrent)" Condition="'$(DotNetBuildFromSource)' == 'true'"/>
-    <NuspecProperty Include="CoreTfm=netcoreapp3.1" Condition="'$(DotNetBuildFromSource)' != 'true'"/>
+    <NuspecProperty Include="CoreTfm=$(NetMinimum)" Condition="'$(DotNetBuildFromSource)' != 'true'"/>
   </ItemGroup>
 
   <!-- 
