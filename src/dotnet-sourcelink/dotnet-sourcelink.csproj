@@ -1,7 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
     <TargetFrameworks>$(NetCurrent)</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <!-- Allow tool to roll forward to a newer major version. -->
+    <RollForward>Major</RollForward>
 
     <!-- NuGet -->
     <IsPackable>true</IsPackable>
@@ -19,4 +22,5 @@
   </ItemGroup>
 
   <Import Project="..\SourceLink.Tools\Microsoft.SourceLink.Tools.projitems" Label="Shared" />
+
 </Project>

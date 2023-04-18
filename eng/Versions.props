@@ -1,25 +1,27 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Licensed to the .NET Foundation under one or more agreements. The .NET Foundation licenses this file to you under the MIT license. See the License.txt file in the project root for more information. -->
 <Project>
+
   <PropertyGroup>
     <!-- This repo version -->
     <VersionPrefix>8.0.0</VersionPrefix>
     <PreReleaseVersionLabel>beta</PreReleaseVersionLabel>
     <!-- Opt-in repo features -->
     <UsingToolSymbolUploader>true</UsingToolSymbolUploader>
+    <!-- msbuild -->
     <MicrosoftBuildVersion>17.3.2</MicrosoftBuildVersion>
-    <MicrosoftBuildTasksCore>17.3.2</MicrosoftBuildTasksCore>
-    <!-- TODO: Remove after https://github.com/dotnet/arcade/pull/13178 is consumed. -->
-    <MicrosoftNETTestSdkVersion>17.5.0</MicrosoftNETTestSdkVersion>
-    <MicrosoftTeamFoundationServerExtendedClientVersion>19.210.0-preview</MicrosoftTeamFoundationServerExtendedClientVersion>
+    <MicrosoftBuildTasksCoreVersion>17.3.2</MicrosoftBuildTasksCoreVersion>
+    <!-- nuget -->
     <NuGetVersioningVersion>5.7.0</NuGetVersioningVersion>
-    <NuGetPackagingVersion>5.7.0</NuGetPackagingVersion>
+    <!-- commandline -->
     <SystemCommandLineVersion>2.0.0-beta4.22272.1</SystemCommandLineVersion>
     <SystemCommandLineNamingConventionBinderVersion>2.0.0-beta4.22272.1</SystemCommandLineNamingConventionBinderVersion>
     <SystemCommandLineRenderingVersion>0.4.0-alpha.22272.1</SystemCommandLineRenderingVersion>
+    <!-- runtime-->
     <SystemTextJsonVersion>7.0.2</SystemTextJsonVersion>
-    <XunitCombinatorialVersion>1.5.25</XunitCombinatorialVersion>
+    <!-- external -->
+    <MicrosoftTeamFoundationServerExtendedClientVersion>19.210.0-preview</MicrosoftTeamFoundationServerExtendedClientVersion>
     <!-- libgit2 used for integration tests -->
     <LibGit2SharpVersion>0.27.0-preview-0119</LibGit2SharpVersion>
+    <XunitCombinatorialVersion>1.5.25</XunitCombinatorialVersion>
   </PropertyGroup>
+
 </Project>

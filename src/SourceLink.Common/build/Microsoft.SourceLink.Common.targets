@@ -1,7 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<!-- Licensed to the .NET Foundation under one or more agreements. The .NET Foundation licenses this file to you under the MIT license. See the License.txt file in the project root for more information. -->
+﻿<!-- Licensed to the .NET Foundation under one or more agreements. The .NET Foundation licenses this file to you under the MIT license. See the License.txt file in the project root for more information. -->
 <Project>
-  <Import Project="InitializeSourceControlInformation.targets"/>
+
+  <Import Project="InitializeSourceControlInformation.targets" />
   
   <UsingTask TaskName="Microsoft.SourceLink.Common.GenerateSourceLinkFile" AssemblyFile="$(_MicrosoftSourceLinkCommonAssemblyFile)"/>
 
@@ -49,7 +49,6 @@
           DependsOnTargets="_SetSourceLinkFilePath;$(_GenerateSourceLinkFileDependsOnTargets);_InitializeSourceRootMappedPathsOpt;$(SourceLinkUrlInitializerTargets)"
           Condition="'$(EnableSourceLink)' == 'true' and '$(DebugType)' != 'none'"
           Outputs="$(_SourceLinkFilePath)">
-
     <!--- Suppress warning if targets are imported from an SDK without a package reference. -->
     <Microsoft.SourceLink.Common.GenerateSourceLinkFile
       SourceRoots="@(SourceRoot)"
@@ -80,5 +79,5 @@
           DependsOnTargets="InitializeSourceControlInformation;_GenerateSourceLinkFile"
           Condition="'$(SourceControlInformationFeatureSupported)' == 'true'"
           BeforeTargets="$(_GenerateSourceLinkFileBeforeTargets)"/>
-  
+
 </Project>

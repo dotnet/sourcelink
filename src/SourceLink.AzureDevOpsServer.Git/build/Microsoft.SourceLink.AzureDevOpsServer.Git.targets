@@ -1,6 +1,6 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<!-- Licensed to the .NET Foundation under one or more agreements. The .NET Foundation licenses this file to you under the MIT license. See the License.txt file in the project root for more information. -->
+﻿<!-- Licensed to the .NET Foundation under one or more agreements. The .NET Foundation licenses this file to you under the MIT license. See the License.txt file in the project root for more information. -->
 <Project>
+
   <PropertyGroup>
     <_SourceLinkAzureDevOpsServerGitAssemblyFile Condition="'$(MSBuildRuntimeType)' != 'Core'">$(MSBuildThisFileDirectory)..\tools\net472\Microsoft.SourceLink.AzureDevOpsServer.Git.dll</_SourceLinkAzureDevOpsServerGitAssemblyFile>
     <_SourceLinkAzureDevOpsServerGitAssemblyFile Condition="'$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)..\tools\core\Microsoft.SourceLink.AzureDevOpsServer.Git.dll</_SourceLinkAzureDevOpsServerGitAssemblyFile>
@@ -53,7 +53,6 @@
     We need to translate ssh URLs to https.
   -->
   <Target Name="TranslateAzureDevOpsServerGitUrlsInSourceControlInformation">
-
     <ItemGroup>
       <_TranslatedSourceRoot Remove="@(_TranslatedSourceRoot)"/>
     </ItemGroup>
@@ -68,5 +67,6 @@
       <SourceRoot Include="@(_TranslatedSourceRoot)"/>
     </ItemGroup>
   </Target>
+
 </Project>
- 
+

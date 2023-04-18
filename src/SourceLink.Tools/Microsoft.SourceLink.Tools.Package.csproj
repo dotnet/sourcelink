@@ -1,24 +1,20 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<!-- Licensed to the .NET Foundation under one or more agreements. The .NET Foundation licenses this file to you under the MIT license. See the License.txt file in the project root for more information. -->
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.Build.NoTargets">
+
   <PropertyGroup>
     <TargetFrameworks>$(NetCurrent);netstandard2.0</TargetFrameworks>
-    <GenerateDocumentationFile>false</GenerateDocumentationFile>
-    <DebugType>none</DebugType>
-    <GenerateDependencyFile>false</GenerateDependencyFile>
 
     <!-- NuGet -->
     <IsPackable>true</IsPackable>
     <IsSourcePackage>true</IsSourcePackage>
     <PackageId>Microsoft.SourceLink.Tools</PackageId>
     <IncludeBuildOutput>false</IncludeBuildOutput>
-    <PackageDescription>
-      Package containing sources of tools for reading Source Link.
-    </PackageDescription>
+    <PackageDescription>Package containing sources of tools for reading Source Link.</PackageDescription>
     <!-- Remove once https://github.com/NuGet/Home/issues/8583 is fixed -->
     <NoWarn>$(NoWarn);NU5128</NoWarn>
   </PropertyGroup>
-  <ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFrameworkIdentifier)' != '.NETCoreApp'">
     <PackageReference Include="System.Text.Json" Version="$(SystemTextJsonVersion)" />
   </ItemGroup>
+
 </Project>
