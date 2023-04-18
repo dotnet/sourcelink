@@ -9,10 +9,8 @@
     <UsingToolSymbolUploader>true</UsingToolSymbolUploader>
     <MicrosoftBuildVersion>17.3.2</MicrosoftBuildVersion>
     <MicrosoftBuildTasksCore>17.3.2</MicrosoftBuildTasksCore>
-
     <!-- TODO: Remove after https://github.com/dotnet/arcade/pull/13178 is consumed. -->
     <MicrosoftNETTestSdkVersion>17.5.0</MicrosoftNETTestSdkVersion>
-
     <MicrosoftTeamFoundationServerExtendedClientVersion>19.210.0-preview</MicrosoftTeamFoundationServerExtendedClientVersion>
     <NuGetVersioningVersion>5.7.0</NuGetVersioningVersion>
     <NuGetPackagingVersion>5.7.0</NuGetPackagingVersion>
