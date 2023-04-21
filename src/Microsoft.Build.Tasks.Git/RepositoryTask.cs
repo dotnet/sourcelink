@@ -147,7 +147,15 @@ namespace Microsoft.Build.Tasks.Git
 
         private bool TryGetCachedRepositoryInstance(string cacheKey, bool requireCached, [NotNullWhen(true)]out GitRepository? repository)
         {
-            var entry = (StrongBox<GitRepository?>)BuildEngine4.GetRegisteredTaskObject(cacheKey, RegisteredTaskObjectLifetime.Build);
+            StrongBox<GitRepository?>? entry;
+            try
+            {
+                entry = (StrongBox<GitRepository?>?)BuildEngine4.GetRegisteredTaskObject(cacheKey, RegisteredTaskObjectLifetime.Build);
+            }
+            catch (InvalidCastException) // workaround for https://github.com/dotnet/msbuild/issues/8478
+            {
+                entry = null;
+            }
 
             if (entry != null)
             {
