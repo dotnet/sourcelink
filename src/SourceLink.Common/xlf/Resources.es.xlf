@@ -34,22 +34,22 @@
       </trans-unit>
       <trans-unit id="SourceLinkEmptyDeletingExistingFile">
         <source>Source Link is empty, deleting existing file: '{0}'.</source>
-        <target state="new">Source Link is empty, deleting existing file: '{0}'.</target>
+        <target state="translated">El vínculo de origen está vacío, eliminando el archivo existente: '{0}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="SourceLinkEmptyNoExistingFile">
         <source>Source Link is empty, file '{0}' does not exist.</source>
-        <target state="new">Source Link is empty, file '{0}' does not exist.</target>
+        <target state="translated">El vínculo de origen está vacío, el archivo '{0}' no existe.</target>
         <note />
       </trans-unit>
       <trans-unit id="SourceLinkFileUpToDate">
         <source>Source Link file '{0}' is up-to-date.</source>
-        <target state="new">Source Link file '{0}' is up-to-date.</target>
+        <target state="translated">El archivo de Source Link '{0}' está actualizado.</target>
         <note />
       </trans-unit>
       <trans-unit id="SourceLinkFileUpdated">
         <source>Updating Source Link file '{0}'.</source>
-        <target state="new">Updating Source Link file '{0}'.</target>
+        <target state="translated">Actualizando archivo de Source Link '{0}'.</target>
         <note />
       </trans-unit>
     </body>

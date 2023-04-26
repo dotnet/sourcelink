@@ -9,7 +9,7 @@
       </trans-unit>
       <trans-unit id="IgnoringInvalidHostName">
         <source>Ignoring invalid host name: '{0}' -- expected 'domain[:port]'.</source>
-        <target state="new">Ignoring invalid host name: '{0}' -- expected 'domain[:port]'.</target>
+        <target state="translated">Ungültiger Hostname wird ignoriert: "{0}" -- erwartet wurde "domain[:p ort]".</target>
         <note />
       </trans-unit>
       <trans-unit id="ItemOfItemGroupMustSpecifyMetadata">
@@ -19,7 +19,7 @@
       </trans-unit>
       <trans-unit id="NoWellFormedHostUrisSpecified">
         <source>No well-formed host URIs specified: {0}.</source>
-        <target state="new">No well-formed host URIs specified: {0}.</target>
+        <target state="translated">Es wurden keine wohlgeformten Host-URIs angegeben: {0}.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnableToDetermineRepositoryUrl">
