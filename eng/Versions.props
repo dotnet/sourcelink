@@ -13,7 +13,6 @@
     <MicrosoftBuildTasksCore>17.3.2</MicrosoftBuildTasksCore>
     <MicrosoftTeamFoundationServerExtendedClientVersion>19.210.0-preview</MicrosoftTeamFoundationServerExtendedClientVersion>
     <NuGetVersioningVersion>5.7.0</NuGetVersioningVersion>
-    <NuGetPackagingVersion>5.7.0</NuGetPackagingVersion>
     <SystemCommandLineVersion>2.0.0-beta4.22272.1</SystemCommandLineVersion>
     <SystemCommandLineNamingConventionBinderVersion>2.0.0-beta4.22272.1</SystemCommandLineNamingConventionBinderVersion>
     <SystemCommandLineRenderingVersion>0.4.0-alpha.22272.1</SystemCommandLineRenderingVersion>
