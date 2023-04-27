@@ -5,6 +5,10 @@
     <PreReleaseVersionLabel>beta</PreReleaseVersionLabel>
     <!-- Opt-in repo features -->
     <UsingToolSymbolUploader>true</UsingToolSymbolUploader>
+    <!-- Prohibit the usage of .NET Standard 1.x dependencies. -->
+    <FlagNetStandard1XDependencies>true</FlagNetStandard1XDependencies>
+  </PropertyGroup>
+  <PropertyGroup>
     <MicrosoftBuildVersion>17.3.2</MicrosoftBuildVersion>
     <MicrosoftBuildTasksCore>17.3.2</MicrosoftBuildTasksCore>
     <!-- TODO: Remove after https://github.com/dotnet/arcade/pull/13178 is consumed. -->
