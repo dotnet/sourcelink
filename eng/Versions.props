@@ -15,7 +15,7 @@
     <SystemCommandLineRenderingVersion>0.4.0-alpha.22272.1</SystemCommandLineRenderingVersion>
     <!-- msbuild -->
     <MicrosoftBuildVersion>17.3.2</MicrosoftBuildVersion>
-    <MicrosoftBuildTasksCore>17.3.2</MicrosoftBuildTasksCore>
+    <MicrosoftBuildTasksCoreVersion>17.3.2</MicrosoftBuildTasksCoreVersion>
     <!-- nuget -->
     <NuGetVersioningVersion>5.7.0</NuGetVersioningVersion>
     <!-- runtime -->
