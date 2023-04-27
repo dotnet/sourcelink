@@ -9,16 +9,21 @@
     <FlagNetStandard1XDependencies>true</FlagNetStandard1XDependencies>
   </PropertyGroup>
   <PropertyGroup>
-    <MicrosoftBuildVersion>17.3.2</MicrosoftBuildVersion>
-    <MicrosoftBuildTasksCore>17.3.2</MicrosoftBuildTasksCore>
-    <MicrosoftTeamFoundationServerExtendedClientVersion>19.210.0-preview</MicrosoftTeamFoundationServerExtendedClientVersion>
-    <NuGetVersioningVersion>5.7.0</NuGetVersioningVersion>
+    <!-- commandline -->
     <SystemCommandLineVersion>2.0.0-beta4.22272.1</SystemCommandLineVersion>
     <SystemCommandLineNamingConventionBinderVersion>2.0.0-beta4.22272.1</SystemCommandLineNamingConventionBinderVersion>
     <SystemCommandLineRenderingVersion>0.4.0-alpha.22272.1</SystemCommandLineRenderingVersion>
+    <!-- msbuild -->
+    <MicrosoftBuildVersion>17.3.2</MicrosoftBuildVersion>
+    <MicrosoftBuildTasksCore>17.3.2</MicrosoftBuildTasksCore>
+    <!-- nuget -->
+    <NuGetVersioningVersion>5.7.0</NuGetVersioningVersion>
+    <!-- runtime -->
     <SystemTextJsonVersion>7.0.2</SystemTextJsonVersion>
-    <XunitCombinatorialVersion>1.5.25</XunitCombinatorialVersion>
+    <!-- external -->
+    <MicrosoftTeamFoundationServerExtendedClientVersion>19.210.0-preview</MicrosoftTeamFoundationServerExtendedClientVersion>
     <!-- libgit2 used for integration tests -->
     <LibGit2SharpVersion>0.27.0-preview-0119</LibGit2SharpVersion>
+    <XunitCombinatorialVersion>1.5.25</XunitCombinatorialVersion>
   </PropertyGroup>
 </Project>
