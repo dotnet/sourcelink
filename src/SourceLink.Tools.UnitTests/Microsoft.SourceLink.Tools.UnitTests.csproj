@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net472;$(NetCurrent)</TargetFrameworks>
   </PropertyGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFrameworkIdentifier)' != '.NETCoreApp'">
     <PackageReference Include="System.Text.Json" Version="$(SystemTextJsonVersion)" />
   </ItemGroup>
   <ItemGroup>

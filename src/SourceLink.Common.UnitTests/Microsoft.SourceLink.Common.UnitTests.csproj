@@ -12,6 +12,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Xunit.Combinatorial" Version="$(XunitCombinatorialVersion)" />
     <ProjectReference Include="..\SourceLink.Common\Microsoft.SourceLink.Common.csproj" />
     <ProjectReference Include="..\TestUtilities\TestUtilities.csproj" />
   </ItemGroup>

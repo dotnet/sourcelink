@@ -7,14 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NuGet.Versioning" Version="$(NuGetVersioningVersion)" />
     <PackageReference Include="Microsoft.Build" Version="$(MicrosoftBuildVersion)" />
-    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="$(MicrosoftBuildTasksCoreVersion)" />
-    <PackageReference Include="xunit.core" Version="$(XunitVersion)" />
+    <PackageReference Include="NuGet.Versioning" Version="$(NuGetVersioningVersion)" />
     <PackageReference Include="xunit.assert" Version="$(XunitVersion)" />
-    <PackageReference Include="xunit.Combinatorial" version="$(XunitCombinatorialVersion)" />
+    <PackageReference Include="xunit.core" Version="$(XunitVersion)" />
     <!-- Upgrade the NETStandard.Library transitive xunit dependency to avoid transitive 1.x NS dependencies. -->
-    <PackageReference Include="NETStandard.Library" Version="2.0.3" Condition="'$(TargetFrameworkIdentifier)' != '.NETStandard'" />
+    <PackageReference Include="NETStandard.Library" Version="2.0.3" />
   </ItemGroup>
 
   <PropertyGroup>
