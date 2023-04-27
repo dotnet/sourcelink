@@ -2,7 +2,6 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <AutoGenerateAssemblyVersion>true</AutoGenerateAssemblyVersion>
-    <ExcludeFromSourceBuild>true</ExcludeFromSourceBuild>
     <SuppressFinalPackageVersion>true</SuppressFinalPackageVersion>
 
     <!-- Using an explicit nuspec file due to https://github.com/NuGet/Home/issues/6754 -->
