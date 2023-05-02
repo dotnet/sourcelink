@@ -1,7 +1,7 @@
 <Project>
   <Import Project="Sdk.targets" Sdk="Microsoft.DotNet.Arcade.Sdk" />
 
-  <!-- TODO: Remove when Arcade offers an in-built way to filter out anything other than NetCurrent. -->
+  <!-- TODO: Remove when Arcade offers an in-built way to filter out anything other than NetCurrent: https://github.com/dotnet/arcade/issues/13390. -->
   <PropertyGroup>
     <TargetFrameworks Condition="'$(TargetFrameworks)' != '' and '$(DotNetBuildFromSource)' == 'true'">$(NetCurrent)</TargetFrameworks>
   </PropertyGroup>
