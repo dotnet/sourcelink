@@ -6,7 +6,6 @@
     <Nullable>enable</Nullable>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GenerateResxSource>true</GenerateResxSource>
-    <UserRuntimeConfig Condition="$(TargetFramework.StartsWith('netcoreapp'))">$(RepositoryEngineeringDir)runtimeconfig.template.json</UserRuntimeConfig>
     
     <!-- Produce snupkg in official builds (when not embedding PDBs to dlls) -->
     <IncludeSymbols Condition="'$(DebugType)' != 'embedded'">true</IncludeSymbols>
