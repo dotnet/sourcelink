@@ -3,9 +3,4 @@
   <IgnorePatterns>
     <UsagePattern IdentityGlob="Microsoft.SourceBuild.Intermediate.*" />
   </IgnorePatterns>
-  <Usages>
-    <!-- MSBuild versions starting from 16.10.0 do not target NET Core -->
-    <!-- and fail the non-source-build -->
-    <Usage Id="Microsoft.Build" Version="16.8.0" IsDirectDependency="true" />
-  </Usages>
 </UsageData>
