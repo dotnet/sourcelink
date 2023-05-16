@@ -4,6 +4,7 @@
     <TargetFrameworks>$(NetCurrent)</TargetFrameworks>
     <!-- Allow tool to roll forward to a newer major version. -->
     <RollForward>Major</RollForward>
+    <!-- Will be removed by https://github.com/dotnet/sourcelink/issues/1028 -->
     <ExcludeFromSourceBuild>true</ExcludeFromSourceBuild>
 
     <!-- NuGet -->
