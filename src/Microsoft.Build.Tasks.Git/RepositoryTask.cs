@@ -13,9 +13,6 @@ namespace Microsoft.Build.Tasks.Git
 {
     public abstract class RepositoryTask : Task
     {
-        // Include the assembly version in the key to avoid conflicts with other SourceLink versions.
-        private static readonly string s_cacheKeyPrefix = $"3AE29AB7-AE6B-48BA-9851-98A15ED51C94:{typeof(RepositoryTask).Assembly.GetName().Version}:";
-
         /// <summary>
         /// Sets the scope of git repository configuration. By default (no scope specified) configuration is read from environment variables
         /// and system and global user git/ssh configuration files.
@@ -142,21 +139,12 @@ namespace Microsoft.Build.Tasks.Git
             return repository;
         }
 
-        private string GetCacheKey(string repositoryId)
-            => s_cacheKeyPrefix + (string.IsNullOrEmpty(ConfigurationScope) ? "*" : ConfigurationScope) + ":" + repositoryId;
+        private Tuple<Type, string> GetCacheKey(string repositoryId)
+            => new(typeof(RepositoryTask), (string.IsNullOrEmpty(ConfigurationScope) ? "*" : ConfigurationScope) + ":" + repositoryId);
 
-        private bool TryGetCachedRepositoryInstance(string cacheKey, bool requireCached, [NotNullWhen(true)]out GitRepository? repository)
+        private bool TryGetCachedRepositoryInstance(Tuple<Type, string> cacheKey, bool requireCached, [NotNullWhen(true)]out GitRepository? repository)
         {
-            StrongBox<GitRepository?>? entry;
-            try
-            {
-                entry = (StrongBox<GitRepository?>?)BuildEngine4.GetRegisteredTaskObject(cacheKey, RegisteredTaskObjectLifetime.Build);
-            }
-            catch (InvalidCastException) // workaround for https://github.com/dotnet/msbuild/issues/8478
-            {
-                entry = null;
-            }
-
+            var entry = (StrongBox<GitRepository?>?)BuildEngine4.GetRegisteredTaskObject(cacheKey, RegisteredTaskObjectLifetime.Build);
             if (entry != null)
             {
                 Log.LogMessage(MessageImportance.Low, $"SourceLink: Reusing cached git repository information.");
@@ -164,16 +152,21 @@ namespace Microsoft.Build.Tasks.Git
                 return repository != null;
             }
 
+            var message = $"SourceLink: Repository instance not found in cache: '{cacheKey.Item2}'";
             if (requireCached)
             {
-                Log.LogError($"SourceLink: Repository instance not found in cache: '{cacheKey.Substring(s_cacheKeyPrefix.Length)}'");
+                Log.LogError(message);
+            }
+            else
+            {
+                Log.LogMessage(MessageImportance.Low, message);
             }
 
             repository = null;
             return false;
         }
 
-        private void CacheRepositoryInstance(string cacheKey, GitRepository? repository)
+        private void CacheRepositoryInstance(Tuple<Type, string> cacheKey, GitRepository? repository)
         {
             BuildEngine4.RegisterTaskObject(
                   cacheKey,
