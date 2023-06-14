@@ -18,9 +18,9 @@
       <Sha>209b724a3c843253d3071e8348c353b297b0b8b5</Sha>
       <SourceBuild RepoName="command-line-api" ManagedOnly="true" />
     </Dependency>
-    <Dependency Name="Microsoft.SourceBuild.Intermediate.source-build-reference-packages" Version="8.0.0-alpha.1.23312.2">
+    <Dependency Name="Microsoft.SourceBuild.Intermediate.source-build-reference-packages" Version="8.0.0-alpha.1.23314.1">
       <Uri>https://github.com/dotnet/source-build-reference-packages</Uri>
-      <Sha>ceb1133c46abe15ee48ea799950e7a6a74417b74</Sha>
+      <Sha>f8ebadcc83f7fc8cfd5147078c87d6e583cb32f1</Sha>
       <SourceBuild RepoName="source-build-reference-packages" ManagedOnly="true" />
     </Dependency>
   </ProductDependencies>
