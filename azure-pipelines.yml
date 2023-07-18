@@ -58,6 +58,7 @@ stages:
           - group: Publish-Build-Assets
           - name: _OfficialBuildArgs
             value: /p:DotNetSignType=$(_SignType)
+                  /p:DotNetPublishUsingPipelines=true
                   /p:TeamName=$(_TeamName)
                   /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
         # else
