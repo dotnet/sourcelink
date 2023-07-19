@@ -21,10 +21,6 @@ variables:
   - template: /eng/common/templates/variables/pool-providers.yml
   - name: _TeamName
     value: Roslyn
-  - name: _PublishUsingPipelines
-    value: true
-  - name: _DotNetArtifactsCategory
-    value: .NETCore
 
 stages:
 - stage: build
@@ -42,7 +38,7 @@ stages:
       enablePublishBuildArtifacts: true
       enablePublishTestResults: true
       enablePublishBuildAssets: true
-      enablePublishUsingPipelines: $(_PublishUsingPipelines)
+      enablePublishUsingPipelines: true
       enableTelemetry: true
       enableSourceBuild: true
       helixRepo: dotnet/symreader
@@ -59,16 +55,11 @@ stages:
         - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
           # DotNet-Blob-Feed provides: dotnetfeed-storage-access-key-1
           # Publish-Build-Assets provides: MaestroAccessToken, BotAccount-dotnet-maestro-bot-PAT
-          - group: DotNet-Blob-Feed
           - group: Publish-Build-Assets
           - name: _OfficialBuildArgs
             value: /p:DotNetSignType=$(_SignType)
+                  /p:DotNetPublishUsingPipelines=true
                   /p:TeamName=$(_TeamName)
-                  /p:DotNetPublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
-                  /p:DotNetPublishBlobFeedUrl=https://dotnetfeed.blob.core.windows.net/dotnet-core/index.json
-                  /p:DotNetPublishToBlobFeed=$(_DotNetPublishToBlobFeed)
-                  /p:DotNetPublishUsingPipelines=$(_PublishUsingPipelines)
-                  /p:DotNetArtifactsCategory=$(_DotNetArtifactsCategory)
                   /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
         # else
         - ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
@@ -80,18 +71,15 @@ stages:
               Debug:
                 _BuildConfig: Debug
                 _SignType: test
-                _DotNetPublishToBlobFeed: false
                 _BuildArgs: ''
             Release:
               _BuildConfig: Release
               # PRs or external builds are not signed.
               ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
                 _SignType: test
-                _DotNetPublishToBlobFeed: false
                 _BuildArgs: ''
               ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
                 _SignType: real
-                _DotNetPublishToBlobFeed: true
                 _BuildArgs: $(_OfficialBuildArgs)
         steps:
         - checkout: self
@@ -117,11 +105,9 @@ stages:
               Debug:
                 _BuildConfig: Debug
                 _SignType: none
-                _DotNetPublishToBlobFeed : false
               Release:
                 _BuildConfig: Release
                 _SignType: none
-                _DotNetPublishToBlobFeed : false
           steps:
           - checkout: self
             clean: true
@@ -137,11 +123,9 @@ stages:
               Debug:
                 _BuildConfig: Debug
                 _SignType: none
-                _DotNetPublishToBlobFeed : false
               Release:
                 _BuildConfig: Release
                 _SignType: none
-                _DotNetPublishToBlobFeed : false
           steps:
           - checkout: self
             clean: true
