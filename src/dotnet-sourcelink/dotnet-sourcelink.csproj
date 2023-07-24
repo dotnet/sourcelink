@@ -4,8 +4,6 @@
     <TargetFrameworks>$(NetCurrent)</TargetFrameworks>
     <!-- Allow tool to roll forward to a newer major version. -->
     <RollForward>Major</RollForward>
-    <!-- Will be removed by https://github.com/dotnet/sourcelink/issues/1028 -->
-    <ExcludeFromSourceBuild>true</ExcludeFromSourceBuild>
 
     <!-- NuGet -->
     <IsPackable>true</IsPackable>
@@ -13,7 +11,7 @@
     <ToolCommandName>sourcelink</ToolCommandName>
     <Description>Command line tool for SourceLink testing.</Description>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <PackAsToolShimRuntimeIdentifiers>win-x64;win-x86;osx-x64</PackAsToolShimRuntimeIdentifiers>
+    <PackAsToolShimRuntimeIdentifiers Condition="'$(DotNetBuildFromSource)' != 'true'">win-x64;win-x86;osx-x64</PackAsToolShimRuntimeIdentifiers>
   </PropertyGroup>
 
   <ItemGroup>
