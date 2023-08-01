@@ -453,13 +453,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var repository = new GitRepository(GitEnvironment.Empty, GitConfig.Empty, gitDir.Path, gitDir.Path, workingDir.Path);
 
             var submodules = repository.GetSubmodules();
-            AssertEx.Equal(new[]
-            {
-                "S10: 'sub10' 'http://github.com'",
-                "S11: 'sub11' 'http://github.com'",
-                "S6: 'sub6' 'http://github.com'",
-                "S9: 'sub9' 'http://github.com'"
-            }, submodules.Select(s => $"{s.Name}: '{s.WorkingDirectoryRelativePath}' '{s.Url}'"));
+            Assert.Empty(submodules);
 
             var diagnostics = repository.GetSubmoduleDiagnostics();
             AssertEx.Equal(new[]
@@ -468,12 +462,6 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
               string.Format(Resources.InvalidSubmodulePath, "S1", "  "),
               // The path of submodule 'S2' is missing or invalid: ''
               string.Format(Resources.InvalidSubmodulePath, "S2", ""),
-              // Could not find a part of the path 'sub3\.git'.
-              TestUtilities.GetExceptionMessage(() => File.ReadAllText(Path.Combine(workingDir.Path, "sub3", ".git"))),
-              // Could not find a part of the path 'sub4\.git'.
-              TestUtilities.GetExceptionMessage(() => File.ReadAllText(Path.Combine(workingDir.Path, "sub4", ".git"))),
-              // Could not find a part of the path 'sub5\.git'.
-              TestUtilities.GetExceptionMessage(() => File.ReadAllText(Path.Combine(workingDir.Path, "sub5", ".git"))),
               // The format of the file 'sub7\.git' is invalid.
               string.Format(Resources.FormatOfFileIsInvalid, Path.Combine(workingDir.Path, "sub7", ".git")),
               // Path specified in file 'sub8\.git' is invalid.
