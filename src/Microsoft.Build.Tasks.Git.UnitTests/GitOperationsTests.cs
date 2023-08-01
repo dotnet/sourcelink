@@ -534,8 +534,9 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             }, warnings.Select(TestUtilities.InspectDiagnostic));
         }
 
-        [Fact]
-        public void GetSourceRoots_RepoWithCommitsWithSubmodules()
+        [Theory]
+        [CombinatorialData]
+        public void GetSourceRoots_RepoWithCommitsWithSubmodules(bool warnOnMissingCommit)
         {
             var repo = CreateRepository(
                 commitSha: "0000000000000000000000000000000000000000",
@@ -547,7 +548,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                     CreateSubmodule("2", "sub/2", "http://2.com", "2222222222222222222222222222222222222222")));
 
             var warnings = new List<(string, object?[])>();
-            var items = GitOperations.GetSourceRoots(repo, remoteName: null, warnOnMissingCommit: false, (message, args) => warnings.Add((message, args)));
+            var items = GitOperations.GetSourceRoots(repo, remoteName: null, warnOnMissingCommit, (message, args) => warnings.Add((message, args)));
 
             AssertEx.Equal(new[]
             {
@@ -555,8 +556,15 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 $@"'{_workingDir}{s}sub{s}2{s}' SourceControl='git' RevisionId='2222222222222222222222222222222222222222' NestedRoot='sub/2/' ContainingRoot='{_workingDir}{s}' ScmRepositoryUrl='http://github.com/sub-2'",
             }, items.Select(TestUtilities.InspectSourceRoot));
 
-            AssertEx.Equal(new[] { string.Format(Resources.SourceCodeWontBeAvailableViaSourceLink, string.Format(Resources.SubmoduleWithoutCommit, "1")) }, 
-                warnings.Select(TestUtilities.InspectDiagnostic));
+            if (warnOnMissingCommit)
+            {
+                AssertEx.Equal(new[] { string.Format(Resources.SourceCodeWontBeAvailableViaSourceLink, string.Format(Resources.SubmoduleWithoutCommit, "1")) },
+                    warnings.Select(TestUtilities.InspectDiagnostic));
+            }
+            else
+            {
+                Assert.Empty(warnings);
+            }
         }
 
         [Fact]

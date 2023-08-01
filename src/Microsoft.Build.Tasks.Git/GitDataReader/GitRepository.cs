@@ -182,12 +182,12 @@ namespace Microsoft.Build.Tasks.Git
             => _referenceResolver.ResolveHeadReference();
 
         /// <summary>
-        /// Reads and resolves the commit SHA of the current HEAD tip of the specified submodule.
+        /// Creates <see cref="GitReferenceResolver"/> for a submodule located in the specified <paramref name="submoduleWorkingDirectoryFullPath"/>.
         /// </summary>
         /// <exception cref="IOException"/>
         /// <exception cref="InvalidDataException"/>
-        /// <returns>Null if the HEAD tip reference can't be resolved.</returns>
-        internal string? ReadSubmoduleHeadCommitSha(string submoduleWorkingDirectoryFullPath)
+        /// <returns>Null if the submodule can't be located.</returns>
+        public static GitReferenceResolver? GetSubmoduleReferenceResolver(string submoduleWorkingDirectoryFullPath)
         {
             // Submodules don't usually have their own .git directories but this is still legal.
             // This can occur with older versions of Git or other tools, or when a user clones one
@@ -195,15 +195,17 @@ namespace Microsoft.Build.Tasks.Git
             // See https://git-scm.com/docs/gitsubmodules#_forms for more details.
             var dotGitPath = Path.Combine(submoduleWorkingDirectoryFullPath, GitDirName);
 
-            var gitDirectory = Directory.Exists(dotGitPath) ? dotGitPath : ReadDotGitFile(dotGitPath);
-            if (!IsGitDirectory(gitDirectory, out var commonDirectory))
+            var gitDirectory =
+                Directory.Exists(dotGitPath) ? dotGitPath :
+                File.Exists(dotGitPath) ? ReadDotGitFile(dotGitPath) : null;
+
+            if (gitDirectory == null || !IsGitDirectory(gitDirectory, out var commonDirectory))
             {
                 return null;
             }
 
-            var resolver = new GitReferenceResolver(gitDirectory, commonDirectory);
-            return resolver.ResolveHeadReference();
-        } 
+            return new GitReferenceResolver(gitDirectory, commonDirectory);
+        }
 
         private string GetWorkingDirectory()
             => WorkingDirectory ?? throw new InvalidOperationException(Resources.RepositoryDoesNotHaveWorkingDirectory);
@@ -263,7 +265,15 @@ namespace Microsoft.Build.Tasks.Git
                 string? headCommitSha;
                 try
                 {
-                    headCommitSha = ReadSubmoduleHeadCommitSha(fullPath);
+                    var resolver = GetSubmoduleReferenceResolver(fullPath);
+                    if (resolver == null)
+                    {
+                        // If we can't locate the submodule directory then it won't have any source files
+                        // and we can safely ignore the submodule.
+                        continue;
+                    }
+
+                    headCommitSha = resolver.ResolveHeadReference();
                 }
                 catch (Exception e) when (e is IOException or InvalidDataException)
                 {

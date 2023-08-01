@@ -514,8 +514,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             submoduleRefsHeadsDir.CreateFile("master").WriteAllText("0000000000000000000000000000000000000000");
             submoduleGitDir.CreateFile("HEAD").WriteAllText("ref: refs/heads/master");
 
-            var repository = new GitRepository(GitEnvironment.Empty, GitConfig.Empty, gitDir.Path, gitDir.Path, workingDir.Path);
-            Assert.Equal("0000000000000000000000000000000000000000", repository.ReadSubmoduleHeadCommitSha(submoduleWorkingDir.Path));
+            Assert.Equal("0000000000000000000000000000000000000000",
+                GitRepository.GetSubmoduleReferenceResolver(submoduleWorkingDir.Path)?.ResolveHeadReference());
         }
 
         [Fact]
@@ -534,8 +534,22 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             oldStyleSubmoduleRefsHeadDir.CreateFile("branch1").WriteAllText("1111111111111111111111111111111111111111");
             oldStyleSubmoduleGitDir.CreateFile("HEAD").WriteAllText("ref: refs/heads/branch1");
 
-            var repository = new GitRepository(GitEnvironment.Empty, GitConfig.Empty, gitDir.Path, gitDir.Path, workingDir.Path);
-            Assert.Equal("1111111111111111111111111111111111111111", repository.ReadSubmoduleHeadCommitSha(oldStyleSubmoduleWorkingDir.Path));
+            Assert.Equal("1111111111111111111111111111111111111111",
+                GitRepository.GetSubmoduleReferenceResolver(oldStyleSubmoduleWorkingDir.Path)?.ResolveHeadReference());
+        }
+
+        [Fact]
+        public void GetSubmoduleHeadCommitSha_NoGitFile()
+        {
+            using var temp = new TempRoot();
+
+            var gitDir = temp.CreateDirectory();
+            var workingDir = temp.CreateDirectory();
+
+            var submoduleGitDir = temp.CreateDirectory();
+            var submoduleWorkingDir = workingDir.CreateDirectory("sub").CreateDirectory("abc");
+
+            Assert.Null(GitRepository.GetSubmoduleReferenceResolver(submoduleWorkingDir.Path)?.ResolveHeadReference());
         }
     }
 }
