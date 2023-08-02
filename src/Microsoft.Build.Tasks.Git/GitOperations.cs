@@ -280,8 +280,11 @@ namespace Microsoft.Build.Tasks.Git
                 var commitSha = submodule.HeadCommitSha;
                 if (commitSha == null)
                 {
-                    logWarning(Resources.SourceCodeWontBeAvailableViaSourceLink, 
-                        new[] { string.Format(Resources.SubmoduleWithoutCommit, new[] { submodule.Name }) });
+                    if (warnOnMissingCommit)
+                    {
+                        logWarning(Resources.SourceCodeWontBeAvailableViaSourceLink,
+                            new[] { string.Format(Resources.SubmoduleWithoutCommit, new[] { submodule.Name }) });
+                    }
 
                     continue;
                 }
