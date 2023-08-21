@@ -22,13 +22,13 @@ namespace Microsoft.SourceLink.AzureRepos.Git
         {
             var gitHost = gitUri.GetHost();
             return AzureDevOpsUrlParser.IsVisualStudioHostedServer(gitHost) ?
-                new Uri($"{gitUri.Scheme}://{gitHost.Substring(0, gitHost.IndexOf('.'))}.{authority}", UriKind.Absolute) :
+                new Uri($"{gitUri.Scheme}://{gitHost[..gitHost.IndexOf('.')]}.{authority}", UriKind.Absolute) :
                 new Uri($"{gitUri.Scheme}://{authority}", UriKind.Absolute);
         }
 
         // Repository URL already contains account in case of VS host. Don't add it like we do when the content URL is inferred from host name.
         protected override Uri GetDefaultContentUriFromRepositoryUri(Uri repositoryUri)
-            => new Uri($"{repositoryUri.Scheme}://{repositoryUri.GetAuthority()}", UriKind.Absolute);
+            => new($"{repositoryUri.Scheme}://{repositoryUri.GetAuthority()}", UriKind.Absolute);
 
         protected override string? BuildSourceLinkUrl(Uri contentUri, Uri gitUri, string relativeUrl, string revisionId, ITaskItem? hostItem)
         {
@@ -73,11 +73,7 @@ namespace Microsoft.SourceLink.AzureRepos.Git
                         return false;
                     }
 
-                    if (map == null)
-                    {
-                        map = new Dictionary<Uri, Uri>();
-                    }
-
+                    map ??= new Dictionary<Uri, Uri>();
                     map[originalUri] = mappedUri;
                 }
 

@@ -24,7 +24,7 @@ namespace Microsoft.SourceLink.IntegrationTests
         [ConditionalFact(typeof(DotNetSdkAvailable))]
         public void GenerateSourceLinkFileTarget_EnableSourceLinkCondition()
         {
-            GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, "http://github.com/test-org/test-repo");
+            GitUtilities.CreateGitRepository(ProjectDir.Path, [ProjectFileName], "http://github.com/test-org/test-repo");
 
             VerifyValues(
                 customProps: @"
@@ -41,31 +41,31 @@ namespace Microsoft.SourceLink.IntegrationTests
   </PropertyGroup>
 </Target>
 ",
-                targets: new[]
-                {
+                targets:
+                [
                     "Build"
-                },
-                expressions: new[]
-                {
+                ],
+                expressions:
+                [
                     "@(SourceRoot)",
                     "$(Test_DefaultEnableSourceControlManagerQueries)",
                     "$(Test_DefaultEnableSourceLink)",
                     "$(SourceLink)"
-                },
-                expectedResults: new[]
-                {
+                ],
+                expectedResults:
+                [
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     "true",
                     "true",
                     ""
-                });
+                ]);
         }
 
         [ConditionalFact(typeof(DotNetSdkAvailable))]
         public void DefaultValuesForEnableProperties_DesignTimeBuild()
         {
-            GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, "http://github.com/test-org/test-repo");
+            GitUtilities.CreateGitRepository(ProjectDir.Path, [ProjectFileName], "http://github.com/test-org/test-repo");
 
             VerifyValues(
                 customProps: @"
@@ -76,31 +76,31 @@ namespace Microsoft.SourceLink.IntegrationTests
 
 ",
                 customTargets: "",
-                targets: new[]
-                {
+                targets:
+                [
                     "Build"
-                },
-                expressions: new[]
-                {
+                ],
+                expressions:
+                [
                     "@(SourceRoot)",
                     "$(Test_DefaultEnableSourceControlManagerQueries)",
                     "$(Test_DefaultEnableSourceLink)",
                     "$(SourceLink)"
-                },
-                expectedResults: new[]
-                {
+                ],
+                expectedResults:
+                [
                     NuGetPackageFolders,
                     "",
                     "",
                     ""
-                },
+                ],
                 additionalCommandLineArgs: "/p:DesignTimeBuild=true");
         }
 
         [ConditionalFact(typeof(DotNetSdkAvailable))]
         public void DefaultValuesForEnableProperties_BuildingForLiveUnitTesting()
         {
-            GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, "http://github.com/test-org/test-repo");
+            GitUtilities.CreateGitRepository(ProjectDir.Path, [ProjectFileName], "http://github.com/test-org/test-repo");
 
             VerifyValues(
                 customProps: @"
@@ -111,24 +111,24 @@ namespace Microsoft.SourceLink.IntegrationTests
 
 ",
                 customTargets: "",
-                targets: new[]
-                {
+                targets:
+                [
                     "Build"
-                },
-                expressions: new[]
-                {
+                ],
+                expressions:
+                [
                     "@(SourceRoot)",
                     "$(Test_DefaultEnableSourceControlManagerQueries)",
                     "$(Test_DefaultEnableSourceLink)",
                     "$(SourceLink)"
-                },
-                expectedResults: new[]
-                {
+                ],
+                expectedResults:
+                [
                     NuGetPackageFolders,
                     "",
                     "",
                     ""
-                },
+                ],
                 additionalCommandLineArgs: "/p:BuildingForLiveUnitTesting=true");
         }
     }

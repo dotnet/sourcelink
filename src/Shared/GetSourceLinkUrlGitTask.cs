@@ -52,7 +52,7 @@ namespace Microsoft.Build.Tasks.SourceControl
         /// Use the <paramref name="gitUri"/> scheme. Some servers might not support https, so we can't default to https.
         /// </remarks>
         protected virtual Uri GetDefaultContentUriFromHostUri(string authority, Uri gitUri)
-            => new Uri($"{gitUri.Scheme}://{authority}", UriKind.Absolute);
+            => new($"{gitUri.Scheme}://{authority}", UriKind.Absolute);
 
         protected virtual Uri GetDefaultContentUriFromRepositoryUri(Uri repositoryUri)
             => GetDefaultContentUriFromHostUri(repositoryUri.GetAuthority(), repositoryUri);
@@ -137,7 +137,7 @@ namespace Microsoft.Build.Tasks.SourceControl
             const string gitUrlSuffix = ".git";
             if (relativeUrl.EndsWith(gitUrlSuffix, StringComparison.Ordinal) && !relativeUrl.EndsWith("/" + gitUrlSuffix, StringComparison.Ordinal))
             {
-                relativeUrl = relativeUrl.Substring(0, relativeUrl.Length - gitUrlSuffix.Length);
+                relativeUrl = relativeUrl[..^gitUrlSuffix.Length];
             }
 
             SourceLinkUrl = BuildSourceLinkUrl(contentUri, gitUri, relativeUrl, revisionId, hostItem);

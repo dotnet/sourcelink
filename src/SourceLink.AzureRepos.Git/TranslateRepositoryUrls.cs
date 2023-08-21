@@ -32,7 +32,7 @@ namespace Microsoft.SourceLink.AzureRepos.Git
                 return null;
             }
 
-            var result = host.Substring(prefix.Length);
+            var result = host[prefix.Length..];
             if (isVisualStudioHost)
             {
                 result = account + "." + result;

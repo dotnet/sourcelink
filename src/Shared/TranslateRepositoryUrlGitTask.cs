@@ -49,7 +49,7 @@ namespace Microsoft.Build.Tasks.SourceControl
             var hostUris = GetHostUris().ToArray();
             if (hostUris.Length == 0)
             {
-                Log.LogMessage(CommonResources.NoWellFormedHostUrisSpecified, "'" + string.Join("','", (Hosts ?? Array.Empty<ITaskItem>()).Select(h => h.ItemSpec)) + "'");
+                Log.LogMessage(CommonResources.NoWellFormedHostUrisSpecified, "'" + string.Join("','", (Hosts ?? []).Select(h => h.ItemSpec)) + "'");
                 return;
             }
 

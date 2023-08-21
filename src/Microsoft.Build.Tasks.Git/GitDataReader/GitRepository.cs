@@ -25,7 +25,7 @@ namespace Microsoft.Build.Tasks.Git
         private const string GitModulesFileName = ".gitmodules";
 
         private static readonly ImmutableArray<string> s_knownExtensions =
-            ImmutableArray.Create("noop", "preciousObjects", "partialclone", "worktreeConfig");
+            ["noop", "preciousObjects", "partialclone", "worktreeConfig"];
 
         public GitConfig Config { get; }
 
@@ -231,7 +231,7 @@ namespace Microsoft.Build.Tasks.Git
             var submoduleConfig = ReadSubmoduleConfig();
             if (submoduleConfig == null)
             {
-                return (ImmutableArray<GitSubmodule>.Empty, ImmutableArray<string>.Empty);
+                return ([], []);
             }
 
             ImmutableArray<string>.Builder? lazyDiagnostics = null;
@@ -284,7 +284,7 @@ namespace Microsoft.Build.Tasks.Git
                 builder.Add(new GitSubmodule(name, path, fullPath, url, headCommitSha));
             }
 
-            return (builder.ToImmutable(), (lazyDiagnostics != null) ? lazyDiagnostics.ToImmutable() : ImmutableArray<string>.Empty);
+            return (builder.ToImmutable(), (lazyDiagnostics != null) ? lazyDiagnostics.ToImmutable() : []);
         }
 
         // internal for testing
@@ -455,7 +455,7 @@ namespace Microsoft.Build.Tasks.Git
                 throw new InvalidDataException(string.Format(Resources.FormatOfFileIsInvalid, path));
             }
 
-            var link = content.Substring(GitDirPrefix.Length).TrimEnd(CharUtils.AsciiWhitespace);
+            var link = content[GitDirPrefix.Length..].TrimEnd(CharUtils.AsciiWhitespace);
 
             try
             {

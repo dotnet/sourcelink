@@ -36,7 +36,7 @@ namespace TestUtilities
 
         private class LCS<T> : LongestCommonSubsequence<IList<T>>
         {
-            public static readonly LCS<T> Default = new LCS<T>((left, right) => EqualityComparer<T>.Default.Equals(left, right));
+            public static readonly LCS<T> Default = new((left, right) => EqualityComparer<T>.Default.Equals(left, right));
 
             private readonly Func<T, T, bool> _comparer;
 
@@ -83,7 +83,7 @@ namespace TestUtilities
             return string.Join(separator, lcs.CalculateDiff(expectedList, actualList, toString));
         }
 
-        private static readonly char[] s_lineSplitChars = new[] { '\r', '\n' };
+        private static readonly char[] s_lineSplitChars = ['\r', '\n'];
 
         public static string[] Lines(string s)
         {

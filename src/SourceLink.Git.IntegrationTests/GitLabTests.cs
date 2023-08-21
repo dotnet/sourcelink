@@ -22,7 +22,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             var repoUrl = "https://噸.com/test-org/test-%72epo\u1234%24%2572%2F";
             var repoName = "test-repo\u1234%24%2572%2F";
 
-            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, [ProjectFileName], repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -35,27 +35,27 @@ namespace Microsoft.SourceLink.IntegrationTests
 </ItemGroup>
 ",
                 customTargets: "",
-                targets: new[]
-                {
+                targets:
+                [
                     "Build", "Pack"
-                },
-                expressions: new[]
-                {
+                ],
+                expressions:
+                [
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)"
-                },
-                expectedResults: new[]
-                {
+                ],
+                expectedResults:
+                [
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://噸.com/test-org/{repoName}/-/raw/{commitSha}/*",
                     s_relativeSourceLinkJsonPath,
                     $"https://噸.com/test-org/{repoName}",
                     $"https://噸.com/test-org/{repoName}"
-                });
+                ]);
 
             AssertEx.AreEqual(
                 $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://噸.com/test-org/{repoName}/-/raw/{commitSha}/*""}}}}",
@@ -80,7 +80,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             var repoUrl = "test-user@噸.com:test-org/test-%72epo\u1234%24%2572%2F";
             var repoName = "test-repo\u1234%24%2572%2F";
 
-            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, [ProjectFileName], repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -93,27 +93,27 @@ namespace Microsoft.SourceLink.IntegrationTests
 </ItemGroup>
 ",
                 customTargets: "",
-                targets: new[]
-                {
+                targets:
+                [
                     "Build", "Pack"
-                },
-                expressions: new[]
-                {
+                ],
+                expressions:
+                [
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)"
-                },
-                expectedResults: new[]
-                {
+                ],
+                expectedResults:
+                [
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://噸.com/test-org/{repoName}/-/raw/{commitSha}/*",
                     s_relativeSourceLinkJsonPath,
                     $"https://噸.com/test-org/{repoName}",
                     $"https://噸.com/test-org/{repoName}"
-                });
+                ]);
 
             AssertEx.AreEqual(
                 $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://噸.com/test-org/{repoName}/-/raw/{commitSha}/*""}}}}",
@@ -139,7 +139,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             var repoUrl = "http://噸.com/test-org/test-%72epo\u1234%24%2572%2F";
             var repoName = "test-repo\u1234%24%2572%2F";
 
-            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, [ProjectFileName], repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -149,22 +149,22 @@ namespace Microsoft.SourceLink.IntegrationTests
 </PropertyGroup>
 ",
                 customTargets: "",
-                targets: new[]
-                {
+                targets:
+                [
                     "Build", "Pack"
-                },
-                expressions: new[]
-                {
+                ],
+                expressions:
+                [
                     "@(SourceRoot->'%(SourceLinkUrl)')",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)"
-                },
-                expectedResults: new[]
-                {
+                ],
+                expectedResults:
+                [
                     $"http://噸.com/test-org/{repoName}/-/raw/{commitSha}/*",
                     $"http://噸.com/test-org/{repoName}",
                     $"http://噸.com/test-org/{repoName}"
-                });
+                ]);
         }
     }
 }

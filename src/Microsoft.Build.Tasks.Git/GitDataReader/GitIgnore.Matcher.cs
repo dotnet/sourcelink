@@ -32,7 +32,7 @@ namespace Microsoft.Build.Tasks.Git
                 Ignore = ignore;
                 _patternGroups = new Dictionary<string, PatternGroup?>(StringComparer.Ordinal);
                 _directoryIgnoreStateCache = new Dictionary<string, bool>(Ignore.PathComparer);
-                _reusableGroupList = new List<PatternGroup>();
+                _reusableGroupList = [];
             }
 
             // test only:
@@ -55,7 +55,7 @@ namespace Microsoft.Build.Tasks.Git
                 }
                 else
                 {
-                    var parentDirectory = directory.Substring(0, directory.LastIndexOf('/', directory.Length - 2, directory.Length - 1) + 1);
+                    var parentDirectory = directory[..(directory.LastIndexOf('/', directory.Length - 2, directory.Length - 1) + 1)];
                     parent = GetPatternGroup(parentDirectory);
                 }
 
@@ -172,8 +172,8 @@ namespace Microsoft.Build.Tasks.Git
                 }
                 else
                 {
-                    directoryWithSlash = fullPath.Substring(0, i + 1);
-                    fileName = fullPath.Substring(i + 1);
+                    directoryWithSlash = fullPath[..(i + 1)];
+                    fileName = fullPath[(i + 1)..];
                 }
             }
 
@@ -222,7 +222,7 @@ namespace Microsoft.Build.Tasks.Git
                         }
 
                         string matchPath = pattern.IsFullPathPattern ?
-                            lazyRelativePath ??= normalizedPosixPath.Substring(patternGroup.ContainingDirectory.Length) :
+                            lazyRelativePath ??= normalizedPosixPath[patternGroup.ContainingDirectory.Length..] :
                             fileName;
 
                         if (Glob.IsMatch(pattern.Glob, matchPath, Ignore.IgnoreCase, matchWildCardWithDirectorySeparator: false))

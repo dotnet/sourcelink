@@ -20,7 +20,7 @@ namespace Microsoft.SourceLink.GitWeb
         protected override string ProviderDisplayName => "GitWeb";
 
         protected override Uri GetDefaultContentUriFromHostUri(string authority, Uri gitUri)
-            => new Uri($"https://{authority}/gitweb", UriKind.Absolute);
+            => new($"https://{authority}/gitweb", UriKind.Absolute);
 
         protected override string BuildSourceLinkUrl(Uri contentUri, Uri gitUri, string relativeUrl, string revisionId, ITaskItem? hostItem)
         {

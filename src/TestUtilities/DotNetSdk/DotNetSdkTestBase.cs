@@ -22,7 +22,7 @@ namespace TestUtilities
             public override string SkipReason => "The location of dotnet SDK can't be determined (DOTNET_INSTALL_DIR environment variable is unset)";
         }
 
-        public readonly TempRoot Temp = new TempRoot();
+        public readonly TempRoot Temp = new();
 
         private static readonly string s_dotnetExeName;
         private static readonly string? s_dotnetInstallDir;
@@ -269,8 +269,8 @@ $@"<Project>
                     int index = expected.IndexOf(ellipsis);
                     return (index == -1) ? expected == actual :
                         actual.Length > expected.Length - ellipsis.Length &&
-                        expected.Substring(0, index) == actual.Substring(0, index) &&
-                        expected.Substring(index + ellipsis.Length) == actual.Substring(actual.Length - (expected.Length - index - ellipsis.Length));
+                        expected[..index] == actual[..index] &&
+                        expected[(index + ellipsis.Length)..] == actual[^(expected.Length - index - ellipsis.Length)..];
                 }
 
                 var outputLines = buildResult.Output.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
@@ -291,7 +291,7 @@ $@"<Project>
                 }
 
                 var actualWarnings = getDiagnostics(outputLines, error: false);
-                AssertEx.Equal(expectedWarnings ?? Array.Empty<string>(), actualWarnings, diagnosticsEqual);
+                AssertEx.Equal(expectedWarnings ?? [], actualWarnings, diagnosticsEqual);
 
                 if (expectedBuildOutputFilter != null)
                 {

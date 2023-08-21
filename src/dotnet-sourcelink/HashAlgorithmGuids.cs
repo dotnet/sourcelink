@@ -7,7 +7,7 @@ namespace Microsoft.SourceLink.Tools
 {
     internal static class HashAlgorithmGuids
     {
-        public static readonly Guid MD5 = new Guid("406ea660-64cf-4c82-b6f0-42d48172a799");
+        public static readonly Guid MD5 = new("406ea660-64cf-4c82-b6f0-42d48172a799");
         public static readonly Guid Sha1 = new("ff1816ec-aa5e-4d10-87f7-6f4963833460");
         public static readonly Guid Sha256 = new("8829d00f-11b8-4213-878b-770e8597ac16");
         

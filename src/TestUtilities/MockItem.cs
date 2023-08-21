@@ -12,7 +12,7 @@ namespace TestUtilities
 {
     public sealed class MockItem : ITaskItem2
     {
-        private readonly Dictionary<string, string> _escapedMetadata = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _escapedMetadata = new();
 
         public static string AdjustSeparators(string path)
             => Path.DirectorySeparatorChar == '/' ? path.Replace('\\', '/') : path;

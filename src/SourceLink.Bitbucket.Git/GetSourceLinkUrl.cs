@@ -22,7 +22,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git
 
         private const string IsEnterpriseEditionMetadataName = "EnterpriseEdition";
         private const string VersionMetadataName = "Version";
-        private static readonly Version s_versionWithNewUrlFormat = new Version(4, 7);
+        private static readonly Version s_versionWithNewUrlFormat = new(4, 7);
 
         protected override string? BuildSourceLinkUrl(Uri contentUri, Uri gitUri, string relativeUrl, string revisionId, ITaskItem? hostItem)
         {
@@ -106,7 +106,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git
         private static string BuildSourceLinkUrlForCloudEdition(Uri contentUri, string relativeUrl, string revisionId)
         {
             // change bitbucket.org to api.bitbucket.org
-            UriBuilder apiUriBuilder = new UriBuilder(contentUri);
+            UriBuilder apiUriBuilder = new(contentUri);
             apiUriBuilder.Host = $"api.{apiUriBuilder.Host}";
 
             string relativeApiUrl = UriUtilities.Combine(UriUtilities.Combine("2.0/repositories", relativeUrl), $"src/{revisionId}/*");

@@ -36,14 +36,14 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 gitDir, 
                 gitDir,
                 workingDir,
-                submodules.IsDefault ? ImmutableArray<GitSubmodule>.Empty : submodules,
-                submoduleDiagnostics: ImmutableArray<string>.Empty,
+                submodules.IsDefault ? [] : submodules,
+                submoduleDiagnostics: [],
                 ignore ?? new GitIgnore(root: null, workingDir, ignoreCase: false),
                 commitSha);
         }
 
         private GitSubmodule CreateSubmodule(string name, string relativePath, string url, string? headCommitSha, string? containingRepositoryWorkingDir = null)
-            => new GitSubmodule(name, relativePath, Path.GetFullPath(Path.Combine(containingRepositoryWorkingDir ?? _workingDir, relativePath)), url, headCommitSha);
+            => new(name, relativePath, Path.GetFullPath(Path.Combine(containingRepositoryWorkingDir ?? _workingDir, relativePath)), url, headCommitSha);
 
         internal static GitIgnore CreateIgnore(string workingDirectory, string[] filePathsRelativeToWorkingDirectory)
         {
@@ -57,7 +57,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
         private static GitVariableName CreateVariableName(string str)
         {
-            var parts = str.Split(new[] { '.' }, 3);
+            var parts = str.Split(['.'], 3);
             return parts.Length switch
             {
                 2 => new GitVariableName(parts[0], "", parts[1]),
@@ -67,11 +67,11 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         }
 
         private static GitConfig CreateConfig(params (string Name, string Value)[] variables)
-            => new GitConfig(ImmutableDictionary.CreateRange(
+            => new(ImmutableDictionary.CreateRange(
                 variables.Select(v => KVP(CreateVariableName(v.Name), ImmutableArray.Create(v.Value)))));
 
         private static GitConfig CreateConfig(params (string Name, string[] Values)[] variables)
-            => new GitConfig(ImmutableDictionary.CreateRange(
+            => new(ImmutableDictionary.CreateRange(
                 variables.Select(v => KVP(CreateVariableName(v.Name), ImmutableArray.CreateRange(v.Values)))));
 
         [Fact]
@@ -80,7 +80,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var repo = CreateRepository();
             var warnings = new List<(string, object?[])>();
             Assert.Null(GitOperations.GetRepositoryUrl(repo, remoteName: null, logWarning: (message, args) => warnings.Add((message, args))));
-            AssertEx.Equal(new[] { string.Format(Resources.RepositoryHasNoRemote, repo.WorkingDirectory) }, warnings.Select(TestUtilities.InspectDiagnostic));
+            AssertEx.Equal([string.Format(Resources.RepositoryHasNoRemote, repo.WorkingDirectory)], warnings.Select(TestUtilities.InspectDiagnostic));
         }
 
         [Fact]
@@ -240,7 +240,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             var warnings = new List<(string, object?[])>();
             Assert.Equal("http://github.com/repo", GitOperations.GetRepositoryUrl(repo, remoteName: "myremote", logWarning: (message, args) => warnings.Add((message, args))));
-            AssertEx.Equal(new[] { string.Format(Resources.RepositoryDoesNotHaveSpecifiedRemote, repo.WorkingDirectory, "myremote", "origin") }, warnings.Select(TestUtilities.InspectDiagnostic));
+            AssertEx.Equal([string.Format(Resources.RepositoryDoesNotHaveSpecifiedRemote, repo.WorkingDirectory, "myremote", "origin")], warnings.Select(TestUtilities.InspectDiagnostic));
         }
 
         /// <summary>
@@ -262,7 +262,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             var warnings = new List<(string, object?[])>();
             Assert.Equal(new Uri(mainWorkingDir.Path).AbsoluteUri, GitOperations.GetRepositoryUrl(repo, remoteName: null, logWarning: (message, args) => warnings.Add((message, args))));
-            AssertEx.Equal(new[] { string.Format(Resources.RepositoryHasNoRemote, mainWorkingDir.Path) }, warnings.Select(TestUtilities.InspectDiagnostic));
+            AssertEx.Equal([string.Format(Resources.RepositoryHasNoRemote, mainWorkingDir.Path)], warnings.Select(TestUtilities.InspectDiagnostic));
         }
 
         /// <summary>
@@ -290,7 +290,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             var warnings = new List<(string, object?[])>();
             Assert.Null(GitOperations.GetRepositoryUrl(repo, remoteName: null, logWarning: (message, args) => warnings.Add((message, args))));
-            AssertEx.Equal(new[] { string.Format(Resources.UnableToLocateRepository, gitDir2.Path) }, warnings.Select(TestUtilities.InspectDiagnostic));
+            AssertEx.Equal([string.Format(Resources.UnableToLocateRepository, gitDir2.Path)], warnings.Select(TestUtilities.InspectDiagnostic));
         }
 
         /// <summary>
@@ -311,7 +311,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             var warnings = new List<(string, object?[])>();
             Assert.Equal(new Uri(mainWorkingDir.Path).AbsoluteUri, GitOperations.GetRepositoryUrl(repo, remoteName: null, logWarning: (message, args) => warnings.Add((message, args))));
-            AssertEx.Equal(new[] { string.Format(Resources.RepositoryHasNoRemote, mainWorkingDir.Path) }, warnings.Select(TestUtilities.InspectDiagnostic));
+            AssertEx.Equal([string.Format(Resources.RepositoryHasNoRemote, mainWorkingDir.Path)], warnings.Select(TestUtilities.InspectDiagnostic));
         }
 
         [Fact]
@@ -332,7 +332,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             var warnings = new List<(string, object?[])>();
             Assert.Equal(new Uri(mainWorkingDir.Path).AbsoluteUri, GitOperations.GetRepositoryUrl(repo, remoteName: null, logWarning: (message, args) => warnings.Add((message, args))));
-            AssertEx.Equal(new[] { string.Format(Resources.RepositoryUrlEvaluationExceededMaximumAllowedDepth, "10") }, warnings.Select(TestUtilities.InspectDiagnostic));
+            AssertEx.Equal([string.Format(Resources.RepositoryUrlEvaluationExceededMaximumAllowedDepth, "10")], warnings.Select(TestUtilities.InspectDiagnostic));
         }
 
         [Theory]
@@ -458,7 +458,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var items = GitOperations.GetSourceRoots(repo, remoteName: null, warnOnMissingCommit, (message, args) => warnings.Add((message, args)));
 
             Assert.Empty(items);
-            AssertEx.Equal(warnOnMissingCommit ? new[] { Resources.RepositoryHasNoCommit } : Array.Empty<string>(), warnings.Select(TestUtilities.InspectDiagnostic));
+            AssertEx.Equal(warnOnMissingCommit ? [Resources.RepositoryHasNoCommit] : Array.Empty<string>(), warnings.Select(TestUtilities.InspectDiagnostic));
         }
 
         [Fact]
@@ -603,7 +603,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         }
 		
 		private static GitOperations.DirectoryNode CreateNode(string name, string? submoduleWorkingDirectory, List<GitOperations.DirectoryNode>? children = null)
-            => new GitOperations.DirectoryNode(name, children ?? new List<GitOperations.DirectoryNode>())
+            => new(name, children ?? new List<GitOperations.DirectoryNode>())
             {
                 Matcher = (submoduleWorkingDirectory != null) ? new Lazy<GitIgnore.Matcher?>(() =>
                     new GitIgnore.Matcher(new GitIgnore(null, submoduleWorkingDirectory, ignoreCase: false))) : null
@@ -722,15 +722,15 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 submodules: ImmutableArray.Create(
                     CreateSubmodule("1", "sub/1", "http://1.com", "1111111111111111111111111111111111111111"),
                     CreateSubmodule("2", "sub/2", "http://2.com", "2222222222222222222222222222222222222222")),
-                ignore: CreateIgnore(_workingDir, new[] { "c.cs", "p/d.cs", "sub/1/x.cs" }));
+                ignore: CreateIgnore(_workingDir, ["c.cs", "p/d.cs", "sub/1/x.cs"]));
 
             var subRoot1 = Path.Combine(_workingDir, "sub", "1");
             var subRoot2 = Path.Combine(_workingDir, "sub", "2");
 
             var subRepos = new Dictionary<string, GitRepository>()
             {
-                { subRoot1, CreateRepository(workingDir: subRoot1, commitSha: null, ignore: CreateIgnore(subRoot1, new[] { "obj/a.cs" })) },
-                { subRoot2, CreateRepository(workingDir: subRoot2, commitSha: null, ignore: CreateIgnore(subRoot2, new[] { "obj/b.cs" })) },
+                { subRoot1, CreateRepository(workingDir: subRoot1, commitSha: null, ignore: CreateIgnore(subRoot1, ["obj/a.cs"])) },
+                { subRoot2, CreateRepository(workingDir: subRoot2, commitSha: null, ignore: CreateIgnore(subRoot2, ["obj/b.cs"])) },
             };
 
             var actual = GitOperations.GetUntrackedFiles(repo,
@@ -763,15 +763,15 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 submodules: ImmutableArray.Create(
                     CreateSubmodule("1", "sub/1", "http://1.com", "1111111111111111111111111111111111111111"),
                     CreateSubmodule("2", "sub/2", "http://2.com", "2222222222222222222222222222222222222222")),
-                ignore: CreateIgnore(_workingDir, new[] { "c.cs", "sub/1/x.cs" }));
+                ignore: CreateIgnore(_workingDir, ["c.cs", "sub/1/x.cs"]));
 
             var subRoot1 = Path.Combine(s_root, "sub", "1");
             var subRoot2 = Path.Combine(s_root, "sub", "2");
 
             var subRepos = new Dictionary<string, GitRepository>()
             {
-                { subRoot1, CreateRepository(subRoot1, commitSha: null, ignore: CreateIgnore(subRoot1, new[] { "obj/a.cs" })) },
-                { subRoot2, CreateRepository(subRoot2, commitSha: null, ignore: CreateIgnore(subRoot2, new[] { "obj/b.cs" })) },
+                { subRoot1, CreateRepository(subRoot1, commitSha: null, ignore: CreateIgnore(subRoot1, ["obj/a.cs"])) },
+                { subRoot2, CreateRepository(subRoot2, commitSha: null, ignore: CreateIgnore(subRoot2, ["obj/b.cs"])) },
             };
 
             var actual = GitOperations.GetUntrackedFiles(repo,

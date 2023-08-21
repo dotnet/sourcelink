@@ -20,7 +20,7 @@ namespace Microsoft.Build.Tasks.SourceControl
         public static string Combine(string baseUrl, string relativeUrl)
             => string.IsNullOrEmpty(relativeUrl) ? baseUrl : 
                 baseUrl.EndsWith("/")
-                    ? (relativeUrl.StartsWith("/") ? baseUrl + relativeUrl.Substring(1) : baseUrl + relativeUrl)
+                    ? (relativeUrl.StartsWith("/") ? baseUrl + relativeUrl[1..] : baseUrl + relativeUrl)
                     : (relativeUrl.StartsWith("/") ? baseUrl + relativeUrl : baseUrl + "/" + relativeUrl);
 
         public static bool UrlStartsWith(string url, string prefix)
@@ -43,7 +43,7 @@ namespace Microsoft.Build.Tasks.SourceControl
             // required leading slash:
             if (relativeUrl.Length == 0 || relativeUrl == "/")
             {
-                parts = Array.Empty<string>();
+                parts = [];
                 return true;
             }
 
@@ -62,7 +62,7 @@ namespace Microsoft.Build.Tasks.SourceControl
                 end--;
             }
 
-            parts = relativeUrl.Substring(start, end - start + 1).Split(new[] { '/' });
+            parts = relativeUrl.Substring(start, end - start + 1).Split(['/']);
             return !parts.Any(part => part.Length == 0);
         }
 
