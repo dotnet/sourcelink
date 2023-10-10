@@ -7,9 +7,8 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GenerateResxSource>true</GenerateResxSource>
     
-    <!-- Produce snupkg in official builds (when not embedding PDBs to dlls) -->
+    <!-- Produce symbol packages in official builds (when not embedding PDBs to dlls) -->
     <IncludeSymbols Condition="'$(DebugType)' != 'embedded' and '$(UsingMicrosoftNoTargetsSdk)' != 'true'">true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
   
   <!--
