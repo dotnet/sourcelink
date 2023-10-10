@@ -7,7 +7,6 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GenerateResxSource>true</GenerateResxSource>
     
-    <!-- Produce symbol packages in official builds (when not embedding PDBs to dlls) -->
     <IncludeSymbols Condition="'$(DebugType)' != 'embedded' and '$(UsingMicrosoftNoTargetsSdk)' != 'true'">true</IncludeSymbols>
   </PropertyGroup>
   
