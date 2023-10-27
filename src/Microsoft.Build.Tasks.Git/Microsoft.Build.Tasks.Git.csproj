@@ -1,17 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <TargetFrameworks>net472;$(NetMinimum);$(NetCurrent)</TargetFrameworks>
-    <AutoGenerateAssemblyVersion>true</AutoGenerateAssemblyVersion>
-
-    <!-- NuGet: Using an explicit nuspec file to customize TFM directory -->
-    <IsPackable>true</IsPackable>
-    <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
-    <NuspecBasePath>$(OutputPath)</NuspecBasePath>
-
+    <TargetFrameworks>$(NetToolMinimum);$(NetFrameworkToolCurrent)</TargetFrameworks>
     <PackageDescription>MSBuild tasks providing git repository information.</PackageDescription>
     <PackageTags>MSBuild Tasks source control git</PackageTags>
-    <DevelopmentDependency>true</DevelopmentDependency>
-    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <IsBuildTaskProject>true</IsBuildTaskProject>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Build" Version="$(MicrosoftBuildVersion)" />
@@ -25,4 +18,5 @@
     <InternalsVisibleTo Include="Microsoft.Build.Tasks.Git.UnitTests" />
     <InternalsVisibleTo Include="Microsoft.SourceLink.Git.IntegrationTests" />
   </ItemGroup>
+
 </Project>

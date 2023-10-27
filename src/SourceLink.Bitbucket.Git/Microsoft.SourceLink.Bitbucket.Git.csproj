@@ -1,20 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <TargetFrameworks>net472;$(NetMinimum);$(NetCurrent)</TargetFrameworks>
-    <AutoGenerateAssemblyVersion>true</AutoGenerateAssemblyVersion>
-
-    <!-- Using an explicit nuspec file since NuGet Pack target currently doesn't support including dependencies in tools packages -->
-    <IsPackable>true</IsPackable>
-    <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
-    <NuspecBasePath>$(OutputPath)</NuspecBasePath>
-
+    <TargetFrameworks>$(NetToolMinimum);$(NetFrameworkToolCurrent)</TargetFrameworks>
     <PackageDescription>Generates source link for Bitbucket repositories.</PackageDescription>
     <PackageTags>MSBuild Tasks Bitbucket source link</PackageTags>
-    <DevelopmentDependency>true</DevelopmentDependency>
+    <IsBuildTaskProject>true</IsBuildTaskProject>
   </PropertyGroup>
+
   <Import Project="..\Common\GitProvider\Items.props" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Build.Tasks.Git\Microsoft.Build.Tasks.Git.csproj" Publish="false" />
+    <ProjectReference Include="..\SourceLink.Common\Microsoft.SourceLink.Common.csproj" Publish="false" />
+  </ItemGroup>
+
   <ItemGroup>
     <InternalsVisibleTo Include="Microsoft.SourceLink.Bitbucket.Git.UnitTests" />
     <InternalsVisibleTo Include="Microsoft.SourceLink.Git.IntegrationTests" />
   </ItemGroup>
+
 </Project>
