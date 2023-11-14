@@ -2,32 +2,34 @@
 
 Source Link is a language- and source-control agnostic system for providing first-class source debugging experiences for binaries. The goal of the project is to enable anyone building [NuGet libraries to provide source debugging](https://github.com/dotnet/designs/blob/main/accepted/2020/diagnostics/debugging-with-symbols-and-sources.md) for their users with almost no effort. Microsoft libraries, such as .NET Core and Roslyn have enabled Source Link. Source Link is supported by Microsoft.
 
-Source Link is a [set of packages](https://www.nuget.org/packages?q=Microsoft.SourceLink) and a [specification](https://github.com/dotnet/designs/blob/main/accepted/2020/diagnostics/source-link.md#source-link-file-specification) for describing source control metadata that can be embedded in symbols, binaries and packages.
+Source Link [specification](https://github.com/dotnet/designs/blob/main/accepted/2020/diagnostics/source-link.md#source-link-file-specification) describes source control metadata that can be embedded in symbols, binaries and packages to link them to their original sources.
 
 Visual Studio 15.3+ supports reading Source Link information from symbols while debugging. It downloads and displays the appropriate commit-specific source for users, such as from [raw.githubusercontent](https://raw.githubusercontent.com/dotnet/roslyn/681cbc414542ffb9fb13ded613d26a88ea73a44b/src/VisualStudio/Core/Def/Implementation/ProjectSystem/AbstractProject.cs), enabling breakpoints and all other sources debugging experience on arbitrary NuGet dependencies. Visual Studio 15.7+ supports downloading source files from private GitHub and Azure DevOps (former VSTS) repositories that require authentication.
 
 The [original Source Link implementation](https://github.com/ctaggart/SourceLink) was provided by [@ctaggart](https://github.com/ctaggart). Thanks! The .NET Team and Cameron worked together to make this implementation available in the .NET Foundation.
 
-> If you arrived here from the original Source Link documentation - you do not need to use `SourceLink.Create.CommandLine`. You only need to install the packages listed below.
+> If you arrived here from the original Source Link documentation - you do not need to use `SourceLink.Create.CommandLine`.
 
-## <a name="using-sourcelink">Using Source Link in .NET projects
+## Using Source Link in .NET projects
 
-You can enable Source Link experience in your own .NET project by setting a few properties and adding a PackageReference to a Source Link package:
+Starting with .NET 8, Source Link for the following source control providers is included in the .NET SDK and enabled by default:
+- [GitHub](http://github.com) or [GitHub Enterprise](https://enterprise.github.com/home) 
+- [Azure Repos](https://azure.microsoft.com/en-us/services/devops/repos) git repositories (formerly known as Visual Studio Team Services)
+- [GitLab](https://gitlab.com) 12.0+ (for older versions see [GitLab settings](#gitlab))
+- [Bitbucket](https://bitbucket.org/) 4.7+ (for older versions see [Bitbucket settings](#bitbucket))
+
+If your project uses .NET SDK 8+ and is hosted by the above providers it does not need to reference any Source Link packages or set any build properties.
+
+**Otherwise**, you can enable Source Link experience in your project by setting a few properties and adding a PackageReference to a Source Link package specific to the provider:
 
 ```xml
-<Project Sdk="Microsoft.NET.Sdk">
+<Project>
  <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
- 
     <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
  
     <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
-  
-    <!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing Source Link -->
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
   <ItemGroup>
     <!-- Add PackageReference specific for your source control provider (see below) --> 
@@ -35,11 +37,11 @@ You can enable Source Link experience in your own .NET project by setting a few 
 </Project>
 ```
 
-If you distribute the library via a package published to [NuGet.org](http://nuget.org), it is recommended to build a [symbol package](https://docs.microsoft.com/en-us/nuget/create-packages/symbol-packages-snupkg) and publish it to [NuGet.org](http://nuget.org) as well. This will make the symbols available on [NuGet.org symbol server](https://docs.microsoft.com/en-us/nuget/create-packages/symbol-packages-snupkg#nugetorg-symbol-server), where the debugger can download it from when needed. Alternatively, you can [include the symbols in the main package](#alternative-pdb-distribution). However, doing so is not recommended as it increases the size of the package and thus restore time for projects that consume your package.
-
-Source Link packages are currently available for the following source control providers.
+Source Link packages are currently available for the source control providers listed below.
 
 > Source Link package is a development dependency, which means it is only used during build. It is therefore recommended to set `PrivateAssets` to `all` on the package reference. This prevents consuming projects of your nuget package from attempting to install Source Link.
+
+> Referencing any Source Link package in a .NET SDK 8+ project suppresses Source Link that is included in the SDK.
 
 ### github.com and GitHub Enterprise
 
@@ -48,7 +50,7 @@ For projects hosted by [GitHub](http://github.com) or [GitHub Enterprise](https:
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
@@ -58,7 +60,7 @@ For projects hosted by [Azure Repos](https://azure.microsoft.com/en-us/services/
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.AzureRepos.Git" Version="1.1.1" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.AzureRepos.Git" Version="8.0.0" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
@@ -69,7 +71,7 @@ For projects hosted by on-prem [Azure DevOps Server](https://azure.microsoft.com
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.AzureDevOpsServer.Git" Version="1.1.1" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.AzureDevOpsServer.Git" Version="8.0.0" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
@@ -97,11 +99,11 @@ For projects hosted by [GitLab](https://gitlab.com) reference [Microsoft.SourceL
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.GitLab" Version="1.1.1" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.GitLab" Version="8.0.0" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
-Starting with version 1.1.1, Microsoft.SourceLink.GitLab assumes GitLab version 12.0+ by default.
+Starting with version 8.0.0, Microsoft.SourceLink.GitLab assumes GitLab version 12.0+ by default.
 If your project is hosted by GitLab older than version 12.0 you must specify `SourceLinkGitLabHost` item group in addition to the package reference:
 
 ```xml
@@ -121,7 +123,7 @@ For projects in git repositories hosted on [Bitbucket.org](https://bitbucket.org
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.Bitbucket.Git" Version="1.1.1" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.Bitbucket.Git" Version="8.0.0" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
@@ -142,7 +144,7 @@ For projects hosted on-prem via [gitweb](https://git-scm.com/docs/gitweb) refere
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.GitWeb" Version="1.1.1" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.GitWeb" Version="8.0.0" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
@@ -152,13 +154,13 @@ For projects hosted on-prem via [gitea](https://gitea.io) reference [Microsoft.S
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Microsoft.SourceLink.Gitea" Version="1.1.1" PrivateAssets="All"/>
+  <PackageReference Include="Microsoft.SourceLink.Gitea" Version="8.0.0" PrivateAssets="All"/>
 </ItemGroup>
 ```
 
 ### Multiple providers, repositories with submodules
 
-If your repository contains submodules hosted by other git providers reference packages of all these providers. For example, projects in a repository hosted by Azure Repos that links a GitHub repository via a submodule should reference both [Microsoft.SourceLink.AzureRepos.Git](https://www.nuget.org/packages/Microsoft.SourceLink.AzureRepos.Git) and [Microsoft.SourceLink.GitHub](https://www.nuget.org/packages/Microsoft.SourceLink.GitHub) packages. [Additional configuration](https://github.com/dotnet/sourcelink/blob/main/docs/README.md#configuring-projects-with-multiple-sourcelink-providers) might be needed if multiple Source Link packages are used in the project.
+If your repository contains submodules hosted by multiple git providers reference packages of all these providers, unless the project uses .NET SDK 8+ and submodules only use providers for which Source Link support is included. For example, projects in a repository hosted by Azure Repos that links a GitHub repository via a submodule should reference both [Microsoft.SourceLink.AzureRepos.Git](https://www.nuget.org/packages/Microsoft.SourceLink.AzureRepos.Git) and [Microsoft.SourceLink.GitHub](https://www.nuget.org/packages/Microsoft.SourceLink.GitHub) packages. [Additional configuration](https://github.com/dotnet/sourcelink/blob/main/docs/README.md#configuring-projects-with-multiple-sourcelink-providers) might be needed if multiple Source Link packages are used in the project.
 
 ## Using Source Link in C++ projects
 
@@ -168,9 +170,9 @@ To add Source Link support to your native project add package references corresp
 
 ```xml
 <packages>
-  <package id="Microsoft.Build.Tasks.Git" version="1.1.1" targetFramework="native" developmentDependency="true" />
-  <package id="Microsoft.SourceLink.Common" version="1.1.1" targetFramework="native" developmentDependency="true" />
-  <package id="Microsoft.SourceLink.GitHub" version="1.1.1" targetFramework="native" developmentDependency="true" />
+  <package id="Microsoft.Build.Tasks.Git" version="8.0.0" targetFramework="native" developmentDependency="true" />
+  <package id="Microsoft.SourceLink.Common" version="8.0.0" targetFramework="native" developmentDependency="true" />
+  <package id="Microsoft.SourceLink.GitHub" version="8.0.0" targetFramework="native" developmentDependency="true" />
 </packages>
 ```
 
@@ -202,9 +204,11 @@ The VC++ linker supports `/SOURCELINK` [switch](https://docs.microsoft.com/en-us
 - Issue when building WPF projects with `/p:ContinuousIntegrationBuild=true`: https://github.com/dotnet/sourcelink/issues/91
 - Issue when building WPF projects with embedding sources on and `BaseIntermediateOutputPath` not a subdirectory of the project directory: https://github.com/dotnet/sourcelink/issues/492
 
-## Alternative PDB distribution
+## PDB distributions
 
-Prior availability of [NuGet.org symbol server](https://docs.microsoft.com/en-us/nuget/create-packages/symbol-packages-snupkg#nugetorg-symbol-server) the recommendation used to be to include the PDB in the main NuGet package by setting the following property in your project:
+If you distribute the library via a package published to [NuGet.org](http://nuget.org), it is recommended to build a [symbol package](https://docs.microsoft.com/en-us/nuget/create-packages/symbol-packages-snupkg) and publish it to [NuGet.org](http://nuget.org) as well. This will make the symbols available on [NuGet.org symbol server](https://docs.microsoft.com/en-us/nuget/create-packages/symbol-packages-snupkg#nugetorg-symbol-server), where the debugger can download it from when needed.
+
+Alternatively, Portable PDBs can be included in the main NuGet package by setting the following property in your project:
 
 ```xml
   <PropertyGroup>
@@ -212,19 +216,21 @@ Prior availability of [NuGet.org symbol server](https://docs.microsoft.com/en-us
   </PropertyGroup>  
 ```
 
-Including PDBs in the .nupkg is generally no longer recommended as it increases the size of the package and thus restore time for projects that consume your package, regardless of whether the user needs to debug through the source code of your library or not. That said, .snupkg symbol packages have some limitations:
+Keep in mind that including PDBs in the .nupkg increases the size of the package and thus restore time for projects that consume your package, regardless of whether the user needs to debug through the source code of your library or not.
 
-- They do not currently support Windows PDBs (generated by VC++, or for managed projects that set build property `DebugType` to `full`)
+.snupkg symbol packages have following limitations:
+
+- They do not support Windows PDBs (generated by VC++, or for managed projects that set build property `DebugType` to `full`)
 - They require the library to be built by newer C#/VB compiler (Visual Studio 2017 Update 9).
 - The consumer of the package also needs Visual Studio 2017 Update 9 debugger.
 - Not supported by [Azure DevOps Artifacts](https://azure.microsoft.com/en-us/services/devops/artifacts) service.
 
-Consider including PDBs in the main package only if it is not possible to use .snupkg for the above reasons. 
+Consider including PDBs in the main package if it is not possible to use .snupkg for the above reasons. 
 For managed projects, consider switching to Portable PDBs by setting `DebugType` property to `portable`. This is the default for .NET SDK projects, but not classic .NET projects.
 
 ## Builds
 
-Pre-release builds are available from Azure DevOps public feed: `https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-tools/nuget/v3/index.json` ([browse](https://dev.azure.com/dnceng/public/_packaging?_a=feed&feed=dotnet-tools)).
+Pre-release builds are available from Azure DevOps public feed: `https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet8/nuget/v3/index.json` ([browse](https://dev.azure.com/dnceng/public/_packaging?_a=feed&feed=dotnet8)).
 
 [![Build Status](https://dnceng.visualstudio.com/public/_apis/build/status/SourceLink%20PR?branchName=main)](https://dnceng.visualstudio.com/public/_build/latest?definitionId=297?branchName=main)
 
