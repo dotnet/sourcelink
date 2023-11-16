@@ -7,14 +7,13 @@
 
   <PropertyGroup>
     <!--
-      Do not query source control manager for any information when building in the IDE or for Live Unit Testing.
-      Features that need this information will be disabled if false.
+      Used to suppress querying source control and features that use the information (e.g. git commit SHA).
     -->
-    <EnableSourceControlManagerQueries Condition="'$(EnableSourceControlManagerQueries)' == '' and '$(DesignTimeBuild)' != 'true' and '$(BuildingForLiveUnitTesting)' != 'true'">true</EnableSourceControlManagerQueries>
-    
+    <EnableSourceControlManagerQueries Condition="'$(EnableSourceControlManagerQueries)' == ''">true</EnableSourceControlManagerQueries>
+
     <!--
       Do not generate SourceLink when building in the IDE or for Live Unit Testing.
     -->
     <EnableSourceLink Condition="'$(EnableSourceLink)' == '' and '$(DesignTimeBuild)' != 'true' and '$(BuildingForLiveUnitTesting)' != 'true'">true</EnableSourceLink>
-  </PropertyGroup>  
+  </PropertyGroup>
 </Project>
