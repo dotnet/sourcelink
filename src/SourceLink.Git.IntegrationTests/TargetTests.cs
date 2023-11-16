@@ -90,7 +90,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 expectedResults: new[]
                 {
                     NuGetPackageFolders,
-                    "",
+                    "True",
                     "",
                     ""
                 },
@@ -125,7 +125,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 expectedResults: new[]
                 {
                     NuGetPackageFolders,
-                    "",
+                    "True",
                     "",
                     ""
                 },
