@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29011.400
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34017.361
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Build.Tasks.Git", "src\Microsoft.Build.Tasks.Git\Microsoft.Build.Tasks.Git.csproj", "{A86F9DC3-9595-44AC-ACC6-025FB74813E6}"
 EndProject
@@ -33,7 +33,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.GitLab
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.GitLab.UnitTests", "src\SourceLink.GitLab.UnitTests\Microsoft.SourceLink.GitLab.UnitTests.csproj", "{46C6BD7C-ABB7-4444-B095-C63868FACC41}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{7621150D-714B-4C87-8834-199A0495B92F}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{7621150D-714B-4C87-8834-199A0495B92F}"
 	ProjectSection(SolutionItems) = preProject
 		src\Common\CommonResources.resx = src\Common\CommonResources.resx
 		src\Common\GetSourceLinkUrlGitTask.cs = src\Common\GetSourceLinkUrlGitTask.cs
@@ -75,11 +75,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.Gitee.UnitTests", "src\SourceLink.Gitee.UnitTests\Microsoft.SourceLink.Gitee.UnitTests.csproj", "{D647294C-40C0-4624-A76B-C4C276233609}"
 EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		src\SourceLink.Tools\Microsoft.SourceLink.Tools.projitems*{4376b613-cd5b-4274-9071-30989769b0b2}*SharedItemsImports = 5
-		src\SourceLink.Tools\Microsoft.SourceLink.Tools.projitems*{5df76cc2-5f0e-45a6-ad56-6bbbccbc1a78}*SharedItemsImports = 13
-		src\SourceLink.Tools\Microsoft.SourceLink.Tools.projitems*{99d113a9-24ec-471d-9f74-d2ac2f16220b}*SharedItemsImports = 5
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -203,5 +198,10 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0E6D4D3C-C44D-4A03-B5C0-10A36F51E272}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		src\SourceLink.Tools\Microsoft.SourceLink.Tools.projitems*{4376b613-cd5b-4274-9071-30989769b0b2}*SharedItemsImports = 5
+		src\SourceLink.Tools\Microsoft.SourceLink.Tools.projitems*{5df76cc2-5f0e-45a6-ad56-6bbbccbc1a78}*SharedItemsImports = 13
+		src\SourceLink.Tools\Microsoft.SourceLink.Tools.projitems*{99d113a9-24ec-471d-9f74-d2ac2f16220b}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

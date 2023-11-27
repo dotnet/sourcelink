@@ -5,17 +5,13 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace Microsoft.Build.Tasks.Git
 {
     internal sealed partial class GitConfig
     {
-        public static readonly GitConfig Empty = new GitConfig(ImmutableDictionary<GitVariableName, ImmutableArray<string>>.Empty);
+        public static readonly GitConfig Empty = new(ImmutableDictionary<GitVariableName, ImmutableArray<string>>.Empty);
 
         public readonly ImmutableDictionary<GitVariableName, ImmutableArray<string>> Variables;
 
@@ -41,7 +37,7 @@ namespace Microsoft.Build.Tasks.Git
         public string? GetVariableValue(string section, string subsection, string name)
         {
             var values = GetVariableValues(section, subsection, name);
-            return values.IsDefault ? null : values[values.Length - 1];
+            return values.IsDefault ? null : values[^1];
         }
 
         public static bool ParseBooleanValue(string? str, bool defaultValue = false)
@@ -86,30 +82,15 @@ namespace Microsoft.Build.Tasks.Git
                 return false;
             }
 
-            long multiplier;
-            switch (str[str.Length - 1])
+            var multiplier = str[^1] switch
             {
-                case 'K':
-                case 'k':
-                    multiplier = 1024;
-                    break;
+                'K' or 'k' => 1024,
+                'M' or 'm' => 1024 * 1024,
+                'G' or 'g' => 1024 * 1024 * 1024,
+                _ => (long)1,
+            };
 
-                case 'M':
-                case 'm':
-                    multiplier = 1024 * 1024;
-                    break;
-
-                case 'G':
-                case 'g':
-                    multiplier = 1024 * 1024 * 1024;
-                    break;
-
-                default:
-                    multiplier = 1;
-                    break;
-            }
-
-            if (!long.TryParse(multiplier > 1 ? str.Substring(0, str.Length - 1) : str, out value))
+            if (!long.TryParse(multiplier > 1 ? str[..^1] : str, out value))
             {
                 return false;
             }

@@ -26,7 +26,7 @@ namespace Microsoft.SourceLink.Tools
     {
         private static readonly Guid s_sourceLinkCustomDebugInformationId = new("CC110556-A091-4D38-9FEC-25AB9A351A6A");
         private static readonly Guid s_embeddedSourceCustomDebugInformationId = new("0E8A571B-6926-466E-B4AD-8AB04611F5FE");
-        private static readonly byte[] s_crlfBytes = { (byte)'\r', (byte)'\n' };
+        private static readonly byte[] s_crlfBytes = [(byte)'\r', (byte)'\n'];
         private static readonly ProductInfoHeaderValue s_sourceLinkProductHeaderValue = new("SourceLink", GetSourceLinkVersion());
 
         private static class AuthenticationMethod 

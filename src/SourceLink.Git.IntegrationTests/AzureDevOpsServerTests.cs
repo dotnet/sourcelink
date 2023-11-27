@@ -22,7 +22,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             var repoUrl = "https://tfs.噸.local:8080/tfs/DefaultCollection/project/_git/test-%72epo\u1234%24%2572%2F";
             var repoName = "test-repo\u1234%24%2572%2F";
 
-            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, [ProjectFileName], repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -35,27 +35,27 @@ namespace Microsoft.SourceLink.IntegrationTests
 </ItemGroup>
 ",
                 customTargets: "",
-                targets: new[]
-                {
+                targets:
+                [
                     "Build", "Pack"
-                },
-                expressions: new[]
-                {
+                ],
+                expressions:
+                [
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)"
-                },
-                expectedResults: new[]
-                {
+                ],
+                expectedResults:
+                [
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://tfs.噸.local:8080/tfs/DefaultCollection/project/_apis/git/repositories/{repoName}/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*",
                     s_relativeSourceLinkJsonPath,
                     $"https://tfs.噸.local:8080/tfs/DefaultCollection/project/_git/{repoName}",
                     $"https://tfs.噸.local:8080/tfs/DefaultCollection/project/_git/{repoName}",
-                });
+                ]);
 
             AssertEx.AreEqual(
                 $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://tfs.噸.local:8080/tfs/DefaultCollection/project/_apis/git/repositories/{repoName}/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*""}}}}",
@@ -80,7 +80,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             var repoUrl = "ssh://tfs.噸.local:22/tfs/DefaultCollection/project/_ssh/test-%72epo\u1234%24%2572%2F";
             var repoName = "test-repo\u1234%24%2572%2F";
 
-            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, [ProjectFileName], repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -93,27 +93,27 @@ namespace Microsoft.SourceLink.IntegrationTests
 </ItemGroup>
 ",
                 customTargets: "",
-                targets: new[]
-                {
+                targets:
+                [
                     "Build", "Pack"
-                },
-                expressions: new[]
-                {
+                ],
+                expressions:
+                [
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)"
-                },
-                expectedResults: new[]
-                {
+                ],
+                expectedResults:
+                [
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://tfs.噸.local/tfs/DefaultCollection/project/_apis/git/repositories/{repoName}/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*",
                     s_relativeSourceLinkJsonPath,
                     $"https://tfs.噸.local/tfs/DefaultCollection/project/_git/{repoName}",
                     $"https://tfs.噸.local/tfs/DefaultCollection/project/_git/{repoName}",
-                });
+                ]);
 
             AssertEx.AreEqual(
                 $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://tfs.噸.local/tfs/DefaultCollection/project/_apis/git/repositories/{repoName}/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*""}}}}",

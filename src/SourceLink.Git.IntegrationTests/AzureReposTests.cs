@@ -25,7 +25,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             var repoUrl = $"https://test.{host}/test-org/_git/test-%72epo\u1234%24%2572%2F";
             var repoName = "test-repo\u1234%24%2572%2F";
 
-            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, [ProjectFileName], repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -35,27 +35,27 @@ namespace Microsoft.SourceLink.IntegrationTests
 </PropertyGroup>
 ",
                 customTargets: "",
-                targets: new[]
-                {
+                targets:
+                [
                     "Build", "Pack"
-                },
-                expressions: new[]
-                {
+                ],
+                expressions:
+                [
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)"
-                },
-                expectedResults: new[]
-                {
+                ],
+                expectedResults:
+                [
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://test.{host}/test-org/_apis/git/repositories/{repoName}/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*",
                     s_relativeSourceLinkJsonPath,
                     $"https://test.{host}/test-org/_git/{repoName}",
                     $"https://test.{host}/test-org/_git/{repoName}",
-                });
+                ]);
 
             AssertEx.AreEqual(
                 $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://test.{host}/test-org/_apis/git/repositories/{repoName}/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*""}}}}",
@@ -82,7 +82,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             var repoUrl = $"ssh://test@vs-ssh.{host}:22/test-org/_ssh/test-%72epo\u1234%24%2572%2F";
             var repoName = "test-repo\u1234%24%2572%2F";
 
-            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, [ProjectFileName], repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -92,27 +92,27 @@ namespace Microsoft.SourceLink.IntegrationTests
 </PropertyGroup>
 ",
                 customTargets: "",
-                targets: new[]
-                {
+                targets:
+                [
                     "Build", "Pack"
-                },
-                expressions: new[]
-                {
+                ],
+                expressions:
+                [
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)"
-                },
-                expectedResults: new[]
-                {
+                ],
+                expectedResults:
+                [
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://test.{host}/test-org/_apis/git/repositories/{repoName}/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*",
                     s_relativeSourceLinkJsonPath,
                     $"https://test.{host}/test-org/_git/{repoName}",
                     $"https://test.{host}/test-org/_git/{repoName}",
-                });
+                ]);
 
             AssertEx.AreEqual(
                 $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://test.{host}/test-org/_apis/git/repositories/{repoName}/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*""}}}}",

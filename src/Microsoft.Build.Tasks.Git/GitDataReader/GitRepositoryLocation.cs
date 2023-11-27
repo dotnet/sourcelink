@@ -4,34 +4,33 @@
 
 using System;
 
-namespace Microsoft.Build.Tasks.Git
+namespace Microsoft.Build.Tasks.Git;
+
+internal readonly struct GitRepositoryLocation
 {
-    internal readonly struct GitRepositoryLocation
+    /// <summary>
+    /// Normalized full path. OS specific directory separators.
+    /// </summary>
+    public readonly string GitDirectory { get; }
+
+    /// <summary>
+    /// Normalized full path. OS specific directory separators.
+    /// </summary>
+    public readonly string CommonDirectory { get; }
+
+    /// <summary>
+    /// Normalized full path. OS specific directory separators. Optional.
+    /// </summary>
+    public readonly string? WorkingDirectory { get; }
+
+    internal GitRepositoryLocation(string gitDirectory, string commonDirectory, string? workingDirectory)
     {
-        /// <summary>
-        /// Normalized full path. OS specific directory separators.
-        /// </summary>
-        public readonly string GitDirectory { get; }
+        NullableDebug.Assert(PathUtils.IsNormalized(gitDirectory));
+        NullableDebug.Assert(PathUtils.IsNormalized(commonDirectory));
+        NullableDebug.Assert(workingDirectory == null || PathUtils.IsNormalized(workingDirectory));
 
-        /// <summary>
-        /// Normalized full path. OS specific directory separators.
-        /// </summary>
-        public readonly string CommonDirectory { get; }
-
-        /// <summary>
-        /// Normalized full path. OS specific directory separators. Optional.
-        /// </summary>
-        public readonly string? WorkingDirectory { get; }
-
-        internal GitRepositoryLocation(string gitDirectory, string commonDirectory, string? workingDirectory)
-        {
-            NullableDebug.Assert(PathUtils.IsNormalized(gitDirectory));
-            NullableDebug.Assert(PathUtils.IsNormalized(commonDirectory));
-            NullableDebug.Assert(workingDirectory == null || PathUtils.IsNormalized(workingDirectory));
-
-            GitDirectory = gitDirectory;
-            CommonDirectory = commonDirectory;
-            WorkingDirectory = workingDirectory;
-        }
+        GitDirectory = gitDirectory;
+        CommonDirectory = commonDirectory;
+        WorkingDirectory = workingDirectory;
     }
 }

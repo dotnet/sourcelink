@@ -32,7 +32,7 @@ namespace Microsoft.SourceLink.IntegrationTests
 
             using var repo = GitUtilities.CreateGitRepository(
                 RootDir.Path, 
-                new[] { Path.Combine(ProjectName, ProjectFileName), Path.Combine(projectName2, projectFileName2) },
+                [Path.Combine(ProjectName, ProjectFileName), Path.Combine(projectName2, projectFileName2)],
                 "http://github.com/test-org/test-repo1");
 
             repo.Network.Remotes.Add("origin2", "http://github.com/test-org/test-repo2");
@@ -49,25 +49,25 @@ namespace Microsoft.SourceLink.IntegrationTests
 </PropertyGroup>
 ",
                 customTargets: "",
-                targets: new[]
-                {
+                targets:
+                [
                     "Build"
-                },
-                expressions: new[]
-                {
+                ],
+                expressions:
+                [
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
-                },
-                expectedResults: new[]
-                {
+                ],
+                expectedResults:
+                [
                     NuGetPackageFolders,
                     SourceRoot,
                     $"https://raw.githubusercontent.com/test-org/test-repo2/{commitSha}/*",
                     s_relativeSourceLinkJsonPath,
                     $"http://github.com/test-org/test-repo2",
-                },
+                ],
                 // the second project should reuse the repository info cached by the first project:
                 buildVerbosity: "detailed",
                 expectedBuildOutputFilter: line => line.Contains("SourceLink: Reusing cached git repository information."));
@@ -107,7 +107,7 @@ namespace Microsoft.SourceLink.IntegrationTests
         [ConditionalFact(typeof(DotNetSdkAvailable))]
         public void Environment_Enabled()
         {
-            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, "http://github.com/test-org/test-repo1");
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, [ProjectFileName], "http://github.com/test-org/test-repo1");
             var commitSha = repo.Head.Tip.Sha;
 
             PrepareTestEnvironment();
@@ -120,26 +120,26 @@ namespace Microsoft.SourceLink.IntegrationTests
 </PropertyGroup>
 ",
                 customTargets: "",
-                targets: new[]
-                {
+                targets:
+                [
                     "Build"
-                },
-                expressions: new[]
-                {
+                ],
+                expressions:
+                [
                     "@(SourceRoot->'%(SourceLinkUrl)')",
                     "$(PrivateRepositoryUrl)",
-                },
-                expectedResults: new[]
-                {
+                ],
+                expectedResults:
+                [
                     $"https://raw.githubusercontent.com/test-org/test-repo2/{commitSha}/*",
                     $"http://github.com/test-org/test-repo2",
-                });
+                ]);
         }
 
         [ConditionalFact(typeof(DotNetSdkAvailable))]
         public void Environment_Disabled()
         {
-            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, "http://github.com/test-org/test-repo1");
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, [ProjectFileName], "http://github.com/test-org/test-repo1");
             var commitSha = repo.Head.Tip.Sha;
 
             PrepareTestEnvironment();
@@ -152,24 +152,24 @@ namespace Microsoft.SourceLink.IntegrationTests
 </PropertyGroup>
 ",
                 customTargets: "",
-                targets: new[]
-                {
+                targets:
+                [
                     "Build"
-                },
-                expressions: new[]
-                {
+                ],
+                expressions:
+                [
                     "@(SourceRoot->'%(SourceLinkUrl)')",
                     "$(PrivateRepositoryUrl)",
-                },
-                expectedResults: new[]
-                {
+                ],
+                expectedResults:
+                [
                     $"https://raw.githubusercontent.com/test-org/test-repo1/{commitSha}/*",
                     $"http://github.com/test-org/test-repo1",
-                },
-                expectedWarnings: new[]
-                {
+                ],
+                expectedWarnings:
+                [
                     string.Format(Resources.RepositoryDoesNotHaveSpecifiedRemote, ProjectDir.Path, "origin2", "origin")
-                });
+                ]);
         }
 
         [ConditionalFact(typeof(DotNetSdkAvailable))]
@@ -180,7 +180,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             var repoUrl = "http://github.com/test-org/test-%72epo\u1234%24%2572%2F";
             var repoName = "test-repo\u1234%24%2572%2F";
 
-            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, [ProjectFileName], repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -190,27 +190,27 @@ namespace Microsoft.SourceLink.IntegrationTests
 </PropertyGroup>
 ",
                 customTargets: "",
-                targets: new[]
-                {
+                targets:
+                [
                     "Build", "Pack"
-                },
-                expressions: new[]
-                {
+                ],
+                expressions:
+                [
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)"
-                },
-                expectedResults: new[]
-                {
+                ],
+                expectedResults:
+                [
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://raw.githubusercontent.com/test-org/{repoName}/{commitSha}/*",
                     s_relativeSourceLinkJsonPath,
                     $"http://github.com/test-org/{repoName}",
                     $"http://github.com/test-org/{repoName}"
-                });
+                ]);
 
             // SourceLink file:
             AssertEx.AreEqual(
@@ -236,7 +236,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             var repoUrl = "ssh://github.com/test-org/test-%72epo\u1234%24%2572%2F";
             var repoName = "test-repo\u1234%24%2572%2F";
 
-            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, [ProjectFileName], repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -246,27 +246,27 @@ namespace Microsoft.SourceLink.IntegrationTests
 </PropertyGroup>
 ",
                 customTargets: "",
-                targets: new[]
-                {
+                targets:
+                [
                     "Build", "Pack"
-                },
-                expressions: new[]
-                {
+                ],
+                expressions:
+                [
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)"
-                },
-                expectedResults: new[]
-                {
+                ],
+                expectedResults:
+                [
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://raw.githubusercontent.com/test-org/{repoName}/{commitSha}/*",
                     s_relativeSourceLinkJsonPath,
                     $"https://github.com/test-org/{repoName}",
                     $"https://github.com/test-org/{repoName}"
-                });
+                ]);
 
             // SourceLink file:
             AssertEx.AreEqual(

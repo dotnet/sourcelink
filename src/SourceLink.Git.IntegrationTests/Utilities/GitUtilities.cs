@@ -10,7 +10,7 @@ namespace Microsoft.SourceLink.IntegrationTests
 {
     public class GitUtilities
     {
-        private static readonly Signature s_signature = new Signature("test", "test@test.com", DateTimeOffset.Now);
+        private static readonly Signature s_signature = new("test", "test@test.com", DateTimeOffset.Now);
 
         public static Repository CreateGitRepository(string directory, string[]? commitFileNames, string? originUrl)
         {

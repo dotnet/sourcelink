@@ -11,7 +11,7 @@ namespace TestUtilities
 {
     public sealed class MockEngine : IBuildEngine
     {
-        private StringBuilder _log = new StringBuilder();
+        private StringBuilder _log = new();
         public MessageImportance MinimumMessageImportance = MessageImportance.Low;
 
         public string Log

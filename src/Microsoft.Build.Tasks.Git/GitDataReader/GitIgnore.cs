@@ -37,16 +37,10 @@ namespace Microsoft.Build.Tasks.Git
             }
         }
 
-        internal readonly struct Pattern
+        internal readonly struct Pattern(string glob, PatternFlags flags)
         {
-            public readonly PatternFlags Flags;
-            public readonly string Glob;
-
-            public Pattern(string glob,  PatternFlags flags)
-            {
-                Glob = glob;
-                Flags = flags;
-            }
+            public readonly PatternFlags Flags = flags;
+            public readonly string Glob = glob;
 
             public bool IsDirectoryPattern => (Flags & PatternFlags.DirectoryPattern) != 0;
             public bool IsFullPathPattern => (Flags & PatternFlags.FullPath) != 0;
@@ -94,7 +88,7 @@ namespace Microsoft.Build.Tasks.Git
             => IgnoreCase ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
 
         public Matcher CreateMatcher()
-            => new Matcher(this);
+            => new(this);
 
         /// <exception cref="IOException"/>
         /// <exception cref="ArgumentException"><paramref name="path"/> is invalid</exception>
@@ -224,7 +218,7 @@ namespace Microsoft.Build.Tasks.Git
             int escape = line.IndexOf('\\', s, e - s);
             if (escape < 0)
             {
-                glob = line.Substring(s, e - s);
+                glob = line[s..e];
                 return true;
             }
 

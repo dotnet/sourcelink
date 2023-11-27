@@ -11,7 +11,7 @@ namespace Microsoft.Build.Tasks.SourceControl
 {
     internal static class PathUtilities
     {
-        private static readonly char[] s_directorySeparators = { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar };
+        private static readonly char[] s_directorySeparators = [Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar];
         private const string UncPrefix = @"\\";
         private const string UnixRoot = "/";
 
@@ -40,7 +40,7 @@ namespace Microsoft.Build.Tasks.SourceControl
 
         public static bool EndsWithSeparator(this string path)
         {
-            char last = path[path.Length - 1];
+            char last = path[^1];
             return last == Path.DirectorySeparatorChar || last == Path.AltDirectorySeparatorChar;
         }
 

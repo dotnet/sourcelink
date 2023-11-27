@@ -24,7 +24,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             var repoUrl = $"ssh://git@噸.com/test-%72epo\u1234%24%2572%2F.git";
             var repoName = "test-repo\u1234%24%2572%2F.git";
 
-            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, [ProjectFileName], repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -37,27 +37,27 @@ namespace Microsoft.SourceLink.IntegrationTests
 </ItemGroup>
 ",
                 customTargets: "",
-                targets: new[]
-                {
+                targets:
+                [
                     "Build", "Pack"
-                },
-                expressions: new[]
-                {
+                ],
+                expressions:
+                [
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)"
-                },
-                expectedResults: new[]
-                {
+                ],
+                expectedResults:
+                [
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://噸.com/gitweb/?p={repoName};a=blob_plain;hb={commitSha};f=*",
                     s_relativeSourceLinkJsonPath,
                     $"ssh://git@噸.com/{repoName}",
                     $"ssh://git@噸.com/{repoName}"
-                });
+                ]);
 
             AssertEx.AreEqual(
                 $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://噸.com/gitweb/?p={repoName};a=blob_plain;hb={commitSha};f=*""}}}}",
@@ -78,7 +78,7 @@ namespace Microsoft.SourceLink.IntegrationTests
         public void Issues_error_on_git_url()
         {
             var repoUrl = "git://噸.com/invalid_url_protocol.git";
-            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, [ProjectFileName], repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -91,21 +91,21 @@ namespace Microsoft.SourceLink.IntegrationTests
 </ItemGroup>
 ",
                 customTargets: "",
-                targets: new[]
-                {
+                targets:
+                [
                     "Build", "Pack"
-                },
-                expressions: Array.Empty<string>(),
-                expectedErrors: new[]{
+                ],
+                expressions: [],
+                expectedErrors: [
                     string.Format(GitWeb.Resources.RepositoryUrlIsNotSupportedByProvider, "GIT")
-                });
+                ]);
         }
 
         [ConditionalFact(typeof(DotNetSdkAvailable))]
         public void Issues_error_on_https_url()
         {
             var repoUrl = "https://噸.com/invalid_url_protocol.git";
-            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, [ProjectFileName], repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -118,15 +118,15 @@ namespace Microsoft.SourceLink.IntegrationTests
 </ItemGroup>
 ",
                 customTargets: "",
-                targets: new[]
-                {
+                targets:
+                [
                     "Build", "Pack"
-                },
-                expressions: Array.Empty<string>(),
-                expectedErrors: new[]
-                {
+                ],
+                expressions: [],
+                expectedErrors:
+                [
                     string.Format(GitWeb.Resources.RepositoryUrlIsNotSupportedByProvider, "HTTP")
-                });
+                ]);
         }
     }
 }

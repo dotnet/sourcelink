@@ -33,25 +33,25 @@ namespace Microsoft.SourceLink.IntegrationTests
             VerifyValues(
                 customProps: "",
                 customTargets: "",
-                targets: new[]
-                {
+                targets:
+                [
                     "Build"
-                },
-                expressions: new[]
-                {
+                ],
+                expressions:
+                [
                     "@(SourceRoot)",
                     "$(SourceLink)",
-                },
-                expectedResults: new[]
-                {
+                ],
+                expectedResults:
+                [
                     NuGetPackageFolders,
                     "",
-                },
-                expectedWarnings: new[]
-                {
+                ],
+                expectedWarnings:
+                [
                     string.Format(Resources.UnableToLocateRepository, ProjectDir.Path),
                     string.Format(Common.Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty),
-                });
+                ]);
 
             Assert.False(File.Exists(sourceLinkFilePath));
         }
@@ -69,20 +69,20 @@ namespace Microsoft.SourceLink.IntegrationTests
                 </PropertyGroup>
                 """,
                 customTargets: "",
-                targets: new[]
-                {
+                targets:
+                [
                     "Build"
-                },
-                expressions: new[]
-                {
+                ],
+                expressions:
+                [
                     "@(SourceRoot)",
                     "$(SourceLink)",
-                },
-                expectedResults: new[]
-                {
+                ],
+                expectedResults:
+                [
                     NuGetPackageFolders,
                     "",
-                });
+                ]);
 
             Assert.False(File.Exists(sourceLinkFilePath));
         }
@@ -95,20 +95,20 @@ namespace Microsoft.SourceLink.IntegrationTests
             VerifyValues(
                 customProps: "",
                 customTargets: "",
-                targets: new[]
-                {
+                targets:
+                [
                     "Build"
-                },
-                expressions: new[]
-                {
+                ],
+                expressions:
+                [
                     "@(SourceRoot)",
-                },
-                expectedResults: new[]
-                {
+                ],
+                expectedResults:
+                [
                     NuGetPackageFolders
-                },
-                expectedWarnings: new[]
-                {
+                ],
+                expectedWarnings:
+                [
                     // Repository has no remote.
                     string.Format(Resources.RepositoryHasNoRemote, ProjectDir.Path),
 
@@ -117,7 +117,7 @@ namespace Microsoft.SourceLink.IntegrationTests
 
                     // No SourceRoot items specified - the generated source link is empty.
                     string.Format(Common.Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty),
-                });
+                ]);
         }
 
         [ConditionalFact(typeof(DotNetSdkAvailable))]
@@ -138,28 +138,28 @@ namespace Microsoft.SourceLink.IntegrationTests
                 </Target>
                 """,
                 customTargets: "",
-                targets: new[]
-                {
+                targets:
+                [
                     "Build"
-                },
-                expressions: new[]
-                {
+                ],
+                expressions:
+                [
                     "@(SourceRoot)",
                     "$(SourceLink)",
                     "@(_SourceLinkFileWrites)",
-                },
-                expectedResults: new[]
-                {
+                ],
+                expectedResults:
+                [
                     NuGetPackageFolders,
                     "",
                     "",
-                });
+                ]);
         }
 
         [ConditionalFact(typeof(DotNetSdkAvailable))]
         public void Commit_NoRemote_NoWarnings()
         {
-            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, originUrl: null);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, [ProjectFileName], originUrl: null);
 
             VerifyValues(
                 customProps: """
@@ -174,23 +174,23 @@ namespace Microsoft.SourceLink.IntegrationTests
                 </Target>
                 """,
                 customTargets: "",
-                targets: new[]
-                {
+                targets:
+                [
                     "Build"
-                },
-                expressions: new[]
-                {
+                ],
+                expressions:
+                [
                     "@(SourceRoot)",
                     "$(SourceLink)",
                     "@(_SourceLinkFileWrites)",
-                },
-                expectedResults: new[]
-                {
+                ],
+                expectedResults:
+                [
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     "",
                     "",
-                });
+                ]);
         }
 
         [ConditionalFact(typeof(DotNetSdkAvailable))]
@@ -211,22 +211,22 @@ namespace Microsoft.SourceLink.IntegrationTests
                 </Target>
                 """,
                 customTargets: "",
-                targets: new[]
-                {
+                targets:
+                [
                     "Build"
-                },
-                expressions: new[]
-                {
+                ],
+                expressions:
+                [
                     "@(SourceRoot)",
                     "$(SourceLink)",
                     "@(_SourceLinkFileWrites)",
-                },
-                expectedResults: new[]
-                {
+                ],
+                expectedResults:
+                [
                     NuGetPackageFolders,
                     "",
                     "",
-                });
+                ]);
         }
 
         [ConditionalFact(typeof(DotNetSdkAvailable))]
@@ -237,7 +237,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             var repoUrl = "ssh://test@vs-ssh.visualstudio.com:22/test-org/_ssh/test-%72epo\u1234%24%2572%2F";
             var repoName = "test-repo\u1234%24%2572%2F";
 
-            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, [ProjectFileName], repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -273,21 +273,21 @@ namespace Microsoft.SourceLink.IntegrationTests
   </ItemGroup>
 </Target>
 ",
-                targets: new[]
-                {
+                targets:
+                [
                     "Build", "Pack"
-                },
-                expressions: new[]
-                {
+                ],
+                expressions:
+                [
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)",
                     "@(_SourceLinkFileWrites)",
-                },
-                expectedResults: new[]
-                {
+                ],
+                expectedResults:
+                [
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://raw.githubusercontent.com/test-org/{repoName}/{commitSha}/*",
@@ -295,7 +295,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     $"https://github.com/test-org/{repoName}",
                     $"https://github.com/test-org/{repoName}",
                     s_relativeSourceLinkJsonPath
-                });
+                ]);
 
             AssertEx.AreEqual(
                 $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://raw.githubusercontent.com/test-org/{repoName}/{commitSha}/*""}}}}",
@@ -322,7 +322,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             var repoUrl = $"https://test.{host}/test-org/_git/test-%72epo\u1234%24%2572%2F";
             var repoName = "test-repo\u1234%24%2572%2F";
 
-            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, [ProjectFileName], repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -332,27 +332,27 @@ namespace Microsoft.SourceLink.IntegrationTests
 </PropertyGroup>
 ",
                 customTargets: "",
-                targets: new[]
-                {
+                targets:
+                [
                     "Build", "Pack"
-                },
-                expressions: new[]
-                {
+                ],
+                expressions:
+                [
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)"
-                },
-                expectedResults: new[]
-                {
+                ],
+                expectedResults:
+                [
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://test.{host}/test-org/_apis/git/repositories/{repoName}/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*",
                     s_relativeSourceLinkJsonPath,
                     $"https://test.{host}/test-org/_git/{repoName}",
                     $"https://test.{host}/test-org/_git/{repoName}",
-                });
+                ]);
         }
 
         [ConditionalTheory(typeof(DotNetSdkAvailable))]
@@ -364,7 +364,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             var repoUrl = $"https://{host}/test/test-org/_git/test-%72epo\u1234%24%2572%2F";
             var repoName = "test-repo\u1234%24%2572%2F";
 
-            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, [ProjectFileName], repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
@@ -374,27 +374,27 @@ namespace Microsoft.SourceLink.IntegrationTests
 </PropertyGroup>
 ",
                 customTargets: "",
-                targets: new[]
-                {
+                targets:
+                [
                     "Build", "Pack"
-                },
-                expressions: new[]
-                {
+                ],
+                expressions:
+                [
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)"
-                },
-                expectedResults: new[]
-                {
+                ],
+                expectedResults:
+                [
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://{host}/test/test-org/_apis/git/repositories/{repoName}/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*",
                     s_relativeSourceLinkJsonPath,
                     $"https://{host}/test/test-org/_git/{repoName}",
                     $"https://{host}/test/test-org/_git/{repoName}",
-                });
+                ]);
         }
 
 
@@ -403,28 +403,28 @@ namespace Microsoft.SourceLink.IntegrationTests
         {
             var repoUrl = $"https://contoso.com/test/test-org/_git/test-repo";
 
-            GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
+            GitUtilities.CreateGitRepository(ProjectDir.Path, [ProjectFileName], repoUrl);
 
             VerifyValues(
                 customProps: "",
                 customTargets: "",
-                targets: new[]
-                {
+                targets:
+                [
                     "Build", "Pack"
-                },
-                expressions: new[]
-                {
+                ],
+                expressions:
+                [
                     "@(SourceRoot->'%(Identity):%(SourceLinkUrl)')",
-                },
-                expectedResults: new[]
-                {
+                ],
+                expectedResults:
+                [
                     NuGetPackageFolders + ":",
                     EnsureTrailingDirectorySeparator(ProjectDir.Path) + ":",
-                },
-                expectedWarnings: new[]
-                {
+                ],
+                expectedWarnings:
+                [
                     string.Format(Common.Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty)
-                });
+                ]);
         }
     }
 }

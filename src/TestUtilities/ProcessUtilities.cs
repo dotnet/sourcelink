@@ -53,8 +53,8 @@ namespace TestUtilities
 
             using (var process = new Process { StartInfo = startInfo })
             {
-                StringBuilder outputBuilder = new StringBuilder();
-                StringBuilder errorBuilder = new StringBuilder();
+                StringBuilder outputBuilder = new();
+                StringBuilder errorBuilder = new();
                 process.OutputDataReceived += (sender, args) =>
                 {
                     if (args.Data != null)
@@ -108,14 +108,14 @@ namespace TestUtilities
                 WorkingDirectory = workingDirectory
             };
 
-            Process p = new Process { StartInfo = startInfo };
+            Process p = new() { StartInfo = startInfo };
             p.Start();
             return p;
         }
 
         public static string RunAndGetOutput(string exeFileName, string? arguments = null, int expectedRetCode = 0, string? startFolder = null)
         {
-            ProcessStartInfo startInfo = new ProcessStartInfo(exeFileName);
+            ProcessStartInfo startInfo = new(exeFileName);
             if (arguments != null)
             {
                 startInfo.Arguments = arguments;

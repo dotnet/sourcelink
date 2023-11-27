@@ -38,8 +38,8 @@ namespace Microsoft.Build.Tasks.SourceControl
 
         public int Compare([AllowNull] T[] left, [AllowNull] T[] right)
         {
-            left ??= Array.Empty<T>();
-            right ??= Array.Empty<T>();
+            left ??= [];
+            right ??= [];
             return Compare(left, left.Length, right, right.Length);
         }
     }

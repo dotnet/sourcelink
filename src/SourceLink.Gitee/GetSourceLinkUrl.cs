@@ -19,7 +19,7 @@ namespace Microsoft.SourceLink.Gitee
         protected override string ProviderDisplayName => "Gitee";
 
         protected override Uri GetDefaultContentUriFromHostUri(string authority, Uri gitUri)
-            => new Uri($"{gitUri.Scheme}://{authority}", UriKind.Absolute);
+            => new($"{gitUri.Scheme}://{authority}", UriKind.Absolute);
 
         protected override string? BuildSourceLinkUrl(Uri contentUri, Uri gitUri, string relativeUrl, string revisionId, ITaskItem? hostItem)
             => UriUtilities.Combine(UriUtilities.Combine(contentUri.ToString(), relativeUrl), "raw/"+ revisionId + "/*");

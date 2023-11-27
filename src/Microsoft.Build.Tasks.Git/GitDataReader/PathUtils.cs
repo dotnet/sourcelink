@@ -14,8 +14,8 @@ namespace Microsoft.Build.Tasks.Git
         public static bool IsUnixLikePlatform => Path.DirectorySeparatorChar == '/';
         public const char VolumeSeparatorChar = ':';
         public static readonly string DirectorySeparatorStr = Path.DirectorySeparatorChar.ToString();
-        private static readonly char[] s_slash = new char[] { '/' };
-        private static readonly char[] s_directorySeparators = new char[] { '/' };
+        private static readonly char[] s_slash = ['/'];
+        private static readonly char[] s_directorySeparators = ['/'];
 
         public static string EnsureTrailingSlash(string path)
             => HasTrailingSlash(path) ? path : path + "/";
@@ -27,10 +27,10 @@ namespace Microsoft.Build.Tasks.Git
             => path.TrimEnd(s_directorySeparators);
 
         public static bool HasTrailingSlash(string path)
-            => path.Length > 0 && path[path.Length - 1] == '/';
+            => path.Length > 0 && path[^1] == '/';
 
         public static bool HasTrailingDirectorySeparator(string path)
-            => path.Length > 0 && (path[path.Length - 1] == '/' || path[path.Length - 1] == '\\');
+            => path.Length > 0 && (path[^1] == '/' || path[^1] == '\\');
 
         public static string ToPosixPath(string path)
             => (Path.DirectorySeparatorChar == '\\') ? path.Replace('\\', '/') : path;
@@ -51,7 +51,7 @@ namespace Microsoft.Build.Tasks.Git
         {
             Debug.Assert(!string.IsNullOrEmpty(root));
 
-            char c = root[root.Length - 1];
+            char c = root[^1];
             if (!IsDirectorySeparator(c) && c != VolumeSeparatorChar)
             {
                 return root + separator + relativePath;

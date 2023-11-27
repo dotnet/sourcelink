@@ -41,7 +41,7 @@ namespace Microsoft.Build.Tasks.Git
             var uri = NormalizeUrl(repository, remoteUrl);
             if (uri == null)
             {
-                logWarning?.Invoke(Resources.InvalidRepositoryRemoteUrl, new[] { remoteName, remoteUrl });
+                logWarning?.Invoke(Resources.InvalidRepositoryRemoteUrl, [remoteName, remoteUrl]);
                 return null;
             }
 
@@ -65,7 +65,7 @@ namespace Microsoft.Build.Tasks.Git
             {
                 if (warnOnMissingRemote)
                 {
-                    logWarning?.Invoke(Resources.RepositoryHasNoRemote, new[] { repository.WorkingDirectory });
+                    logWarning?.Invoke(Resources.RepositoryHasNoRemote, [repository.WorkingDirectory]);
                 }
 
                 return null;
@@ -73,7 +73,7 @@ namespace Microsoft.Build.Tasks.Git
 
             if (unknownRemoteName != null)
             {
-                logWarning?.Invoke(Resources.RepositoryDoesNotHaveSpecifiedRemote, new[] { repository.WorkingDirectory, unknownRemoteName, remoteName });
+                logWarning?.Invoke(Resources.RepositoryDoesNotHaveSpecifiedRemote, [repository.WorkingDirectory, unknownRemoteName, remoteName]);
             }
 
             return remoteUrl;
@@ -91,7 +91,7 @@ namespace Microsoft.Build.Tasks.Git
             {
                 if (warnOnMissingRemote)
                 {
-                    logWarning?.Invoke(Resources.RepositoryHasNoRemote, new[] { repositoryPath });
+                    logWarning?.Invoke(Resources.RepositoryHasNoRemote, [repositoryPath]);
                 }
 
                 return uri.AbsoluteUri;
@@ -99,14 +99,14 @@ namespace Microsoft.Build.Tasks.Git
 
             if (recursionDepth > RemoteRepositoryRecursionLimit)
             {
-                logWarning?.Invoke(Resources.RepositoryUrlEvaluationExceededMaximumAllowedDepth, new[] { RemoteRepositoryRecursionLimit.ToString() });
+                logWarning?.Invoke(Resources.RepositoryUrlEvaluationExceededMaximumAllowedDepth, [RemoteRepositoryRecursionLimit.ToString()]);
                 return null;
             }
 
             var remoteRepository = GitRepository.OpenRepository(remoteRepositoryLocation, environment);
             if (remoteRepository.WorkingDirectory == null)
             {
-                logWarning?.Invoke(Resources.UnableToLocateRepository, new[] { repositoryPath });
+                logWarning?.Invoke(Resources.UnableToLocateRepository, [repositoryPath]);
                 return null;
             }
 
@@ -163,7 +163,7 @@ namespace Microsoft.Build.Tasks.Git
                 }
             }
 
-            return (longestPrefixLength >= 0) ? replacement + url.Substring(longestPrefixLength) : url;
+            return (longestPrefixLength >= 0) ? replacement + url[longestPrefixLength..] : url;
         }
 
         internal static Uri? NormalizeUrl(GitRepository repository, string url)
@@ -243,7 +243,7 @@ namespace Microsoft.Build.Tasks.Git
             }
 
             // [user@]server:path
-            var url = "ssh://" + value.Substring(0, colon) + "/" + value.Substring(colon + 1);
+            var url = "ssh://" + value[..colon] + "/" + value[(colon + 1)..];
             return Uri.TryCreate(url, UriKind.Absolute, out uri);
         }
 
@@ -272,7 +272,7 @@ namespace Microsoft.Build.Tasks.Git
             }
             else if (warnOnMissingCommit)
             {
-                logWarning(Resources.RepositoryHasNoCommit, Array.Empty<object>());
+                logWarning(Resources.RepositoryHasNoCommit, []);
             }
 
             foreach (var submodule in repository.GetSubmodules())
@@ -283,7 +283,7 @@ namespace Microsoft.Build.Tasks.Git
                     if (warnOnMissingCommit)
                     {
                         logWarning(Resources.SourceCodeWontBeAvailableViaSourceLink,
-                            new[] { string.Format(Resources.SubmoduleWithoutCommit, new[] { submodule.Name }) });
+                            [string.Format(Resources.SubmoduleWithoutCommit, [submodule.Name])]);
                     }
 
                     continue;
@@ -304,7 +304,7 @@ namespace Microsoft.Build.Tasks.Git
                 if (submoduleUri == null)
                 {
                     logWarning(Resources.SourceCodeWontBeAvailableViaSourceLink,
-                        new[] { string.Format(Resources.InvalidSubmoduleUrl, submodule.Name, submoduleConfigUrl) });
+                        [string.Format(Resources.InvalidSubmoduleUrl, submodule.Name, submoduleConfigUrl)]);
 
                     continue;
                 }
@@ -313,7 +313,7 @@ namespace Microsoft.Build.Tasks.Git
                 if (submoduleUrl == null)
                 {
                     logWarning(Resources.SourceCodeWontBeAvailableViaSourceLink,
-                       new[] { string.Format(Resources.InvalidSubmoduleUrl, submodule.Name, submoduleConfigUrl) });
+                       [string.Format(Resources.InvalidSubmoduleUrl, submodule.Name, submoduleConfigUrl)]);
 
                     continue;
                 }
@@ -333,7 +333,7 @@ namespace Microsoft.Build.Tasks.Git
 
             foreach (var diagnostic in repository.GetSubmoduleDiagnostics())
             {
-                logWarning(Resources.SourceCodeWontBeAvailableViaSourceLink, new[] { diagnostic });
+                logWarning(Resources.SourceCodeWontBeAvailableViaSourceLink, [diagnostic]);
             }
 
             return result.ToArray();

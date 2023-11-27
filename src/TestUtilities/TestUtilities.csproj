@@ -21,7 +21,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\Common\NullableAttributes.cs" Link="Common\NullableAttributes.cs" />
+    <Compile Include="..\Shared\Framework\**\*.cs" Link="Shared\Framework\%(RecursiveDir)\%(FileName).cs" />
   </ItemGroup>
 
   <Target Name="_GenerateSdkVersionAttribute" BeforeTargets="CoreCompile" Outputs="$(IntermediateOutputPath)$(_DotNetSdkBuildIInfoFile)">

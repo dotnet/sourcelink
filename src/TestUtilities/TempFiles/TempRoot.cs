@@ -12,7 +12,7 @@ namespace TestUtilities
 {
     public sealed class TempRoot : IDisposable
     {
-        private readonly ConcurrentBag<IDisposable> _temps = new ConcurrentBag<IDisposable>();
+        private readonly ConcurrentBag<IDisposable> _temps = new();
         public static readonly string Root;
         private bool _disposed;
 

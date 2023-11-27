@@ -13,12 +13,11 @@
     <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\Common\NullableAttributes.cs" Link="Common\NullableAttributes.cs" />
-    <Compile Include="..\Common\Names.cs" Link="Common\Names.cs" />
-    <Compile Include="..\Common\GetSourceLinkUrlGitTask.cs" Link="Common\GetSourceLinkUrlGitTask.cs" />
-    <Compile Include="..\Common\TranslateRepositoryUrlGitTask.cs" Link="Common\TranslateRepositoryUrlGitTask.cs" />
-    <Compile Include="..\Common\UriUtilities.cs" Link="Common\UriUtilities.cs" />
-    <EmbeddedResource Include="..\Common\CommonResources.resx" Link="Common\CommonResources.resx">
+    <Compile Include="..\Shared\Framework\**\*.cs" Link="Shared\Framework\%(RecursiveDir)\%(FileName).cs" />
+    <Compile Include="..\Shared\Names.cs" Link="Shared\Names.cs" />
+    <Compile Include="..\Shared\GetSourceLinkUrlGitTask.cs" Link="Shared\GetSourceLinkUrlGitTask.cs" />
+    <Compile Include="..\Shared\TranslateRepositoryUrlGitTask.cs" Link="Shared\TranslateRepositoryUrlGitTask.cs" />
+    <EmbeddedResource Include="..\Shared\CommonResources.resx" Link="Shared\CommonResources.resx">
       <Namespace>Microsoft.Build.Tasks.SourceControl</Namespace>
       <GenerateSource>true</GenerateSource>
     </EmbeddedResource>

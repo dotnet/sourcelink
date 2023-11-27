@@ -4,7 +4,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 
@@ -15,7 +14,7 @@ namespace Microsoft.Build.Tasks.Git
         private const string LocalConfigurationScopeName = "local";
         private const string GitRepositoryConfigurationScopeName = "GitRepositoryConfigurationScope";
 
-        public static readonly GitEnvironment Empty = new GitEnvironment();
+        public static readonly GitEnvironment Empty = new();
 
         public string? HomeDirectory { get; }
         public string? XdgConfigHomeDirectory { get; }

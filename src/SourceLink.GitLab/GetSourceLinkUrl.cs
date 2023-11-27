@@ -21,7 +21,7 @@ namespace Microsoft.SourceLink.GitLab
         private const string VersionMetadataName = "Version";
 
         // see https://gitlab.com/gitlab-org/gitlab/-/issues/28848
-        private static readonly Version s_versionWithNewUrlFormat = new Version(12, 0);
+        private static readonly Version s_versionWithNewUrlFormat = new(12, 0);
 
         protected override string? BuildSourceLinkUrl(Uri contentUri, Uri gitUri, string relativeUrl, string revisionId, ITaskItem? hostItem)
         {
