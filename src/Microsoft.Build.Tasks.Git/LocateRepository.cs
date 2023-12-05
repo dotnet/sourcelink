@@ -53,8 +53,8 @@ namespace Microsoft.Build.Tasks.Git
             
             RepositoryId = repository.GitDirectory;
             WorkingDirectory = repository.WorkingDirectory;
-            Url = GitOperations.GetRepositoryUrl(repository, RemoteName, warnOnMissingRemote: !NoWarnOnMissingInfo, Log.LogWarning);
-            Roots = GitOperations.GetSourceRoots(repository, RemoteName, warnOnMissingCommit: !NoWarnOnMissingInfo, Log.LogWarning);
+            Url = GitOperations.GetRepositoryUrl(repository, RemoteName, warnOnMissingOrUnsupportedRemote: !NoWarnOnMissingInfo, Log.LogWarning);
+            Roots = GitOperations.GetSourceRoots(repository, RemoteName, warnOnMissingCommitOrUnsupportedUri: !NoWarnOnMissingInfo, Log.LogWarning);
             RevisionId = repository.GetHeadCommitSha();
         }
     }
