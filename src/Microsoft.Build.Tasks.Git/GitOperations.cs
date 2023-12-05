@@ -16,8 +16,6 @@ namespace Microsoft.Build.Tasks.Git
 {
     internal static class GitOperations
     {
-        private const int RemoteRepositoryRecursionLimit = 10;
-
         private const string SourceControlName = "git";
         private const string RemoteSectionName = "remote";
         private const string SubmoduleSectionName = "submodule";
@@ -25,14 +23,11 @@ namespace Microsoft.Build.Tasks.Git
         private const string UrlSectionName = "url";
         private const string UrlVariableName = "url";
 
-        public static string? GetRepositoryUrl(GitRepository repository, string? remoteName, bool warnOnMissingRemote = true, Action<string, object?[]>? logWarning = null)
-            => GetRepositoryUrl(repository, remoteName, recursionDepth: 0, warnOnMissingRemote, logWarning);
-
-        private static string? GetRepositoryUrl(GitRepository repository, string? remoteName, int recursionDepth, bool warnOnMissingRemote, Action<string, object?[]>? logWarning)
+        public static string? GetRepositoryUrl(GitRepository repository, string? remoteName, bool warnOnMissingOrUnsupportedRemote = true, Action<string, object?[]>? logWarning = null)
         {
             NullableDebug.Assert(repository.WorkingDirectory != null);
             
-            var remoteUrl = GetRemoteUrl(repository, ref remoteName, warnOnMissingRemote, logWarning);
+            var remoteUrl = GetRemoteUrl(repository, ref remoteName, warnOnMissingOrUnsupportedRemote, logWarning);
             if (remoteUrl == null)
             {
                 return null;
@@ -45,7 +40,18 @@ namespace Microsoft.Build.Tasks.Git
                 return null;
             }
 
-            return ResolveUrl(uri, repository.Environment, remoteName, recursionDepth, warnOnMissingRemote, logWarning);
+            if (!IsSupportedScheme(uri.Scheme))
+            {
+                if (warnOnMissingOrUnsupportedRemote)
+                {
+                    // TODO: Better message https://github.com/dotnet/sourcelink/issues/1149
+                    logWarning?.Invoke(Resources.InvalidRepositoryRemoteUrl, new[] { remoteName, remoteUrl });
+                }
+
+                return null;
+            }
+
+            return uri.AbsoluteUri;
         }
 
         private static string? GetRemoteUrl(GitRepository repository, ref string? remoteName, bool warnOnMissingRemote, Action<string, object?[]>? logWarning)
@@ -77,40 +83,6 @@ namespace Microsoft.Build.Tasks.Git
             }
 
             return remoteUrl;
-        }
-
-        private static string? ResolveUrl(Uri uri, GitEnvironment environment, string? remoteName, int recursionDepth, bool warnOnMissingRemote, Action<string, object?[]>? logWarning)
-        {
-            if (!uri.IsFile)
-            {
-                return uri.AbsoluteUri;
-            }
-
-            var repositoryPath = uri.LocalPath;
-            if (!GitRepository.TryGetRepositoryLocation(repositoryPath, out var remoteRepositoryLocation))
-            {
-                if (warnOnMissingRemote)
-                {
-                    logWarning?.Invoke(Resources.RepositoryHasNoRemote, new[] { repositoryPath });
-                }
-
-                return uri.AbsoluteUri;
-            }
-
-            if (recursionDepth > RemoteRepositoryRecursionLimit)
-            {
-                logWarning?.Invoke(Resources.RepositoryUrlEvaluationExceededMaximumAllowedDepth, new[] { RemoteRepositoryRecursionLimit.ToString() });
-                return null;
-            }
-
-            var remoteRepository = GitRepository.OpenRepository(remoteRepositoryLocation, environment);
-            if (remoteRepository.WorkingDirectory == null)
-            {
-                logWarning?.Invoke(Resources.UnableToLocateRepository, new[] { repositoryPath });
-                return null;
-            }
-
-            return GetRepositoryUrl(remoteRepository, remoteName, recursionDepth + 1, warnOnMissingRemote, logWarning) ?? uri.AbsoluteUri;
         }
 
         private static bool TryGetRemote(GitConfig config, [NotNullWhen(true)]out string? remoteName, [NotNullWhen(true)]out string? remoteUrl)
@@ -176,6 +148,21 @@ namespace Microsoft.Build.Tasks.Git
             NullableDebug.Assert(repository.WorkingDirectory != null);
             return NormalizeUrl(ApplyInsteadOfUrlMapping(repository.Config, url), root: repository.WorkingDirectory);
         }
+
+        /// <summary>
+        /// Git supports "http(s)", "ssh", "git" and "file" schemes. "ftp" support is obsolete. The scheme is case-sensitive.
+        /// See https://git-scm.com/docs/git-clone#_git_urls.
+        /// 
+        /// Source Link does not support "file" scheme since repositories hosted locally or on a network share 
+        /// are usually bare and the actual source files are not available (a work tree is not available).
+        /// The debugger also does not support "file" URLs in Source Link.
+        /// 
+        /// The scenario of a repository on a network share that is not bare is rare since pushing into such repository
+        /// is not allowed by default (see configuration "receive.denyCurrentBranch") and the work tree needs
+        /// to be kept up to date by a service.
+        /// </summary>
+        private static bool IsSupportedScheme(string scheme)
+            => scheme is "http" or "https" or "ssh" or "git";
 
         internal static Uri? NormalizeUrl(string url, string root)
         {
@@ -247,7 +234,7 @@ namespace Microsoft.Build.Tasks.Git
             return Uri.TryCreate(url, UriKind.Absolute, out uri);
         }
 
-        public static ITaskItem[] GetSourceRoots(GitRepository repository, string? remoteName, bool warnOnMissingCommit, Action<string, object?[]> logWarning)
+        public static ITaskItem[] GetSourceRoots(GitRepository repository, string? remoteName, bool warnOnMissingCommitOrUnsupportedUri, Action<string, object?[]> logWarning)
         {
             // Not supported for repositories without a working directory.
             NullableDebug.Assert(repository.WorkingDirectory != null);
@@ -270,7 +257,7 @@ namespace Microsoft.Build.Tasks.Git
                 item.SetMetadata(Names.SourceRoot.RevisionId, revisionId);
                 result.Add(item);
             }
-            else if (warnOnMissingCommit)
+            else if (warnOnMissingCommitOrUnsupportedUri)
             {
                 logWarning(Resources.RepositoryHasNoCommit, Array.Empty<object>());
             }
@@ -280,7 +267,7 @@ namespace Microsoft.Build.Tasks.Git
                 var commitSha = submodule.HeadCommitSha;
                 if (commitSha == null)
                 {
-                    if (warnOnMissingCommit)
+                    if (warnOnMissingCommitOrUnsupportedUri)
                     {
                         logWarning(Resources.SourceCodeWontBeAvailableViaSourceLink,
                             new[] { string.Format(Resources.SubmoduleWithoutCommit, new[] { submodule.Name }) });
@@ -309,11 +296,14 @@ namespace Microsoft.Build.Tasks.Git
                     continue;
                 }
 
-                var submoduleUrl = ResolveUrl(submoduleUri, repository.Environment, remoteName, recursionDepth: 0, warnOnMissingRemote: true, logWarning);
-                if (submoduleUrl == null)
+                if (!IsSupportedScheme(submoduleUri.Scheme))
                 {
-                    logWarning(Resources.SourceCodeWontBeAvailableViaSourceLink,
-                       new[] { string.Format(Resources.InvalidSubmoduleUrl, submodule.Name, submoduleConfigUrl) });
+                    if (warnOnMissingCommitOrUnsupportedUri)
+                    {
+                        // TODO: Better message https://github.com/dotnet/sourcelink/issues/1149
+                        logWarning(Resources.SourceCodeWontBeAvailableViaSourceLink,
+                            new[] { string.Format(Resources.InvalidSubmoduleUrl, submodule.Name, submoduleConfigUrl) });
+                    }
 
                     continue;
                 }
@@ -324,7 +314,7 @@ namespace Microsoft.Build.Tasks.Git
 
                 var item = new TaskItem(Evaluation.ProjectCollection.Escape(submodule.WorkingDirectoryFullPath.EndWithSeparator()));
                 item.SetMetadata(Names.SourceRoot.SourceControl, SourceControlName);
-                item.SetMetadata(Names.SourceRoot.ScmRepositoryUrl, Evaluation.ProjectCollection.Escape(submoduleUrl));
+                item.SetMetadata(Names.SourceRoot.ScmRepositoryUrl, Evaluation.ProjectCollection.Escape(submoduleUri.AbsoluteUri));
                 item.SetMetadata(Names.SourceRoot.RevisionId, commitSha);
                 item.SetMetadata(Names.SourceRoot.ContainingRoot, Evaluation.ProjectCollection.Escape(repoRoot));
                 item.SetMetadata(Names.SourceRoot.NestedRoot, Evaluation.ProjectCollection.Escape(submodule.WorkingDirectoryRelativePath.EndWithSeparator('/')));

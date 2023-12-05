@@ -54,7 +54,7 @@ url=https://github.com/test-org/test-sub
             Assert.Equal("1111111111111111111111111111111111111111", repository.GetHeadCommitSha());
 
             var warnings = new List<(string, object?[])>();
-            var sourceRoots = GitOperations.GetSourceRoots(repository, remoteName: null, warnOnMissingCommit: true, (message, args) => warnings.Add((message, args)));
+            var sourceRoots = GitOperations.GetSourceRoots(repository, remoteName: null, warnOnMissingCommitOrUnsupportedUri: true, (message, args) => warnings.Add((message, args)));
             AssertEx.Equal(new[]
             {
                 $@"'{repoDir.Path}{s}' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' ScmRepositoryUrl='http://github.com/test-org/test-repo'",
