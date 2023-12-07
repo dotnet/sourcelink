@@ -3,6 +3,5 @@
 
 <UsageData>
   <IgnorePatterns>
-    <UsagePattern IdentityGlob="Microsoft.SourceBuild.Intermediate.*" />
   </IgnorePatterns>
 </UsageData>
