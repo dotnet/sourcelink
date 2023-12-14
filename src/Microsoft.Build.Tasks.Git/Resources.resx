@@ -198,4 +198,13 @@
   <data name="RepositoryUrlEvaluationExceededMaximumAllowedDepth" xml:space="preserve">
     <value>Repository URL evaluation exceeded maximum allowed depth of {0} local repositories.</value>
   </data>
+  <data name="UnexpectedEndOfFile" xml:space="preserve">
+    <value>Unexpected end of file.</value>
+  </data>
+  <data name="UnexpectedCharacter" xml:space="preserve">
+    <value>Unexpected character {0}.</value>
+  </data>
+  <data name="ErrorParsingConfigLineInFile" xml:space="preserve">
+    <value>Error parsing config line {0} in file '{1}': {2}</value>
+  </data>
 </root>
