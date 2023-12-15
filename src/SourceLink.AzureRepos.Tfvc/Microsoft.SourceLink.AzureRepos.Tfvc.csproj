@@ -14,7 +14,7 @@
     <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\Common\NullableAttributes.cs" Link="Common\NullableAttributes.cs" />
+    <Compile Include="..\Common\Utilities\*.cs" Link="Common\%(FileName).cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Build" Version="$(MicrosoftBuildVersion)" />

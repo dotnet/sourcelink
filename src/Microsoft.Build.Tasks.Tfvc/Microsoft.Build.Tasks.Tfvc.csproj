@@ -20,8 +20,6 @@
     <PackageReference Include="Microsoft.TeamFoundationServer.ExtendedClient" Version="$(MicrosoftTeamFoundationServerExtendedClientVersion)" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Common\NullableAttributes.cs" Link="Common\NullableAttributes.cs" />
-    <Compile Include="..\Common\PathUtilities.cs" Link="Common\PathUtilities.cs" />
-    <Compile Include="..\Common\UriUtilities.cs" Link="Common\UriUtilities.cs" />
+    <Compile Include="..\Common\Utilities\*.cs" Link="Common\%(FileName).cs" />
   </ItemGroup>
 </Project>

@@ -18,11 +18,7 @@
     <PackageReference Include="Microsoft.Build.Tasks.Core" Version="$(MicrosoftBuildTasksCoreVersion)" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Common\NullableAttributes.cs" Link="Common\NullableAttributes.cs" />
-    <Compile Include="..\Common\Names.cs" Link="Common\Names.cs" />
-    <Compile Include="..\Common\ValueTuple.cs" Link="Common\ValueTuple.cs" />
-    <Compile Include="..\Common\PathUtilities.cs" Link="Common\PathUtilities.cs" />
-    <Compile Include="..\Common\SequenceComparer.cs" Link="Common\SequenceComparer.cs" />
+    <Compile Include="..\Common\Utilities\*.cs" Link="Common\%(FileName).cs" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Microsoft.Build.Tasks.Git.Operations" />

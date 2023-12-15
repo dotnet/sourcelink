@@ -1,0 +1,16 @@
+<Project>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)..\Utilities\*.cs" Link="Common\%(FileName).cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)*.cs" Link="Common\%(FileName).cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)CommonResources.resx" Link="Common\CommonResources.resx">
+      <Namespace>Microsoft.Build.Tasks.SourceControl</Namespace>
+      <GenerateSource>true</GenerateSource>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build" Version="$(MicrosoftBuildVersion)" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="$(MicrosoftBuildTasksCoreVersion)" />
+  </ItemGroup>
+</Project>

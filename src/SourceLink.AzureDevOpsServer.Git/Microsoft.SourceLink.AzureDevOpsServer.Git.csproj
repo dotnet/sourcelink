@@ -12,22 +12,7 @@
     <PackageTags>MSBuild Tasks Azure DepOps Server TFS Git source link</PackageTags>
     <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="..\Common\NullableAttributes.cs" Link="Common\NullableAttributes.cs" />
-    <Compile Include="..\Common\Names.cs" Link="Common\Names.cs" />
-    <Compile Include="..\Common\GetSourceLinkUrlGitTask.cs" Link="Common\GetSourceLinkUrlGitTask.cs" />
-    <Compile Include="..\Common\TranslateRepositoryUrlGitTask.cs" Link="Common\TranslateRepositoryUrlGitTask.cs" />
-    <Compile Include="..\Common\UriUtilities.cs" Link="Common\UriUtilities.cs" />
-    <Compile Include="..\Common\AzureDevOpsUrlParser.cs" Link="Common\AzureDevOpsUrlParser.cs" />
-    <EmbeddedResource Include="..\Common\CommonResources.resx" Link="Common\CommonResources.resx">
-      <Namespace>Microsoft.Build.Tasks.SourceControl</Namespace>
-      <GenerateSource>true</GenerateSource>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Build" Version="$(MicrosoftBuildVersion)" />
-    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="$(MicrosoftBuildTasksCoreVersion)" />
-  </ItemGroup>
+  <Import Project="..\Common\AzureDevOps\Items.props" />
   <ItemGroup>
     <InternalsVisibleTo Include="Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests" />
   </ItemGroup>
