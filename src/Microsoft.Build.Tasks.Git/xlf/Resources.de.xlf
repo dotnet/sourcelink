@@ -7,6 +7,11 @@
         <target state="translated">Die Rekursion der Konfigurationsdatei hat die maximal zulässige Tiefe von {0} überschritten.</target>
         <note />
       </trans-unit>
+      <trans-unit id="ErrorParsingConfigLineInFile">
+        <source>Error parsing config line {0} in file '{1}': {2}</source>
+        <target state="new">Error parsing config line {0} in file '{1}': {2}</target>
+        <note />
+      </trans-unit>
       <trans-unit id="ErrorReadingGitRepositoryInformation">
         <source>Error reading git repository information: {0}</source>
         <target state="translated">Fehler beim Lesen der Git-Repositoryinformationen: {0}</target>
@@ -115,6 +120,16 @@
       <trans-unit id="UnableToLocateRepository">
         <source>Unable to locate repository with working directory that contains directory '{0}'.</source>
         <target state="translated">Das Repository mit dem Arbeitsverzeichnis, welches das Verzeichnis "{0}" enthält, wurde nicht gefunden.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="UnexpectedCharacter">
+        <source>Unexpected character {0}.</source>
+        <target state="new">Unexpected character {0}.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="UnexpectedEndOfFile">
+        <source>Unexpected end of file.</source>
+        <target state="new">Unexpected end of file.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnsupportedRepositoryExtension">
