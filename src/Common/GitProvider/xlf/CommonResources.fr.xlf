@@ -4,52 +4,52 @@
     <body>
       <trans-unit id="AtLeastOneRepositoryHostIsRequired">
         <source>{0} item group is empty. At least one {1} repository host is required in order to generate SourceLink.</source>
-        <target state="translated">Le groupe d'éléments {0} est vide. Au moins un hôte de dépôt {1} est nécessaire pour générer SourceLink.</target>
+        <target state="new">{0} item group is empty. At least one {1} repository host is required in order to generate SourceLink.</target>
         <note />
       </trans-unit>
       <trans-unit id="IgnoringInvalidHostName">
         <source>Ignoring invalid host name: '{0}' -- expected 'domain[:port]'.</source>
-        <target state="translated">Nom d’hôte non valide ignoré : '{0}' -- 'domain[:p ort]' attendu.</target>
+        <target state="new">Ignoring invalid host name: '{0}' -- expected 'domain[:port]'.</target>
         <note />
       </trans-unit>
       <trans-unit id="ItemOfItemGroupMustSpecifyMetadata">
         <source>Item '{0}' of item group '{1}' must specify metadata '{2}'</source>
-        <target state="translated">L'élément '{0}' du groupe d'éléments '{1}' doit spécifier les métadonnées '{2}'</target>
+        <target state="new">Item '{0}' of item group '{1}' must specify metadata '{2}'</target>
         <note />
       </trans-unit>
       <trans-unit id="NoWellFormedHostUrisSpecified">
         <source>No well-formed host URIs specified: {0}.</source>
-        <target state="translated">Aucun URI d’hôte bien formé spécifié : {0}.</target>
+        <target state="new">No well-formed host URIs specified: {0}.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnableToDetermineRepositoryUrl">
         <source>Unable to determine repository url, the source code won't be available via source link.</source>
-        <target state="translated">Impossible de déterminer l'URL du dépôt, le code source n'est pas disponible via Source Link.</target>
+        <target state="new">Unable to determine repository url, the source code won't be available via source link.</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsInvalid">
         <source>The value of {0} with identity '{1}' is invalid: '{2}'</source>
-        <target state="translated">La valeur de {0} avec l'identité '{1}' n’est pas valide : '{2}'</target>
+        <target state="new">The value of {0} with identity '{1}' is invalid: '{2}'</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsNotValidCommitHash">
         <source>The value of {0} with identity '{1}' is not a valid commit hash: '{2}'</source>
-        <target state="translated">La valeur de {0} avec l'identité '{1}' n'est pas un hachage de validation valide : '{2}'</target>
+        <target state="new">The value of {0} with identity '{1}' is not a valid commit hash: '{2}'</target>
         <note />
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidDomainName">
         <source>The value passed to task parameter {0} is not a valid domain name: '{1}'</source>
-        <target state="translated">La valeur passée au paramètre de tâche {0} n'est pas un nom de domaine valide : '{1}'</target>
+        <target state="new">The value passed to task parameter {0} is not a valid domain name: '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidHostUri">
         <source>The value passed to task parameter {0} is not a valid host URI: '{1}'</source>
-        <target state="translated">La valeur passée au paramètre de tâche {0} n'est pas un URI d'hôte valide : '{1}'</target>
+        <target state="new">The value passed to task parameter {0} is not a valid host URI: '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidUri">
         <source>The value passed to task parameter {0} is not a valid URI: '{1}'</source>
-        <target state="translated">La valeur passée au paramètre de tâche {0} n'est pas un URI valide : '{1}'</target>
+        <target state="new">The value passed to task parameter {0} is not a valid URI: '{1}'</target>
         <note />
       </trans-unit>
     </body>
