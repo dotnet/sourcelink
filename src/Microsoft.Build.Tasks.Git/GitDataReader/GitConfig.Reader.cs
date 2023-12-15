@@ -13,7 +13,40 @@ namespace Microsoft.Build.Tasks.Git
 {
     partial class GitConfig
     {
-        internal class Reader
+        internal sealed class LineCountingReader(TextReader reader, string path)
+        {
+            /// <summary>
+            /// 1-based current line number.
+            /// </summary>
+            private int _lineNumber = 1;
+
+            private int _last = -1;
+
+            public int Read()
+            {
+                var c = reader.Read();
+
+                if (c == '\r' || c == '\n' && _last != '\r')
+                {
+                    _lineNumber++;
+                }
+
+                _last = c;
+                return c;
+            }
+
+            public int Peek()
+                => reader.Peek();
+
+            public void UnexpectedCharacter()
+                => UnexpectedCharacter(Peek());
+
+            public void UnexpectedCharacter(int c)
+                => throw new InvalidDataException(string.Format(Resources.ErrorParsingConfigLineInFile, _lineNumber, path,
+                    (c == -1) ? Resources.UnexpectedEndOfFile : string.Format(Resources.UnexpectedCharacter, $"U+{c:x4}")));
+        }
+
+        internal sealed class Reader
         {
             private const int MaxIncludeDepth = 10;
 
@@ -169,11 +202,11 @@ namespace Microsoft.Build.Tasks.Git
                     throw new InvalidDataException(string.Format(Resources.ConfigurationFileRecursionExceededMaximumAllowedDepth, MaxIncludeDepth));
                 }
 
-                TextReader reader;
+                TextReader textReader;
 
                 try
                 {
-                    reader = _fileOpener(path);
+                    textReader = _fileOpener(path);
                 }
                 catch (Exception e) when (e is FileNotFoundException or DirectoryNotFoundException)
                 {
@@ -184,8 +217,10 @@ namespace Microsoft.Build.Tasks.Git
                     throw new IOException(e.Message, e);
                 }
 
-                using (reader)
+                using (textReader)
                 {
+                    var reader = new LineCountingReader(textReader, path);
+
                     string sectionName = "";
                     string subsectionName = "";
 
@@ -320,7 +355,7 @@ namespace Microsoft.Build.Tasks.Git
             }
 
             // internal for testing
-            internal static void ReadSectionHeader(TextReader reader, StringBuilder reusableBuffer, out string name, out string subsectionName)
+            internal static void ReadSectionHeader(LineCountingReader reader, StringBuilder reusableBuffer, out string name, out string subsectionName)
             {
                 var nameBuilder = reusableBuffer.Clear();
 
@@ -345,7 +380,7 @@ namespace Microsoft.Build.Tasks.Git
                         c = reader.Read();
                         if (c != ']')
                         {
-                            throw new InvalidDataException();
+                            reader.UnexpectedCharacter(c);
                         }
 
                         break;
@@ -358,7 +393,7 @@ namespace Microsoft.Build.Tasks.Git
                     }
                     else
                     {
-                        throw new InvalidDataException();
+                        reader.UnexpectedCharacter(c);
                     }
                 }
 
@@ -381,14 +416,14 @@ namespace Microsoft.Build.Tasks.Git
                 }
             }
 
-            private static string ReadSubsectionName(TextReader reader, StringBuilder reusableBuffer)
+            private static string ReadSubsectionName(LineCountingReader reader, StringBuilder reusableBuffer)
             {
                 SkipWhitespace(reader);
 
                 int c = reader.Read();
                 if (c != '"')
                 {
-                    throw new InvalidDataException();
+                    reader.UnexpectedCharacter(c);
                 }
 
                 var subsectionName = reusableBuffer.Clear();
@@ -397,7 +432,7 @@ namespace Microsoft.Build.Tasks.Git
                     c = reader.Read();
                     if (c <= 0)
                     {
-                        throw new InvalidDataException();
+                        reader.UnexpectedCharacter(c);
                     }
 
                     if (c == '"')
@@ -412,7 +447,7 @@ namespace Microsoft.Build.Tasks.Git
                         c = reader.Read();
                         if (c <= 0)
                         {
-                            throw new InvalidDataException();
+                            reader.UnexpectedCharacter(c);
                         }
                     }
 
@@ -421,12 +456,12 @@ namespace Microsoft.Build.Tasks.Git
             }
 
             // internal for testing
-            internal static void ReadVariableDeclaration(TextReader reader, StringBuilder reusableBuffer, out string name, out string value)
+            internal static void ReadVariableDeclaration(LineCountingReader reader, StringBuilder reusableBuffer, out string name, out string value)
             {
                 name = ReadVariableName(reader, reusableBuffer);
                 if (name.Length == 0)
                 {
-                    throw new InvalidDataException();
+                    reader.UnexpectedCharacter();
                 }
 
                 SkipWhitespace(reader);
@@ -447,7 +482,7 @@ namespace Microsoft.Build.Tasks.Git
 
                 if (c != '=')
                 {
-                    throw new InvalidDataException();
+                    reader.UnexpectedCharacter(c);
                 }
 
                 reader.Read();
@@ -457,7 +492,7 @@ namespace Microsoft.Build.Tasks.Git
                 value = ReadVariableValue(reader, reusableBuffer);
             }
 
-            private static string ReadVariableName(TextReader reader, StringBuilder reusableBuffer)
+            private static string ReadVariableName(LineCountingReader reader, StringBuilder reusableBuffer)
             {
                 var nameBuilder = reusableBuffer.Clear();
                 int c;
@@ -472,10 +507,12 @@ namespace Microsoft.Build.Tasks.Git
                 return nameBuilder.ToString().ToLowerInvariant();
             }
 
-            private static string ReadVariableValue(TextReader reader, StringBuilder reusableBuffer)
+            private static string ReadVariableValue(LineCountingReader reader, StringBuilder reusableBuffer)
             {
                 // Allowed:
                 //   name = "a"x"b"        `axb`
+                //   name = "a
+                //           b"            `a\n        b`
                 //   name = "b"#"a"        `b`
                 //   name = \
                 //          abc            `abc`
@@ -494,11 +531,22 @@ namespace Microsoft.Build.Tasks.Git
                 while (true)
                 {
                     int c = reader.Read();
-                    if (c == -1 || IsEndOfLine(c))
+                    if (c == -1)
                     {
                         if (inQuotes)
                         {
-                            throw new InvalidDataException();
+                            reader.UnexpectedCharacter(c);
+                        }
+
+                        break;
+                    }
+
+                    if (IsEndOfLine(c))
+                    {
+                        if (inQuotes)
+                        {
+                            builder.Append((char)c);
+                            continue;
                         }
 
                         break;
@@ -536,7 +584,8 @@ namespace Microsoft.Build.Tasks.Git
                                 continue;
 
                             default:
-                                throw new InvalidDataException();
+                                reader.UnexpectedCharacter(c);
+                                break;
                         }
                     }
 
@@ -563,7 +612,7 @@ namespace Microsoft.Build.Tasks.Git
                 return builder.ToString(0, lengthIgnoringTrailingWhitespace);
             }
 
-            private static void SkipMultilineWhitespace(TextReader reader)
+            private static void SkipMultilineWhitespace(LineCountingReader reader)
             {
                 while (IsWhitespaceOrEndOfLine(reader.Peek()))
                 {
@@ -571,7 +620,7 @@ namespace Microsoft.Build.Tasks.Git
                 }
             }
 
-            private static void SkipWhitespace(TextReader reader)
+            private static void SkipWhitespace(LineCountingReader reader)
             {
                 while (IsWhitespace(reader.Peek()))
                 {
@@ -579,7 +628,7 @@ namespace Microsoft.Build.Tasks.Git
                 }
             }
 
-            private static void ReadToLineEnd(TextReader reader)
+            private static void ReadToLineEnd(LineCountingReader reader)
             {
                 while (true)
                 {
