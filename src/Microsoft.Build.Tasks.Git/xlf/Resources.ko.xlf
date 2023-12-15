@@ -7,6 +7,11 @@
         <target state="translated">구성 파일 재귀가 허용되는 최대 깊이 {0}을(를) 초과했습니다.</target>
         <note />
       </trans-unit>
+      <trans-unit id="ErrorParsingConfigLineInFile">
+        <source>Error parsing config line {0} in file '{1}': {2}</source>
+        <target state="new">Error parsing config line {0} in file '{1}': {2}</target>
+        <note />
+      </trans-unit>
       <trans-unit id="ErrorReadingGitRepositoryInformation">
         <source>Error reading git repository information: {0}</source>
         <target state="translated">Git 리포지토리 정보를 읽는 동안 오류가 발생했습니다. {0}</target>
@@ -115,6 +120,16 @@
       <trans-unit id="UnableToLocateRepository">
         <source>Unable to locate repository with working directory that contains directory '{0}'.</source>
         <target state="translated">디렉터리 '{0}'이(가) 포함된 작업 디렉터리로 리포지토리를 찾을 수 없습니다.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="UnexpectedCharacter">
+        <source>Unexpected character {0}.</source>
+        <target state="new">Unexpected character {0}.</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="UnexpectedEndOfFile">
+        <source>Unexpected end of file.</source>
+        <target state="new">Unexpected end of file.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnsupportedRepositoryExtension">

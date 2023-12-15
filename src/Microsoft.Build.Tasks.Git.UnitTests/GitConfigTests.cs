@@ -48,11 +48,11 @@ d =
         [Fact]
         public void Sections_Errors()
         {
-            Assert.Throws<InvalidDataException>(() => LoadFromString("/", "/config", @"
+            var e = Assert.Throws<InvalidDataException>(() => LoadFromString("/", "/config", @"
 [s]
 a = 
 1"));
-
+            AssertEx.AreEqual(string.Format(Resources.ErrorParsingConfigLineInFile, 4, "/config", string.Format(Resources.UnexpectedCharacter, "U+0031")), e.Message);
         }
 
         [Fact]
@@ -206,7 +206,9 @@ a =
                 });
             }
 
-            Assert.Throws<InvalidDataException>(() => new GitConfig.Reader(gitDirectory, gitDirectory, GitEnvironment.Empty, openFile).LoadFrom(Path.Combine(gitDirectory, "config")));
+            var e = Assert.Throws<InvalidDataException>(() => new GitConfig.Reader(gitDirectory, gitDirectory, GitEnvironment.Empty, openFile).LoadFrom(Path.Combine(gitDirectory, "config")));
+
+            AssertEx.AreEqual(string.Format(Resources.ConfigurationFileRecursionExceededMaximumAllowedDepth, 10), e.Message);
         }
 
         [Theory]
@@ -286,22 +288,31 @@ a =
         [InlineData("[X \"/*-\\a\"]", "x", "/*-a")]
         public void ReadSectionHeader(string str, string name, string subsectionName)
         {
-            GitConfig.Reader.ReadSectionHeader(new StringReader(str), new StringBuilder(), out var actualName, out var actualSubsectionName);
+            GitConfig.Reader.ReadSectionHeader(
+                new GitConfig.LineCountingReader(new StringReader(str), "path"), new StringBuilder(), out var actualName, out var actualSubsectionName);
+
             Assert.Equal(name, actualName);
             Assert.Equal(subsectionName, actualSubsectionName);
         }
 
         [Theory]
-        [InlineData("[")]
-        [InlineData("[x")]
-        [InlineData("[x x x]")]
-        [InlineData("[* \"\\")]
-        [InlineData("[* \"\\\"]")]
-        [InlineData("[* \"*\"]")]
-        [InlineData("[x \"y\" ]")]
-        public void ReadSectionHeader_Errors(string str)
+        [InlineData("[", -1)]
+        [InlineData("[x", -1)]
+        [InlineData("[x x x]", 'x')]
+        [InlineData("[* \"\\", '*')]
+        [InlineData("[* \"\\\"]", '*')]
+        [InlineData("[* \"*\"]", '*')]
+        [InlineData("[x \"y\" ]", ' ')]
+        public void ReadSectionHeader_Errors(string str, int unexpectedChar)
         {
-            Assert.Throws<InvalidDataException>(() => GitConfig.Reader.ReadSectionHeader(new StringReader(str), new StringBuilder(), out _, out _));
+            var e = Assert.Throws<InvalidDataException>(() => GitConfig.Reader.ReadSectionHeader(
+                new GitConfig.LineCountingReader(new StringReader(str), "path"), new StringBuilder(), out _, out _));
+
+            var message = (unexpectedChar == -1)
+                ? Resources.UnexpectedEndOfFile
+                : string.Format(Resources.UnexpectedCharacter, $@"U+{unexpectedChar:x4}");
+
+            AssertEx.AreEqual(string.Format(Resources.ErrorParsingConfigLineInFile, 1, "path", message), e.Message);
         }
 
         [Theory]
@@ -336,29 +347,44 @@ a =
         [InlineData("name= 1\\\"", "name", "1\"")]
         [InlineData("name= ", "name", "")]
         [InlineData("name=", "name", "")]
+        [InlineData("name=\"a\rb\"", "name", "a\rb")]
+        [InlineData("name=\"a\nb\"", "name", "a\nb")]
+        [InlineData("name=\"a\r\nb\"", "name", "a\r\nb")]
         public void ReadVariableDeclaration(string str, string name, string value)
         {
-            GitConfig.Reader.ReadVariableDeclaration(new StringReader(str), new StringBuilder(), out var actualName, out var actualValue);
+            GitConfig.Reader.ReadVariableDeclaration(
+                new GitConfig.LineCountingReader(new StringReader(str), "path"), new StringBuilder(), out var actualName, out var actualValue);
+
             Assert.Equal(name, actualName);
             Assert.Equal(value, actualValue);
         }
 
         [Theory]
-        [InlineData("")]
-        [InlineData("*")]
-        [InlineData("-=1")]
-        [InlineData("_=1")]
-        [InlineData("5=1")]
-        [InlineData("a_=1")]
-        [InlineData("a*=1")]
-        [InlineData("name=\\j")]
-        [InlineData("name=\"")]
-        [InlineData("name=\"a")]
-        [InlineData("name=\"a\n")]
-        [InlineData("name=\"a\nb")]
-        public void ReadVariableDeclaration_Errors(string str)
+        [InlineData("", -1)]
+        [InlineData("*", '*')]
+        [InlineData("-=1", '-')]
+        [InlineData("_=1", '_')]
+        [InlineData("5=1", '5')]
+        [InlineData("a_=1", '_')]
+        [InlineData("a*=1", '*')]
+        [InlineData("name=\\j", '\\')]
+        [InlineData("name=\"", -1)]
+        [InlineData("name=\"a", -1)]
+        [InlineData("name=\"a\n", -1, 2)]
+        [InlineData("name=\"a\nb", -1, 2)]
+        [InlineData("name=\"a\rb", -1, 2)]
+        [InlineData("name=\"a\r\nb", -1, 2)]
+        [InlineData("name=\"a\r\rb", -1, 3)]
+        public void ReadVariableDeclaration_Errors(string str, int unexpectedChar, int line = 1)
         {
-            Assert.Throws<InvalidDataException>(() => GitConfig.Reader.ReadVariableDeclaration(new StringReader(str), new StringBuilder(), out _, out _));
+            var e = Assert.Throws<InvalidDataException>(() => GitConfig.Reader.ReadVariableDeclaration(
+                new GitConfig.LineCountingReader(new StringReader(str), "path"), new StringBuilder(), out _, out _));
+
+            var message = (unexpectedChar == -1)
+                ? Resources.UnexpectedEndOfFile
+                : string.Format(Resources.UnexpectedCharacter, $@"U+{unexpectedChar:x4}");
+
+            AssertEx.AreEqual(string.Format(Resources.ErrorParsingConfigLineInFile, line, "path", message), e.Message);
         }
 
         [Theory]
