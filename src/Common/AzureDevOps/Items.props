@@ -1,0 +1,6 @@
+<Project>
+  <Import Project="$(MSBuildThisFileDirectory)..\GitProvider\Items.props" />
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)*.cs" Link="Common\%(FileName).cs" />
+  </ItemGroup>
+</Project>

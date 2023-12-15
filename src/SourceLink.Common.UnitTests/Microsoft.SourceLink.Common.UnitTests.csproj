@@ -3,10 +3,11 @@
     <TargetFrameworks>net472;$(NetCurrent)</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\Common\GetSourceLinkUrlGitTask.cs" Link="Common\GetSourceLinkUrlGitTask.cs" />
-    <Compile Include="..\Common\TranslateRepositoryUrlGitTask.cs" Link="Common\TranslateRepositoryUrlGitTask.cs" />
-    <Compile Include="..\Common\UriUtilities.cs" Link="Common\UriUtilities.cs" />
-    <EmbeddedResource Include="..\Common\CommonResources.resx" Link="Common\CommonResources.resx">
+    <Compile Include="..\Common\GitProvider\GetSourceLinkUrlGitTask.cs" Link="Common\GitProvider\GetSourceLinkUrlGitTask.cs" />
+    <Compile Include="..\Common\GitProvider\TranslateRepositoryUrlGitTask.cs" Link="Common\GitProvider\TranslateRepositoryUrlGitTask.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\Common\GitProvider\CommonResources.resx" Link="Common\CommonResources.resx">
       <Namespace>Microsoft.Build.Tasks.SourceControl</Namespace>
       <GenerateSource>true</GenerateSource>
     </EmbeddedResource>

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29011.400
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34322.126
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Build.Tasks.Git", "src\Microsoft.Build.Tasks.Git\Microsoft.Build.Tasks.Git.csproj", "{A86F9DC3-9595-44AC-ACC6-025FB74813E6}"
 EndProject
@@ -33,19 +33,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.GitLab
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.GitLab.UnitTests", "src\SourceLink.GitLab.UnitTests\Microsoft.SourceLink.GitLab.UnitTests.csproj", "{46C6BD7C-ABB7-4444-B095-C63868FACC41}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{7621150D-714B-4C87-8834-199A0495B92F}"
-	ProjectSection(SolutionItems) = preProject
-		src\Common\CommonResources.resx = src\Common\CommonResources.resx
-		src\Common\GetSourceLinkUrlGitTask.cs = src\Common\GetSourceLinkUrlGitTask.cs
-		src\Common\Names.cs = src\Common\Names.cs
-		src\Common\NullableAttributes.cs = src\Common\NullableAttributes.cs
-		src\Common\PathUtilities.cs = src\Common\PathUtilities.cs
-		src\Common\SequenceComparer.cs = src\Common\SequenceComparer.cs
-		src\Common\TeamFoundationUrlParser.cs = src\Common\TeamFoundationUrlParser.cs
-		src\Common\TranslateRepositoryUrlGitTask.cs = src\Common\TranslateRepositoryUrlGitTask.cs
-		src\Common\UriUtilities.cs = src\Common\UriUtilities.cs
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.Bitbucket.Git", "src\SourceLink.Bitbucket.Git\Microsoft.SourceLink.Bitbucket.Git.csproj", "{9138BCAB-41BC-4DED-8A3F-7EB4177CDCE1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.Bitbucket.Git.UnitTests", "src\SourceLink.Bitbucket.Git.UnitTests\Microsoft.SourceLink.Bitbucket.Git.UnitTests.csproj", "{97AD20FC-9526-4579-8E95-47890FE12783}"
@@ -74,12 +61,39 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.Gitee"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.Gitee.UnitTests", "src\SourceLink.Gitee.UnitTests\Microsoft.SourceLink.Gitee.UnitTests.csproj", "{D647294C-40C0-4624-A76B-C4C276233609}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{4BB63B07-D1DD-48CF-845F-34B3BBB0F596}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AzureDevOps", "AzureDevOps", "{8A4D5938-D99A-4BEC-8C02-4BF69E70D720}"
+	ProjectSection(SolutionItems) = preProject
+		src\Common\AzureDevOps\AzureDevOpsUrlParser.cs = src\Common\AzureDevOps\AzureDevOpsUrlParser.cs
+		src\Common\AzureDevOps\Items.props = src\Common\AzureDevOps\Items.props
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitProvider", "GitProvider", "{59A2C2E8-AE72-46C4-B51C-4244D6451597}"
+	ProjectSection(SolutionItems) = preProject
+		src\Common\GitProvider\CommonResources.resx = src\Common\GitProvider\CommonResources.resx
+		src\Common\GitProvider\GetSourceLinkUrlGitTask.cs = src\Common\GitProvider\GetSourceLinkUrlGitTask.cs
+		src\Common\GitProvider\Items.props = src\Common\GitProvider\Items.props
+		src\Common\GitProvider\TranslateRepositoryUrlGitTask.cs = src\Common\GitProvider\TranslateRepositoryUrlGitTask.cs
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utilities", "Utilities", "{F351EFBE-DAEE-437A-A492-4F1434489693}"
+	ProjectSection(SolutionItems) = preProject
+		src\Common\Utilities\Hash.cs = src\Common\Utilities\Hash.cs
+		src\Common\Utilities\Index.cs = src\Common\Utilities\Index.cs
+		src\Common\Utilities\IsExternalInit.cs = src\Common\Utilities\IsExternalInit.cs
+		src\Common\Utilities\Names.cs = src\Common\Utilities\Names.cs
+		src\Common\Utilities\NullableAttributes.cs = src\Common\Utilities\NullableAttributes.cs
+		src\Common\Utilities\PathUtilities.cs = src\Common\Utilities\PathUtilities.cs
+		src\Common\Utilities\Range.cs = src\Common\Utilities\Range.cs
+		src\Common\Utilities\RequiredMemberAttribute.cs = src\Common\Utilities\RequiredMemberAttribute.cs
+		src\Common\Utilities\SequenceComparer.cs = src\Common\Utilities\SequenceComparer.cs
+		src\Common\Utilities\SetsRequiredMembersAttribute.cs = src\Common\Utilities\SetsRequiredMembersAttribute.cs
+		src\Common\Utilities\UriUtilities.cs = src\Common\Utilities\UriUtilities.cs
+		src\Common\Utilities\ValueTuple.cs = src\Common\Utilities\ValueTuple.cs
+	EndProjectSection
+EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		src\SourceLink.Tools\Microsoft.SourceLink.Tools.projitems*{4376b613-cd5b-4274-9071-30989769b0b2}*SharedItemsImports = 5
-		src\SourceLink.Tools\Microsoft.SourceLink.Tools.projitems*{5df76cc2-5f0e-45a6-ad56-6bbbccbc1a78}*SharedItemsImports = 13
-		src\SourceLink.Tools\Microsoft.SourceLink.Tools.projitems*{99d113a9-24ec-471d-9f74-d2ac2f16220b}*SharedItemsImports = 5
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -201,7 +215,17 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8A4D5938-D99A-4BEC-8C02-4BF69E70D720} = {4BB63B07-D1DD-48CF-845F-34B3BBB0F596}
+		{59A2C2E8-AE72-46C4-B51C-4244D6451597} = {4BB63B07-D1DD-48CF-845F-34B3BBB0F596}
+		{F351EFBE-DAEE-437A-A492-4F1434489693} = {4BB63B07-D1DD-48CF-845F-34B3BBB0F596}
+	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0E6D4D3C-C44D-4A03-B5C0-10A36F51E272}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		src\SourceLink.Tools\Microsoft.SourceLink.Tools.projitems*{4376b613-cd5b-4274-9071-30989769b0b2}*SharedItemsImports = 5
+		src\SourceLink.Tools\Microsoft.SourceLink.Tools.projitems*{5df76cc2-5f0e-45a6-ad56-6bbbccbc1a78}*SharedItemsImports = 13
+		src\SourceLink.Tools\Microsoft.SourceLink.Tools.projitems*{99d113a9-24ec-471d-9f74-d2ac2f16220b}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal
