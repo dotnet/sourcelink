@@ -4,52 +4,52 @@
     <body>
       <trans-unit id="AtLeastOneRepositoryHostIsRequired">
         <source>{0} item group is empty. At least one {1} repository host is required in order to generate SourceLink.</source>
-        <target state="translated">{0} 項目グループが空です。SourceLink を生成するには、少なくとも 1 つの {1} リポジトリ ホストが必要です。</target>
+        <target state="new">{0} item group is empty. At least one {1} repository host is required in order to generate SourceLink.</target>
         <note />
       </trans-unit>
       <trans-unit id="IgnoringInvalidHostName">
         <source>Ignoring invalid host name: '{0}' -- expected 'domain[:port]'.</source>
-        <target state="translated">無効なホスト名を無視しています: '{0}' -- 'domain[:p ort]' が必要です。</target>
+        <target state="new">Ignoring invalid host name: '{0}' -- expected 'domain[:port]'.</target>
         <note />
       </trans-unit>
       <trans-unit id="ItemOfItemGroupMustSpecifyMetadata">
         <source>Item '{0}' of item group '{1}' must specify metadata '{2}'</source>
-        <target state="translated">項目グループ '{1}' の項目 '{0}' には、メタデータ '{2}' を指定する必要があります</target>
+        <target state="new">Item '{0}' of item group '{1}' must specify metadata '{2}'</target>
         <note />
       </trans-unit>
       <trans-unit id="NoWellFormedHostUrisSpecified">
         <source>No well-formed host URIs specified: {0}.</source>
-        <target state="translated">整形式のホスト URI が指定されていません: {0}。</target>
+        <target state="new">No well-formed host URIs specified: {0}.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnableToDetermineRepositoryUrl">
         <source>Unable to determine repository url, the source code won't be available via source link.</source>
-        <target state="translated">リポジトリのURLを特定できません。ソース リンクを使用してソース コードを利用できません。</target>
+        <target state="new">Unable to determine repository url, the source code won't be available via source link.</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsInvalid">
         <source>The value of {0} with identity '{1}' is invalid: '{2}'</source>
-        <target state="translated">ID '{1}' の {0} の値が無効です: '{2}'</target>
+        <target state="new">The value of {0} with identity '{1}' is invalid: '{2}'</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsNotValidCommitHash">
         <source>The value of {0} with identity '{1}' is not a valid commit hash: '{2}'</source>
-        <target state="translated">ID '{1}' の {0} の値が有効なコミット ハッシュではありません: '{2}'</target>
+        <target state="new">The value of {0} with identity '{1}' is not a valid commit hash: '{2}'</target>
         <note />
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidDomainName">
         <source>The value passed to task parameter {0} is not a valid domain name: '{1}'</source>
-        <target state="translated">タスク パラメーター {0} に渡された値は有効なドメイン名ではありません: '{1}'</target>
+        <target state="new">The value passed to task parameter {0} is not a valid domain name: '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidHostUri">
         <source>The value passed to task parameter {0} is not a valid host URI: '{1}'</source>
-        <target state="translated">タスク パラメーター {0} に渡された値は有効なホスト URI ではありません: '{1}'</target>
+        <target state="new">The value passed to task parameter {0} is not a valid host URI: '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidUri">
         <source>The value passed to task parameter {0} is not a valid URI: '{1}'</source>
-        <target state="translated">タスクのパラメーター {0} に渡された値は、有効な URI ではありません: '{1}'</target>
+        <target state="new">The value passed to task parameter {0} is not a valid URI: '{1}'</target>
         <note />
       </trans-unit>
     </body>
