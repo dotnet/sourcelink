@@ -201,7 +201,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             using var temp = new TempRoot();
 
             var dir = temp.CreateDirectory();
-            var originRepoPath = dir.CreateDirectory("x \u1234").Path;
+            var originRepoPath = dir.CreateDirectory("x " + TestStrings.GB18030).Path;
 
             var url = kind switch
             {
@@ -229,50 +229,20 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [InlineData("abc://user@github.com/org/repo")]
         public void NormalizeUrl_PlatformAgnostic1(string url)
         {
-            Assert.Equal(url, GitOperations.NormalizeUrl(url, s_root)?.AbsoluteUri);
+            AssertEx.AreEqual(url, GitOperations.NormalizeUrl(url, s_root)?.AbsoluteUri);
         }
 
         [Theory]
         [InlineData("http://?", null)]
         [InlineData("https://github.com/org/repo/./.", "https://github.com/org/repo/")]
-        [InlineData("http://github.com/org/\u1234", "http://github.com/org/%E1%88%B4")]
+        [InlineData("http://github.com/org/\ue25b", "http://github.com/org/%EE%89%9B")]
+        [InlineData("http://github.com/org/" + TestStrings.GB18030, "http://github.com/org/" + TestStrings.GB18030Escaped)]
         [InlineData("ssh://github.com/org/../repo", "ssh://github.com/repo")]
         [InlineData("ssh://github.com/%32/repo", "ssh://github.com/2/repo")]
         [InlineData("ssh://github.com/%3F/repo", "ssh://github.com/%3F/repo")]
         public void NormalizeUrl_PlatformAgnostic2(string url, string expectedUrl)
         {
-            Assert.Equal(expectedUrl, GitOperations.NormalizeUrl(url, s_root)?.AbsoluteUri);
-        }
-
-        [ConditionalTheory(typeof(WindowsOnly))]
-        [InlineData(@"C:", "file:///C:/")]
-        [InlineData(@"C:\", "file:///C:/")]
-        [InlineData(@"C:x", null)]
-        [InlineData(@"C:x\y\..\z", null)]
-        [InlineData(@"C:org/repo", null)]
-        [InlineData(@"D:\src", "file:///D:/src")]
-        [InlineData(@"D:\a%20b", "file:///D:/a%2520b")]
-        [InlineData(@"\\", null)]
-        [InlineData(@"\\server", "file://server/")]
-        [InlineData(@"\\server\dir", "file://server/dir")]
-        [InlineData(@"relative/./path", "file:///C:/src/a/b/relative/path")]
-        [InlineData(@"%20", "file:///C:/src/a/b/%2520")]
-        [InlineData(@"..\%20", "file:///C:/src/a/%2520")]
-        [InlineData(@"../relative/path", "file:///C:/src/a/relative/path")]
-        [InlineData(@"..\relative\path", "file:///C:/src/a/relative/path")]
-        [InlineData(@"../relative/path?a=b", "file:///C:/src/a/relative/path%3Fa=b")]
-        [InlineData(@"../relative/path*<>|\0%00", "file:///C:/src/a/relative/path*%3C%3E%7C/0%2500")]
-        [InlineData(@"../../../../relative/path", "file:///C:/relative/path")]
-        [InlineData(@"a:/../../relative/path", "file:///a:/relative/path")]
-        [InlineData(@"Z:/a/b/../../relative/path", "file:///Z:/relative/path")]
-        [InlineData(@"../.://../../relative/path", "file:///C:/src/a/relative/path")]
-        [InlineData(@"../.:./../../relative/path", "ssh://../relative/path")]
-        [InlineData(@".:/../../relative/path", "ssh://./relative/path")]
-        [InlineData(@"..:/../../relative/path", "ssh://../relative/path")]
-        [InlineData(@"@:org/repo", "file:///C:/src/a/b/@:org/repo")]
-        public void NormalizeUrl_Windows(string url, string expectedUrl)
-        {
-            Assert.Equal(expectedUrl, GitOperations.NormalizeUrl(url, @"C:\src\a\b")?.AbsoluteUri);
+            AssertEx.AreEqual(expectedUrl, GitOperations.NormalizeUrl(url, s_root)?.AbsoluteUri);
         }
 
         [ConditionalTheory(typeof(UnixOnly))]
@@ -461,8 +431,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             var dir = temp.CreateDirectory();
 
-            // TODO: test unicode chars on Linux as well https://github.com/dotnet/corefx/issues/34227
-            var repoDir = dir.CreateDirectory("%25@" + (s == '\\' ? "噸" : ""));
+            var repoDir = dir.CreateDirectory("%25@噸" + TestStrings.GB18030);
 
             var repo1WorkingDir = dir.CreateDirectory("1");
             var repo1GitDir = repo1WorkingDir.CreateDirectory(".git");

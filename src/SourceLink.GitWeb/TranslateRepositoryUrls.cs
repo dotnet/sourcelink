@@ -21,7 +21,7 @@ namespace Microsoft.SourceLink.GitWeb
         /// <param name="uri"></param>
         /// <returns><paramref name="uri"/> as a string</returns>
         protected override string TranslateSshUrl(Uri uri)
-            => uri.ToString();
+            => uri.AbsoluteUri;
 
         protected override string TranslateGitUrl(Uri uri)
             => throw new NotSupportedException(string.Format(Resources.RepositoryUrlIsNotSupportedByProvider, "GIT"));

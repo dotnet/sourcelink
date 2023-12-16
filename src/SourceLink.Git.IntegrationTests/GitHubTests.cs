@@ -177,8 +177,8 @@ namespace Microsoft.SourceLink.IntegrationTests
         {
             // Test non-ascii characters and escapes in the URL.
             // Escaped URI reserved characters should remain escaped, non-reserved characters unescaped in the results.
-            var repoUrl = "http://github.com/test-org/test-%72epo\u1234%24%2572%2F";
-            var repoName = "test-repo\u1234%24%2572%2F";
+            var repoUrl = $"http://github.com/test-org/test-%72epo{TestStrings.RepoName}";
+            var repoName = $"test-repo{TestStrings.RepoNameEscaped}";
 
             var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
             var commitSha = repo.Head.Tip.Sha;
@@ -233,8 +233,8 @@ namespace Microsoft.SourceLink.IntegrationTests
         {
             // Test non-ascii characters and escapes in the URL.
             // Escaped URI reserved characters should remain escaped, non-reserved characters unescaped in the results.
-            var repoUrl = "ssh://github.com/test-org/test-%72epo\u1234%24%2572%2F";
-            var repoName = "test-repo\u1234%24%2572%2F";
+            var repoUrl = $"ssh://github.com/test-org/test-%72epo{TestStrings.RepoName}";
+            var repoName = $"test-repo{TestStrings.RepoNameEscaped}";
 
             var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
             var commitSha = repo.Head.Tip.Sha;

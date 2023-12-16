@@ -89,7 +89,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
             var task = new GetSourceLinkUrl()
             {
                 BuildEngine = engine,
-                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", ProjectCollection.Escape("https://user_name%40domain.com:Bitbucket_personaltoken@bitbucket.domain.tools/scm/abc/project1.git")), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "https://user_name%40domain.com:Bitbucket_personaltoken@bitbucket.domain.tools/scm/abc/project1.git"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
                     new MockItem("bitbucket.domain.tools", KVP("ContentUrl", "https://bitbucket.domain.tools")),
