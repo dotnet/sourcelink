@@ -46,6 +46,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [InlineData("//")]
         [InlineData("!/")]
         [InlineData("!//")]
+        [InlineData("#" + TestStrings.GB18030)]
         public void TryParsePattern_None(string line)
         {
             Assert.False(GitIgnore.TryParsePattern(line, new StringBuilder(), out _, out _));
@@ -69,16 +70,16 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var dirC = dirB.CreateDirectory("C");
             dirC.CreateDirectory("D1");
             dirC.CreateDirectory("D2");
-            dirC.CreateDirectory("D3");
+            dirC.CreateDirectory(TestStrings.GB18030);
 
-            dirA.CreateFile(".gitignore").WriteAllText(@"
+            dirA.CreateFile(".gitignore").WriteAllText($@"
 !z.txt
 *.txt
 !u.txt
 !v.txt
 !.git
 b/
-D3/
+{TestStrings.GB18030}/
 Bar/**/*.xyz
 v.txt
 ");
@@ -129,7 +130,7 @@ D1/c.cs
             Assert.True(matcher.IsPathIgnored(Path.Combine(workingDir.Path, "A", "B", "C", "D1", "b") + Path.DirectorySeparatorChar));
 
             // matches "D3/" (existing directory path)
-            Assert.True(matcher.IsPathIgnored(Path.Combine(workingDir.Path, "A", "B", "C", "D3")));
+            Assert.True(matcher.IsPathIgnored(Path.Combine(workingDir.Path, "A", "B", "C", TestStrings.GB18030)));
 
             // matches "D1/c.cs"
             Assert.True(matcher.IsPathIgnored(Path.Combine(workingDir.Path, "A", "B", "C", "D1", "c.cs")));
@@ -150,7 +151,7 @@ D1/c.cs
                 "/Repo/A/B/C/D1: False",
                 "/Repo/A/B/C/D2/E: True",
                 "/Repo/A/B/C/D2: True",
-                "/Repo/A/B/C/D3: True",
+                $"/Repo/A/B/C/{TestStrings.GB18030}: True",
                 "/Repo/A/B/C: False",
                 "/Repo/A/B: False",
                 "/Repo/A: False",

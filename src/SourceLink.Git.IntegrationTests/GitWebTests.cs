@@ -21,19 +21,20 @@ namespace Microsoft.SourceLink.IntegrationTests
         {
             // Test non-ascii characters and escapes in the URL. Escaped URI reserved characters
             // should remain escaped, non-reserved characters unescaped in the results.
-            var repoUrl = $"ssh://git@噸.com/test-%72epo\u1234%24%2572%2F.git";
-            var repoName = "test-repo\u1234%24%2572%2F.git";
+            var repoUrl = $"ssh://git@{TestStrings.DomainName}.com/test-%72epo{TestStrings.RepoName}.git";
+            var repoName = $"test-repo{TestStrings.RepoNameEscaped}.git";
+            var repoNameFullyEscaped = $"test-repo{TestStrings.RepoNameFullyEscaped}.git";
 
             var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
-                customProps: @"
+                customProps: $@"
 <PropertyGroup>
   <PublishRepositoryUrl>true</PublishRepositoryUrl>
 </PropertyGroup>
 <ItemGroup>
-  <SourceLinkGitWebHost Include='噸.com' ContentUrl='https://噸.com/gitweb'/>
+  <SourceLinkGitWebHost Include='{TestStrings.DomainName}.com' ContentUrl='https://{TestStrings.DomainName}.com/gitweb'/>
 </ItemGroup>
 ",
                 customTargets: "",
@@ -53,14 +54,14 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     NuGetPackageFolders,
                     ProjectSourceRoot,
-                    $"https://噸.com/gitweb/?p={repoName};a=blob_plain;hb={commitSha};f=*",
+                    $"https://{TestStrings.DomainName}.com/gitweb/?p={repoName};a=blob_plain;hb={commitSha};f=*",
                     s_relativeSourceLinkJsonPath,
-                    $"ssh://git@噸.com/{repoName}",
-                    $"ssh://git@噸.com/{repoName}"
+                    $"ssh://git@{TestStrings.DomainName}.com/{repoNameFullyEscaped}",
+                    $"ssh://git@{TestStrings.DomainName}.com/{repoNameFullyEscaped}"
                 });
 
             AssertEx.AreEqual(
-                $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://噸.com/gitweb/?p={repoName};a=blob_plain;hb={commitSha};f=*""}}}}",
+                $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://{TestStrings.DomainName}.com/gitweb/?p={repoName};a=blob_plain;hb={commitSha};f=*""}}}}",
                 File.ReadAllText(Path.Combine(ProjectDir.Path, s_relativeSourceLinkJsonPath)));
 
             TestUtilities.ValidateAssemblyInformationalVersion(
@@ -71,23 +72,23 @@ namespace Microsoft.SourceLink.IntegrationTests
                 Path.Combine(ProjectDir.Path, s_relativePackagePath),
                 type: "git",
                 commit: commitSha,
-                url: $"ssh://git@噸.com/{repoName}");
+                url: $"ssh://git@{TestStrings.DomainName}.com/{repoNameFullyEscaped}");
         }
 
         [ConditionalFact(typeof(DotNetSdkAvailable))]
         public void Issues_error_on_git_url()
         {
-            var repoUrl = "git://噸.com/invalid_url_protocol.git";
+            var repoUrl = $"git://{TestStrings.DomainName}.com/invalid_url_protocol.git";
             var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
-                customProps: @"
+                customProps: $@"
 <PropertyGroup>
   <PublishRepositoryUrl>true</PublishRepositoryUrl>
 </PropertyGroup>
 <ItemGroup>
-  <SourceLinkGitWebHost Include='噸.com' ContentUrl='https://噸.com/gitweb'/>
+  <SourceLinkGitWebHost Include='{TestStrings.DomainName}.com' ContentUrl='https://{TestStrings.DomainName}.com/gitweb'/>
 </ItemGroup>
 ",
                 customTargets: "",
@@ -104,17 +105,17 @@ namespace Microsoft.SourceLink.IntegrationTests
         [ConditionalFact(typeof(DotNetSdkAvailable))]
         public void Issues_error_on_https_url()
         {
-            var repoUrl = "https://噸.com/invalid_url_protocol.git";
+            var repoUrl = $"https://{TestStrings.DomainName}.com/invalid_url_protocol.git";
             var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
-                customProps: @"
+                customProps: $@"
 <PropertyGroup>
   <PublishRepositoryUrl>true</PublishRepositoryUrl>
 </PropertyGroup>
 <ItemGroup>
-  <SourceLinkGitWebHost Include='噸.com' ContentUrl='https://噸.com/gitweb'/>
+  <SourceLinkGitWebHost Include='{TestStrings.DomainName}.com' ContentUrl='https://{TestStrings.DomainName}.com/gitweb'/>
 </ItemGroup>
 ",
                 customTargets: "",

@@ -24,7 +24,7 @@ namespace TestUtilities
 
             foreach (var (name, value) in metadata)
             {
-                SetMetadata(name, value);
+                SetMetadataValueLiteral(name, value);
             }
         }
 

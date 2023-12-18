@@ -26,7 +26,7 @@ namespace Microsoft.Build.Tasks.Git
         public static string? GetRepositoryUrl(GitRepository repository, string? remoteName, bool warnOnMissingOrUnsupportedRemote = true, Action<string, object?[]>? logWarning = null)
         {
             NullableDebug.Assert(repository.WorkingDirectory != null);
-            
+
             var remoteUrl = GetRemoteUrl(repository, ref remoteName, warnOnMissingOrUnsupportedRemote, logWarning);
             if (remoteUrl == null)
             {
@@ -181,6 +181,10 @@ namespace Microsoft.Build.Tasks.Git
                 return uri;
             }
 
+            // Note that creating a Uri from a local path with certain Unicode characters
+            // has issues (https://github.com/dotnet/runtime/issues/89538). 
+            // However, we do not support file:// URIs, so if the actual URI
+            // value doesn't matter for local paths.
             if (!Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out uri))
             {
                 return null;

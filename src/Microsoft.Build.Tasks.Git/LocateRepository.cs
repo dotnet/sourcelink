@@ -50,7 +50,7 @@ namespace Microsoft.Build.Tasks.Git
         private protected override void Execute(GitRepository repository)
         {
             NullableDebug.Assert(repository.WorkingDirectory != null);
-            
+
             RepositoryId = repository.GitDirectory;
             WorkingDirectory = repository.WorkingDirectory;
             Url = GitOperations.GetRepositoryUrl(repository, RemoteName, warnOnMissingOrUnsupportedRemote: !NoWarnOnMissingInfo, Log.LogWarning);

@@ -19,19 +19,19 @@ namespace Microsoft.SourceLink.IntegrationTests
         {
             // Test non-ascii characters and escapes in the URL.
             // Escaped URI reserved characters should remain escaped, non-reserved characters unescaped in the results.
-            var repoUrl = "https://噸.com/test-org/test-%72epo\u1234%24%2572%2F";
-            var repoName = "test-repo\u1234%24%2572%2F";
+            var repoUrl = $"https://{TestStrings.DomainName}.com/test-org/test-%72epo{TestStrings.RepoName}";
+            var repoName = $"test-repo{TestStrings.RepoNameEscaped}";
 
             var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
-                customProps: @"
+                customProps: $@"
 <PropertyGroup>
   <PublishRepositoryUrl>true</PublishRepositoryUrl>
 </PropertyGroup>
 <ItemGroup>
-  <SourceLinkGitLabHost Include='噸.com'/>
+  <SourceLinkGitLabHost Include='{TestStrings.DomainName}.com'/>
 </ItemGroup>
 ",
                 customTargets: "",
@@ -51,14 +51,14 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     NuGetPackageFolders,
                     ProjectSourceRoot,
-                    $"https://噸.com/test-org/{repoName}/-/raw/{commitSha}/*",
+                    $"https://{TestStrings.DomainName}.com/test-org/{repoName}/-/raw/{commitSha}/*",
                     s_relativeSourceLinkJsonPath,
-                    $"https://噸.com/test-org/{repoName}",
-                    $"https://噸.com/test-org/{repoName}"
+                    $"https://{TestStrings.DomainName}.com/test-org/{repoName}",
+                    $"https://{TestStrings.DomainName}.com/test-org/{repoName}"
                 });
 
             AssertEx.AreEqual(
-                $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://噸.com/test-org/{repoName}/-/raw/{commitSha}/*""}}}}",
+                $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://{TestStrings.DomainName}.com/test-org/{repoName}/-/raw/{commitSha}/*""}}}}",
                 File.ReadAllText(Path.Combine(ProjectDir.Path, s_relativeSourceLinkJsonPath)));
 
             TestUtilities.ValidateAssemblyInformationalVersion(
@@ -69,7 +69,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 Path.Combine(ProjectDir.Path, s_relativePackagePath),
                 type: "git", 
                 commit: commitSha,
-                url: $"https://噸.com/test-org/{repoName}");
+                url: $"https://{TestStrings.DomainName}.com/test-org/{repoName}");
         }
 
         [ConditionalFact(typeof(DotNetSdkAvailable))]
@@ -77,19 +77,19 @@ namespace Microsoft.SourceLink.IntegrationTests
         {
             // Test non-ascii characters and escapes in the URL.
             // Escaped URI reserved characters should remain escaped, non-reserved characters unescaped in the results.
-            var repoUrl = "test-user@噸.com:test-org/test-%72epo\u1234%24%2572%2F";
-            var repoName = "test-repo\u1234%24%2572%2F";
+            var repoUrl = $"test-user@{TestStrings.DomainName}.com:test-org/test-%72epo{TestStrings.RepoName}";
+            var repoName = $"test-repo{TestStrings.RepoNameEscaped}";
 
             var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
-                customProps: @"
+                customProps: $@"
 <PropertyGroup>
   <PublishRepositoryUrl>true</PublishRepositoryUrl>
 </PropertyGroup>
 <ItemGroup>
-  <SourceLinkGitLabHost Include='噸.com'/>
+  <SourceLinkGitLabHost Include='{TestStrings.DomainName}.com'/>
 </ItemGroup>
 ",
                 customTargets: "",
@@ -109,14 +109,14 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     NuGetPackageFolders,
                     ProjectSourceRoot,
-                    $"https://噸.com/test-org/{repoName}/-/raw/{commitSha}/*",
+                    $"https://{TestStrings.DomainName}.com/test-org/{repoName}/-/raw/{commitSha}/*",
                     s_relativeSourceLinkJsonPath,
-                    $"https://噸.com/test-org/{repoName}",
-                    $"https://噸.com/test-org/{repoName}"
+                    $"https://{TestStrings.DomainName}.com/test-org/{repoName}",
+                    $"https://{TestStrings.DomainName}.com/test-org/{repoName}"
                 });
 
             AssertEx.AreEqual(
-                $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://噸.com/test-org/{repoName}/-/raw/{commitSha}/*""}}}}",
+                $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://{TestStrings.DomainName}.com/test-org/{repoName}/-/raw/{commitSha}/*""}}}}",
                 File.ReadAllText(Path.Combine(ProjectDir.Path, s_relativeSourceLinkJsonPath)));
 
             TestUtilities.ValidateAssemblyInformationalVersion(
@@ -127,7 +127,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 Path.Combine(ProjectDir.Path, s_relativePackagePath),
                 type: "git",
                 commit: commitSha,
-                url: $"https://噸.com/test-org/{repoName}");
+                url: $"https://{TestStrings.DomainName}.com/test-org/{repoName}");
         }
 
 
@@ -136,8 +136,8 @@ namespace Microsoft.SourceLink.IntegrationTests
         {
             // Test non-ascii characters and escapes in the URL.
             // Escaped URI reserved characters should remain escaped, non-reserved characters unescaped in the results.
-            var repoUrl = "http://噸.com/test-org/test-%72epo\u1234%24%2572%2F";
-            var repoName = "test-repo\u1234%24%2572%2F";
+            var repoUrl = $"http://{TestStrings.DomainName}.com/test-org/test-%72epo{TestStrings.RepoName}";
+            var repoName = $"test-repo{TestStrings.RepoNameEscaped}";
 
             var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
             var commitSha = repo.Head.Tip.Sha;
@@ -161,9 +161,9 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expectedResults: new[]
                 {
-                    $"http://噸.com/test-org/{repoName}/-/raw/{commitSha}/*",
-                    $"http://噸.com/test-org/{repoName}",
-                    $"http://噸.com/test-org/{repoName}"
+                    $"http://{TestStrings.DomainName}.com/test-org/{repoName}/-/raw/{commitSha}/*",
+                    $"http://{TestStrings.DomainName}.com/test-org/{repoName}",
+                    $"http://{TestStrings.DomainName}.com/test-org/{repoName}"
                 });
         }
     }
