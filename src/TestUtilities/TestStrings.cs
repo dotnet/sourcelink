@@ -12,9 +12,14 @@ public static class TestStrings
     public const string RepoName = $"test-repo{GB18030}%24%2572%2F";
 
     /// <summary>
-    /// Used for testing repository names. Partially escapeddue to https://github.com/dotnet/runtime/issues/89538.
+    /// Used for testing repository names. Partially escaped due to https://github.com/dotnet/runtime/issues/89538.
     /// </summary>
     public const string RepoNameEscaped = $"test-repo{GB18030Escaped}%24%2572%2F";
+
+    /// <summary>
+    /// Used for testing repository names. Fully escaped.
+    /// </summary>
+    public const string RepoNameFullyEscaped = $"test-repo{GB18030FullyEscaped}%24%2572%2F";
 
     /// <summary>
     /// Used for testing domain names.
