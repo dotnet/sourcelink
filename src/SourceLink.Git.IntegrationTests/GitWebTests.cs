@@ -23,7 +23,7 @@ namespace Microsoft.SourceLink.IntegrationTests
             // should remain escaped, non-reserved characters unescaped in the results.
             var repoUrl = $"ssh://git@{TestStrings.DomainName}.com/test-%72epo{TestStrings.RepoName}.git";
             var repoName = $"test-repo{TestStrings.RepoNameEscaped}.git";
-            var repoNameFullyEscaped = $"test-repo{TestStrings.GB18030FullyEscaped}%24%2572%2F.git";
+            var repoNameFullyEscaped = $"test-repo{TestStrings.RepoNameFullyEscaped}.git";
 
             var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
             var commitSha = repo.Head.Tip.Sha;
