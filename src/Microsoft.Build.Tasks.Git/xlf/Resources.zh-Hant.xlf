@@ -9,7 +9,7 @@
       </trans-unit>
       <trans-unit id="ErrorParsingConfigLineInFile">
         <source>Error parsing config line {0} in file '{1}': {2}</source>
-        <target state="new">Error parsing config line {0} in file '{1}': {2}</target>
+        <target state="translated">剖析檔案 '{1}' 中的設定行 {0} 時發生錯誤: {2}</target>
         <note />
       </trans-unit>
       <trans-unit id="ErrorReadingGitRepositoryInformation">
@@ -124,12 +124,12 @@
       </trans-unit>
       <trans-unit id="UnexpectedCharacter">
         <source>Unexpected character {0}.</source>
-        <target state="new">Unexpected character {0}.</target>
+        <target state="translated">未預期的字元 {0}。</target>
         <note />
       </trans-unit>
       <trans-unit id="UnexpectedEndOfFile">
         <source>Unexpected end of file.</source>
-        <target state="new">Unexpected end of file.</target>
+        <target state="translated">未預期的檔案結尾。</target>
         <note />
       </trans-unit>
       <trans-unit id="UnsupportedRepositoryExtension">

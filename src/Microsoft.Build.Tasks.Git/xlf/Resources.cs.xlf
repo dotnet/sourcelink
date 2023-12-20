@@ -9,7 +9,7 @@
       </trans-unit>
       <trans-unit id="ErrorParsingConfigLineInFile">
         <source>Error parsing config line {0} in file '{1}': {2}</source>
-        <target state="new">Error parsing config line {0} in file '{1}': {2}</target>
+        <target state="translated">Při analýze konfiguračního řádku {0} v souboru {1} došlo k chybě: {2}</target>
         <note />
       </trans-unit>
       <trans-unit id="ErrorReadingGitRepositoryInformation">
@@ -124,12 +124,12 @@
       </trans-unit>
       <trans-unit id="UnexpectedCharacter">
         <source>Unexpected character {0}.</source>
-        <target state="new">Unexpected character {0}.</target>
+        <target state="translated">Neočekávaný znak {0}.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnexpectedEndOfFile">
         <source>Unexpected end of file.</source>
-        <target state="new">Unexpected end of file.</target>
+        <target state="translated">Neočekávaný konec souboru</target>
         <note />
       </trans-unit>
       <trans-unit id="UnsupportedRepositoryExtension">
