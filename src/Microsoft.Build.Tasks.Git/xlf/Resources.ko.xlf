@@ -9,7 +9,7 @@
       </trans-unit>
       <trans-unit id="ErrorParsingConfigLineInFile">
         <source>Error parsing config line {0} in file '{1}': {2}</source>
-        <target state="new">Error parsing config line {0} in file '{1}': {2}</target>
+        <target state="translated">파일 '{1}'의 구성 줄 {0}을(를) 구문 분석하는 동안 오류가 발생했습니다: {2}</target>
         <note />
       </trans-unit>
       <trans-unit id="ErrorReadingGitRepositoryInformation">
@@ -124,12 +124,12 @@
       </trans-unit>
       <trans-unit id="UnexpectedCharacter">
         <source>Unexpected character {0}.</source>
-        <target state="new">Unexpected character {0}.</target>
+        <target state="translated">예기치 않은 문자 {0}입니다.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnexpectedEndOfFile">
         <source>Unexpected end of file.</source>
-        <target state="new">Unexpected end of file.</target>
+        <target state="translated">예기치 않은 파일의 끝입니다.</target>
         <note />
       </trans-unit>
       <trans-unit id="UnsupportedRepositoryExtension">
