@@ -38,7 +38,7 @@ namespace Microsoft.SourceLink.GitLab.UnitTests
         [InlineData("", "/", "12.0")]
         [InlineData("/", "", "12.0")]
         [InlineData("/", "/", "12.0")]
-        public void BuildSourceLinkUrl(string s1, string s2, string version)
+        public void BuildSourceLinkUrl(string s1, string s2, string? version)
         {
             var engine = new MockEngine();
 

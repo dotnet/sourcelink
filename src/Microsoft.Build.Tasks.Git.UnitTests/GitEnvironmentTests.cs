@@ -13,7 +13,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [InlineData(null, "/etc")]
         [InlineData("", "/etc")]
         [InlineData("/xyz", "/xyz")]
-        public void FindSystemDirectory_Unix(string etc, string expected)
+        public void FindSystemDirectory_Unix(string? etc, string expected)
         {
             Assert.Equal(expected, GitEnvironment.FindSystemDirectory(null, etc));
         }
