@@ -415,7 +415,7 @@ a =
         [InlineData("9223372036854775808")]
         [InlineData("922337203685477580k")]
         [InlineData("922337203685477580G")]
-        public void TryParseInt64Value_Error(string str)
+        public void TryParseInt64Value_Error(string? str)
         {
             Assert.False(GitConfig.TryParseInt64Value(str, out _));
         }
@@ -443,7 +443,7 @@ a =
         [InlineData("2")]
         [InlineData(" ")]
         [InlineData("x")]
-        public void TryParseBooleanValue_Error(string str)
+        public void TryParseBooleanValue_Error(string? str)
         {
             Assert.False(GitConfig.TryParseBooleanValue(str, out _));
         }

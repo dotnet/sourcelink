@@ -1,4 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFrameworks>net472;$(NetCurrent)</TargetFrameworks>
     <IsShipping>false</IsShipping>
@@ -12,8 +13,6 @@
     <PackageReference Include="xunit.Combinatorial" version="$(XunitCombinatorialVersion)" />
     <PackageReference Include="xunit.assert" Version="$(XunitVersion)" />
     <PackageReference Include="xunit.core" Version="$(XunitVersion)" />
-    <!-- Upgrade the NETStandard.Library transitive xunit dependency to avoid transitive 1.x NS dependencies. -->
-    <PackageReference Include="NETStandard.Library" Version="2.0.3" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -38,4 +37,5 @@
       <Output TaskParameter="OutputFile" ItemName="FileWrites" />
     </WriteCodeFragment>
   </Target>
+
 </Project>

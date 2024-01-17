@@ -239,7 +239,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [InlineData("ssh://github.com/org/../repo", "ssh://github.com/repo")]
         [InlineData("ssh://github.com/%32/repo", "ssh://github.com/2/repo")]
         [InlineData("ssh://github.com/%3F/repo", "ssh://github.com/%3F/repo")]
-        public void NormalizeUrl_PlatformAgnostic2(string url, string expectedUrl)
+        public void NormalizeUrl_PlatformAgnostic2(string url, string? expectedUrl)
         {
             AssertEx.AreEqual(expectedUrl, GitOperations.NormalizeUrl(url, s_root)?.AbsoluteUri);
         }
@@ -493,7 +493,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [InlineData(@"C:\src\c\x\x.cs", "C:/src/c/x/")]
         [InlineData(@"C:\src\d\x.cs", "C:/src/")]
         [InlineData(@"C:\src\e\x.cs", "C:/src/e/")]
-        public void GetContainingRepository_Windows(string path, string expectedDirectory)
+        public void GetContainingRepository_Windows(string path, string? expectedDirectory)
         {
             var actual = GitOperations.GetContainingRepositoryMatcher(path,
                 CreateNode("", null,
@@ -533,7 +533,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [InlineData("/src/c/x/x.cs", "/src/c/x/")]
         [InlineData("/src/d/x.cs", "/src/")]
         [InlineData("/src/e/x.cs", "/src/e/")]
-        public void GetContainingRepository_Unix(string path, string expectedDirectory)
+        public void GetContainingRepository_Unix(string path, string? expectedDirectory)
         {
             var actual = GitOperations.GetContainingRepositoryMatcher(path,
                 CreateNode("", null,

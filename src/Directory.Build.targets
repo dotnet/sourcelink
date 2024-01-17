@@ -1,15 +1,11 @@
 <Project>
+
   <Import Project="Sdk.targets" Sdk="Microsoft.DotNet.Arcade.Sdk" />
 
   <!-- TODO: Remove when Arcade offers an in-built way to filter out anything other than NetCurrent: https://github.com/dotnet/arcade/issues/13390. -->
   <PropertyGroup>
     <TargetFrameworks Condition="'$(TargetFrameworks)' != '' and '$(DotNetBuildFromSource)' == 'true'">$(NetCurrent)</TargetFrameworks>
   </PropertyGroup>
-
-  <ItemGroup Condition="'$(IsTestProject)' == 'true'">
-    <!-- Upgrade the NETStandard.Library transitive xunit dependency to avoid transitive 1.x NS dependencies. -->
-    <PackageReference Include="NETStandard.Library" Version="2.0.3" Condition="'$(TargetFrameworkIdentifier)' != '.NETStandard'" />
-  </ItemGroup>
 
   <ItemGroup>
     <NuspecProperty Include="DesktopTfm=net472"/>
@@ -43,4 +39,5 @@
       <PackageId Condition="'$(PackageId)' == ''">$(MSBuildProjectName)</PackageId>
     </PropertyGroup>
   </Target>
+
 </Project>
