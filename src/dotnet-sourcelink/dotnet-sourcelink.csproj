@@ -11,7 +11,7 @@
     <ToolCommandName>sourcelink</ToolCommandName>
     <Description>Command line tool for SourceLink testing.</Description>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <PackAsToolShimRuntimeIdentifiers Condition="'$(DotNetBuildFromSource)' != 'true'">win-x64;win-x86;osx-x64</PackAsToolShimRuntimeIdentifiers>
+    <PackAsToolShimRuntimeIdentifiers Condition="'$(DotNetBuildSourceOnly)' != 'true'">win-x64;win-x86;osx-x64</PackAsToolShimRuntimeIdentifiers>
   </PropertyGroup>
 
   <ItemGroup>
