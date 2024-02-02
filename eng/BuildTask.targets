@@ -6,7 +6,6 @@
     <IsPackable>true</IsPackable>
     <!-- Build Tasks should have this set per https://github.com/dotnet/arcade/blob/master/Documentation/CorePackages/Versioning.md#recommended-settings -->
     <AutoGenerateAssemblyVersion>true</AutoGenerateAssemblyVersion>
-    <BuildTaskTargetFolder Condition="'$(BuildTaskTargetFolder)' == ''">tools</BuildTaskTargetFolder>
     <PackTasks Condition="'$(PackTasks)' == ''">true</PackTasks>
     <TargetsForTfmSpecificContentInPackage Condition="'$(PackTasks)' == 'true'">$(TargetsForTfmSpecificContentInPackage);_AddBuildOutputToPackageCore;_AddBuildOutputToPackageDesktop</TargetsForTfmSpecificContentInPackage>
     <DevelopmentDependency>true</DevelopmentDependency>
@@ -94,24 +93,18 @@
     <PackageReference Update="System.Reflection.Metadata" Version="7.0.0" />
   </ItemGroup>
 
-  <!-- Publish .NET Core assets and include them in the package under $(BuildTaskTargetFolder) directory. -->
+  <!-- Publish .NET assets and include them in the package under tools/net directory. -->
   <Target Name="_AddBuildOutputToPackageCore" DependsOnTargets="Publish" Condition="'$(TargetFrameworkIdentifier)' == '.NETCoreApp'">
-    <PropertyGroup>
-      <BuildTaskTargetTfmSpecificFolder Condition="'$(BuildTaskTargetTfmSpecificFolder)' == ''">net</BuildTaskTargetTfmSpecificFolder>
-    </PropertyGroup>
     <ItemGroup>
       <TfmSpecificPackageFile Include="$(PublishDir)**"
-                              PackagePath="$(BuildTaskTargetFolder)/$(BuildTaskTargetTfmSpecificFolder)/%(RecursiveDir)%(FileName)%(Extension)"/>
+                              PackagePath="tools/net/%(RecursiveDir)%(FileName)%(Extension)"/>
     </ItemGroup>
   </Target>
 
-  <!-- Include .NET Framework build outputs in the package under $(BuildTaskTargetFolder) directory. -->
+  <!-- Include .NET Framework build outputs in the package under tools/netframework directory. -->
   <Target Name="_AddBuildOutputToPackageDesktop" Condition="'$(TargetFrameworkIdentifier)' != '.NETCoreApp'">
-    <PropertyGroup>
-      <BuildTaskTargetTfmSpecificFolder Condition="'$(BuildTaskTargetTfmSpecificFolder)' == ''">netframework</BuildTaskTargetTfmSpecificFolder>
-    </PropertyGroup>
     <ItemGroup>
-      <TfmSpecificPackageFile Include="$(OutputPath)**" PackagePath="$(BuildTaskTargetFolder)/$(BuildTaskTargetTfmSpecificFolder)/%(RecursiveDir)%(FileName)%(Extension)"/>
+      <TfmSpecificPackageFile Include="$(OutputPath)**" PackagePath="tools/netframework/%(RecursiveDir)%(FileName)%(Extension)"/>
     </ItemGroup>
   </Target>
 
