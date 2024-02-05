@@ -13,11 +13,13 @@
       <Uri>https://github.com/dotnet/command-line-api</Uri>
       <Sha>02fe27cd6a9b001c8feb7938e6ef4b3799745759</Sha>
     </Dependency>
+    <!-- Intermediate is necessary for source build. -->
     <Dependency Name="Microsoft.SourceBuild.Intermediate.command-line-api" Version="0.1.430701">
       <Uri>https://github.com/dotnet/command-line-api</Uri>
       <Sha>02fe27cd6a9b001c8feb7938e6ef4b3799745759</Sha>
       <SourceBuild RepoName="command-line-api" ManagedOnly="true" />
     </Dependency>
+    <!-- Intermediate is necessary for source build. -->
     <Dependency Name="Microsoft.SourceBuild.Intermediate.source-build-reference-packages" Version="9.0.0-alpha.1.24101.2">
       <Uri>https://github.com/dotnet/source-build-reference-packages</Uri>
       <Sha>69b60d2af1775f374c91b3e52da02de6b7de1943</Sha>
@@ -28,11 +30,16 @@
     <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="9.0.0-beta.24102.4">
       <Uri>https://github.com/dotnet/arcade</Uri>
       <Sha>2fb543a45580400a559b5ae41c96a815ea14dac5</Sha>
-      <SourceBuild RepoName="arcade" ManagedOnly="true" />
     </Dependency>
     <Dependency Name="Microsoft.DotNet.XliffTasks" Version="9.0.0-beta.24102.4">
       <Uri>https://github.com/dotnet/arcade</Uri>
       <Sha>2fb543a45580400a559b5ae41c96a815ea14dac5</Sha>
+    </Dependency>
+    <!-- Intermediate is necessary for source build. -->
+    <Dependency Name="Microsoft.SourceBuild.Intermediate.arcade" Version="9.0.0-beta.24102.4">
+      <Uri>https://github.com/dotnet/arcade</Uri>
+      <Sha>2fb543a45580400a559b5ae41c96a815ea14dac5</Sha>
+      <SourceBuild RepoName="arcade" ManagedOnly="true" />
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>
