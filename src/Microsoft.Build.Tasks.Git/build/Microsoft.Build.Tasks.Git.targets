@@ -50,7 +50,7 @@
       RepositoryId="$(_GitRepositoryId)"
       ConfigurationScope="$(GitRepositoryConfigurationScope)"
       ProjectDirectory="$(MSBuildProjectDirectory)"
-      Files="@(Compile)"
+      Files="@(CompileBefore);@(Compile)"
       Condition="'$(_GitRepositoryId)' != ''">
 
       <Output TaskParameter="UntrackedFiles" ItemName="EmbeddedFiles" />
