@@ -18,36 +18,21 @@ schedules:
     - main
 
 variables:
-  - template: /eng/common/templates/variables/pool-providers.yml@self
+  - template: /eng/common/templates/variables/pool-providers.yml
   - name: _TeamName
     value: Roslyn
-resources:
-    repositories:
-    - repository: 1ESPipelineTemplates
-      type: git
-      name: 1ESPipelineTemplates/1ESPipelineTemplates
-      ref: refs/tags/release
-      extends:
-        template: v1/1ES.Official.PipelineTemplate.yml@1ESPipelineTemplates
-        parameters:
-          pool:
-            name: Azure-Pipelines-1ESPT-ExDShared
-            image: windows-2022
-            os: windows
-          customBuildTags:
-          - ES365AIMigrationTooling
 
 stages:
 - stage: build
   displayName: Build
   jobs:
   - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.SourceBranch'], 'refs/heads/main')) }}:
-    - template: /eng/common/templates/job/onelocbuild.yml@self
+    - template: /eng/common/templates/job/onelocbuild.yml
       parameters:
         MirrorRepo: sourcelink
         LclSource: lclFilesfromPackage
         LclPackageId: 'LCL-JUNO-PROD-SOURCELINK'
-  - template: /eng/common/templates/jobs/jobs.yml@self
+  - template: /eng/common/templates/jobs/jobs.yml
     parameters:
       enableMicrobuild: true
       enablePublishBuildArtifacts: true
@@ -71,7 +56,10 @@ stages:
           # Publish-Build-Assets provides: MaestroAccessToken, BotAccount-dotnet-maestro-bot-PAT
           - group: Publish-Build-Assets
           - name: _OfficialBuildArgs
-            value: /p:DotNetSignType=$(_SignType) /p:DotNetPublishUsingPipelines=true /p:TeamName=$(_TeamName) /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
+            value: /p:DotNetSignType=$(_SignType)
+                  /p:DotNetPublishUsingPipelines=true
+                  /p:TeamName=$(_TeamName)
+                  /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
         # else
         - ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
           - name: _OfficialBuildArgs
@@ -144,4 +132,4 @@ stages:
             displayName: Build and Test
 
 - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-  - template: /eng/common/templates/post-build/post-build.yml@self
+  - template: eng\common\templates\post-build\post-build.yml
