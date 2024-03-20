@@ -18,130 +18,122 @@ schedules:
     - main
 
 variables:
-  - template: /eng/common/templates-official/variables/pool-providers.yml@self
-  - name: _TeamName
-    value: Roslyn
+- template: /eng/common/templates/variables/pool-providers.yml@self
+- name: _TeamName
+  value: Roslyn
 resources:
-    repositories:
-    - repository: 1ESPipelineTemplates
-      type: git
-      name: 1ESPipelineTemplates/1ESPipelineTemplates
-      ref: refs/tags/release
-      extends:
-        template: v1/1ES.Official.PipelineTemplate.yml@1ESPipelineTemplates
-        parameters:
-          pool:
-            name: Azure-Pipelines-1ESPT-ExDShared
-            image: windows-2022
-            os: windows
-          customBuildTags:
-          - ES365AIMigrationTooling
-
-stages:
-- stage: build
-  displayName: Build
-  jobs:
-  - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.SourceBranch'], 'refs/heads/main')) }}:
-    - template: /eng/common/templates-official/job/onelocbuild.yml@self
-      parameters:
-        MirrorRepo: sourcelink
-        LclSource: lclFilesfromPackage
-        LclPackageId: 'LCL-JUNO-PROD-SOURCELINK'
-  - template: /eng/common/templates-official/jobs/jobs.yml@self
-    parameters:
-      enableMicrobuild: true
-      enablePublishBuildArtifacts: true
-      enablePublishTestResults: true
-      enablePublishBuildAssets: true
-      enablePublishUsingPipelines: true
-      enableTelemetry: true
-      enableSourceBuild: true
-      helixRepo: dotnet/symreader
+  repositories:
+  - repository: 1ESPipelineTemplates
+    type: git
+    name: 1ESPipelineTemplates/1ESPipelineTemplates
+    ref: refs/tags/release
+extends:
+  template: v1/1ES.Official.PipelineTemplate.yml@1ESPipelineTemplates
+  parameters:
+    pool:
+      name: Azure-Pipelines-1ESPT-ExDShared
+      image: windows-2022
+      os: windows
+    customBuildTags:
+    - ES365AIMigrationTooling
+    stages:
+    - stage: build
+      displayName: Build
       jobs:
-      - job: Windows
-        pool:
-          ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
-            vmImage: 'windows-latest'
-          ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-            name: $(DncEngInternalBuildPool)
-            demands: ImageOverride -equals 1es-windows-2022
-        variables:
-        # Only enable publishing in official builds
-        - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-          # Publish-Build-Assets provides: MaestroAccessToken, BotAccount-dotnet-maestro-bot-PAT
-          - group: Publish-Build-Assets
-          - name: _OfficialBuildArgs
-            value: /p:DotNetSignType=$(_SignType) /p:DotNetPublishUsingPipelines=true /p:TeamName=$(_TeamName) /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
-        # else
-        - ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
-          - name: _OfficialBuildArgs
-            value: ''
-        strategy:
-          matrix:
-            ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
-              Debug:
-                _BuildConfig: Debug
-                _SignType: test
-                _BuildArgs: ''
-            Release:
-              _BuildConfig: Release
-              # PRs or external builds are not signed.
+      - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.SourceBranch'], 'refs/heads/main')) }}:
+        - template: /eng/common/templates/job/onelocbuild.yml@self
+          parameters:
+            MirrorRepo: sourcelink
+            LclSource: lclFilesfromPackage
+            LclPackageId: 'LCL-JUNO-PROD-SOURCELINK'
+      - template: /eng/common/templates/jobs/jobs.yml@self
+        parameters:
+          enableMicrobuild: true
+          enablePublishBuildArtifacts: true
+          enablePublishTestResults: true
+          enablePublishBuildAssets: true
+          enablePublishUsingPipelines: true
+          enableTelemetry: true
+          enableSourceBuild: true
+          helixRepo: dotnet/symreader
+          jobs:
+          - job: Windows
+            pool:
               ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
-                _SignType: test
-                _BuildArgs: ''
+                vmImage: 'windows-latest'
               ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-                _SignType: real
-                _BuildArgs: $(_OfficialBuildArgs)
-        steps:
-        - checkout: self
-          clean: true
-        - script: eng\cibuild.cmd -configuration $(_BuildConfig) -prepareMachine $(_BuildArgs)
-          displayName: Build and Test
-
+                name: $(DncEngInternalBuildPool)
+                demands: ImageOverride -equals 1es-windows-2022
+            variables:
+            - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
+              - group: Publish-Build-Assets
+              - name: _OfficialBuildArgs
+                value: /p:DotNetSignType=$(_SignType) /p:DotNetPublishUsingPipelines=true /p:TeamName=$(_TeamName) /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
+            - ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
+              - name: _OfficialBuildArgs
+                value: ''
+            strategy:
+              matrix:
+                ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
+                  Debug:
+                    _BuildConfig: Debug
+                    _SignType: test
+                    _BuildArgs: ''
+                Release:
+                  _BuildConfig: Release
+              # PRs or external builds are not signed.
+                  ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
+                    _SignType: test
+                    _BuildArgs: ''
+                  ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
+                    _SignType: real
+                    _BuildArgs: $(_OfficialBuildArgs)
+            steps:
+            - checkout: self
+              clean: true
+            - script: eng\cibuild.cmd -configuration $(_BuildConfig) -prepareMachine $(_BuildArgs)
+              displayName: Build and Test
         # Archive NuGet packages to DevOps (workaround for https://github.com/dotnet/arcade/issues/4444)
-        - task: PublishBuildArtifacts@1
-          displayName: Publish Artifact Packages
-          inputs:
-            PathtoPublish: 'artifacts\packages\$(_BuildConfig)'
-            ArtifactName: 'Packages'
-          condition: succeeded()
-
-      - ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
-        - job: MacOS
-          displayName: 'MacOS'
-          pool:
-            vmImage: 'macOS-latest'
-          strategy:
-            matrix:
-              Debug:
-                _BuildConfig: Debug
-                _SignType: none
-              Release:
-                _BuildConfig: Release
-                _SignType: none
-          steps:
-          - checkout: self
-            clean: true
-          - script: eng/cibuild.sh --configuration $(_BuildConfig) --prepareMachine
-            displayName: Build and Test
-
-        - job: Linux
-          displayName: 'Linux'
-          pool:
-            vmImage: 'ubuntu-latest'
-          strategy:
-            matrix:
-              Debug:
-                _BuildConfig: Debug
-                _SignType: none
-              Release:
-                _BuildConfig: Release
-                _SignType: none
-          steps:
-          - checkout: self
-            clean: true
-          - script: eng/cibuild.sh --configuration $(_BuildConfig) --prepareMachine
-            displayName: Build and Test
-
-- ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-  - template: /eng/common/templates-official/post-build/post-build.yml@self
+            - task: PublishBuildArtifacts@1
+              displayName: Publish Artifact Packages
+              inputs:
+                PathtoPublish: 'artifacts\packages\$(_BuildConfig)'
+                ArtifactName: 'Packages'
+              condition: succeeded()
+          - ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
+            - job: MacOS
+              displayName: 'MacOS'
+              pool:
+                vmImage: 'macOS-latest'
+              strategy:
+                matrix:
+                  Debug:
+                    _BuildConfig: Debug
+                    _SignType: none
+                  Release:
+                    _BuildConfig: Release
+                    _SignType: none
+              steps:
+              - checkout: self
+                clean: true
+              - script: eng/cibuild.sh --configuration $(_BuildConfig) --prepareMachine
+                displayName: Build and Test
+            - job: Linux
+              displayName: 'Linux'
+              pool:
+                vmImage: 'ubuntu-latest'
+              strategy:
+                matrix:
+                  Debug:
+                    _BuildConfig: Debug
+                    _SignType: none
+                  Release:
+                    _BuildConfig: Release
+                    _SignType: none
+              steps:
+              - checkout: self
+                clean: true
+              - script: eng/cibuild.sh --configuration $(_BuildConfig) --prepareMachine
+                displayName: Build and Test
+    - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
+      - template: /eng/common/templates/post-build/post-build.yml@self
