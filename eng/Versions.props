@@ -14,12 +14,12 @@
     <SystemCommandLineNamingConventionBinderVersion>2.0.0-beta4.23307.1</SystemCommandLineNamingConventionBinderVersion>
     <SystemCommandLineRenderingVersion>0.4.0-alpha.23307.1</SystemCommandLineRenderingVersion>
     <!-- msbuild -->
-    <MicrosoftBuildVersion>17.9.5</MicrosoftBuildVersion>
-    <MicrosoftBuildTasksCoreVersion>17.9.5</MicrosoftBuildTasksCoreVersion>
+    <MicrosoftBuildVersion>17.3.2</MicrosoftBuildVersion>
+    <MicrosoftBuildTasksCoreVersion>17.3.2</MicrosoftBuildTasksCoreVersion>
     <!-- nuget -->
     <NuGetVersioningVersion>5.7.0</NuGetVersioningVersion>
     <!-- runtime -->
-    <SystemTextJsonVersion>8.0.0</SystemTextJsonVersion>
+    <SystemTextJsonVersion>7.0.2</SystemTextJsonVersion>
     <!-- external -->
     <MicrosoftTeamFoundationServerExtendedClientVersion>19.210.0-preview</MicrosoftTeamFoundationServerExtendedClientVersion>
     <!-- libgit2 used for integration tests -->
