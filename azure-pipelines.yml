@@ -1,20 +1,9 @@
-pr:
-  branches:
-    include:
-    - main
-    - release/*
-  paths:
-    exclude:
-    - README.md
-    - docs/*
-
 schedules:
 - cron: "0 0 * * *"
   displayName: Daily Official Build
   branches:
     include:
     - main
-
 variables:
 - template: /eng/common/templates-official/variables/pool-providers.yml@self
 - name: _TeamName
@@ -90,9 +79,9 @@ extends:
               clean: true
             - script: eng\cibuild.cmd -configuration $(_BuildConfig) -prepareMachine $(_BuildArgs)
               displayName: Build and Test
-            - task: PublishBuildArtifacts@1
-              displayName: Publish Artifact Packages
-              inputs:
+              outputs:
+              - output: buildArtifacts
+                displayName: 'Publish Artifact Packages'
                 PathtoPublish: 'artifacts\packages\$(_BuildConfig)'
                 ArtifactName: 'Packages'
               condition: succeeded()
