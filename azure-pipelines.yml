@@ -1,3 +1,15 @@
+# This Yaml Document has been converted by ESAI Yaml Pipeline Conversion Tool.
+# Please make sure to check all the converted content, it is your team's responsibility to make sure that the pipeline is still valid and functions as expected.
+# This pipeline will be extended to the MicroBuild template
+pr:
+  branches:
+    include:
+    - main
+    - release/*
+  paths:
+    exclude:
+    - README.md
+    - docs/*
 schedules:
 - cron: "0 0 * * *"
   displayName: Daily Official Build
@@ -5,21 +17,23 @@ schedules:
     include:
     - main
 variables:
-- template: /eng/common/templates-official/variables/pool-providers.yml@self
+- template: /eng/common/templates/variables/pool-providers.yml@self
 - name: _TeamName
   value: Roslyn
 resources:
   repositories:
-  - repository: 1ESPipelineTemplates
+  - repository: MicroBuildTemplate
     type: git
-    name: 1ESPipelineTemplates/1ESPipelineTemplates
+    name: 1ESPipelineTemplates/MicroBuildTemplate
     ref: refs/tags/release
 extends:
-  template: v1/1ES.Official.PipelineTemplate.yml@1ESPipelineTemplates
+  template: azure-pipelines/MicroBuild.1ES.Official.yml@MicroBuildTemplate
   parameters:
+    sdl:
+      sourceAnalysisPool: <AgentPoolPlaceHolder>
     pool:
-      name: Azure-Pipelines-1ESPT-ExDShared
-      image: windows-2022
+      name: AzurePipelines-EO
+      image: AzurePipelinesWindows2022compliantGPT
       os: windows
     customBuildTags:
     - ES365AIMigrationTooling
@@ -28,12 +42,12 @@ extends:
       displayName: Build
       jobs:
       - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.SourceBranch'], 'refs/heads/main')) }}:
-        - template: /eng/common/templates-official/job/onelocbuild.yml@self
+        - template: /eng/common/templates/job/onelocbuild.yml@self
           parameters:
             MirrorRepo: sourcelink
             LclSource: lclFilesfromPackage
             LclPackageId: 'LCL-JUNO-PROD-SOURCELINK'
-      - template: /eng/common/templates-official/jobs/jobs.yml@self
+      - template: /eng/common/templates/jobs/jobs.yml@self
         parameters:
           enableMicrobuild: true
           enablePublishBuildArtifacts: true
@@ -79,6 +93,12 @@ extends:
               clean: true
             - script: eng\cibuild.cmd -configuration $(_BuildConfig) -prepareMachine $(_BuildArgs)
               displayName: Build and Test
+            - task: 1ES.PublishBuildArtifacts@1
+              displayName: Publish Artifact Packages
+              inputs:
+                PathtoPublish: 'artifacts\packages\$(_BuildConfig)'
+                ArtifactName: 'Packages'
+              condition: succeeded()
           - ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
             - job: MacOS
               displayName: 'MacOS'
@@ -115,4 +135,4 @@ extends:
               - script: eng/cibuild.sh --configuration $(_BuildConfig) --prepareMachine
                 displayName: Build and Test
     - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-      - template: /eng/common/templates-official/post-build/post-build.yml@self
+      - template: /eng/common/templates/post-build/post-build.yml@self
