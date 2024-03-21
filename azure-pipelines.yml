@@ -20,6 +20,8 @@ variables:
 - template: /eng/common/templates-official/variables/pool-providers.yml@self
 - name: _TeamName
   value: Roslyn
+- name: TeamName
+  value: Roslyn
 resources:
   repositories:
   - repository: MicroBuildTemplate
