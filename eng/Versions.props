@@ -19,7 +19,7 @@
     <!-- nuget -->
     <NuGetVersioningVersion>5.7.0</NuGetVersioningVersion>
     <!-- runtime -->
-    <SystemTextJsonVersion>7.0.2</SystemTextJsonVersion>
+    <SystemTextJsonVersion>8.0.0</SystemTextJsonVersion>
     <!-- external -->
     <MicrosoftTeamFoundationServerExtendedClientVersion>19.210.0-preview</MicrosoftTeamFoundationServerExtendedClientVersion>
     <!-- libgit2 used for integration tests -->
