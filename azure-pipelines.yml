@@ -93,12 +93,6 @@ extends:
               clean: true
             - script: eng\cibuild.cmd -configuration $(_BuildConfig) -prepareMachine $(_BuildArgs)
               displayName: Build and Test
-            - task: 1ES.PublishBuildArtifacts@1
-              displayName: Publish Artifact Packages
-              inputs:
-                PathtoPublish: 'artifacts\packages\$(_BuildConfig)'
-                ArtifactName: 'Packages'
-              condition: succeeded()
           - ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
             - job: MacOS
               displayName: 'MacOS'
