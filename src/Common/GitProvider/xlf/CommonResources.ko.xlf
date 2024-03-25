@@ -4,52 +4,52 @@
     <body>
       <trans-unit id="AtLeastOneRepositoryHostIsRequired">
         <source>{0} item group is empty. At least one {1} repository host is required in order to generate SourceLink.</source>
-        <target state="new">{0} item group is empty. At least one {1} repository host is required in order to generate SourceLink.</target>
+        <target state="translated">{0} 항목 그룹이 비어 있습니다. SourceLink를 생성하려면 {1} 리포지토리 호스트가 하나 이상 필요합니다.</target>
         <note />
       </trans-unit>
       <trans-unit id="IgnoringInvalidHostName">
         <source>Ignoring invalid host name: '{0}' -- expected 'domain[:port]'.</source>
-        <target state="new">Ignoring invalid host name: '{0}' -- expected 'domain[:port]'.</target>
+        <target state="translated">잘못된 호스트 이름 무시: '{0}' -- 'domain[:port]'이 필요합니다.</target>
         <note />
       </trans-unit>
       <trans-unit id="ItemOfItemGroupMustSpecifyMetadata">
         <source>Item '{0}' of item group '{1}' must specify metadata '{2}'</source>
-        <target state="new">Item '{0}' of item group '{1}' must specify metadata '{2}'</target>
+        <target state="translated">항목 그룹 '{1}'의 '{0}' 항목은 '{2}' 메타데이터를 지정해야 합니다.</target>
         <note />
       </trans-unit>
       <trans-unit id="NoWellFormedHostUrisSpecified">
         <source>No well-formed host URIs specified: {0}.</source>
-        <target state="new">No well-formed host URIs specified: {0}.</target>
+        <target state="translated">올바른 형식의 호스트 URI가 지정되지 않았습니다({0}).</target>
         <note />
       </trans-unit>
       <trans-unit id="UnableToDetermineRepositoryUrl">
         <source>Unable to determine repository url, the source code won't be available via source link.</source>
-        <target state="new">Unable to determine repository url, the source code won't be available via source link.</target>
+        <target state="translated">리포지토리 URL을 확인할 수 없으며, 소스 링크를 통해 소스 코드를 사용할 수 없습니다.</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsInvalid">
         <source>The value of {0} with identity '{1}' is invalid: '{2}'</source>
-        <target state="new">The value of {0} with identity '{1}' is invalid: '{2}'</target>
+        <target state="translated">ID가 '{1}'인 {0}의 값은 잘못되었습니다. '{2}'</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsNotValidCommitHash">
         <source>The value of {0} with identity '{1}' is not a valid commit hash: '{2}'</source>
-        <target state="new">The value of {0} with identity '{1}' is not a valid commit hash: '{2}'</target>
+        <target state="translated">ID가 '{1}'인 {0}의 값은 유효한 커밋 해시가 아닙니다. '{2}'</target>
         <note />
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidDomainName">
         <source>The value passed to task parameter {0} is not a valid domain name: '{1}'</source>
-        <target state="new">The value passed to task parameter {0} is not a valid domain name: '{1}'</target>
+        <target state="translated">작업 매개 변수 {0}에 전달되는 값이 유효한 도메인 이름이 아닙니다. '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidHostUri">
         <source>The value passed to task parameter {0} is not a valid host URI: '{1}'</source>
-        <target state="new">The value passed to task parameter {0} is not a valid host URI: '{1}'</target>
+        <target state="translated">작업 매개 변수 {0}에 전달되는 값이 유효한 호스트 URI가 아닙니다. '{1}'</target>
         <note />
       </trans-unit>
       <trans-unit id="ValuePassedToTaskParameterNotValidUri">
         <source>The value passed to task parameter {0} is not a valid URI: '{1}'</source>
-        <target state="new">The value passed to task parameter {0} is not a valid URI: '{1}'</target>
+        <target state="translated">작업 매개 변수 {0}에 전달된 값은 유효한 URI가 아닙니다. '{1}'</target>
         <note />
       </trans-unit>
     </body>
