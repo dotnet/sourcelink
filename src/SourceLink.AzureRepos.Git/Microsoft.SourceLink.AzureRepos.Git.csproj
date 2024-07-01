@@ -1,19 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <TargetFrameworks>net472;$(NetMinimum);$(NetCurrent)</TargetFrameworks>
-    <AutoGenerateAssemblyVersion>true</AutoGenerateAssemblyVersion>
-
-    <!-- Using an explicit nuspec file due to https://github.com/NuGet/Home/issues/6754 -->
-    <IsPackable>true</IsPackable>
-    <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
-    <NuspecBasePath>$(OutputPath)</NuspecBasePath>
-
+    <TargetFrameworks>$(NetToolMinimum);$(NetFrameworkToolCurrent)</TargetFrameworks>
     <PackageDescription>Generates source link for Azure Repos (formerly known as VSTS) Git repositories.</PackageDescription>
     <PackageTags>MSBuild Tasks Azure DevOps Repos VSTS Git source link</PackageTags>
-    <DevelopmentDependency>true</DevelopmentDependency>
+    <IsBuildTaskProject>true</IsBuildTaskProject>
   </PropertyGroup>
+
   <Import Project="..\Common\AzureDevOps\Items.props" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Build.Tasks.Git\Microsoft.Build.Tasks.Git.csproj" Publish="false" />
+    <ProjectReference Include="..\SourceLink.Common\Microsoft.SourceLink.Common.csproj" Publish="false" />
+  </ItemGroup>
+
   <ItemGroup>
     <InternalsVisibleTo Include="Microsoft.SourceLink.AzureRepos.Git.UnitTests" />
   </ItemGroup>
+
 </Project>
