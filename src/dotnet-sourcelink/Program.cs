@@ -211,7 +211,7 @@ namespace Microsoft.SourceLink.Tools
 
             if (!offline)
             {
-                var handler = new HttpClientHandler();
+                using var handler = new HttpClientHandler();
                 if (handler.SupportsAutomaticDecompression)
                     handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
