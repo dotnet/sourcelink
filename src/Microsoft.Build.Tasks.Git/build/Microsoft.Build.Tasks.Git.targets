@@ -22,7 +22,7 @@
       Reports a warning if the given project doesn't belong to a repository under source control,
       unless the targets were implicily imported from an SDK without a package reference.
     -->
-    <Microsoft.Build.Tasks.Git.LocateRepository 
+    <Microsoft.Build.Tasks.Git.LocateRepository
       Path="$(MSBuildProjectDirectory)"
       RemoteName="$(GitRepositoryRemoteName)"
       ConfigurationScope="$(GitRepositoryConfigurationScope)"
@@ -32,7 +32,19 @@
       <Output TaskParameter="Url" PropertyName="ScmRepositoryUrl" />
       <Output TaskParameter="Roots" ItemName="SourceRoot" />
       <Output TaskParameter="RevisionId" PropertyName="SourceRevisionId" Condition="'$(SourceRevisionId)' == ''" />
+      <Output TaskParameter="BranchName" PropertyName="SourceBranchName" />
     </Microsoft.Build.Tasks.Git.LocateRepository>
+
+    <PropertyGroup>
+      <!--
+        This allows the SourceLink parameter to flow directly into the Pack task.
+
+        TODO: Should we do this here, or should we also make a change at
+        https://github.com/NuGet/NuGet.Client/blob/839df088f48e1e9d87ab86e5b26b7431547fa820/src/NuGet.Core/NuGet.Build.Tasks.Pack/NuGet.Build.Tasks.Pack.targets#L258
+        to map them in?
+      -->
+      <RepositoryBranch Condition="'$(RepositoryBranch)' == ''">$(SourceBranchName)</RepositoryBranch>
+    </PropertyGroup>
 
     <PropertyGroup>
       <RepositoryType Condition="'$(RepositoryType)' == ''">git</RepositoryType>

@@ -143,6 +143,11 @@ The default value is `true`. Set to `false` to suppress publishing `SourceRevisi
 Set by target `InitializeSourceControlInformationFromSourceControlManager` and consumed by NuGet `Pack` target and `GenerateAssemblyInfo` target. 
 May be used by custom targets that need this information.
 
+### SourceBranchName
+
+Set by target `InitializeSourceControlInformationFromSourceControlManager` and consumed by NuGet `Pack` target.
+May be used by custom targets that need this information.
+
 ### EnableSourceLink
 
 This property is implicitly set to `true` by a Source Link package. Including a Source Link package thus enables Source Link generation unless explicitly disabled by the project by setting this property to `false`.
