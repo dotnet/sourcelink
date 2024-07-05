@@ -170,6 +170,7 @@ Additional source-control specific metadata may be defined (depends on the sourc
 For example, for Git:
 
 - _RepositoryUrl_: e.g. `http://github.com/dotnet/corefx`
+- _BranchName_: e.g. `refs/heads/main` (may be null if branch is in a detached HEAD state)
 
 For TFVC:
 

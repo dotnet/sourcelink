@@ -85,12 +85,14 @@ namespace Microsoft.Build.Tasks.Git
             ImmutableArray<GitSubmodule> submodules,
             ImmutableArray<string> submoduleDiagnostics,
             GitIgnore ignore,
-            string? headCommitSha)
+            string? headCommitSha,
+            string? branchName)
             : this(environment, config, gitDirectory, commonDirectory, workingDirectory)
         {
             _lazySubmodules = new Lazy<(ImmutableArray<GitSubmodule>, ImmutableArray<string>)>(() => (submodules, submoduleDiagnostics));
             _lazyIgnore = new Lazy<GitIgnore>(() => ignore);
             _lazyHeadCommitSha = new Lazy<string?>(() => headCommitSha);
+            _lazyBranchName = new Lazy<string?>(() => branchName);
         }        
 
         /// <summary>

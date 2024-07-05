@@ -18,6 +18,7 @@ namespace Microsoft.Build.Tasks.SourceControl
             public const string NestedRoot = nameof(NestedRoot);
             public const string MappedPath = nameof(MappedPath);
             public const string SourceLinkUrl = nameof(SourceLinkUrl);
+            public const string BranchName = nameof(BranchName);
 
             public const string MappedPathFullName = nameof(SourceRoot) + "." + nameof(MappedPath);
             public const string SourceLinkUrlFullName = nameof(SourceRoot) + "." + nameof(SourceLinkUrl);
