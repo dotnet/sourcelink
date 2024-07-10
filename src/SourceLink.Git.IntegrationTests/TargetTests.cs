@@ -48,6 +48,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 expressions: new[]
                 {
                     "@(SourceRoot)",
+                    "@(SourceRoot->'%(BranchName)')",
                     "$(Test_DefaultEnableSourceControlManagerQueries)",
                     "$(Test_DefaultEnableSourceLink)",
                     "$(SourceLink)"
@@ -56,6 +57,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     NuGetPackageFolders,
                     ProjectSourceRoot,
+                    "refs/heads/main",
                     "true",
                     "true",
                     ""
@@ -83,6 +85,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 expressions: new[]
                 {
                     "@(SourceRoot)",
+                    "@(SourceRoot->'%(BranchName)')",
                     "$(Test_DefaultEnableSourceControlManagerQueries)",
                     "$(Test_DefaultEnableSourceLink)",
                     "$(SourceLink)"
@@ -91,6 +94,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     NuGetPackageFolders,
                     ProjectSourceRoot,
+                    "refs/heads/main",
                     "true",
                     "",
                     ""
@@ -119,6 +123,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 expressions: new[]
                 {
                     "@(SourceRoot)",
+                    "@(SourceRoot->'%(BranchName)')",
                     "$(Test_DefaultEnableSourceControlManagerQueries)",
                     "$(Test_DefaultEnableSourceLink)",
                     "$(SourceLink)"
@@ -127,6 +132,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     NuGetPackageFolders,
                     ProjectSourceRoot,
+                    "refs/heads/main",
                     "true",
                     "",
                     ""
