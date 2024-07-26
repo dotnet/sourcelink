@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 
@@ -152,10 +153,30 @@ namespace Microsoft.Build.Tasks.Git
         public string? ResolveHeadReference()
             => ResolveReference(ReadReferenceFromFile(Path.Combine(_gitDirectory, GitRepository.GitHeadFileName)));
 
+        public string? GetBranchForHead()
+        {
+            string reference = ReadReferenceFromFile(Path.Combine(_gitDirectory, GitRepository.GitHeadFileName));
+
+            return TryGetReferenceName(reference, out var name) ? name : null;
+        }
+
         public string? ResolveReference(string reference)
         {
             HashSet<string>? lazyVisitedReferences = null;
             return ResolveReference(reference, ref lazyVisitedReferences);
+        }
+
+        private static bool TryGetReferenceName(string reference, [NotNullWhen(true)] out string? name)
+        {
+            const string refPrefix = "ref: ";
+            if (reference.StartsWith(refPrefix + RefsPrefix, StringComparison.Ordinal))
+            {
+                name = reference.Substring(refPrefix.Length);
+                return true;
+            }
+
+            name = null;
+            return false;
         }
 
         /// <exception cref="IOException"/>
@@ -164,11 +185,8 @@ namespace Microsoft.Build.Tasks.Git
         {
             // See https://git-scm.com/docs/gitrepository-layout#Documentation/gitrepository-layout.txt-HEAD
 
-            const string refPrefix = "ref: ";
-            if (reference.StartsWith(refPrefix + RefsPrefix, StringComparison.Ordinal))
+            if (TryGetReferenceName(reference, out var symRef))
             {
-                var symRef = reference.Substring(refPrefix.Length);
-
                 if (lazyVisitedReferences != null && !lazyVisitedReferences.Add(symRef))
                 {
                     // infinite recursion

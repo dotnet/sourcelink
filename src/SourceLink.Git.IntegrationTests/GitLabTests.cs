@@ -43,6 +43,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
+                    "@(SourceRoot->'%(BranchName)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)"
@@ -52,6 +53,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://{TestStrings.DomainName}.com/test-org/{repoName}/-/raw/{commitSha}/*",
+                    "refs/heads/main",
                     s_relativeSourceLinkJsonPath,
                     $"https://{TestStrings.DomainName}.com/test-org/{repoName}",
                     $"https://{TestStrings.DomainName}.com/test-org/{repoName}"
@@ -101,6 +103,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
+                    "@(SourceRoot->'%(BranchName)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)"
@@ -110,6 +113,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://{TestStrings.DomainName}.com/test-org/{repoName}/-/raw/{commitSha}/*",
+                    "refs/heads/main",
                     s_relativeSourceLinkJsonPath,
                     $"https://{TestStrings.DomainName}.com/test-org/{repoName}",
                     $"https://{TestStrings.DomainName}.com/test-org/{repoName}"
@@ -155,12 +159,14 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expressions: new[]
                 {
+                    "@(SourceRoot->'%(BranchName)')",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)"
                 },
                 expectedResults: new[]
                 {
+                    "refs/heads/main",
                     $"http://{TestStrings.DomainName}.com/test-org/{repoName}/-/raw/{commitSha}/*",
                     $"http://{TestStrings.DomainName}.com/test-org/{repoName}",
                     $"http://{TestStrings.DomainName}.com/test-org/{repoName}"

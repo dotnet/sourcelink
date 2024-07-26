@@ -251,6 +251,7 @@ namespace Microsoft.Build.Tasks.Git
             {
                 // Don't report a warning since it has already been reported by GetRepositoryUrl task.
                 string? repositoryUrl = GetRepositoryUrl(repository, remoteName, logWarning: null);
+                string? branchName = repository.GetBranchName();
 
                 // Item metadata are stored msbuild-escaped. GetMetadata unescapes, SetMetadata stores the value as specified.
                 // Escape msbuild special characters so that URL escapes in the URL are preserved when the URL is read by GetMetadata.
@@ -259,6 +260,7 @@ namespace Microsoft.Build.Tasks.Git
                 item.SetMetadata(Names.SourceRoot.SourceControl, SourceControlName);
                 item.SetMetadata(Names.SourceRoot.ScmRepositoryUrl, Evaluation.ProjectCollection.Escape(repositoryUrl));
                 item.SetMetadata(Names.SourceRoot.RevisionId, revisionId);
+                item.SetMetadata(Names.SourceRoot.BranchName, Evaluation.ProjectCollection.Escape(branchName));
                 result.Add(item);
             }
             else if (warnOnMissingCommitOrUnsupportedUri)

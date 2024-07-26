@@ -25,6 +25,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             string? workingDir = null,
             GitConfig? config = null,
             string? commitSha = null,
+            string? branchName = null,
             ImmutableArray<GitSubmodule> submodules = default,
             GitIgnore? ignore = null)
         {
@@ -39,7 +40,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 submodules.IsDefault ? ImmutableArray<GitSubmodule>.Empty : submodules,
                 submoduleDiagnostics: ImmutableArray<string>.Empty,
                 ignore ?? new GitIgnore(root: null, workingDir, ignoreCase: false),
-                commitSha);
+                commitSha,
+                branchName);
         }
 
         private GitSubmodule CreateSubmodule(string name, string relativePath, string url, string? headCommitSha, string? containingRepositoryWorkingDir = null)
@@ -317,6 +319,24 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         }
 
         [Fact]
+        public void GetSourceRoots_BranchName()
+        {
+            var repo = CreateRepository(
+                commitSha: "0000000000000000000000000000000000000000",
+                branchName: "refs/heads/abc");
+
+            var warnings = new List<(string, object?[])>();
+            var items = GitOperations.GetSourceRoots(repo, remoteName: null, warnOnMissingCommitOrUnsupportedUri: false, (message, args) => warnings.Add((message, args)));
+
+            AssertEx.Equal(new[]
+{
+                $@"'{_workingDir}{s}' SourceControl='git' RevisionId='0000000000000000000000000000000000000000' BranchName='refs/heads/abc'",
+            }, items.Select(TestUtilities.InspectSourceRoot));
+
+            AssertEx.Equal(Array.Empty<string>(), warnings.Select(TestUtilities.InspectDiagnostic));
+        }
+
+        [Fact]
         public void GetSourceRoots_RepoWithCommits_WithoutUrl()
         {
             var repo = CreateRepository(
@@ -468,7 +488,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 Assert.Empty(warnings);
             }
         }
-		
+
 		private static GitOperations.DirectoryNode CreateNode(string name, string? submoduleWorkingDirectory, List<GitOperations.DirectoryNode>? children = null)
             => new GitOperations.DirectoryNode(name, children ?? new List<GitOperations.DirectoryNode>())
             {

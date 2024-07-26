@@ -57,6 +57,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
+                    "@(SourceRoot->'%(BranchName)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
                 },
@@ -65,6 +66,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     NuGetPackageFolders,
                     SourceRoot,
                     $"https://raw.githubusercontent.com/test-org/test-repo2/{commitSha}/*",
+                    "refs/heads/main",
                     s_relativeSourceLinkJsonPath,
                     $"http://github.com/test-org/test-repo2",
                 },
@@ -127,11 +129,13 @@ namespace Microsoft.SourceLink.IntegrationTests
                 expressions: new[]
                 {
                     "@(SourceRoot->'%(SourceLinkUrl)')",
+                    "@(SourceRoot->'%(BranchName)')",
                     "$(PrivateRepositoryUrl)",
                 },
                 expectedResults: new[]
                 {
                     $"https://raw.githubusercontent.com/test-org/test-repo2/{commitSha}/*",
+                    "refs/heads/main",
                     $"http://github.com/test-org/test-repo2",
                 });
         }
@@ -159,11 +163,13 @@ namespace Microsoft.SourceLink.IntegrationTests
                 expressions: new[]
                 {
                     "@(SourceRoot->'%(SourceLinkUrl)')",
+                    "@(SourceRoot->'%(BranchName)')",
                     "$(PrivateRepositoryUrl)",
                 },
                 expectedResults: new[]
                 {
                     $"https://raw.githubusercontent.com/test-org/test-repo1/{commitSha}/*",
+                    "refs/heads/main",
                     $"http://github.com/test-org/test-repo1",
                 },
                 expectedWarnings: new[]
@@ -198,6 +204,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
+                    "@(SourceRoot->'%(BranchName)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)"
@@ -207,6 +214,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://raw.githubusercontent.com/test-org/{repoName}/{commitSha}/*",
+                    "refs/heads/main",
                     s_relativeSourceLinkJsonPath,
                     $"http://github.com/test-org/{repoName}",
                     $"http://github.com/test-org/{repoName}"
@@ -254,6 +262,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
+                    "@(SourceRoot->'%(BranchName)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)"
@@ -263,6 +272,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://raw.githubusercontent.com/test-org/{repoName}/{commitSha}/*",
+                    "refs/heads/main",
                     s_relativeSourceLinkJsonPath,
                     $"https://github.com/test-org/{repoName}",
                     $"https://github.com/test-org/{repoName}"

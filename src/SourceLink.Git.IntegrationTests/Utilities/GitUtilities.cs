@@ -30,6 +30,9 @@ namespace Microsoft.SourceLink.IntegrationTests
 
                 repository.Index.Write();
                 repository.Commit("First commit", s_signature, s_signature);
+
+                // To avoid reliance on init.defaultBranch, rename the current branch to a known name.
+                repository.Branches.Rename(branch: repository.Head, newName: "main", allowOverwrite: true);
             }
 
             return repository;

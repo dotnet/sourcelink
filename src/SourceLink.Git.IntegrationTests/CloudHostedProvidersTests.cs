@@ -76,12 +76,14 @@ namespace Microsoft.SourceLink.IntegrationTests
                 expressions: new[]
                 {
                     "@(SourceRoot)",
+                    // "@(SourceRoot->'%(BranchName)')", // TODO: Assert branch name once SDK has new SourceLink version https://github.com/dotnet/sourcelink/issues/1251
                     "$(SourceLink)",
                 },
                 expectedResults: new[]
                 {
                     NuGetPackageFolders,
                     "",
+                    // "refs/heads/main", // TODO: Assert branch name once SDK has new SourceLink version https://github.com/dotnet/sourcelink/issues/1251
                 });
 
             Assert.False(File.Exists(sourceLinkFilePath));
@@ -105,7 +107,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 },
                 expectedResults: new[]
                 {
-                    NuGetPackageFolders
+                    NuGetPackageFolders,
                 },
                 expectedWarnings: new[]
                 {
@@ -145,6 +147,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 expressions: new[]
                 {
                     "@(SourceRoot)",
+                    // "@(SourceRoot->'%(BranchName)')", // TODO: Assert branch name once SDK has new SourceLink version https://github.com/dotnet/sourcelink/issues/1251
                     "$(SourceLink)",
                     "@(_SourceLinkFileWrites)",
                 },
@@ -152,6 +155,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     NuGetPackageFolders,
                     "",
+                    // "refs/heads/main", // TODO: Assert branch name once SDK has new SourceLink version https://github.com/dotnet/sourcelink/issues/1251
                     "",
                 });
         }
@@ -181,6 +185,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 expressions: new[]
                 {
                     "@(SourceRoot)",
+                    // "@(SourceRoot->'%(BranchName)')", // TODO: Assert branch name once SDK has new SourceLink version https://github.com/dotnet/sourcelink/issues/1251
                     "$(SourceLink)",
                     "@(_SourceLinkFileWrites)",
                 },
@@ -188,6 +193,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     NuGetPackageFolders,
                     ProjectSourceRoot,
+                    // "refs/heads/main", // TODO: Assert branch name once SDK has new SourceLink version https://github.com/dotnet/sourcelink/issues/1251
                     "",
                     "",
                 });
@@ -218,6 +224,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 expressions: new[]
                 {
                     "@(SourceRoot)",
+                    // "@(SourceRoot->'%(BranchName)')", // TODO: Assert branch name once SDK has new SourceLink version https://github.com/dotnet/sourcelink/issues/1251
                     "$(SourceLink)",
                     "@(_SourceLinkFileWrites)",
                 },
@@ -225,6 +232,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     NuGetPackageFolders,
                     "",
+                    // "refs/heads/main", // TODO: Assert branch name once SDK has new SourceLink version https://github.com/dotnet/sourcelink/issues/1251
                     "",
                 });
         }
@@ -281,6 +289,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
+                    "@(SourceRoot->'%(BranchName)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)",
@@ -291,6 +300,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://raw.githubusercontent.com/test-org/{repoName}/{commitSha}/*",
+                    "refs/heads/main",
                     s_relativeSourceLinkJsonPath,
                     $"https://github.com/test-org/{repoName}",
                     $"https://github.com/test-org/{repoName}",
@@ -340,6 +350,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
+                    "@(SourceRoot->'%(BranchName)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)"
@@ -349,6 +360,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://test.{host}/test-org/_apis/git/repositories/{repoName}/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*",
+                    "refs/heads/main",
                     s_relativeSourceLinkJsonPath,
                     $"https://test.{host}/test-org/_git/{repoName}",
                     $"https://test.{host}/test-org/_git/{repoName}",
@@ -382,6 +394,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
+                    "@(SourceRoot->'%(BranchName)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)"
@@ -391,6 +404,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://{host}/test/test-org/_apis/git/repositories/{repoName}/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*",
+                    "refs/heads/main",
                     s_relativeSourceLinkJsonPath,
                     $"https://{host}/test/test-org/_git/{repoName}",
                     $"https://{host}/test/test-org/_git/{repoName}",
@@ -415,11 +429,13 @@ namespace Microsoft.SourceLink.IntegrationTests
                 expressions: new[]
                 {
                     "@(SourceRoot->'%(Identity):%(SourceLinkUrl)')",
+                    "@(SourceRoot->'%(BranchName)')",
                 },
                 expectedResults: new[]
                 {
                     NuGetPackageFolders + ":",
                     EnsureTrailingDirectorySeparator(ProjectDir.Path) + ":",
+                    "refs/heads/main",
                 },
                 expectedWarnings: new[]
                 {
