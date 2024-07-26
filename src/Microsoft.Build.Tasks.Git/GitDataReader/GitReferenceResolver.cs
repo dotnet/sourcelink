@@ -157,7 +157,7 @@ namespace Microsoft.Build.Tasks.Git
         {
             string reference = ReadReferenceFromFile(Path.Combine(_gitDirectory, GitRepository.GitHeadFileName));
 
-            return TryGetReferenceName(reference, out string? name) ? name : null;
+            return TryGetReferenceName(reference, out var name) ? name : null;
         }
 
         public string? ResolveReference(string reference)
@@ -185,7 +185,7 @@ namespace Microsoft.Build.Tasks.Git
         {
             // See https://git-scm.com/docs/gitrepository-layout#Documentation/gitrepository-layout.txt-HEAD
 
-            if (TryGetReferenceName(reference, out string? symRef))
+            if (TryGetReferenceName(reference, out var symRef))
             {
                 if (lazyVisitedReferences != null && !lazyVisitedReferences.Add(symRef))
                 {

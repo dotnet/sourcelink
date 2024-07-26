@@ -76,14 +76,14 @@ namespace Microsoft.SourceLink.IntegrationTests
                 expressions: new[]
                 {
                     "@(SourceRoot)",
-                    // "@(SourceRoot->'%(BranchName)')", // TODO: Unclear what to do here since this test explicitly uses the SDK version of Microsoft.Build.Tasks.Git
+                    // "@(SourceRoot->'%(BranchName)')", // TODO: Assert branch name once SDK has new SourceLink version https://github.com/dotnet/sourcelink/issues/1251
                     "$(SourceLink)",
                 },
                 expectedResults: new[]
                 {
                     NuGetPackageFolders,
                     "",
-                    // "refs/heads/main",
+                    // "refs/heads/main", // TODO: Assert branch name once SDK has new SourceLink version https://github.com/dotnet/sourcelink/issues/1251
                 });
 
             Assert.False(File.Exists(sourceLinkFilePath));
@@ -147,7 +147,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 expressions: new[]
                 {
                     "@(SourceRoot)",
-                    // "@(SourceRoot->'%(BranchName)')", // TODO: Unclear what to do here since this test explicitly uses the SDK version of Microsoft.Build.Tasks.Git
+                    // "@(SourceRoot->'%(BranchName)')", // TODO: Assert branch name once SDK has new SourceLink version https://github.com/dotnet/sourcelink/issues/1251
                     "$(SourceLink)",
                     "@(_SourceLinkFileWrites)",
                 },
@@ -155,7 +155,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     NuGetPackageFolders,
                     "",
-                    // "refs/heads/main",
+                    // "refs/heads/main", // TODO: Assert branch name once SDK has new SourceLink version https://github.com/dotnet/sourcelink/issues/1251
                     "",
                 });
         }
@@ -185,7 +185,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 expressions: new[]
                 {
                     "@(SourceRoot)",
-                    // "@(SourceRoot->'%(BranchName)')", // TODO: Unclear what to do here since this test explicitly uses the SDK version of Microsoft.Build.Tasks.Git
+                    // "@(SourceRoot->'%(BranchName)')", // TODO: Assert branch name once SDK has new SourceLink version https://github.com/dotnet/sourcelink/issues/1251
                     "$(SourceLink)",
                     "@(_SourceLinkFileWrites)",
                 },
@@ -193,7 +193,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     NuGetPackageFolders,
                     ProjectSourceRoot,
-                    // "refs/heads/main",
+                    // "refs/heads/main", // TODO: Assert branch name once SDK has new SourceLink version https://github.com/dotnet/sourcelink/issues/1251
                     "",
                     "",
                 });
@@ -224,7 +224,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 expressions: new[]
                 {
                     "@(SourceRoot)",
-                    // "@(SourceRoot->'%(BranchName)')", // TODO: Unclear what to do here since this test explicitly uses the SDK version of Microsoft.Build.Tasks.Git
+                    // "@(SourceRoot->'%(BranchName)')", // TODO: Assert branch name once SDK has new SourceLink version https://github.com/dotnet/sourcelink/issues/1251
                     "$(SourceLink)",
                     "@(_SourceLinkFileWrites)",
                 },
@@ -232,7 +232,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     NuGetPackageFolders,
                     "",
-                    // "refs/heads/main",
+                    // "refs/heads/main", // TODO: Assert branch name once SDK has new SourceLink version https://github.com/dotnet/sourcelink/issues/1251
                     "",
                 });
         }
