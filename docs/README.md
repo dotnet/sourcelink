@@ -43,11 +43,11 @@ Note that it is possible and supported to reference multiple Source Link package
 
 ### PublishRepositoryUrl
 
-The URL of the repository supplied by the CI server or retrieved from source control manager is stored in `PrivateRepositoryUrl` variable.
+To avoid inadvertently publishing private repository data, the URL and branch of the repository supplied by the CI server or retrieved from the source control manager
+are not consumed directly. Instead, they are stored in the `PrivateRepositoryUrl` and `SourceBranchName` variables.
 
-This value is not directly embedded in build outputs to avoid inadvertently publishing links to private repositories.
-Instead, `PublishRepositoryUrl` needs to be set by the project in order to publish the URL into `RepositoryUrl` property,
-which is used e.g. in the nuspec file generated for NuGet package produced by the project.
+If `PublishRepositoryUrl` is set to `true` by the project, these properties are published into the `RepositoryUrl` and `RepositoryBranch` properties,
+which are used e.g. in the nuspec file generated for the NuGet package produced by the project.
 
 ### EmbedAllSources
 
