@@ -51,6 +51,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 customTargets: "",
                 targets: new[]
                 {
+                    "Restore",
                     "Build"
                 },
                 expressions: new[]
