@@ -10,8 +10,8 @@
   <Import Project="..\Common\GitProvider\Items.props" />
 
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Build.Tasks.Git\Microsoft.Build.Tasks.Git.csproj" Publish="false" />
-    <ProjectReference Include="..\SourceLink.Common\Microsoft.SourceLink.Common.csproj" Publish="false" />
+    <ProjectReference Include="..\Microsoft.Build.Tasks.Git\Microsoft.Build.Tasks.Git.csproj" Private="false" />
+    <ProjectReference Include="..\SourceLink.Common\Microsoft.SourceLink.Common.csproj" Private="false" />
   </ItemGroup>
 
   <ItemGroup>

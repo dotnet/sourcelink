@@ -11,8 +11,8 @@
     <Compile Include="..\Common\Utilities\*.cs" Link="Common\%(FileName).cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Build.Tasks.Tfvc\Microsoft.Build.Tasks.Tfvc.csproj" Publish="false" />
-    <ProjectReference Include="..\SourceLink.Common\Microsoft.SourceLink.Common.csproj" Publish="false" />
+    <ProjectReference Include="..\Microsoft.Build.Tasks.Tfvc\Microsoft.Build.Tasks.Tfvc.csproj" Private="false" />
+    <ProjectReference Include="..\SourceLink.Common\Microsoft.SourceLink.Common.csproj" Private="false" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Build" Version="$(MicrosoftBuildVersion)" />

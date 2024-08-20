@@ -74,6 +74,7 @@
     <PackageReference Update="@(PackageReference)">
       <Publish Condition="'%(PackageReference.Publish)' == ''">true</Publish>
       <PrivateAssets Condition="'%(PackageReference.Publish)' == 'false'">all</PrivateAssets>
+      <ExcludeAssets Condition="'%(PackageReference.Publish)' == 'false'">runtime</ExcludeAssets>
     </PackageReference>
 
     <!--
