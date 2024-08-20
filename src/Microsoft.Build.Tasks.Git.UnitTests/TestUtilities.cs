@@ -17,6 +17,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var containingRoot = sourceRoot.GetMetadata("ContainingRoot");
             var scmRepositoryUrl = sourceRoot.GetMetadata("ScmRepositoryUrl");
             var sourceLinkUrl = sourceRoot.GetMetadata("SourceLinkUrl");
+            var branchName = sourceRoot.GetMetadata("BranchName");
 
             return $"'{sourceRoot.ItemSpec}'" +
               (string.IsNullOrEmpty(sourceControl) ? "" : $" SourceControl='{sourceControl}'") +
@@ -24,7 +25,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
               (string.IsNullOrEmpty(nestedRoot) ? "" : $" NestedRoot='{nestedRoot}'") +
               (string.IsNullOrEmpty(containingRoot) ? "" : $" ContainingRoot='{containingRoot}'") +
               (string.IsNullOrEmpty(scmRepositoryUrl) ? "" : $" ScmRepositoryUrl='{scmRepositoryUrl}'") +
-              (string.IsNullOrEmpty(sourceLinkUrl) ? "" : $" SourceLinkUrl='{sourceLinkUrl}'");
+              (string.IsNullOrEmpty(sourceLinkUrl) ? "" : $" SourceLinkUrl='{sourceLinkUrl}'") +
+              (string.IsNullOrEmpty(branchName) ? "" : $" BranchName='{branchName}'");
         }
 
         public static string InspectDiagnostic((string Message, object?[] Args) warning)

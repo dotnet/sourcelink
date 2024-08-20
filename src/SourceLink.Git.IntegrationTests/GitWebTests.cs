@@ -46,6 +46,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
+                    "@(SourceRoot->'%(BranchName)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)"
@@ -55,6 +56,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://{TestStrings.DomainName}.com/gitweb/?p={repoName};a=blob_plain;hb={commitSha};f=*",
+                    "refs/heads/main",
                     s_relativeSourceLinkJsonPath,
                     $"ssh://git@{TestStrings.DomainName}.com/{repoNameFullyEscaped}",
                     $"ssh://git@{TestStrings.DomainName}.com/{repoNameFullyEscaped}"

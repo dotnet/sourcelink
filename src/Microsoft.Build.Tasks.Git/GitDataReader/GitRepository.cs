@@ -51,6 +51,7 @@ namespace Microsoft.Build.Tasks.Git
         private readonly Lazy<(ImmutableArray<GitSubmodule> Submodules, ImmutableArray<string> Diagnostics)> _lazySubmodules;
         private readonly Lazy<GitIgnore> _lazyIgnore;
         private readonly Lazy<string?> _lazyHeadCommitSha;
+        private readonly Lazy<string?> _lazyBranchName;
         private readonly GitReferenceResolver _referenceResolver;
 
         internal GitRepository(GitEnvironment environment, GitConfig config, string gitDirectory, string commonDirectory, string? workingDirectory)
@@ -71,6 +72,7 @@ namespace Microsoft.Build.Tasks.Git
             _lazySubmodules = new Lazy<(ImmutableArray<GitSubmodule>, ImmutableArray<string>)>(ReadSubmodules);
             _lazyIgnore = new Lazy<GitIgnore>(LoadIgnore);
             _lazyHeadCommitSha = new Lazy<string?>(ReadHeadCommitSha);
+            _lazyBranchName = new Lazy<string?>(ReadBranchName);
         }
 
         // test only
@@ -83,12 +85,14 @@ namespace Microsoft.Build.Tasks.Git
             ImmutableArray<GitSubmodule> submodules,
             ImmutableArray<string> submoduleDiagnostics,
             GitIgnore ignore,
-            string? headCommitSha)
+            string? headCommitSha,
+            string? branchName)
             : this(environment, config, gitDirectory, commonDirectory, workingDirectory)
         {
             _lazySubmodules = new Lazy<(ImmutableArray<GitSubmodule>, ImmutableArray<string>)>(() => (submodules, submoduleDiagnostics));
             _lazyIgnore = new Lazy<GitIgnore>(() => ignore);
             _lazyHeadCommitSha = new Lazy<string?>(() => headCommitSha);
+            _lazyBranchName = new Lazy<string?>(() => branchName);
         }        
 
         /// <summary>
@@ -180,6 +184,12 @@ namespace Microsoft.Build.Tasks.Git
         /// <exception cref="InvalidDataException"/>
         private string? ReadHeadCommitSha()
             => _referenceResolver.ResolveHeadReference();
+
+        public string? GetBranchName()
+            => _lazyBranchName.Value;
+
+        private string? ReadBranchName()
+            => _referenceResolver.GetBranchForHead();
 
         /// <summary>
         /// Creates <see cref="GitReferenceResolver"/> for a submodule located in the specified <paramref name="submoduleWorkingDirectoryFullPath"/>.

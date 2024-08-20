@@ -43,11 +43,11 @@ Note that it is possible and supported to reference multiple Source Link package
 
 ### PublishRepositoryUrl
 
-The URL of the repository supplied by the CI server or retrieved from source control manager is stored in `PrivateRepositoryUrl` variable.
+To avoid inadvertently publishing private repository data, the URL and branch of the repository supplied by the CI server or retrieved from the source control manager
+are not consumed directly. Instead, they are stored in the `PrivateRepositoryUrl` and `SourceBranchName` variables.
 
-This value is not directly embedded in build outputs to avoid inadvertently publishing links to private repositories.
-Instead, `PublishRepositoryUrl` needs to be set by the project in order to publish the URL into `RepositoryUrl` property,
-which is used e.g. in the nuspec file generated for NuGet package produced by the project.
+If `PublishRepositoryUrl` is set to `true` by the project, these properties are published into the `RepositoryUrl` and `RepositoryBranch` properties,
+which are used e.g. in the nuspec file generated for the NuGet package produced by the project.
 
 ### EmbedAllSources
 
@@ -143,6 +143,11 @@ The default value is `true`. Set to `false` to suppress publishing `SourceRevisi
 Set by target `InitializeSourceControlInformationFromSourceControlManager` and consumed by NuGet `Pack` target and `GenerateAssemblyInfo` target. 
 May be used by custom targets that need this information.
 
+### SourceBranchName
+
+Set by target `InitializeSourceControlInformationFromSourceControlManager` and consumed by NuGet `Pack` target.
+May be used by custom targets that need this information.
+
 ### EnableSourceLink
 
 This property is implicitly set to `true` by a Source Link package. Including a Source Link package thus enables Source Link generation unless explicitly disabled by the project by setting this property to `false`.
@@ -165,6 +170,7 @@ Additional source-control specific metadata may be defined (depends on the sourc
 For example, for Git:
 
 - _RepositoryUrl_: e.g. `http://github.com/dotnet/corefx`
+- _BranchName_: e.g. `refs/heads/main` (may be null if branch is in a detached HEAD state)
 
 For TFVC:
 

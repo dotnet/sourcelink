@@ -22,7 +22,7 @@
       Reports a warning if the given project doesn't belong to a repository under source control,
       unless the targets were implicily imported from an SDK without a package reference.
     -->
-    <Microsoft.Build.Tasks.Git.LocateRepository 
+    <Microsoft.Build.Tasks.Git.LocateRepository
       Path="$(MSBuildProjectDirectory)"
       RemoteName="$(GitRepositoryRemoteName)"
       ConfigurationScope="$(GitRepositoryConfigurationScope)"
@@ -32,6 +32,7 @@
       <Output TaskParameter="Url" PropertyName="ScmRepositoryUrl" />
       <Output TaskParameter="Roots" ItemName="SourceRoot" />
       <Output TaskParameter="RevisionId" PropertyName="SourceRevisionId" Condition="'$(SourceRevisionId)' == ''" />
+      <Output TaskParameter="BranchName" PropertyName="SourceBranchName" />
     </Microsoft.Build.Tasks.Git.LocateRepository>
 
     <PropertyGroup>

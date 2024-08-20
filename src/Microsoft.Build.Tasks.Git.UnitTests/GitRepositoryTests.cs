@@ -539,5 +539,37 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             Assert.Null(GitRepository.GetSubmoduleReferenceResolver(submoduleWorkingDir.Path)?.ResolveHeadReference());
         }
+
+        [Fact]
+        public void GetHeadBranchName()
+        {
+            using var temp = new TempRoot();
+
+            var commonDir = temp.CreateDirectory();
+            var refsHeadsDir = commonDir.CreateDirectory("refs").CreateDirectory("heads");
+            refsHeadsDir.CreateFile("master").WriteAllText("0000000000000000000000000000000000000000 \t\v\r\n");
+
+            var gitDir = temp.CreateDirectory();
+            gitDir.CreateFile("HEAD").WriteAllText("ref: refs/heads/master \t\v\r\n");
+
+            var repository = new GitRepository(GitEnvironment.Empty, GitConfig.Empty, gitDir.Path, commonDir.Path, workingDirectory: null);
+            Assert.Equal("refs/heads/master", repository.GetBranchName());
+        }
+
+        [Fact]
+        public void GetHeadBranchName_DetachedHead()
+        {
+            using var temp = new TempRoot();
+
+            var commonDir = temp.CreateDirectory();
+            var refsHeadsDir = commonDir.CreateDirectory("refs").CreateDirectory("heads");
+            refsHeadsDir.CreateFile("master").WriteAllText("0000000000000000000000000000000000000000 \t\v\r\n");
+
+            var gitDir = temp.CreateDirectory();
+            gitDir.CreateFile("HEAD").WriteAllText("0000000000000000000000000000000000000000 \t\v\r\n");
+
+            var repository = new GitRepository(GitEnvironment.Empty, GitConfig.Empty, gitDir.Path, commonDir.Path, workingDirectory: null);
+            Assert.Null(repository.GetBranchName());
+        }
     }
 }

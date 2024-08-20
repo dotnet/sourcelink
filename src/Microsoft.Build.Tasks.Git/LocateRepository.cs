@@ -44,6 +44,12 @@ namespace Microsoft.Build.Tasks.Git
         [Output]
         public string? RevisionId { get; private set; }
 
+        /// <summary>
+        /// Branch name.
+        /// </summary>
+        [Output]
+        public string? BranchName { get; private set; }
+
         protected override string? GetRepositoryId() => null;
         protected override string GetInitialPath() => Path!;
 
@@ -56,6 +62,7 @@ namespace Microsoft.Build.Tasks.Git
             Url = GitOperations.GetRepositoryUrl(repository, RemoteName, warnOnMissingOrUnsupportedRemote: !NoWarnOnMissingInfo, Log.LogWarning);
             Roots = GitOperations.GetSourceRoots(repository, RemoteName, warnOnMissingCommitOrUnsupportedUri: !NoWarnOnMissingInfo, Log.LogWarning);
             RevisionId = repository.GetHeadCommitSha();
+            BranchName = repository.GetBranchName();
         }
     }
 }

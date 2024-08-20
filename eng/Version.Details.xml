@@ -13,26 +13,33 @@
       <Uri>https://github.com/dotnet/command-line-api</Uri>
       <Sha>02fe27cd6a9b001c8feb7938e6ef4b3799745759</Sha>
     </Dependency>
+    <!-- Intermediate is necessary for source build. -->
     <Dependency Name="Microsoft.SourceBuild.Intermediate.command-line-api" Version="0.1.430701">
       <Uri>https://github.com/dotnet/command-line-api</Uri>
       <Sha>02fe27cd6a9b001c8feb7938e6ef4b3799745759</Sha>
       <SourceBuild RepoName="command-line-api" ManagedOnly="true" />
     </Dependency>
-    <Dependency Name="Microsoft.SourceBuild.Intermediate.source-build-reference-packages" Version="9.0.0-alpha.1.24080.1">
+    <!-- Intermediate is necessary for source build. -->
+    <Dependency Name="Microsoft.SourceBuild.Intermediate.source-build-reference-packages" Version="10.0.0-alpha.1.24419.1">
       <Uri>https://github.com/dotnet/source-build-reference-packages</Uri>
-      <Sha>960c24c32a4bde8a83073f33fec25de7ec88a062</Sha>
+      <Sha>c818c3cf018e7aa9fd31f6aed5d14e9b59f03e4f</Sha>
       <SourceBuild RepoName="source-build-reference-packages" ManagedOnly="true" />
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="9.0.0-beta.24076.5">
+    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="9.0.0-beta.24416.2">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>66c9c5397d599af40f2a94989241944f5a73442a</Sha>
-      <SourceBuild RepoName="arcade" ManagedOnly="true" />
+      <Sha>8fe02bab989df1265eee225df2c28af6dbdccc83</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.DotNet.XliffTasks" Version="9.0.0-beta.24076.5">
+    <Dependency Name="Microsoft.DotNet.XliffTasks" Version="9.0.0-beta.24416.2">
       <Uri>https://github.com/dotnet/arcade</Uri>
-      <Sha>66c9c5397d599af40f2a94989241944f5a73442a</Sha>
+      <Sha>8fe02bab989df1265eee225df2c28af6dbdccc83</Sha>
+    </Dependency>
+    <!-- Intermediate is necessary for source build. -->
+    <Dependency Name="Microsoft.SourceBuild.Intermediate.arcade" Version="9.0.0-beta.24416.2">
+      <Uri>https://github.com/dotnet/arcade</Uri>
+      <Sha>8fe02bab989df1265eee225df2c28af6dbdccc83</Sha>
+      <SourceBuild RepoName="arcade" ManagedOnly="true" />
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>

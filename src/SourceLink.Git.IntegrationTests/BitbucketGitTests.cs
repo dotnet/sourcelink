@@ -39,6 +39,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
+                    "@(SourceRoot->'%(BranchName)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)"
@@ -48,6 +49,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://api.bitbucket.org/2.0/repositories/test-org/{repoName}/src/{commitSha}/*",
+                    "refs/heads/main",
                     s_relativeSourceLinkJsonPath,
                     $"https://bitbucket.org/test-org/{repoName}",
                     $"https://bitbucket.org/test-org/{repoName}"
@@ -98,6 +100,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
+                    "@(SourceRoot->'%(BranchName)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)"
@@ -107,6 +110,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://bitbucket.domain.com/projects/test-org/repos/{repoName}/raw/*?at={commitSha}",
+                    "refs/heads/main",
                     s_relativeSourceLinkJsonPath,
                     $"https://bitbucket.domain.com/scm/test-org/{repoName}",
                     $"https://bitbucket.domain.com/scm/test-org/{repoName}"
@@ -155,6 +159,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
+                    "@(SourceRoot->'%(BranchName)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)"
@@ -164,6 +169,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://bitbucket.domain.com/projects/test-org/repos/{repoName}/raw/*?at={commitSha}",
+                    "refs/heads/main",
                     s_relativeSourceLinkJsonPath,
                     $"https://bitbucket.domain.com/scm/test-org/{repoName}.git",
                     $"https://bitbucket.domain.com/scm/test-org/{repoName}.git"
@@ -272,6 +278,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
+                    "@(SourceRoot->'%(BranchName)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)"
@@ -281,6 +288,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://bitbucket.domain.com/projects/test-org/repos/{repoName}/browse/*?at={commitSha}&raw",
+                    "refs/heads/main",
                     s_relativeSourceLinkJsonPath,
                     $"https://bitbucket.domain.com/scm/test-org/{repoName}",
                     $"https://bitbucket.domain.com/scm/test-org/{repoName}"
@@ -330,6 +338,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
+                    "@(SourceRoot->'%(BranchName)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)"
@@ -339,6 +348,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://api.{TestStrings.DomainName}.com/2.0/repositories/test-org/{repoName}/src/{commitSha}/*",
+                    "refs/heads/main",
                     s_relativeSourceLinkJsonPath,
                     $"https://{TestStrings.DomainName}.com/test-org/{repoName}",
                     $"https://{TestStrings.DomainName}.com/test-org/{repoName}"
@@ -388,6 +398,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
+                    "@(SourceRoot->'%(BranchName)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)"
@@ -397,6 +408,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://{TestStrings.DomainName}.com/projects/test-org/repos/{repoName}/browse/*?at={commitSha}&raw",
+                    "refs/heads/main",
                     s_relativeSourceLinkJsonPath,
                     $"https://{TestStrings.DomainName}.com/test-org/{repoName}",
                     $"https://{TestStrings.DomainName}.com/test-org/{repoName}"
@@ -446,6 +458,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     "@(SourceRoot)",
                     "@(SourceRoot->'%(SourceLinkUrl)')",
+                    "@(SourceRoot->'%(BranchName)')",
                     "$(SourceLink)",
                     "$(PrivateRepositoryUrl)",
                     "$(RepositoryUrl)"
@@ -455,6 +468,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     NuGetPackageFolders,
                     ProjectSourceRoot,
                     $"https://{TestStrings.DomainName}.com/projects/test-org/repos/{repoName}/raw/*?at={commitSha}",
+                    "refs/heads/main",
                     s_relativeSourceLinkJsonPath,
                     $"https://{TestStrings.DomainName}.com/test-org/{repoName}",
                     $"https://{TestStrings.DomainName}.com/test-org/{repoName}"
