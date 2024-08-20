@@ -3,7 +3,7 @@
     <TargetFrameworks>net472;$(NetCurrent)</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="LibGit2Sharp" Version="$(LibGit2SharpVersion)" />
+    <PackageReference Include="LibGit2Sharp" />
     <ProjectReference Include="..\Microsoft.Build.Tasks.Git\Microsoft.Build.Tasks.Git.csproj" />
     <ProjectReference Include="..\SourceLink.Common\Microsoft.SourceLink.Common.csproj" />
     <ProjectReference Include="..\SourceLink.GitHub\Microsoft.SourceLink.GitHub.csproj" />

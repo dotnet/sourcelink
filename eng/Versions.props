@@ -17,11 +17,6 @@
     <NuGetVersioningVersion>5.7.0</NuGetVersioningVersion>
     <!-- runtime -->
     <SystemTextJsonVersion>7.0.3</SystemTextJsonVersion>
-    <!-- external -->
-    <MicrosoftTeamFoundationServerExtendedClientVersion>19.210.0-preview</MicrosoftTeamFoundationServerExtendedClientVersion>
-    <!-- libgit2 used for integration tests -->
-    <LibGit2SharpVersion>0.27.0-preview-0119</LibGit2SharpVersion>
-    <XunitCombinatorialVersion>1.5.25</XunitCombinatorialVersion>
   </PropertyGroup>
   <!-- msbuild (conditional due to https://github.com/dotnet/msbuild/issues/10492) -->
   <PropertyGroup Condition="'$(DotnetBuildFromSource)' == 'true'">
