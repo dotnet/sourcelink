@@ -18,19 +18,24 @@ Starting with .NET 8, Source Link for the following source control providers is 
 - [GitLab](https://gitlab.com) 12.0+ (for older versions see [GitLab settings](#gitlab))
 - [Bitbucket](https://bitbucket.org/) 4.7+ (for older versions see [Bitbucket settings](#bitbucket))
 
-If your project uses .NET SDK 8+ and is hosted by the above providers it does not need to reference any Source Link packages or set any build properties.
-
-**Otherwise**, you can enable Source Link experience in your project by setting a few properties and adding a PackageReference to a Source Link package specific to the provider:
+You can enable the Source Link experience in your project by opt-ing in to publish repository information:
 
 ```xml
 <Project>
  <PropertyGroup>
-    <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <!-- Publish the repository URL in the built .nupkg (in the NuSpec <repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
  
-    <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
+    <!-- Optional (set by default in .NET SDK 8+): Embed source files that are not tracked by the source control manager in the PDB -->
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
+</Project>
+```
+
+If your project does not yet use .NET SDK 8+, or is not hosted by one of the above providers, you must also add a PackageReference to a Source Link package specific to the provider:
+
+```xml
+<Project>
   <ItemGroup>
     <!-- Add PackageReference specific for your source control provider (see below) --> 
   </ItemGroup>
@@ -39,8 +44,10 @@ If your project uses .NET SDK 8+ and is hosted by the above providers it does no
 
 Source Link packages are currently available for the source control providers listed below.
 
+> [!TIP]
 > Source Link package is a development dependency, which means it is only used during build. It is therefore recommended to set `PrivateAssets` to `all` on the package reference. This prevents consuming projects of your nuget package from attempting to install Source Link.
 
+> [!NOTE]
 > Referencing any Source Link package in a .NET SDK 8+ project suppresses Source Link that is included in the SDK.
 
 ### github.com and GitHub Enterprise
