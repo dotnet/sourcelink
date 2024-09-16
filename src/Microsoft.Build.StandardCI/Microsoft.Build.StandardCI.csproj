@@ -2,20 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <IsPackable>true</IsPackable>
     <SuppressFinalPackageVersion>true</SuppressFinalPackageVersion>
     <PackageDescription>Standard CI targets.</PackageDescription>
     <PackageTags>Standard CI msbuild targets</PackageTags>
-    <DevelopmentDependency>true</DevelopmentDependency>
-    <!-- This is a content only package. -->
-    <NoWarn>$(NoWarn);NU5128</NoWarn>
-    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <IsBuildTaskProject>true</IsBuildTaskProject>
+    <PackTasks>false</PackTasks>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Include="build\Microsoft.Build.StandardCI.props"
-          Pack="true"
-          PackagePath="build" />
-  </ItemGroup>
 
 </Project>
