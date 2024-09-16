@@ -15,9 +15,9 @@
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Build" Version="$(MicrosoftBuildVersion)" />
-    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="$(MicrosoftBuildTasksCoreVersion)" />
-    <PackageReference Include="Microsoft.TeamFoundationServer.ExtendedClient" Version="$(MicrosoftTeamFoundationServerExtendedClientVersion)" />
+    <PackageReference Include="Microsoft.Build" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" />
+    <PackageReference Include="Microsoft.TeamFoundationServer.ExtendedClient" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Common\Utilities\*.cs" Link="Common\%(FileName).cs" />
