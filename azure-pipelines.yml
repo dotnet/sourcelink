@@ -13,6 +13,14 @@ schedules:
   branches:
     include:
     - main
+- cron: "0 8 22-28 * 0" # Fourth Sunday of each month at 8:00 UTC
+  displayName: "Monthly build check"
+  branches:
+    include: 
+      - main
+  always: true # Run even if there have been no source code changes since the last successful scheduled run
+  batch: false # Do not run the pipeline if the previously scheduled run is in-progress
+
 variables:
 - template: /eng/common/templates-official/variables/pool-providers.yml@self
 - name: _TeamName
