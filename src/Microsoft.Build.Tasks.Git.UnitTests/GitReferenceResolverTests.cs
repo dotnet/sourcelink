@@ -88,42 +88,6 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         }
 
         [Fact]
-        public void ResolveReference_Worktree_Packed()
-        {
-            using var temp = new TempRoot();
-            
-            string mainGitFolder = "worktreepackedtestmain";
-            string worktreeName = "worktreepackedtestchild";
-
-            var gitDir = temp.CreateDirectory(mainGitFolder);
-
-            gitDir.CreateFile("packed-refs").WriteAllText(
-@"# pack-refs with: peeled fully-peeled sorted
-1111111111111111111111111111111111111111 refs/heads/master
-2222222222222222222222222222222222222222 refs/heads/br2
-");
-            var commonDir = temp.CreateDirectory();
-            var refsHeadsDir = commonDir.CreateDirectory("refs").CreateDirectory("heads");
-            var worktreeDir = 
-
-            
-
-            var gitSubmoduleDir = temp.CreateDirectory(submoduleName);
-            gitSubmoduleDir
-
-            
-            
-
-            var refsHeadsDir = commonDir.CreateDirectory("refs").CreateDirectory("heads");
-
-            var resolver = new GitReferenceResolver(gitDir.Path, commonDir.Path);
-
-            Assert.Equal("1111111111111111111111111111111111111111", resolver.ResolveReference("ref: refs/heads/master"));
-            Assert.Equal("2222222222222222222222222222222222222222", resolver.ResolveReference("ref: refs/heads/br1"));
-            Assert.Equal("2222222222222222222222222222222222222222", resolver.ResolveReference("ref: refs/heads/br2"));
-        }
-
-        [Fact]
         public void ReadPackedReferences()
         {
             var packedRefs =
