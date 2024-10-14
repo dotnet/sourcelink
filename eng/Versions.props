@@ -19,11 +19,11 @@
     <SystemTextJsonVersion>7.0.3</SystemTextJsonVersion>
   </PropertyGroup>
   <!-- msbuild (conditional due to https://github.com/dotnet/msbuild/issues/10492) -->
-  <PropertyGroup Condition="'$(DotnetBuildFromSource)' == 'true'">
+  <PropertyGroup Condition="'$(DotNetBuildSourceOnly)' == 'true'">
     <MicrosoftBuildVersion>17.3.4</MicrosoftBuildVersion>
     <MicrosoftBuildTasksCoreVersion>17.3.4</MicrosoftBuildTasksCoreVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(DotnetBuildFromSource)' != 'true'">
+  <PropertyGroup Condition="'$(DotNetBuildSourceOnly)' != 'true'">
     <MicrosoftBuildVersion>17.4.0</MicrosoftBuildVersion>
     <MicrosoftBuildTasksCoreVersion>17.4.0</MicrosoftBuildTasksCoreVersion>
   </PropertyGroup>
