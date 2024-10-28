@@ -185,6 +185,13 @@ $@"<Project>
 </Project>
 ");
             RootDir.CreateFile("Directory.Build.targets").WriteAllText("<Project/>");
+            RootDir.CreateFile("Directory.Packages.props").WriteAllText(
+$@"<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+</Project>
+");
             RootDir.CreateFile(".editorconfig").WriteAllText("root = true");
             RootDir.CreateFile("nuget.config").WriteAllText(GetLocalNuGetConfigContent(s_buildInfo.PackagesDirectory));
 

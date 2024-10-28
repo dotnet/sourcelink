@@ -2,17 +2,17 @@
 
   <PropertyGroup>
     <TargetFrameworks>$(NetToolCurrent);$(NetFrameworkToolCurrent)</TargetFrameworks>
-    <IsTestProject>false</IsTestProject>
     <IsTestUtilityProject>true</IsTestUtilityProject>
+    <IsTestProject>false</IsTestProject>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Build" Version="$(MicrosoftBuildVersion)" />
-    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="$(MicrosoftBuildVersion)" />
-    <PackageReference Include="NuGet.Versioning" Version="$(NuGetVersioningVersion)" />
-    <PackageReference Include="xunit.Combinatorial" version="$(XunitCombinatorialVersion)" />
-    <PackageReference Include="xunit.assert" Version="$(XunitVersion)" />
-    <PackageReference Include="xunit.core" Version="$(XunitVersion)" />
+    <PackageReference Include="Microsoft.Build" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" />
+    <PackageReference Include="NuGet.Versioning" />
+    <PackageReference Include="xunit.Combinatorial" />
+    <PackageReference Include="xunit.assert" />
+    <PackageReference Include="xunit.core" />
   </ItemGroup>
 
   <PropertyGroup>
