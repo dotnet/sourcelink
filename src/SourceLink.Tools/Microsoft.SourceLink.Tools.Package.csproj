@@ -1,6 +1,9 @@
-<Project Sdk="Microsoft.Build.NoTargets">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>$(NetToolMinimum);netstandard2.0</TargetFrameworks>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <DebugType>none</DebugType>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
     <IsPackable>true</IsPackable>
     <IsSourcePackage>true</IsSourcePackage>
     <PackageId>Microsoft.SourceLink.Tools</PackageId>
