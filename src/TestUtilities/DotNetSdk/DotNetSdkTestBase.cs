@@ -110,7 +110,7 @@ $@"<?xml version=""1.0"" encoding=""utf-8""?>
             }
         }
 
-        public void Dispose() 
+        public void Dispose()
             => Temp.Dispose();
 
         private const string EmptyValueMarker = "--{empty}--";
@@ -218,12 +218,12 @@ $@"<Project>
             => (path.LastOrDefault() == Path.DirectorySeparatorChar) ? path : path + Path.DirectorySeparatorChar;
 
         protected void VerifyValues(
-            string customProps, 
+            string customProps,
             string customTargets,
             string[] targets,
-            string[] expressions, 
-            string[]? expectedResults = null, 
-            string[]? expectedErrors = null, 
+            string[] expressions,
+            string[]? expectedResults = null,
+            string[]? expectedErrors = null,
             string[]? expectedWarnings = null,
             string? additionalCommandLineArgs = null,
             string buildVerbosity = "minimal",
@@ -281,7 +281,7 @@ $@"<Project>
                 }
 
                 var outputLines = buildResult.Output.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-                
+
                 if (expectedErrors == null)
                 {
                     Assert.True(buildResult.ExitCode == 0, $"Build failed with exit code {buildResult.ExitCode}:{Environment.NewLine}{buildResult.Output}{Environment.NewLine}{buildResult.Errors}");
