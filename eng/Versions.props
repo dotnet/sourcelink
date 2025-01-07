@@ -16,6 +16,7 @@
     <!-- msbuild -->
     <MicrosoftBuildVersion>17.8.3</MicrosoftBuildVersion>
     <MicrosoftBuildTasksCoreVersion>17.8.3</MicrosoftBuildTasksCoreVersion>
+    <MicrosoftIORedistVersion>6.0.1</MicrosoftIORedistVersion>
     <!-- nuget -->
     <NuGetVersioningVersion>5.7.0</NuGetVersioningVersion>
     <!-- runtime -->

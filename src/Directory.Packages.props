@@ -29,6 +29,7 @@
     <!-- libgit2 used for integration tests -->
     <PackageVersion Include="LibGit2Sharp" Version="0.27.0-preview-0119" />
     <PackageVersion Include="Microsoft.TeamFoundationServer.ExtendedClient" Version="19.210.0-preview" />
+    <PackageVersion Include="Microsoft.IO.Redist" Version="$(MicrosoftIORedistVersion)" />
     <PackageVersion Include="xunit.Combinatorial" version="1.5.25" />
     <PackageVersion Include="xunit.assert" Version="$(XunitVersion)" Condition="'$(IsTestUtilityProject)' == 'true'" />
     <PackageVersion Include="xunit.core" Version="$(XunitVersion)" Condition="'$(IsTestUtilityProject)' == 'true'" />
