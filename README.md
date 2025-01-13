@@ -206,6 +206,18 @@ The VC++ linker supports `/SOURCELINK` [switch](https://docs.microsoft.com/en-us
 
 ## PDB distributions
 
+There are three main ways to distribute PDBs: via a dedicated .snupkg, including them in the main package, and embedding them directly into the assembly. Each has advantages and drawbacks, depending on your use case.
+
+|                                         | snupkg                      | Include in main package | Embed in assembly |
+|-----------------------------------------|-----------------------------|-------------------------|-------------------|
+| No user opt-in required to load symbols | ✅                          | ❌                      | ✅                |
+| No increase in size of main package     | ✅                          | ❌                      | ❌                |
+| No increase in size of assemblies       | ✅                          | ✅                      | ❌                |
+| Supported by all package feeds          | ❌ (Supported on NuGet.org) | ✅                      | ✅                |
+| Supports all symbol types               | ❌ (Portable symbols only)  | ✅                      | ✅                |
+
+### .snupkg symbol packages
+
 If you distribute the library via a package published to [NuGet.org](http://nuget.org), it is recommended to build a [symbol package](https://docs.microsoft.com/en-us/nuget/create-packages/symbol-packages-snupkg) and publish it to [NuGet.org](http://nuget.org) as well. This will make the symbols available on [NuGet.org symbol server](https://docs.microsoft.com/en-us/nuget/create-packages/symbol-packages-snupkg#nugetorg-symbol-server), where the debugger can download it from when needed.
 
 .snupkg symbol packages have following limitations:
@@ -215,20 +227,11 @@ If you distribute the library via a package published to [NuGet.org](http://nuge
 - The consumer of the package also needs Visual Studio 2017 Update 9 debugger.
 - Not supported by [Azure DevOps Artifacts](https://azure.microsoft.com/en-us/services/devops/artifacts) service.
 
-If a .snupkg does not work for your scenario, consider including debug information in the main package.
+If a .snupkg does not work for your scenario, consider including debug information in the main package via one of the alternatives.
 
-> [!IMPORTANT]
-> Keep in mind that including debug information in the .nupkg increases the size of the package and thus restore time for projects that consume your package, regardless of whether the user needs to debug the source code of your library or not.
+### Include in main package
 
-The simplest way to include debug information is to embed Portable PDBs directly in the assembly by setting the following property in your project:
-
-```xml
-<PropertyGroup>
-  <DebugType>embedded</DebugType>
-</PropertyGroup>
-```
-
-Alternatively, you can include PDB files in the main NuGet package by setting the following property in your project:
+You can include PDB files in the main NuGet package by setting the following property in your project:
 
 ```xml
 <PropertyGroup>
@@ -236,8 +239,27 @@ Alternatively, you can include PDB files in the main NuGet package by setting th
 </PropertyGroup>
 ```
 
+> [!IMPORTANT]
+> Keep in mind that including debug information in the .nupkg increases the size of the package and thus restore time for projects that consume your package, regardless of whether the user needs to debug the source code of your library or not.
+
+> [!IMPORTANT]
+> When including PDB files in the main package, projects that consume the package must _also_ opt-in to copying the symbols into their own output directory. Starting in .NET 7 this can be controlled via the [`CopyDebugSymbolFilesFromPackages`](https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#copydebugsymbolfilesfrompackages) property.
+
 > [!TIP]
 > Classic .NET projects should also consider changing the `DebugType` property to `portable` (or `embedded`) to match .NET SDK projects.
+
+### Embed in assembly
+
+You can embed Portable PDB debug information directly in the assembly by setting the following property in your project:
+
+```xml
+<PropertyGroup>
+  <DebugType>embedded</DebugType>
+</PropertyGroup>
+```
+
+> [!IMPORTANT]
+> Keep in mind that embedding debug including debug information in assembly both increases the size of the package and thus restore time for projects that consume your package, regardless of whether the user needs to debug the source code of your library or not, and also may impact assembly load performance for very large assemblies.
 
 ## Builds
 
