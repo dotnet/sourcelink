@@ -8,40 +8,62 @@ Visual Studio 15.3+ supports reading Source Link information from symbols while 
 
 The [original Source Link implementation](https://github.com/ctaggart/SourceLink) was provided by [@ctaggart](https://github.com/ctaggart). Thanks! The .NET Team and Cameron worked together to make this implementation available in the .NET Foundation.
 
+> [!TIP]
 > If you arrived here from the original Source Link documentation - you do not need to use `SourceLink.Create.CommandLine`.
+
+Providing a good debugging experience for your project involves three main steps:
+
+1. Including source control information in PDBs
+2. Including source control information in the NuGet package manifest
+3. Distributing PDBs
+
+See below for examples and best practices regarding each step.
 
 ## Using Source Link in .NET projects
 
 Starting with .NET 8, Source Link for the following source control providers is included in the .NET SDK and enabled by default:
+
 - [GitHub](http://github.com) or [GitHub Enterprise](https://enterprise.github.com/home) 
 - [Azure Repos](https://azure.microsoft.com/en-us/services/devops/repos) git repositories (formerly known as Visual Studio Team Services)
 - [GitLab](https://gitlab.com) 12.0+ (for older versions see [GitLab settings](#gitlab))
 - [Bitbucket](https://bitbucket.org/) 4.7+ (for older versions see [Bitbucket settings](#bitbucket))
 
-If your project uses .NET SDK 8+ and is hosted by the above providers it does not need to reference any Source Link packages or set any build properties.
+If your project uses .NET SDK 8+ and is hosted by the above providers it does not need to reference any Source Link packages or set any build properties to include source control information in the PDB.
 
-**Otherwise**, you can enable Source Link experience in your project by setting a few properties and adding a PackageReference to a Source Link package specific to the provider:
+If your project does not yet use .NET SDK 8+, or is not hosted by one of the these providers, you must add a PackageReference to a Source Link package specific to the provider:
+
+```xml
+<Project>
+  <ItemGroup>
+    <!-- Add PackageReference specific for your source control provider (see below) -->
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!-- Optional (set by default in .NET SDK 8+): Embed source files that are not tracked by the source control manager in the PDB -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  </PropertyGroup>
+</Project>
+```
+
+> [!TIP]
+> Source Link is a development dependency, which means it is only used during build. It is therefore recommended to set `PrivateAssets` to `all` on the package reference. This prevents consuming projects from attempting to install Source Link.
+
+> [!NOTE]
+> Referencing any Source Link package in a .NET SDK 8+ project overrides the Source Link version that is included in the SDK.
+
+
+If your project produces a NuGet package, set `PublishRepositoryUrl` to include source control information in the package manifest:
 
 ```xml
 <Project>
  <PropertyGroup>
-    <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
- 
-    <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
-  <ItemGroup>
-    <!-- Add PackageReference specific for your source control provider (see below) --> 
-  </ItemGroup>
 </Project>
 ```
 
-Source Link packages are currently available for the source control providers listed below.
-
-> Source Link package is a development dependency, which means it is only used during build. It is therefore recommended to set `PrivateAssets` to `all` on the package reference. This prevents consuming projects of your nuget package from attempting to install Source Link.
-
-> Referencing any Source Link package in a .NET SDK 8+ project suppresses Source Link that is included in the SDK.
+Source Link packages are currently available for these source control providers:
 
 ### github.com and GitHub Enterprise
 
@@ -209,9 +231,9 @@ If you distribute the library via a package published to [NuGet.org](http://nuge
 Alternatively, Portable PDBs can be included in the main NuGet package by setting the following property in your project:
 
 ```xml
-  <PropertyGroup>
-    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-  </PropertyGroup>  
+<PropertyGroup>
+  <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+</PropertyGroup>
 ```
 
 Keep in mind that including PDBs in the .nupkg increases the size of the package and thus restore time for projects that consume your package, regardless of whether the user needs to debug through the source code of your library or not.
