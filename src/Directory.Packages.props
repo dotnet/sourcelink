@@ -1,0 +1,38 @@
+<Project>
+
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+    <!-- Using multiple feeds isn't supported by Maestro: https://github.com/dotnet/arcade/issues/14155. -->
+    <NoWarn>$(NoWarn);NU1507</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Command-line-api dependencies -->
+    <PackageVersion Include="System.CommandLine" Version="$(SystemCommandLineVersion)" />
+    <PackageVersion Include="System.CommandLine.NamingConventionBinder" Version="$(SystemCommandLineNamingConventionBinderVersion)" />
+    <PackageVersion Include="System.CommandLine.Rendering" Version="$(SystemCommandLineRenderingVersion)" />
+
+    <!-- MSBuild dependencies -->
+    <PackageVersion Include="Microsoft.Build" Version="$(MicrosoftBuildVersion)" />
+    <PackageVersion Include="Microsoft.Build.Tasks.Core" Version="$(MicrosoftBuildTasksCoreVersion)" />
+
+    <!-- NuGet dependencies -->
+    <PackageVersion Include="NuGet.Versioning" Version="$(NuGetVersioningVersion)" />
+
+    <!-- Runtime dependencies -->
+    <PackageVersion Include="System.Text.Json" Version="$(SystemTextJsonVersion)" />
+  </ItemGroup>
+
+  <!-- External dependencies -->
+  <ItemGroup>
+    <!-- libgit2 used for integration tests -->
+    <PackageVersion Include="LibGit2Sharp" Version="0.27.0-preview-0119" />
+    <PackageVersion Include="Microsoft.TeamFoundationServer.ExtendedClient" Version="19.210.0-preview" />
+    <PackageVersion Include="Microsoft.IO.Redist" Version="$(MicrosoftIORedistVersion)" />
+    <PackageVersion Include="xunit.Combinatorial" version="1.5.25" />
+    <PackageVersion Include="xunit.assert" Version="$(XunitVersion)" Condition="'$(IsTestUtilityProject)' == 'true'" />
+    <PackageVersion Include="xunit.core" Version="$(XunitVersion)" Condition="'$(IsTestUtilityProject)' == 'true'" />
+  </ItemGroup>
+
+</Project>

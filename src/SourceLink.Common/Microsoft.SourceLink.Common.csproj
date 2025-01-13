@@ -1,21 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <TargetFrameworks>net472;$(NetMinimum);$(NetCurrent)</TargetFrameworks>
-    <AutoGenerateAssemblyVersion>true</AutoGenerateAssemblyVersion>
-
-    <!-- NuGet: Using an explicit nuspec file to customize TFM directory -->
-    <IsPackable>true</IsPackable>
-    <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
-    <NuspecBasePath>$(OutputPath)</NuspecBasePath>
-
+    <TargetFrameworks>$(NetToolMinimum);$(NetFrameworkToolCurrent)</TargetFrameworks>
     <PackageDescription>MSBuild tasks providing source control information.</PackageDescription>
     <PackageTags>MSBuild Tasks source control</PackageTags>
-    <DevelopmentDependency>true</DevelopmentDependency>
-    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <IsBuildTaskProject>true</IsBuildTaskProject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Build" Version="$(MicrosoftBuildVersion)" />
-    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="$(MicrosoftBuildTasksCoreVersion)" />
+    <PackageReference Include="Microsoft.Build" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Common\Utilities\*.cs" Link="Common\%(FileName).cs" />
@@ -24,4 +17,5 @@
     <InternalsVisibleTo Include="Microsoft.SourceLink.Common.UnitTests" />
     <InternalsVisibleTo Include="Microsoft.SourceLink.Git.IntegrationTests" />
   </ItemGroup>
+
 </Project>

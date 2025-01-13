@@ -8,40 +8,62 @@ Visual Studio 15.3+ supports reading Source Link information from symbols while 
 
 The [original Source Link implementation](https://github.com/ctaggart/SourceLink) was provided by [@ctaggart](https://github.com/ctaggart). Thanks! The .NET Team and Cameron worked together to make this implementation available in the .NET Foundation.
 
+> [!TIP]
 > If you arrived here from the original Source Link documentation - you do not need to use `SourceLink.Create.CommandLine`.
+
+Providing a good debugging experience for your project involves three main steps:
+
+1. Including source control information in PDBs
+2. Including source control information in the NuGet package manifest
+3. Distributing PDBs
+
+See below for examples and best practices regarding each step.
 
 ## Using Source Link in .NET projects
 
 Starting with .NET 8, Source Link for the following source control providers is included in the .NET SDK and enabled by default:
+
 - [GitHub](http://github.com) or [GitHub Enterprise](https://enterprise.github.com/home) 
 - [Azure Repos](https://azure.microsoft.com/en-us/services/devops/repos) git repositories (formerly known as Visual Studio Team Services)
 - [GitLab](https://gitlab.com) 12.0+ (for older versions see [GitLab settings](#gitlab))
 - [Bitbucket](https://bitbucket.org/) 4.7+ (for older versions see [Bitbucket settings](#bitbucket))
 
-If your project uses .NET SDK 8+ and is hosted by the above providers it does not need to reference any Source Link packages or set any build properties.
+If your project uses .NET SDK 8+ and is hosted by the above providers it does not need to reference any Source Link packages or set any build properties to include source control information in the PDB.
 
-**Otherwise**, you can enable Source Link experience in your project by setting a few properties and adding a PackageReference to a Source Link package specific to the provider:
+If your project does not yet use .NET SDK 8+, or is not hosted by one of the these providers, you must add a PackageReference to a Source Link package specific to the provider:
+
+```xml
+<Project>
+  <ItemGroup>
+    <!-- Add PackageReference specific for your source control provider (see below) -->
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!-- Optional (set by default in .NET SDK 8+): Embed source files that are not tracked by the source control manager in the PDB -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  </PropertyGroup>
+</Project>
+```
+
+> [!TIP]
+> Source Link is a development dependency, which means it is only used during build. It is therefore recommended to set `PrivateAssets` to `all` on the package reference. This prevents consuming projects from attempting to install Source Link.
+
+> [!NOTE]
+> Referencing any Source Link package in a .NET SDK 8+ project overrides the Source Link version that is included in the SDK.
+
+
+If your project produces a NuGet package, set `PublishRepositoryUrl` to include source control information in the package manifest:
 
 ```xml
 <Project>
  <PropertyGroup>
-    <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
- 
-    <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
-  <ItemGroup>
-    <!-- Add PackageReference specific for your source control provider (see below) --> 
-  </ItemGroup>
 </Project>
 ```
 
-Source Link packages are currently available for the source control providers listed below.
-
-> Source Link package is a development dependency, which means it is only used during build. It is therefore recommended to set `PrivateAssets` to `all` on the package reference. This prevents consuming projects of your nuget package from attempting to install Source Link.
-
-> Referencing any Source Link package in a .NET SDK 8+ project suppresses Source Link that is included in the SDK.
+Source Link packages are currently available for these source control providers:
 
 ### github.com and GitHub Enterprise
 
@@ -182,9 +204,9 @@ The only feature currently supported is mapping of source files to the source re
 
 ## Prerequisites for .NET projects
 
-Source Link supports classic .NET Framework projects as well as .NET SDK projects, that is projects that import `Microsoft.NET.Sdk` (e.g. like so: `<Project Sdk="Microsoft.NET.Sdk">`). The project may target any .NET Framework or .NET Core App/Standard version. All PDB formats are supported: Portable, Embedded and Windows PDBs. 
+Source Link supports classic .NET Framework projects as well as .NET SDK projects, that is projects that import `Microsoft.NET.Sdk` (e.g. like so: `<Project Sdk="Microsoft.NET.Sdk">`). The project may target .NET, .NET Framework or .NET Standard. All PDB formats are supported: Portable, Embedded and Windows PDBs.
 
-[.NET Core SDK 2.1.300](https://www.microsoft.com/net/download/dotnet-core/sdk-2.1.300) or newer is required for .NET SDK projects. If building via desktop `msbuild` you'll need version 15.7 or higher.
+[.NET 8 SDK](https://www.microsoft.com/net/download/dotnet/8.0) or newer is required for .NET SDK projects. If building via desktop `msbuild` you'll need version 16.0 or higher.
 
 The following features are not available in projects that do not import `Microsoft.NET.Sdk`:
 - Automatic inclusion of commit SHA in `AssemblyInformationalVersionAttribute`.
@@ -200,8 +222,6 @@ The VC++ linker supports `/SOURCELINK` [switch](https://docs.microsoft.com/en-us
 
 ## Known issues
 
-- `EmbedUntrackedSources` does not work in Visual Basic projects that use .NET SDK: https://github.com/dotnet/sourcelink/issues/193 (fixed in Visual Studio 2019)
-- Issue when building WPF projects with `/p:ContinuousIntegrationBuild=true`: https://github.com/dotnet/sourcelink/issues/91
 - Issue when building WPF projects with embedding sources on and `BaseIntermediateOutputPath` not a subdirectory of the project directory: https://github.com/dotnet/sourcelink/issues/492
 
 ## PDB distributions
@@ -263,12 +283,12 @@ You can embed Portable PDB debug information directly in the assembly by setting
 
 ## Builds
 
-Pre-release builds are available from Azure DevOps public feed: `https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet8/nuget/v3/index.json` ([browse](https://dev.azure.com/dnceng/public/_packaging?_a=feed&feed=dotnet8)).
+Pre-release builds are available from Azure DevOps public feed: `https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet9/nuget/v3/index.json` ([browse](https://dev.azure.com/dnceng/public/_packaging?_a=feed&feed=dotnet9)).
 
 [![Build Status](https://dnceng.visualstudio.com/public/_apis/build/status/SourceLink%20PR?branchName=main)](https://dnceng.visualstudio.com/public/_build/latest?definitionId=297?branchName=main)
 
 ## Experience in Visual Studio
 
-The following screenshot demonstrates debugging a NuGet package referenced by an application, with source automatically downloaded from GitHub and used by Visual Studio 2017.
+The following screenshot demonstrates debugging a NuGet package referenced by an application, with source automatically downloaded from GitHub and used by Visual Studio.
 
 ![sourcelink-example](https://user-images.githubusercontent.com/2608468/39667937-10d7dabe-5076-11e8-815e-935724b3a783.PNG)

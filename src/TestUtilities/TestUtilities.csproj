@@ -1,18 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net472;$(NetCurrent)</TargetFrameworks>
-    <IsShipping>false</IsShipping>
-    <ExcludeFromSourceBuild>true</ExcludeFromSourceBuild>
+    <TargetFrameworks>$(NetToolCurrent);$(NetFrameworkToolCurrent)</TargetFrameworks>
+    <IsTestUtilityProject>true</IsTestUtilityProject>
     <IsTestProject>false</IsTestProject>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Build" Version="$(MicrosoftBuildVersion)" />
-    <PackageReference Include="NuGet.Versioning" Version="$(NuGetVersioningVersion)" />
-    <PackageReference Include="xunit.Combinatorial" version="$(XunitCombinatorialVersion)" />
-    <PackageReference Include="xunit.assert" Version="$(XunitVersion)" />
-    <PackageReference Include="xunit.core" Version="$(XunitVersion)" />
+    <PackageReference Include="Microsoft.Build" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" />
+    <PackageReference Include="NuGet.Versioning" />
+    <PackageReference Include="xunit.Combinatorial" />
+    <PackageReference Include="xunit.assert" />
+    <PackageReference Include="xunit.core" />
   </ItemGroup>
 
   <PropertyGroup>
