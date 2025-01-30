@@ -18,8 +18,8 @@
     <MicrosoftBuildTasksCoreVersion>17.8.3</MicrosoftBuildTasksCoreVersion>
     <MicrosoftIORedistVersion>6.0.1</MicrosoftIORedistVersion>
     <!-- nuget -->
-    <NuGetVersioningVersion>5.7.0</NuGetVersioningVersion>
+    <NuGetVersioningVersion>6.12.1</NuGetVersioningVersion>
     <!-- runtime -->
-    <SystemTextJsonVersion>7.0.3</SystemTextJsonVersion>
+    <SystemTextJsonVersion>8.0.5</SystemTextJsonVersion>
   </PropertyGroup>
 </Project>
