@@ -16,8 +16,6 @@
 
   <ItemGroup>
     <PackageReference Include="System.CommandLine" />
-    <PackageReference Include="System.CommandLine.NamingConventionBinder" />
-    <PackageReference Include="System.CommandLine.Rendering" />
   </ItemGroup>
 
   <Import Project="..\SourceLink.Tools\Microsoft.SourceLink.Tools.projitems" Label="Shared" />
