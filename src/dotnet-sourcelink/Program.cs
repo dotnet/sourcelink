@@ -4,6 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.CommandLine;
+using System.CommandLine.Invocation;
+using System.CommandLine.NamingConventionBinder;
+using System.CommandLine.Parsing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -59,82 +62,77 @@ namespace Microsoft.SourceLink.Tools
             return attribute.InformationalVersion.Split('+').First();
         }
 
-        private static RootCommand GetRootCommand()
+        private static CliRootCommand GetRootCommand()
         {
-            var pathArg = new Argument<string>("path")
-            {
-                Description = "Path to an assembly or .pdb"
-            };
-            var authArg = new Option<string>("--auth", "-a")
+            var authArg = new CliOption<string>("--auth", "-a")
             {
                 Description = "Authentication method"
             };
             authArg.AcceptOnlyFromAmong(AuthenticationMethod.Basic);
 
-            var authEncodingArg = new Option<Encoding>("--auth-encoding", "-e")
-            {
-                CustomParser = arg => Encoding.GetEncoding(arg.Tokens.Single().Value),
-                Description = "Encoding to use for authentication value"
-            };
-
-            var userArg = new Option<string>("--user", "-u")
+            var userArg = new CliOption<string>("--user", "-u")
             {
                 Description = "Username to use to authenticate",
                 Arity = ArgumentArity.ExactlyOne
             };
 
-            var passwordArg = new Option<string>("--password", "-p")
+            var passwordArg = new CliOption<string>("--password", "-p")
             {
                 Description = "Password to use to authenticate",
                 Arity = ArgumentArity.ExactlyOne
             };
 
-            var offlineArg = new Option<bool>("--offline")
+            var offlineArg = new CliOption<bool>("--offline")
             {
                 Description = "Offline mode - skip validation of sourcelink URL targets"
             };
 
-            var test = new Command("test", "TODO")
+            var test = new CliCommand("test", "TODO")
             {
-                pathArg,
+                new CliArgument<string>("path")
+                {
+                    Description = "Path to an assembly or .pdb"
+                },
                 authArg,
-                authEncodingArg,
+                new CliOption<Encoding>("--auth-encoding", "-e")
+                {
+                    CustomParser = arg => Encoding.GetEncoding(arg.Tokens.Single().Value),
+                    Description = "Encoding to use for authentication value"
+                },
                 userArg,
                 passwordArg,
                 offlineArg,
             };
-
-            test.SetAction((parseResult, cancellationToken) =>
-            {
-                string path = parseResult.GetValue(pathArg)!;
-                string? authMethod = parseResult.GetValue(authArg);
-                Encoding? authEncoding = parseResult.GetValue(authEncodingArg);
-                string? user = parseResult.GetValue(userArg);
-                string? password = parseResult.GetValue(passwordArg);
-                bool offline = parseResult.GetValue(offlineArg);
-
-                return TestAsync(path, authMethod, authEncoding, user, password, offline, parseResult, cancellationToken);
-            });
+            test.Action = CommandHandler.Create<string, string?, Encoding?, string?, string?, bool, ParseResult>(TestAsync);
             
-            var printJson = new Command("print-json", "Print Source Link JSON stored in the PDB")
+            var printJson = new CliCommand("print-json", "Print Source Link JSON stored in the PDB")
             {
-                pathArg
+                new CliArgument<string>("path")
+                {
+                    Description = "Path to an assembly or .pdb"
+                }
             };
-            printJson.SetAction((parseResult, ct) => PrintJsonAsync(parseResult.GetValue(pathArg)!, parseResult));
+            printJson.Action = CommandHandler.Create<string, ParseResult>(PrintJsonAsync);
 
-            var printDocuments = new Command("print-documents", "TODO")
+            var printDocuments = new CliCommand("print-documents", "TODO")
             {
-                pathArg
+                new CliArgument<string>("path")
+                {
+                    Description = "Path to an assembly or .pdb"
+                }
             };
-            printDocuments.SetAction((parseResult, ct) => PrintDocumentsAsync(parseResult.GetValue(pathArg)!, parseResult));
+            printDocuments.Action = CommandHandler.Create<string, ParseResult>(PrintDocumentsAsync);
 
-            var printUrls = new Command("print-urls", "TODO")
+            var printUrls = new CliCommand("print-urls", "TODO")
             {
-                pathArg
+                new CliArgument<string>("path")
+                {
+                    Description = "Path to an assembly or .pdb"
+                }
             };
-            printUrls.SetAction((parseResult, ct) => PrintUrlsAsync(parseResult.GetValue(pathArg)!, parseResult));
+            printUrls.Action = CommandHandler.Create<string, ParseResult>(PrintUrlsAsync);
 
-            var root = new RootCommand()
+            var root = new CliRootCommand()
             {
                 test,
                 printJson,
@@ -178,14 +176,20 @@ namespace Microsoft.SourceLink.Tools
             string? user,
             string? password,
             bool offline,
-            ParseResult parseResult,
-            CancellationToken cancellationToken)
+            ParseResult parseResult)
         {
             var authenticationHeader = (authMethod != null) ? GetAuthenticationHeader(authMethod, authEncoding ?? Encoding.ASCII, user!, password!) : null;
 
+            var cancellationSource = new CancellationTokenSource();
+            Console.CancelKeyPress += (sender, e) =>
+            {
+                e.Cancel = true;
+                cancellationSource.Cancel();
+            };
+
             try
             {
-                return await new Program(parseResult).TestAsync(path, authenticationHeader, offline, cancellationToken).ConfigureAwait(false);
+                return await new Program(parseResult).TestAsync(path, authenticationHeader, offline, cancellationSource.Token).ConfigureAwait(false);
             }
             catch (OperationCanceledException)
             {
