@@ -278,7 +278,7 @@ You can embed Portable PDB debug information directly in the assembly by setting
 ```
 
 > [!IMPORTANT]
-> Keep in mind that embedding debug including debug information in assembly both increases the size of the package and thus restore time for projects that consume your package, regardless of whether the user needs to debug the source code of your library or not, and also may impact assembly load performance for very large assemblies.
+> Keep in mind that embedding debug information in the assembly increases binary size. Larger binaries increase application size, NuGet restore time, assembly load time (if assemblies are very large), regardless of whether the user needs to debug the source code of your library or not.
 
 ## Builds
 
