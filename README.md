@@ -226,7 +226,7 @@ The VC++ linker supports `/SOURCELINK` [switch](https://docs.microsoft.com/en-us
 
 ## PDB distributions
 
-There are three main ways to distribute PDBs: via a dedicated .snupkg, including them in the main package, and embedding them directly into the assembly. Each has advantages and drawbacks, depending on your use case.
+There are three main ways to distribute PDBs for managed code: via a dedicated .snupkg, including them in the main package, and embedding them directly into the assembly. Each has advantages and drawbacks, depending on your use case.
 
 |                                         | snupkg                      | Include in main package | Embed in assembly |
 |-----------------------------------------|-----------------------------|-------------------------|-------------------|
@@ -234,7 +234,6 @@ There are three main ways to distribute PDBs: via a dedicated .snupkg, including
 | No increase in size of main package     | ✅                          | ❌                      | ❌                |
 | No increase in size of assemblies       | ✅                          | ✅                      | ❌                |
 | Supported by all package feeds          | ❌ (Supported on NuGet.org) | ✅                      | ✅                |
-| Supports all symbol types               | ❌ (Portable symbols only)  | ✅                      | ✅                |
 
 ### .snupkg symbol packages
 
