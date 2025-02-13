@@ -226,17 +226,18 @@ The VC++ linker supports `/SOURCELINK` [switch](https://docs.microsoft.com/en-us
 
 ## PDB distributions
 
+There are three main ways to distribute PDBs for managed code: via a dedicated .snupkg, including them in the main package, and embedding them directly into the assembly. Each has advantages and drawbacks, depending on your use case.
+
+|                                         | snupkg                      | Include in main package | Embed in assembly |
+|-----------------------------------------|-----------------------------|-------------------------|-------------------|
+| No user opt-in required to load symbols | ✅                          | ❌                      | ✅                |
+| No increase in size of main package     | ✅                          | ❌                      | ❌                |
+| No increase in size of assemblies       | ✅                          | ✅                      | ❌                |
+| Supported by all package feeds          | ❌ (Supported on NuGet.org) | ✅                      | ✅                |
+
+### .snupkg symbol packages
+
 If you distribute the library via a package published to [NuGet.org](http://nuget.org), it is recommended to build a [symbol package](https://docs.microsoft.com/en-us/nuget/create-packages/symbol-packages-snupkg) and publish it to [NuGet.org](http://nuget.org) as well. This will make the symbols available on [NuGet.org symbol server](https://docs.microsoft.com/en-us/nuget/create-packages/symbol-packages-snupkg#nugetorg-symbol-server), where the debugger can download it from when needed.
-
-Alternatively, Portable PDBs can be included in the main NuGet package by setting the following property in your project:
-
-```xml
-<PropertyGroup>
-  <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-</PropertyGroup>
-```
-
-Keep in mind that including PDBs in the .nupkg increases the size of the package and thus restore time for projects that consume your package, regardless of whether the user needs to debug through the source code of your library or not.
 
 .snupkg symbol packages have following limitations:
 
@@ -245,8 +246,39 @@ Keep in mind that including PDBs in the .nupkg increases the size of the package
 - The consumer of the package also needs Visual Studio 2017 Update 9 or newer.
 - Not supported by [Azure DevOps Artifacts](https://azure.microsoft.com/en-us/services/devops/artifacts) service.
 
-Consider including PDBs in the main package if it is not possible to use .snupkg for the above reasons. 
-For managed projects, consider switching to Portable PDBs by setting `DebugType` property to `portable`. This is the default for .NET SDK projects, but not classic .NET projects.
+If a .snupkg does not work for your scenario, consider including debug information in the main package via one of the alternatives.
+
+### Include in main package
+
+You can include PDB files in the main NuGet package by setting the following property in your project:
+
+```xml
+<PropertyGroup>
+  <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+</PropertyGroup>
+```
+
+> [!IMPORTANT]
+> Keep in mind that including debug information in the .nupkg increases the size of the package and thus restore time for projects that consume your package, regardless of whether the user needs to debug the source code of your library or not.
+
+> [!IMPORTANT]
+> When including PDB files in the main package, projects that consume the package must _also_ opt-in to copying the symbols into their own output directory. Starting in .NET 7 this can be controlled via the [`CopyDebugSymbolFilesFromPackages`](https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#copydebugsymbolfilesfrompackages) property.
+
+> [!TIP]
+> Classic .NET projects should also consider changing the `DebugType` property to `portable` (or `embedded`) to match .NET SDK projects.
+
+### Embed in assembly
+
+You can embed Portable PDB debug information directly in the assembly by setting the following property in your project:
+
+```xml
+<PropertyGroup>
+  <DebugType>embedded</DebugType>
+</PropertyGroup>
+```
+
+> [!IMPORTANT]
+> Keep in mind that embedding debug information in the assembly increases binary size. Larger binaries increase application size, NuGet restore time, assembly load time (if assemblies are very large), regardless of whether the user needs to debug the source code of your library or not.
 
 ## Builds
 
