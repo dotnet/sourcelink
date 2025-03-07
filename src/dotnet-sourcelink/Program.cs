@@ -59,42 +59,42 @@ namespace Microsoft.SourceLink.Tools
             return attribute.InformationalVersion.Split('+').First();
         }
 
-        private static CliRootCommand GetRootCommand()
+        private static RootCommand GetRootCommand()
         {
-            var pathArg = new CliArgument<string>("path")
+            var pathArg = new Argument<string>("path")
             {
                 Description = "Path to an assembly or .pdb"
             };
-            var authArg = new CliOption<string>("--auth", "-a")
+            var authArg = new Option<string>("--auth", "-a")
             {
                 Description = "Authentication method"
             };
             authArg.AcceptOnlyFromAmong(AuthenticationMethod.Basic);
 
-            var authEncodingArg = new CliOption<Encoding>("--auth-encoding", "-e")
+            var authEncodingArg = new Option<Encoding>("--auth-encoding", "-e")
             {
                 CustomParser = arg => Encoding.GetEncoding(arg.Tokens.Single().Value),
                 Description = "Encoding to use for authentication value"
             };
 
-            var userArg = new CliOption<string>("--user", "-u")
+            var userArg = new Option<string>("--user", "-u")
             {
                 Description = "Username to use to authenticate",
                 Arity = ArgumentArity.ExactlyOne
             };
 
-            var passwordArg = new CliOption<string>("--password", "-p")
+            var passwordArg = new Option<string>("--password", "-p")
             {
                 Description = "Password to use to authenticate",
                 Arity = ArgumentArity.ExactlyOne
             };
 
-            var offlineArg = new CliOption<bool>("--offline")
+            var offlineArg = new Option<bool>("--offline")
             {
                 Description = "Offline mode - skip validation of sourcelink URL targets"
             };
 
-            var test = new CliCommand("test", "TODO")
+            var test = new Command("test", "TODO")
             {
                 pathArg,
                 authArg,
@@ -116,25 +116,25 @@ namespace Microsoft.SourceLink.Tools
                 return TestAsync(path, authMethod, authEncoding, user, password, offline, parseResult, cancellationToken);
             });
             
-            var printJson = new CliCommand("print-json", "Print Source Link JSON stored in the PDB")
+            var printJson = new Command("print-json", "Print Source Link JSON stored in the PDB")
             {
                 pathArg
             };
             printJson.SetAction((parseResult, ct) => PrintJsonAsync(parseResult.GetValue(pathArg)!, parseResult));
 
-            var printDocuments = new CliCommand("print-documents", "TODO")
+            var printDocuments = new Command("print-documents", "TODO")
             {
                 pathArg
             };
             printDocuments.SetAction((parseResult, ct) => PrintDocumentsAsync(parseResult.GetValue(pathArg)!, parseResult));
 
-            var printUrls = new CliCommand("print-urls", "TODO")
+            var printUrls = new Command("print-urls", "TODO")
             {
                 pathArg
             };
             printUrls.SetAction((parseResult, ct) => PrintUrlsAsync(parseResult.GetValue(pathArg)!, parseResult));
 
-            var root = new CliRootCommand()
+            var root = new RootCommand()
             {
                 test,
                 printJson,
