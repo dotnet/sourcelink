@@ -577,6 +577,14 @@ namespace Microsoft.Build.Tasks.Git
                                 lengthIgnoringTrailingWhitespace = builder.Length;
                                 continue;
 
+                            case 'b':
+                                reader.Read();
+                                builder.Append('\b');
+
+                                // escaped \b is not considered trailing whitespace:
+                                lengthIgnoringTrailingWhitespace = builder.Length;
+                                continue;
+
                             case '\\':
                             case '"':
                                 builder.Append((char)reader.Read());
