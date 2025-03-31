@@ -350,6 +350,7 @@ a =
         [InlineData("name=\"a\rb\"", "name", "a\rb")]
         [InlineData("name=\"a\nb\"", "name", "a\nb")]
         [InlineData("name=\"a\r\nb\"", "name", "a\r\nb")]
+        [InlineData("name=\"a\bb\"", "name", "a\bb")]
         public void ReadVariableDeclaration(string str, string name, string value)
         {
             GitConfig.Reader.ReadVariableDeclaration(
