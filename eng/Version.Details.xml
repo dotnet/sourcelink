@@ -12,9 +12,9 @@
       <SourceBuild RepoName="command-line-api" ManagedOnly="true" />
     </Dependency>
     <!-- Intermediate is necessary for source build. -->
-    <Dependency Name="Microsoft.SourceBuild.Intermediate.source-build-reference-packages" Version="10.0.617501">
+    <Dependency Name="Microsoft.SourceBuild.Intermediate.source-build-reference-packages" Version="10.0.618101">
       <Uri>https://github.com/dotnet/source-build-reference-packages</Uri>
-      <Sha>d2fc98192bb9780acbe2ad3df284da19203cc26d</Sha>
+      <Sha>f216638d3d6324b6ec140f826b92a7f853dbdfb7</Sha>
       <SourceBuild RepoName="source-build-reference-packages" ManagedOnly="true" />
     </Dependency>
   </ProductDependencies>
