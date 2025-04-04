@@ -10,7 +10,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <!-- commandline -->
-    <SystemCommandLineVersion>2.0.0-beta4.23307.1</SystemCommandLineVersion>
+    <SystemCommandLineVersion>2.0.0-beta4.25202.102</SystemCommandLineVersion>
     <!-- msbuild -->
     <MicrosoftBuildVersion>17.8.3</MicrosoftBuildVersion>
     <MicrosoftBuildTasksCoreVersion>17.8.3</MicrosoftBuildTasksCoreVersion>
@@ -19,5 +19,6 @@
     <NuGetVersioningVersion>6.12.1</NuGetVersioningVersion>
     <!-- runtime -->
     <SystemTextJsonVersion>8.0.5</SystemTextJsonVersion>
+    <MicrosoftDotNetXliffTasksVersion>10.0.0-beta.25202.102</MicrosoftDotNetXliffTasksVersion>
   </PropertyGroup>
 </Project>
