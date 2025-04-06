@@ -3,5 +3,10 @@
 
 <UsageData>
   <IgnorePatterns>
+    <!-- temporary until repo-level source-build is removed -->
+    <UsagePattern IdentityGlob="Microsoft.DotNet.Arcade.Sdk/10.0.*" />
+    <UsagePattern IdentityGlob="Microsoft.DotNet.Build.Tasks.Feed/10.0.*" />
+    <UsagePattern IdentityGlob="Microsoft.DotNet.SourceBuild.Tasks/10.0.*" />
+    <UsagePattern IdentityGlob="Microsoft.DotNet.XliffTasks/10.0.*" />
   </IgnorePatterns>
 </UsageData>
