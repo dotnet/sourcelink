@@ -9,6 +9,12 @@ pr:
     - README.md
     - docs/*
 
+trigger:
+  branches:
+    include:
+    - main
+    - release/*
+
 # Run official build every day at midnight, if code has changed since the last run.
 schedules:
 - cron: "0 0 * * *"
