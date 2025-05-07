@@ -225,7 +225,9 @@ namespace Microsoft.SourceLink.Tools
                     }
                 });
 
+#pragma warning disable CA2025 // we await the tasks via WhenAll later so client can't be disposed early
                 var tasks = documents.Where(document => document.Uri != null).Select(document => DownloadAndValidateDocumentAsync(client, document, errorReporter, cancellationToken));
+#pragma warning restore
 
                 _ = await Task.WhenAll(tasks).ConfigureAwait(false);
 
