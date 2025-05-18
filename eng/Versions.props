@@ -12,8 +12,8 @@
     <!-- commandline -->
     <SystemCommandLineVersion>2.0.0-beta5.25208.1</SystemCommandLineVersion>
     <!-- msbuild -->
-    <MicrosoftBuildVersion>17.15.0-preview-25266-103</MicrosoftBuildVersion>
-    <MicrosoftBuildTasksCoreVersion>17.15.0-preview-25266-103</MicrosoftBuildTasksCoreVersion>
+    <MicrosoftBuildVersion>17.15.0-preview-25267-102</MicrosoftBuildVersion>
+    <MicrosoftBuildTasksCoreVersion>17.15.0-preview-25267-102</MicrosoftBuildTasksCoreVersion>
     <!-- nuget -->
     <NuGetVersioningVersion>6.12.1</NuGetVersioningVersion>
     <!-- runtime -->
