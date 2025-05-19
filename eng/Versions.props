@@ -10,7 +10,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <!-- commandline -->
-    <SystemCommandLineVersion>2.0.0-beta5.25208.1</SystemCommandLineVersion>
+    <SystemCommandLineVersion>2.0.0-beta5.25267.102</SystemCommandLineVersion>
     <!-- msbuild -->
     <MicrosoftBuildVersion>17.11.31</MicrosoftBuildVersion>
     <MicrosoftBuildTasksCoreVersion>17.11.31</MicrosoftBuildTasksCoreVersion>
