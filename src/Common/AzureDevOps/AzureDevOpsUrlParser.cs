@@ -106,7 +106,7 @@ namespace Microsoft.SourceLink
                 return false;
             }
 
-            projectPath = string.Join("/", parts, 0, virtualDirectoryParts.Length) + "/" + collection + "/" + (projectName ?? repositoryName);
+            projectPath = string.Join("/", parts, 0, virtualDirectoryParts.Length) + "/" + collection + "/" + Uri.EscapeDataString(projectName ?? repositoryName);
             return true;
         }
 
