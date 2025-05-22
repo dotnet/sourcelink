@@ -67,7 +67,7 @@ namespace Microsoft.SourceLink
             }
 
             projectPath = projectName ?? repositoryName;
-           
+
             if (!isVisualStudioHost)
             {
                 if (teamName != null)
@@ -176,7 +176,7 @@ namespace Microsoft.SourceLink
             repositoryPath = string.Join("/", parts, 0, teamNameIndex + 1);
             return true;
         }
-        
+
         private static bool TryParsePath(string[] parts, int startIndex, string? type, [NotNullWhen(true)]out string? repositoryPath, [NotNullWhen(true)]out string? repositoryName)
         {
             if (TryParsePath(parts, startIndex, type, out var projectName, out var teamName, out repositoryName))
