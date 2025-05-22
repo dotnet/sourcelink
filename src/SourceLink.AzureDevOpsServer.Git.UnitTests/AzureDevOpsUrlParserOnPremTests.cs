@@ -36,6 +36,7 @@ namespace Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests
         [Theory]
         [InlineData("/collection/project/team/_git/repo", "/", "/collection/project", "repo")]
         [InlineData("/collection/project/_git/repo", "/", "/collection/project", "repo")]
+        [InlineData("/collection/project name/_git/repo", "/", "/collection/project%20name", "repo")]
         [InlineData("/collection/_git/repo/", "/", "/collection/repo", "repo")]
         [InlineData("/collection/_git/repo", "/", "/collection/repo", "repo")]
         [InlineData("/virtual/iis/path/collection/project/team/_git/repo", "/virtual/iis/path", "virtual/iis/path/collection/project", "repo")]
