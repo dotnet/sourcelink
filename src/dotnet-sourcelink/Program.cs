@@ -160,15 +160,15 @@ namespace Microsoft.SourceLink.Tools
 
         private void ReportError(string message)
         {
-            _parseResult.Configuration.Error.Write(message);
-            _parseResult.Configuration.Error.Write(Environment.NewLine);
+            _parseResult.InvocationConfiguration.Error.Write(message);
+            _parseResult.InvocationConfiguration.Error.Write(Environment.NewLine);
             _errorReported = true;
         }
 
         private void WriteOutputLine(string message)
         {
-            _parseResult.Configuration.Output.Write(message);
-            _parseResult.Configuration.Output.Write(Environment.NewLine);
+            _parseResult.InvocationConfiguration.Output.Write(message);
+            _parseResult.InvocationConfiguration.Output.Write(Environment.NewLine);
         }
 
         private static async Task<int> TestAsync(
@@ -189,8 +189,8 @@ namespace Microsoft.SourceLink.Tools
             }
             catch (OperationCanceledException)
             {
-                parseResult.Configuration.Error.Write("Operation canceled.");
-                parseResult.Configuration.Error.Write(Environment.NewLine);
+                parseResult.InvocationConfiguration.Error.Write("Operation canceled.");
+                parseResult.InvocationConfiguration.Error.Write(Environment.NewLine);
                 return -1;
             }
         }
