@@ -9,11 +9,6 @@
     <FlagNetStandard1XDependencies>true</FlagNetStandard1XDependencies>
   </PropertyGroup>
   <PropertyGroup>
-    <!-- commandline -->
-    <SystemCommandLineVersion>2.0.0-rc.1.25377.103</SystemCommandLineVersion>
-    <!-- msbuild -->
-    <MicrosoftBuildVersion>17.11.31</MicrosoftBuildVersion>
-    <MicrosoftBuildTasksCoreVersion>17.11.31</MicrosoftBuildTasksCoreVersion>
     <!-- nuget -->
     <NuGetVersioningVersion>6.12.1</NuGetVersioningVersion>
     <!-- runtime -->
