@@ -33,11 +33,38 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             Assert.Equal("0000000000000000000000000000000000000000", resolver.ResolveReference("ref: refs/heads/br1"));
             Assert.Equal("0000000000000000000000000000000000000000", resolver.ResolveReference("ref: refs/heads/br2"));
 
-            // branch without commits (emtpy repository) will have not file in refs/heads:
+            // branch without commits (empty repository) will have not file in refs/heads:
             Assert.Null(resolver.ResolveReference("ref: refs/heads/none"));
 
             Assert.Null(resolver.ResolveReference("ref: refs/heads/rec1   "));
             Assert.Null(resolver.ResolveReference("ref: refs/heads/none" + string.Join("/", Path.GetInvalidPathChars())));
+        }
+
+        [Fact]
+        public void ResolveReference_SHA256()
+        {
+            using var temp = new TempRoot();
+
+            var gitDir = temp.CreateDirectory();
+
+            var commonDir = temp.CreateDirectory();
+            var refsHeadsDir = commonDir.CreateDirectory("refs").CreateDirectory("heads");
+
+            // SHA256 hash (64 characters)
+            refsHeadsDir.CreateFile("master").WriteAllText("0000000000000000000000000000000000000000000000000000000000000000");
+            refsHeadsDir.CreateFile("br1").WriteAllText("ref: refs/heads/br2");
+            refsHeadsDir.CreateFile("br2").WriteAllText("ref: refs/heads/master");
+
+            var resolver = new GitReferenceResolver(gitDir.Path, commonDir.Path);
+
+            // Verify SHA256 hash is accepted directly
+            Assert.Equal(
+                "0123456789ABCDEFabcdef00000000000000000000000000000000000000000000", 
+                resolver.ResolveReference("0123456789ABCDEFabcdef00000000000000000000000000000000000000000000"));
+
+            Assert.Equal("0000000000000000000000000000000000000000000000000000000000000000", resolver.ResolveReference("ref: refs/heads/master"));
+            Assert.Equal("0000000000000000000000000000000000000000000000000000000000000000", resolver.ResolveReference("ref: refs/heads/br1"));
+            Assert.Equal("0000000000000000000000000000000000000000000000000000000000000000", resolver.ResolveReference("ref: refs/heads/br2"));
         }
 
         [Fact]
@@ -59,8 +86,14 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             Assert.Throws<InvalidDataException>(() => resolver.ResolveReference("ref: xyz/heads/rec1"));
             Assert.Throws<InvalidDataException>(() => resolver.ResolveReference("ref:refs/heads/rec1"));
             Assert.Throws<InvalidDataException>(() => resolver.ResolveReference("refs/heads/rec1"));
+
+            // Invalid SHA1 hash lengths
             Assert.Throws<InvalidDataException>(() => resolver.ResolveReference(new string('0', 39)));
             Assert.Throws<InvalidDataException>(() => resolver.ResolveReference(new string('0', 41)));
+
+            // Invalid SHA256 hash lengths
+            Assert.Throws<InvalidDataException>(() => resolver.ResolveReference(new string('0', 63)));
+            Assert.Throws<InvalidDataException>(() => resolver.ResolveReference(new string('0', 65)));
         }
 
         [Fact]
@@ -88,6 +121,31 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         }
 
         [Fact]
+        public void ResolveReference_Packed_SHA256()
+        {
+            using var temp = new TempRoot();
+
+            var gitDir = temp.CreateDirectory();
+
+            // Packed refs with SHA256 hashes (64 characters)
+            gitDir.CreateFile("packed-refs").WriteAllText(
+@"# pack-refs with: peeled fully-peeled sorted
+1111111111111111111111111111111111111111111111111111111111111111 refs/heads/master
+2222222222222222222222222222222222222222222222222222222222222222 refs/heads/br2
+");
+            var commonDir = temp.CreateDirectory();
+            var refsHeadsDir = commonDir.CreateDirectory("refs").CreateDirectory("heads");
+
+            refsHeadsDir.CreateFile("br1").WriteAllText("ref: refs/heads/br2");
+
+            var resolver = new GitReferenceResolver(gitDir.Path, commonDir.Path);
+
+            Assert.Equal("1111111111111111111111111111111111111111111111111111111111111111", resolver.ResolveReference("ref: refs/heads/master"));
+            Assert.Equal("2222222222222222222222222222222222222222222222222222222222222222", resolver.ResolveReference("ref: refs/heads/br1"));
+            Assert.Equal("2222222222222222222222222222222222222222222222222222222222222222", resolver.ResolveReference("ref: refs/heads/br2"));
+        }
+
+        [Fact]
         public void ReadPackedReferences()
         {
             var packedRefs =
@@ -107,6 +165,29 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             {
                 "refs/heads/br:2222222222222222222222222222222222222222",
                 "refs/heads/master:1111111111111111111111111111111111111111"
+            }, actual.Select(e => $"{e.Key}:{e.Value}"));
+        }
+
+        [Fact]
+        public void ReadPackedReferences_SHA256()
+        {
+            var packedRefs =
+@"# pack-refs with:
+1111111111111111111111111111111111111111111111111111111111111111 refs/heads/master
+2222222222222222222222222222222222222222222222222222222222222222 refs/heads/br
+^3333333333333333333333333333333333333333333333333333333333333333
+4444444444444444444444444444444444444444444444444444444444444444 x
+5555555555555555555555555555555555555555555555555555555555555555 y 
+6666666666666666666666666666666666666666666666666666666666666666 y z
+7777777777777777777777777777777777777777777777777777777777777777 refs/heads/br
+";
+
+            var actual = GitReferenceResolver.ReadPackedReferences(new StringReader(packedRefs), "<path>");
+
+            AssertEx.SetEqual(new[]
+            {
+                "refs/heads/br:2222222222222222222222222222222222222222222222222222222222222222",
+                "refs/heads/master:1111111111111111111111111111111111111111111111111111111111111111"
             }, actual.Select(e => $"{e.Key}:{e.Value}"));
         }
 

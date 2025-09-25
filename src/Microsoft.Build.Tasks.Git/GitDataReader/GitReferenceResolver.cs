@@ -21,21 +21,23 @@ namespace Microsoft.Build.Tasks.Git
 
         private readonly string _commonDirectory;
         private readonly string _gitDirectory;
+        private readonly ObjectFormat _objectFormat;
 
         // maps refs/heads references to the correspondign object ids:
         private readonly Lazy<ImmutableDictionary<string, string>> _lazyPackedReferences;
 
-        public GitReferenceResolver(string gitDirectory, string commonDirectory)
+        public GitReferenceResolver(string gitDirectory, string commonDirectory, ObjectFormat objectFormat)
         {
             Debug.Assert(PathUtils.IsNormalized(gitDirectory));
             Debug.Assert(PathUtils.IsNormalized(commonDirectory));
 
             _gitDirectory = gitDirectory;
             _commonDirectory = commonDirectory;
+            _objectFormat = objectFormat;
             _lazyPackedReferences = new Lazy<ImmutableDictionary<string, string>>(() => ReadPackedReferences(_gitDirectory));
         }
 
-        private static ImmutableDictionary<string, string> ReadPackedReferences(string gitDirectory)
+        private ImmutableDictionary<string, string> ReadPackedReferences(string gitDirectory)
         {
             // https://git-scm.com/docs/git-pack-refs
 
@@ -62,7 +64,7 @@ namespace Microsoft.Build.Tasks.Git
         }
 
         // internal for testing
-        internal static ImmutableDictionary<string, string> ReadPackedReferences(TextReader reader, string path)
+        internal ImmutableDictionary<string, string> ReadPackedReferences(TextReader reader, string path)
         {
             var builder = ImmutableDictionary.CreateBuilder<string, string>();
 
@@ -254,7 +256,7 @@ namespace Microsoft.Build.Tasks.Git
         private string? ResolvePackedReference(string reference)
             => _lazyPackedReferences.Value.TryGetValue(reference, out var objectId) ? objectId : null;
 
-        private static bool IsObjectId(string reference)
-            => reference.Length == 40 && reference.All(CharUtils.IsHexadecimalDigit);
+        private bool IsObjectId(string reference)
+            => reference.Length == _objectFormat.HashLength * 2 && reference.All(CharUtils.IsHexadecimalDigit);
     }
 }
