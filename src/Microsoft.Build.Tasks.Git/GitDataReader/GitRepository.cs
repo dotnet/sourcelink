@@ -25,7 +25,7 @@ namespace Microsoft.Build.Tasks.Git
         private const string GitModulesFileName = ".gitmodules";
 
         private static readonly ImmutableArray<string> s_knownExtensions =
-            ImmutableArray.Create("noop", "preciousObjects", "partialclone", "worktreeConfig");
+            ImmutableArray.Create("noop", "preciousObjects", "partialclone", "worktreeConfig", "objectformat");
 
         public GitConfig Config { get; }
 
