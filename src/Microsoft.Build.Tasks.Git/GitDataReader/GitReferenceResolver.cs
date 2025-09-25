@@ -23,7 +23,8 @@ namespace Microsoft.Build.Tasks.Git
 
         private readonly string _commonDirectory;
         private readonly string _gitDirectory;
-        private readonly ReferenceStorageFormat _format;
+        private readonly ReferenceStorageFormat _storageFormat;
+        private readonly ObjectNameFormat _objectNameFormat;
 
         // maps refs/heads references to the correspondign object ids:
         private readonly Lazy<ImmutableDictionary<string, string>> _lazyPackedReferences;
@@ -32,14 +33,15 @@ namespace Microsoft.Build.Tasks.Git
         // lock on access:
         private readonly List<GitRefTableReader> _openedRefTableReaders = [];
 
-        public GitReferenceResolver(string gitDirectory, string commonDirectory, ReferenceStorageFormat format)
+        public GitReferenceResolver(string gitDirectory, string commonDirectory, ReferenceStorageFormat storageFormat, ObjectNameFormat objectNameFormat)
         {
             Debug.Assert(PathUtils.IsNormalized(gitDirectory));
             Debug.Assert(PathUtils.IsNormalized(commonDirectory));
 
             _gitDirectory = gitDirectory;
             _commonDirectory = commonDirectory;
-            _format = format;
+            _storageFormat = storageFormat;
+            _objectNameFormat = objectNameFormat;
             _lazyPackedReferences = new(() => ReadPackedReferences(_gitDirectory));
             _lazyRefTableReferenceReaders = new(() => CreateRefTableReaders(_gitDirectory, _openedRefTableReaders));
         }
@@ -57,7 +59,7 @@ namespace Microsoft.Build.Tasks.Git
             }
         }
 
-        private static ImmutableDictionary<string, string> ReadPackedReferences(string gitDirectory)
+        private ImmutableDictionary<string, string> ReadPackedReferences(string gitDirectory)
         {
             // https://git-scm.com/docs/git-pack-refs
 
@@ -84,7 +86,7 @@ namespace Microsoft.Build.Tasks.Git
         }
 
         // internal for testing
-        internal static ImmutableDictionary<string, string> ReadPackedReferences(TextReader reader, string path)
+        internal ImmutableDictionary<string, string> ReadPackedReferences(TextReader reader, string path)
         {
             var builder = ImmutableDictionary.CreateBuilder<string, string>();
 
@@ -248,7 +250,7 @@ namespace Microsoft.Build.Tasks.Git
             return false;
         }
 
-        private static (string? objectName, string? referenceName) ParseObjectNameOrReference(string value)
+        private (string? objectName, string? referenceName) ParseObjectNameOrReference(string value)
         {
             if (TryGetReferenceName(value, out var referenceName))
             {
@@ -297,7 +299,7 @@ namespace Microsoft.Build.Tasks.Git
         }
 
         private (string? objectName, string? referenceName) FindHeadReference()
-            => _format switch
+            => _storageFormat switch
             {
                 ReferenceStorageFormat.LooseFiles => ParseObjectNameOrReference(ReadReferenceFromFile(Path.Combine(_gitDirectory, GitRepository.GitHeadFileName))),
                 ReferenceStorageFormat.RefTable => FindReferenceInRefTable(GitRepository.GitHeadFileName),
@@ -305,7 +307,7 @@ namespace Microsoft.Build.Tasks.Git
             };
 
         private (string? objectName, string? referenceName) FindReference(string referenceName)
-            => _format switch
+            => _storageFormat switch
             {
                 ReferenceStorageFormat.LooseFiles => FindReferenceInLooseFile(referenceName),
                 ReferenceStorageFormat.RefTable => FindReferenceInRefTable(referenceName),
@@ -383,7 +385,7 @@ namespace Microsoft.Build.Tasks.Git
         private string? FindPackedReference(string reference)
             => _lazyPackedReferences.Value.TryGetValue(reference, out var objectId) ? objectId : null;
 
-        private static bool IsObjectId(string reference)
-            => reference.Length == 40 && reference.All(CharUtils.IsHexadecimalDigit);
+        private bool IsObjectId(string reference)
+            => reference.Length == _objectNameFormat.HashSize * 2 && reference.All(CharUtils.IsHexadecimalDigit);
     }
 }

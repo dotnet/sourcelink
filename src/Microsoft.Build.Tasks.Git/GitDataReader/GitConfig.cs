@@ -16,23 +16,40 @@ namespace Microsoft.Build.Tasks.Git
 
         private const int SupportedGitRepoFormatVersion = 1;
 
-        private const string ExtensionSectionName = "extensions";
+        private const string CoreSectionName = "core";
+        private const string ExtensionsSectionName = "extensions";
+
         private const string RefStorageExtensionName = "refstorage";
+        private const string ObjectFormatExtensionName = "objectFormat";
+        private const string RepositoryFormatVersionVariableName = "repositoryformatversion";
 
         private static readonly ImmutableArray<string> s_knownExtensions =
-            ["noop", "preciousObjects", "partialclone", "worktreeConfig", RefStorageExtensionName];
+            ["noop", "preciousObjects", "partialclone", "worktreeConfig", RefStorageExtensionName, ObjectFormatExtensionName];
 
         public readonly ImmutableDictionary<GitVariableName, ImmutableArray<string>> Variables;
         public readonly ReferenceStorageFormat ReferenceStorageFormat;
 
-        internal GitConfig(ImmutableDictionary<GitVariableName, ImmutableArray<string>> variables)
+        /// <summary>
+        /// The parsed value of "extensions.objectFormat" variable.
+        /// </summary>
+        public ObjectNameFormat ObjectNameFormat { get; }
+
+        /// <exception cref="InvalidDataException"/>
+        public GitConfig(ImmutableDictionary<GitVariableName, ImmutableArray<string>> variables)
         {
             Variables = variables;
 
-            ReferenceStorageFormat = GetVariableValue(ExtensionSectionName, RefStorageExtensionName) switch
+            ReferenceStorageFormat = GetVariableValue(ExtensionsSectionName, RefStorageExtensionName) switch
             {
                 null => ReferenceStorageFormat.LooseFiles,
                 "reftable" => ReferenceStorageFormat.RefTable,
+                _ => throw new InvalidDataException(),
+            };
+
+            ObjectNameFormat = GetVariableValue(ExtensionsSectionName, ObjectFormatExtensionName) switch
+            {
+                null or "sha1" => ObjectNameFormat.Sha1,
+                "sha256" => ObjectNameFormat.Sha256,
                 _ => throw new InvalidDataException(),
             };
         }
@@ -60,7 +77,7 @@ namespace Microsoft.Build.Tasks.Git
         private void ValidateRepositoryConfig()
         {
             // See https://github.com/git/git/blob/master/Documentation/technical/repository-version.txt
-            var versionStr = GetVariableValue("core", "repositoryformatversion");
+            var versionStr = GetVariableValue(CoreSectionName, RepositoryFormatVersionVariableName);
             if (TryParseInt64Value(versionStr, out var version) && version > SupportedGitRepoFormatVersion)
             {
                 throw new NotSupportedException(string.Format(Resources.UnsupportedRepositoryVersion, versionStr, SupportedGitRepoFormatVersion));
@@ -71,7 +88,7 @@ namespace Microsoft.Build.Tasks.Git
                 // All variables defined under extensions section must be known, otherwise a git implementation is not allowed to proceed.
                 foreach (var variable in Variables)
                 {
-                    if (variable.Key.SectionNameEquals(ExtensionSectionName) &&
+                    if (variable.Key.SectionNameEquals(ExtensionsSectionName) &&
                         !s_knownExtensions.Contains(variable.Key.VariableName, StringComparer.OrdinalIgnoreCase))
                     {
                         throw new NotSupportedException(string.Format(
