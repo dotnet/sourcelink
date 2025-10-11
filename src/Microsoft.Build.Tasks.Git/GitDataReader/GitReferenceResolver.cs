@@ -255,6 +255,6 @@ namespace Microsoft.Build.Tasks.Git
             => _lazyPackedReferences.Value.TryGetValue(reference, out var objectId) ? objectId : null;
 
         private static bool IsObjectId(string reference)
-            => reference.Length == 40 && reference.All(CharUtils.IsHexadecimalDigit);
+            => (reference.Length == 40 || reference.Length == 64) && reference.All(CharUtils.IsHexadecimalDigit);
     }
 }
