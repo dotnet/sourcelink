@@ -240,6 +240,33 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         }
 
         [Fact]
+        public void OpenRepository_Version1_RelativeWorktreesExtension()
+        {
+            using var temp = new TempRoot();
+
+            var workingDir = temp.CreateDirectory();
+            var gitDir = workingDir.CreateDirectory(".git");
+
+            gitDir.CreateFile("HEAD");
+            gitDir.CreateFile("config").WriteAllText(@"
+[core]
+	repositoryformatversion = 1
+[extensions]
+    relativeWorktrees = true
+");
+
+            Assert.True(GitRepository.TryFindRepository(gitDir.Path, out var location));
+            Assert.Equal(gitDir.Path, location.CommonDirectory);
+            Assert.Equal(gitDir.Path, location.GitDirectory);
+            Assert.Null(location.WorkingDirectory);
+
+            var repository = GitRepository.OpenRepository(location, GitEnvironment.Empty);
+            Assert.Equal(gitDir.Path, repository.CommonDirectory);
+            Assert.Equal(gitDir.Path, repository.GitDirectory);
+            Assert.Null(repository.WorkingDirectory);
+        }
+
+        [Fact]
         public void OpenRepository_Version1_UnknownExtension()
         {
             using var temp = new TempRoot();
