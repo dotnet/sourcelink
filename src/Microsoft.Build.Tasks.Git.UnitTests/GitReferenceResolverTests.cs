@@ -154,5 +154,113 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             // Should still resolve refs from files even when reftable directory exists but is empty
             Assert.Equal("1111111111111111111111111111111111111111", resolver.ResolveReference("ref: refs/heads/master"));
         }
+
+        [Fact]
+        public void ResolveReference_ReftableWithBinaryFile()
+        {
+            using var temp = new TempRoot();
+
+            var gitDir = temp.CreateDirectory();
+            var reftableDir = gitDir.CreateDirectory("reftable");
+
+            // Create a minimal valid reftable file
+            var reftableFile = reftableDir.CreateFile("test.ref");
+            using (var stream = new FileStream(reftableFile.Path, FileMode.Create))
+            using (var writer = new BinaryWriter(stream))
+            {
+                // Write reftable header (24 bytes)
+                WriteUInt32BE(writer, 0x52454654); // Magic: 'REFT'
+                WriteUInt32BE(writer, 1);           // Version: 1
+                WriteUInt64BE(writer, 1);           // Min update index
+                WriteUInt64BE(writer, 1);           // Max update index
+
+                // Write a ref block
+                long blockStart = stream.Position;
+                writer.Write((byte)0x72); // Block type: 'r' (ref)
+                
+                // Placeholder for block size (will be updated later)
+                long sizePos = stream.Position;
+                writer.Write((byte)0);
+                writer.Write((byte)0);
+                writer.Write((byte)0);
+
+                // Write a ref record for refs/heads/test
+                byte[] refName = System.Text.Encoding.UTF8.GetBytes("refs/heads/test");
+                WriteVarint(writer, 0);              // Prefix length
+                WriteVarint(writer, refName.Length); // Suffix length
+                writer.Write(refName);
+
+                // Value type: 0x1 (has object ID)
+                writer.Write((byte)0x01);
+
+                // Object ID (20 bytes SHA-1) - all 0x22 for testing
+                writer.Write(new byte[] { 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22,
+                                         0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22 });
+
+                // Restart points (2 bytes)
+                writer.Write((byte)0);
+                writer.Write((byte)0);
+
+                // Calculate and write block size
+                long blockEnd = stream.Position;
+                int blockSize = (int)(blockEnd - blockStart);
+                
+                // Pad to 256 bytes
+                int padding = 256 - (blockSize % 256);
+                if (padding < 256)
+                {
+                    writer.Write(new byte[padding]);
+                    blockSize += padding;
+                }
+
+                // Update block size in header
+                long currentPos = stream.Position;
+                stream.Seek(sizePos, SeekOrigin.Begin);
+                writer.Write((byte)((blockSize >> 16) & 0xFF));
+                writer.Write((byte)((blockSize >> 8) & 0xFF));
+                writer.Write((byte)(blockSize & 0xFF));
+                stream.Seek(currentPos, SeekOrigin.Begin);
+
+                // Write footer (68 bytes of zeros for simplicity)
+                writer.Write(new byte[68]);
+            }
+
+            var commonDir = temp.CreateDirectory();
+            var resolver = new GitReferenceResolver(gitDir.Path, commonDir.Path);
+
+            // Should be able to resolve the ref from reftable
+            var result = resolver.ResolveReference("ref: refs/heads/test");
+            Assert.Equal("2222222222222222222222222222222222222222", result);
+        }
+
+        private static void WriteUInt32BE(BinaryWriter writer, uint value)
+        {
+            writer.Write((byte)((value >> 24) & 0xFF));
+            writer.Write((byte)((value >> 16) & 0xFF));
+            writer.Write((byte)((value >> 8) & 0xFF));
+            writer.Write((byte)(value & 0xFF));
+        }
+
+        private static void WriteUInt64BE(BinaryWriter writer, ulong value)
+        {
+            writer.Write((byte)((value >> 56) & 0xFF));
+            writer.Write((byte)((value >> 48) & 0xFF));
+            writer.Write((byte)((value >> 40) & 0xFF));
+            writer.Write((byte)((value >> 32) & 0xFF));
+            writer.Write((byte)((value >> 24) & 0xFF));
+            writer.Write((byte)((value >> 16) & 0xFF));
+            writer.Write((byte)((value >> 8) & 0xFF));
+            writer.Write((byte)(value & 0xFF));
+        }
+
+        private static void WriteVarint(BinaryWriter writer, int value)
+        {
+            while (value > 0x7F)
+            {
+                writer.Write((byte)(0x80 | (value & 0x7F)));
+                value >>= 7;
+            }
+            writer.Write((byte)(value & 0x7F));
+        }
     }
 }
