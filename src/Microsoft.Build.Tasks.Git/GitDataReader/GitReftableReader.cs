@@ -160,15 +160,15 @@ namespace Microsoft.Build.Tasks.Git
                 long dataStart = blockStart + 4;
                 reader.BaseStream.Seek(dataStart, SeekOrigin.Begin);
 
-                // Reset last ref name for this block
-                _lastRefName = "";
+                // Track last ref name for prefix compression within this block
+                string lastRefName = "";
 
                 // Read restart points count (last 2 bytes before block end, excluding padding)
                 // For simplicity, we'll do a sequential scan instead of using restart points
                 
                 while (reader.BaseStream.Position < blockEnd - 2)
                 {
-                    var (refName, objectId) = ReadRefRecord(reader);
+                    var (refName, objectId) = ReadRefRecord(reader, ref lastRefName);
                     
                     if (refName == null || objectId == null)
                     {
@@ -185,9 +185,7 @@ namespace Microsoft.Build.Tasks.Git
             }
         }
 
-        private static string _lastRefName = "";
-
-        private static (string? RefName, string? ObjectId) ReadRefRecord(BinaryReader reader)
+        private static (string? RefName, string? ObjectId) ReadRefRecord(BinaryReader reader, ref string lastRefName)
         {
             try
             {
@@ -220,9 +218,9 @@ namespace Microsoft.Build.Tasks.Git
                 {
                     refName = suffix;
                 }
-                else if (prefixLength <= _lastRefName.Length)
+                else if (prefixLength <= lastRefName.Length)
                 {
-                    refName = _lastRefName.Substring(0, prefixLength) + suffix;
+                    refName = lastRefName.Substring(0, prefixLength) + suffix;
                 }
                 else
                 {
@@ -230,7 +228,7 @@ namespace Microsoft.Build.Tasks.Git
                     return (null, null);
                 }
 
-                _lastRefName = refName;
+                lastRefName = refName;
 
                 // Read value type
                 byte valueType = reader.ReadByte();
