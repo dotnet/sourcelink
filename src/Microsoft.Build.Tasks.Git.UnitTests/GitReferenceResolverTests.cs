@@ -58,8 +58,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var resolver = new GitReferenceResolver(gitDir.Path, commonDir.Path);
 
             // Verify SHA256 hash is accepted directly
-            Assert.Equal("0123456789ABCDEFabcdef00000000000000000000000000000000000000000000", 
-                         resolver.ResolveReference("0123456789ABCDEFabcdef00000000000000000000000000000000000000000000"));
+            Assert.Equal("0123456789ABCDEFabcdef000000000000000000000000000000000000000000", 
+                         resolver.ResolveReference("0123456789ABCDEFabcdef000000000000000000000000000000000000000000"));
 
             Assert.Equal("0000000000000000000000000000000000000000000000000000000000000000", resolver.ResolveReference("ref: refs/heads/master"));
             Assert.Equal("0000000000000000000000000000000000000000000000000000000000000000", resolver.ResolveReference("ref: refs/heads/br1"));
