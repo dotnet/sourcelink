@@ -17,6 +17,7 @@ namespace Microsoft.Build.Tasks.Git
         // See https://git-scm.com/docs/gitrepository-layout#Documentation/gitrepository-layout.txt-HEAD
 
         private const string PackedRefsFileName = "packed-refs";
+        private const string ReftableDirectoryName = "reftable";
         private const string RefsPrefix = "refs/";
 
         private readonly string _commonDirectory;
@@ -39,6 +40,25 @@ namespace Microsoft.Build.Tasks.Git
         {
             // https://git-scm.com/docs/git-pack-refs
 
+            // First try to read from reftable
+            var reftableDirectory = Path.Combine(gitDirectory, ReftableDirectoryName);
+            if (Directory.Exists(reftableDirectory))
+            {
+                try
+                {
+                    var reftableRefs = GitReftableReader.ReadReftableReferences(reftableDirectory);
+                    if (reftableRefs.Count > 0)
+                    {
+                        return reftableRefs;
+                    }
+                }
+                catch
+                {
+                    // If reftable reading fails, fall through to try packed-refs
+                }
+            }
+
+            // Fall back to packed-refs
             var packedRefsPath = Path.Combine(gitDirectory, PackedRefsFileName);
             if (!File.Exists(packedRefsPath))
             {
