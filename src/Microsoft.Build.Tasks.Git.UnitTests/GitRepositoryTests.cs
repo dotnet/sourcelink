@@ -226,6 +226,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
     preciousObjects = true
     partialClone = promisor_remote
     worktreeConfig = true
+    objectformat = sha256
 ");
 
             Assert.True(GitRepository.TryFindRepository(gitDir.Path, out var location));
@@ -262,6 +263,36 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var src = workingDir.CreateDirectory("src");
 
             Assert.Throws<NotSupportedException>(() => GitRepository.OpenRepository(src.Path, new GitEnvironment(homeDir.Path)));
+        }
+
+        [Fact]
+        public void OpenRepository_Version1_ObjectFormatExtension()
+        {
+            using var temp = new TempRoot();
+
+            var homeDir = temp.CreateDirectory();
+
+            var workingDir = temp.CreateDirectory();
+            var gitDir = workingDir.CreateDirectory(".git");
+
+            gitDir.CreateFile("HEAD").WriteAllText("ref: refs/heads/master");
+            gitDir.CreateDirectory("refs").CreateDirectory("heads").CreateFile("master").WriteAllText("0000000000000000000000000000000000000000");
+            gitDir.CreateDirectory("objects");
+
+            gitDir.CreateFile("config").WriteAllText(@"
+[core]
+	repositoryformatversion = 1
+[extensions]
+	objectformat = sha256");
+
+            var src = workingDir.CreateDirectory("src");
+
+            // Should not throw - objectformat extension should be supported
+            var repository = GitRepository.OpenRepository(src.Path, new GitEnvironment(homeDir.Path));
+            Assert.NotNull(repository);
+            Assert.Equal(gitDir.Path, repository.GitDirectory);
+            Assert.Equal(gitDir.Path, repository.CommonDirectory);
+            Assert.Equal(workingDir.Path, repository.WorkingDirectory);
         }
 
         [Fact]
