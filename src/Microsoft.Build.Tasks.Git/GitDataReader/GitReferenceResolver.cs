@@ -254,6 +254,7 @@ namespace Microsoft.Build.Tasks.Git
         private string? ResolvePackedReference(string reference)
             => _lazyPackedReferences.Value.TryGetValue(reference, out var objectId) ? objectId : null;
 
+        // SHA1 hashes are 40 hex characters, SHA256 hashes are 64 hex characters
         private static bool IsObjectId(string reference)
             => (reference.Length == 40 || reference.Length == 64) && reference.All(CharUtils.IsHexadecimalDigit);
     }
