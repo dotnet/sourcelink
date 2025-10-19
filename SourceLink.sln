@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.9.34322.126
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11114.144 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Build.Tasks.Git", "src\Microsoft.Build.Tasks.Git\Microsoft.Build.Tasks.Git.csproj", "{A86F9DC3-9595-44AC-ACC6-025FB74813E6}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Build.Tasks.Tfvc", "src\Microsoft.Build.Tasks.Tfvc\Microsoft.Build.Tasks.Tfvc.csproj", "{13E94F49-DE63-4F6A-8771-D6AE9B7E043D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.Common", "src\SourceLink.Common\Microsoft.SourceLink.Common.csproj", "{1FAB9031-3148-476B-B9BB-AB89B8CD2C17}"
 EndProject
@@ -18,8 +16,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.GitHub", "src\SourceLink.GitHub\Microsoft.SourceLink.GitHub.csproj", "{6B305358-98A3-4F3D-8D69-32475523EE02}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.AzureRepos.Git", "src\SourceLink.AzureRepos.Git\Microsoft.SourceLink.AzureRepos.Git.csproj", "{076D322B-A705-4C57-A5A0-39C81BCFC285}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.SourceLink.AzureRepos.Tfvc", "src\SourceLink.AzureRepos.Tfvc\Microsoft.SourceLink.AzureRepos.Tfvc.csproj", "{DA058284-2FBD-459C-B9F3-82B5F7713C6F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestUtilities", "src\TestUtilities\TestUtilities.csproj", "{D6ED6730-02A8-4B21-8D62-C7B2009F53A5}"
 EndProject
@@ -103,10 +99,6 @@ Global
 		{A86F9DC3-9595-44AC-ACC6-025FB74813E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A86F9DC3-9595-44AC-ACC6-025FB74813E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A86F9DC3-9595-44AC-ACC6-025FB74813E6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{13E94F49-DE63-4F6A-8771-D6AE9B7E043D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{13E94F49-DE63-4F6A-8771-D6AE9B7E043D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{13E94F49-DE63-4F6A-8771-D6AE9B7E043D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{13E94F49-DE63-4F6A-8771-D6AE9B7E043D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1FAB9031-3148-476B-B9BB-AB89B8CD2C17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1FAB9031-3148-476B-B9BB-AB89B8CD2C17}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1FAB9031-3148-476B-B9BB-AB89B8CD2C17}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -131,10 +123,6 @@ Global
 		{076D322B-A705-4C57-A5A0-39C81BCFC285}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{076D322B-A705-4C57-A5A0-39C81BCFC285}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{076D322B-A705-4C57-A5A0-39C81BCFC285}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DA058284-2FBD-459C-B9F3-82B5F7713C6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DA058284-2FBD-459C-B9F3-82B5F7713C6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DA058284-2FBD-459C-B9F3-82B5F7713C6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DA058284-2FBD-459C-B9F3-82B5F7713C6F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D6ED6730-02A8-4B21-8D62-C7B2009F53A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D6ED6730-02A8-4B21-8D62-C7B2009F53A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6ED6730-02A8-4B21-8D62-C7B2009F53A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
