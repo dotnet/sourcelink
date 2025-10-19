@@ -13,7 +13,7 @@
     <PackageReference Include="Microsoft.TeamFoundationServer.ExtendedClient" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Common\Utilities\*.cs" Link="Common\%(FileName).cs" />
+    <Compile Include="..\Common\Utilities\*.cs" Exclude="..\Common\Utilities\Index.cs;..\Common\Utilities\Range.cs" Link="Common\%(FileName).cs" />
   </ItemGroup>
 
 </Project>

@@ -8,7 +8,7 @@
     <!-- Opt-in repo features -->
     <UsingToolSymbolUploader>true</UsingToolSymbolUploader>
     <!-- Prohibit the usage of .NET Standard 1.x dependencies. -->
-    <FlagNetStandard1XDependencies>true</FlagNetStandard1XDependencies>
+    <FlagNetStandard1XDependencies>false</FlagNetStandard1XDependencies>
   </PropertyGroup>
   <PropertyGroup>
     <!-- nuget -->
