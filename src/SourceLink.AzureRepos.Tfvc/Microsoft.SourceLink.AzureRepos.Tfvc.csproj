@@ -6,6 +6,7 @@
     <PackageDescription>Generates source link for Azure Repos (formerly known as VSTS) TFVC repositories.</PackageDescription>
     <PackageTags>MSBuild Tasks Azure DevOps Repos VSTS TFVC source link</PackageTags>
     <IsBuildTaskProject>true</IsBuildTaskProject>
+    <ExcludeFromSourceOnlyBuild>true</ExcludeFromSourceOnlyBuild>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\Common\Utilities\*.cs" Link="Common\%(FileName).cs" />

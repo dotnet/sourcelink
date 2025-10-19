@@ -1,0 +1,9 @@
+<Project>
+
+  <Import Project="..\Directory.Build.props" />
+
+  <PropertyGroup>
+    <FlagNetStandard1XDependencies>false</FlagNetStandard1XDependencies>
+  </PropertyGroup>
+
+</Project>
