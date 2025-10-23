@@ -1,7 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the License.txt file in the project root for more information.
-using System;
+
 using System.IO;
 using System.Linq;
 using TestUtilities;
@@ -25,7 +25,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             refsHeadsDir.CreateFile("br1").WriteAllText("ref: refs/heads/br2");
             refsHeadsDir.CreateFile("br2").WriteAllText("ref: refs/heads/master");
 
-            var resolver = new GitReferenceResolver(gitDir.Path, commonDir.Path);
+            var resolver = new GitReferenceResolver(gitDir.Path, commonDir.Path, ReferenceStorageFormat.LooseFiles);
 
             Assert.Equal("0123456789ABCDEFabcdef000000000000000000", resolver.ResolveReference("0123456789ABCDEFabcdef000000000000000000"));
 
@@ -53,7 +53,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             refsHeadsDir.CreateFile("rec1").WriteAllText("ref: refs/heads/rec2");
             refsHeadsDir.CreateFile("rec2").WriteAllText("ref: refs/heads/rec1");
 
-            var resolver = new GitReferenceResolver(gitDir.Path, commonDir.Path);
+            var resolver = new GitReferenceResolver(gitDir.Path, commonDir.Path, ReferenceStorageFormat.LooseFiles);
 
             Assert.Throws<InvalidDataException>(() => resolver.ResolveReference("ref: refs/heads/rec1"));
             Assert.Throws<InvalidDataException>(() => resolver.ResolveReference("ref: xyz/heads/rec1"));
@@ -80,7 +80,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
 
             refsHeadsDir.CreateFile("br1").WriteAllText("ref: refs/heads/br2");
 
-            var resolver = new GitReferenceResolver(gitDir.Path, commonDir.Path);
+            var resolver = new GitReferenceResolver(gitDir.Path, commonDir.Path, ReferenceStorageFormat.LooseFiles);
 
             Assert.Equal("1111111111111111111111111111111111111111", resolver.ResolveReference("ref: refs/heads/master"));
             Assert.Equal("2222222222222222222222222222222222222222", resolver.ResolveReference("ref: refs/heads/br1"));
@@ -130,6 +130,41 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         public void ReadPackedReferences_Errors(string content)
         {
             Assert.Throws<InvalidDataException>(() => GitReferenceResolver.ReadPackedReferences(new StringReader(content), "<path>"));
+        }
+
+        [Fact]
+        public void ResolveReference_RefTable()
+        {
+            using var temp = new TempRoot();
+
+            var gitDir = temp.CreateDirectory();
+            var commonDir = temp.CreateDirectory();
+
+            var refTableDir = gitDir.CreateDirectory("reftable");
+
+            refTableDir.CreateFile("tables.list").WriteAllText("""
+                2.ref
+                1.ref
+                """);
+
+            var ref1 = refTableDir.CreateFile("1.ref").WriteAllBytes(GitRefTableTestWriter.GetRefTableBlob([("refs/heads/a", 0x01), ("refs/heads/c", 0x02)]));
+            TempFile ref2;
+
+            using (var resolver = new GitReferenceResolver(gitDir.Path, commonDir.Path, ReferenceStorageFormat.RefTable))
+            {
+                Assert.Equal("0100000000000000000000000000000000000000", resolver.ResolveReference("ref: refs/heads/a"));
+                Assert.Equal("0200000000000000000000000000000000000000", resolver.ResolveReference("ref: refs/heads/c"));
+
+                // 2.ref shouldn't be opened until needed:
+                ref2 = refTableDir.CreateFile("2.ref").WriteAllBytes(GitRefTableTestWriter.GetRefTableBlob([("refs/heads/b", 0x03), ("refs/heads/c", 0x04)]));
+
+                Assert.Equal("0300000000000000000000000000000000000000", resolver.ResolveReference("ref: refs/heads/b"));
+                Assert.Null(resolver.ResolveReference("ref: refs/heads/d"));
+            }
+
+            // files should have been closed:
+            File.WriteAllBytes(ref1.Path, [0]);
+            File.WriteAllBytes(ref2.Path, [0]);
         }
     }
 }

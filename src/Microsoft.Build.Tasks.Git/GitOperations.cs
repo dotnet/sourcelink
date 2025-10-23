@@ -339,8 +339,9 @@ namespace Microsoft.Build.Tasks.Git
             => GetUntrackedFiles(repository, files, projectDirectory, CreateSubmoduleRepository);
 
         private static GitRepository? CreateSubmoduleRepository(GitEnvironment environment, string directoryFullPath)
-            => GitRepository.TryGetRepositoryLocation(directoryFullPath, out var location) ?
-               GitRepository.OpenRepository(location, environment) : null;
+            => GitRepository.TryGetRepositoryLocation(directoryFullPath, out var location)
+                ? GitRepository.OpenRepository(location, environment)
+                : null;
 
         // internal for testing
         internal static ITaskItem[] GetUntrackedFiles(GitRepository repository, ITaskItem[] files, string projectDirectory, Func<GitEnvironment, string, GitRepository?> repositoryFactory)
@@ -388,8 +389,14 @@ namespace Microsoft.Build.Tasks.Git
             {
                 var submoduleWorkingDirectory = submodule.WorkingDirectoryFullPath;
 
-                AddTreeNode(treeRoot, submoduleWorkingDirectory,
-                    new Lazy<GitIgnore.Matcher?>(() => repositoryFactory(repository.Environment, submoduleWorkingDirectory)?.Ignore.CreateMatcher()));
+                AddTreeNode(
+                    treeRoot,
+                    submoduleWorkingDirectory,
+                    matcher: new Lazy<GitIgnore.Matcher?>(() =>
+                    {
+                        using var submoduleRepository = repositoryFactory(repository.Environment, submoduleWorkingDirectory);
+                        return submoduleRepository?.Ignore.CreateMatcher();
+                    }));
             }
 
             return treeRoot;

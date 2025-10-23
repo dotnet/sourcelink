@@ -22,6 +22,7 @@
 
     <!-- Runtime dependencies -->
     <PackageVersion Include="System.Text.Json" Version="$(SystemTextJsonVersion)" />
+    <PackageVersion Include="System.IO.Hashing" Version="$(SystemIOHashingPackageVersion)" />
   </ItemGroup>
 
   <!-- External dependencies -->
