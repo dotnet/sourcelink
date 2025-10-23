@@ -124,7 +124,7 @@ namespace Microsoft.Build.Tasks.SourceControl
             static bool IsHexDigit(char c)
                 => c is >= '0' and <= '9' or >= 'a' and <= 'f' or >= 'A' and <= 'F';
 
-            string revisionId = SourceRoot.GetMetadata(Names.SourceRoot.RevisionId);
+            var revisionId = SourceRoot.GetMetadata(Names.SourceRoot.RevisionId);
             if (revisionId == null || revisionId.Length != 40 || !revisionId.All(IsHexDigit))
             {
                 Log.LogError(CommonResources.ValueOfWithIdentityIsNotValidCommitHash, Names.SourceRoot.RevisionIdFullName, SourceRoot.ItemSpec, revisionId);
@@ -174,7 +174,7 @@ namespace Microsoft.Build.Tasks.SourceControl
             {
                 foreach (var item in Hosts)
                 {
-                    string hostUrl = item.ItemSpec;
+                    var hostUrl = item.ItemSpec;
 
                     if (!UriUtilities.TryParseAuthority(hostUrl, out var hostUri))
                     {
@@ -183,8 +183,8 @@ namespace Microsoft.Build.Tasks.SourceControl
                     }
 
                     Uri? contentUri;
-                    string contentUrl = item.GetMetadata(ContentUrlMetadataName);
-                    bool hasDefaultContentUri = string.IsNullOrEmpty(contentUrl);
+                    var contentUrl = item.GetMetadata(ContentUrlMetadataName);
+                    var hasDefaultContentUri = string.IsNullOrEmpty(contentUrl);
                     if (hasDefaultContentUri)
                     {
                         contentUri = GetDefaultContentUriFromHostUri(hostUri.GetAuthority(), gitUri);

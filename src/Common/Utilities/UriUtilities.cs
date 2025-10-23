@@ -53,10 +53,10 @@ namespace Microsoft.Build.Tasks.SourceControl
                 return false;
             }
 
-            int start = (relativeUrl[0] == '/') ? 1 : 0;
+            var start = (relativeUrl[0] == '/') ? 1 : 0;
 
             // optional trailing slash:
-            int end = relativeUrl.Length - 1;
+            var end = relativeUrl.Length - 1;
             if (relativeUrl[end] == '/')
             {
                 end--;

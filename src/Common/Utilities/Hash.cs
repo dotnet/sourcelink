@@ -32,7 +32,7 @@ namespace Roslyn.Utilities
         /// </summary>
         internal static int Combine<T>(T newKeyPart, int currentKey) where T : class?
         {
-            int hash = unchecked(currentKey * (int)0xA5555529);
+            var hash = unchecked(currentKey * (int)0xA5555529);
 
             if (newKeyPart != null)
             {
@@ -97,7 +97,7 @@ namespace Roslyn.Utilities
             var maxSize = Math.Min(maxItemsToHash, values.Length);
             var hashCode = 0;
 
-            for (int i = 0; i < maxSize; i++)
+            for (var i = 0; i < maxSize; i++)
             {
                 T value = values[i];
 
@@ -201,9 +201,9 @@ namespace Roslyn.Utilities
         /// <returns>The FNV-1a hash of <paramref name="data"/></returns>
         internal static int GetFNVHashCode(byte[] data)
         {
-            int hashCode = Hash.FnvOffsetBias;
+            var hashCode = Hash.FnvOffsetBias;
 
-            for (int i = 0; i < data.Length; i++)
+            for (var i = 0; i < data.Length; i++)
             {
                 hashCode = unchecked((hashCode ^ data[i]) * Hash.FnvPrime);
             }
@@ -222,13 +222,13 @@ namespace Roslyn.Utilities
         /// <returns>The FNV-1a hash of <paramref name="data"/></returns>
         internal static int GetFNVHashCode(ReadOnlySpan<byte> data, out bool isAscii)
         {
-            int hashCode = Hash.FnvOffsetBias;
+            var hashCode = Hash.FnvOffsetBias;
 
             byte asciiMask = 0;
 
-            for (int i = 0; i < data.Length; i++)
+            for (var i = 0; i < data.Length; i++)
             {
-                byte b = data[i];
+                var b = data[i];
                 asciiMask |= b;
                 hashCode = unchecked((hashCode ^ b) * Hash.FnvPrime);
             }
@@ -245,9 +245,9 @@ namespace Roslyn.Utilities
         /// <returns>The FNV-1a hash of <paramref name="data"/></returns>
         internal static int GetFNVHashCode(ImmutableArray<byte> data)
         {
-            int hashCode = Hash.FnvOffsetBias;
+            var hashCode = Hash.FnvOffsetBias;
 
-            for (int i = 0; i < data.Length; i++)
+            for (var i = 0; i < data.Length; i++)
             {
                 hashCode = unchecked((hashCode ^ data[i]) * Hash.FnvPrime);
             }
@@ -314,7 +314,7 @@ namespace Roslyn.Utilities
         /// <returns>The FNV-1a hash code of <paramref name="text"/></returns>
         internal static int GetFNVHashCode(System.Text.StringBuilder text)
         {
-            int hashCode = Hash.FnvOffsetBias;
+            var hashCode = Hash.FnvOffsetBias;
 
 #if NETCOREAPP3_1_OR_GREATER
             foreach (var chunk in text.GetChunks())
@@ -324,9 +324,9 @@ namespace Roslyn.Utilities
 #else
             // StringBuilder.GetChunks is not available in this target framework. Since there is no other direct access
             // to the underlying storage spans of StringBuilder, we fall back to using slower per-character operations.
-            int end = text.Length;
+            var end = text.Length;
 
-            for (int i = 0; i < end; i++)
+            for (var i = 0; i < end; i++)
             {
                 hashCode = unchecked((hashCode ^ text[i]) * Hash.FnvPrime);
             }
@@ -345,10 +345,10 @@ namespace Roslyn.Utilities
         /// <returns>The FNV-1a hash code of the substring beginning at <paramref name="start"/> and ending after <paramref name="length"/> characters.</returns>
         internal static int GetFNVHashCode(char[] text, int start, int length)
         {
-            int hashCode = Hash.FnvOffsetBias;
-            int end = start + length;
+            var hashCode = Hash.FnvOffsetBias;
+            var end = start + length;
 
-            for (int i = start; i < end; i++)
+            for (var i = start; i < end; i++)
             {
                 hashCode = unchecked((hashCode ^ text[i]) * Hash.FnvPrime);
             }
@@ -379,7 +379,7 @@ namespace Roslyn.Utilities
         /// <returns>The result of combining <paramref name="hashCode"/> with <paramref name="text"/> using the FNV-1a algorithm</returns>
         internal static int CombineFNVHash(int hashCode, string text)
         {
-            foreach (char ch in text)
+            foreach (var ch in text)
             {
                 hashCode = unchecked((hashCode ^ ch) * Hash.FnvPrime);
             }
@@ -408,7 +408,7 @@ namespace Roslyn.Utilities
         /// <returns>The result of combining <paramref name="hashCode"/> with <paramref name="data"/> using the FNV-1a algorithm</returns>
         internal static int CombineFNVHash(int hashCode, ReadOnlySpan<char> data)
         {
-            for (int i = 0; i < data.Length; i++)
+            for (var i = 0; i < data.Length; i++)
             {
                 hashCode = unchecked((hashCode ^ data[i]) * Hash.FnvPrime);
             }

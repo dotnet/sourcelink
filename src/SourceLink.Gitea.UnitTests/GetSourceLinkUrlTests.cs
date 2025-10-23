@@ -21,7 +21,7 @@ namespace Microsoft.SourceLink.Gitea.UnitTests
                 SourceRoot = new MockItem("x", KVP("RepositoryUrl", "http://abc.com"), KVP("SourceControl", "git")),
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
                 "ERROR : " + string.Format(CommonResources.AtLeastOneRepositoryHostIsRequired, "SourceLinkGiteaHost", "Gitea"), engine.Log);
@@ -48,7 +48,7 @@ namespace Microsoft.SourceLink.Gitea.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("https://domain.com/x/y/a/b/raw/commit/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
             Assert.True(result);

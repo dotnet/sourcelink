@@ -221,14 +221,14 @@ namespace Microsoft.Build.Tasks.Git
                 {
                     var reader = new LineCountingReader(textReader, path);
 
-                    string sectionName = "";
-                    string subsectionName = "";
+                    var sectionName = "";
+                    var subsectionName = "";
 
                     while (true)
                     {
                         SkipMultilineWhitespace(reader);
 
-                        int c = reader.Peek();
+                        var c = reader.Peek();
                         if (c == -1)
                         {
                             break;
@@ -262,7 +262,7 @@ namespace Microsoft.Build.Tasks.Git
                         // Spec https://git-scm.com/docs/git-config#_includes:
                         if (IsIncludePath(key, path))
                         {
-                            string includedConfigPath = NormalizeRelativePath(relativePath: variableValue, basePath: path, key);
+                            var includedConfigPath = NormalizeRelativePath(relativePath: variableValue, basePath: path, key);
                             LoadVariablesFrom(includedConfigPath, variables, includeDepth + 1);
                         }
                     }
@@ -359,7 +359,7 @@ namespace Microsoft.Build.Tasks.Git
             {
                 var nameBuilder = reusableBuffer.Clear();
 
-                int c = reader.Read();
+                var c = reader.Read();
                 Debug.Assert(c == '[');
 
                 while (true)
@@ -400,7 +400,7 @@ namespace Microsoft.Build.Tasks.Git
                 name = name.ToLowerInvariant();
 
                 // Deprecated syntax: [section.subsection]
-                int firstDot = name.IndexOf('.');
+                var firstDot = name.IndexOf('.');
                 if (firstDot != -1)
                 {
                     // "[.x]" parses to section "", subsection ".x" (lookup ".x.var" suceeds, ".X.var" fails)
@@ -420,7 +420,7 @@ namespace Microsoft.Build.Tasks.Git
             {
                 SkipWhitespace(reader);
 
-                int c = reader.Read();
+                var c = reader.Read();
                 if (c != '"')
                 {
                     reader.UnexpectedCharacter(c);
@@ -470,7 +470,7 @@ namespace Microsoft.Build.Tasks.Git
                 // name         #
                 // = value
 
-                int c = reader.Peek();
+                var c = reader.Peek();
                 if (c == -1 || IsCommentStart(c) || IsEndOfLine(c))
                 {
                     ReadToLineEnd(reader);
@@ -524,13 +524,13 @@ namespace Microsoft.Build.Tasks.Git
                 //    bc                   `a bc`
 
                 // read until comment/eoln, quote
-                bool inQuotes = false;
+                var inQuotes = false;
                 var builder = reusableBuffer.Clear();
-                int lengthIgnoringTrailingWhitespace = 0;
+                var lengthIgnoringTrailingWhitespace = 0;
 
                 while (true)
                 {
-                    int c = reader.Read();
+                    var c = reader.Read();
                     if (c == -1)
                     {
                         if (inQuotes)
@@ -640,7 +640,7 @@ namespace Microsoft.Build.Tasks.Git
             {
                 while (true)
                 {
-                    int c = reader.Read();
+                    var c = reader.Read();
                     if (c == -1)
                     {
                         return;

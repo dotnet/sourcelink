@@ -116,7 +116,7 @@ namespace Microsoft.Build.Tasks.Git
             //  - URL prefix matching is case sensitive.
             //  - if the replacement is empty the URL is prefixed with the replacement string
 
-            int longestPrefixLength = -1;
+            var longestPrefixLength = -1;
             string? replacement = null;
 
             foreach (var variable in config.Variables)
@@ -215,7 +215,7 @@ namespace Microsoft.Build.Tasks.Git
         {
             uri = null;
            
-            int colon = value.IndexOf(':');
+            var colon = value.IndexOf(':');
             if (colon == -1)
             {
                 return false;
@@ -250,8 +250,8 @@ namespace Microsoft.Build.Tasks.Git
             if (revisionId != null)
             {
                 // Don't report a warning since it has already been reported by GetRepositoryUrl task.
-                string? repositoryUrl = GetRepositoryUrl(repository, remoteName, logWarning: null);
-                string? branchName = repository.GetBranchName();
+                var repositoryUrl = GetRepositoryUrl(repository, remoteName, logWarning: null);
+                var branchName = repository.GetBranchName();
 
                 // Item metadata are stored msbuild-escaped. GetMetadata unescapes, SetMetadata stores the value as specified.
                 // Escape msbuild special characters so that URL escapes in the URL are preserved when the URL is read by GetMetadata.
@@ -401,9 +401,9 @@ namespace Microsoft.Build.Tasks.Git
 
             var node = root;
 
-            for (int i = 0; i < segments.Length; i++)
+            for (var i = 0; i < segments.Length; i++)
             {
-                int index = node.FindChildIndex(segments[i]);
+                var index = node.FindChildIndex(segments[i]);
                 if (index >= 0)
                 {
                     node = node.OrderedChildren[index];
@@ -432,9 +432,9 @@ namespace Microsoft.Build.Tasks.Git
             GitIgnore.Matcher? containingRepositoryMatcher = null;
 
             var node = root;
-            for (int i = 0; i < segments.Length - 1; i++)
+            for (var i = 0; i < segments.Length - 1; i++)
             {
-                int index = node.FindChildIndex(segments[i]);
+                var index = node.FindChildIndex(segments[i]);
                 if (index < 0)
                 {
                     break;

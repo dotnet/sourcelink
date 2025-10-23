@@ -242,7 +242,7 @@ $@"<Project>
             var testBinDirectory = Path.GetDirectoryName(typeof(DotNetSdkTestBase).Assembly.Location);
             var buildLog = Path.Combine(RootDir.Path, $"build{_logIndex++}.binlog");
 
-            bool success = false;
+            var success = false;
             try
             {
                 if (!_projectRestored)
@@ -272,8 +272,8 @@ $@"<Project>
 
                 static bool diagnosticsEqual(string expected, string actual)
                 {
-                    string ellipsis = "...";
-                    int index = expected.IndexOf(ellipsis);
+                    var ellipsis = "...";
+                    var index = expected.IndexOf(ellipsis);
                     return (index == -1) ? expected == actual :
                         actual.Length > expected.Length - ellipsis.Length &&
                         expected.Substring(0, index) == actual.Substring(0, index) &&
@@ -320,7 +320,7 @@ $@"<Project>
         private void FixupGeneratedPropsFilePath(string generatedPropsFilePath)
         {
             var content = File.ReadAllText(generatedPropsFilePath, Encoding.UTF8);
-            int i = 0;
+            var i = 0;
             content = Regex.Replace(content, "<SourceRoot Include=\"(.*)\" */>",
                 match => (i++ == 0) ? $"<SourceRoot Include=\"{NuGetPackageFolders}\" />" : "");
             File.WriteAllText(generatedPropsFilePath, content, Encoding.UTF8);
