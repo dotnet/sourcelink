@@ -2,7 +2,7 @@
 {
     "merge-flow-configurations": {
         // Automate opening PRs to merge release/10.0 to main
-        "release/10.0":{
+        "release/10.0.1xx":{
             "MergeToBranch": "main",
             "ExtraSwitches": "-QuietComments"
         }
