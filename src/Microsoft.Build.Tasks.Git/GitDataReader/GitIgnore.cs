@@ -224,7 +224,7 @@ namespace Microsoft.Build.Tasks.Git
             var escape = line.IndexOf('\\', s, e - s);
             if (escape < 0)
             {
-                glob = line.Substring(s, e - s);
+                glob = line[s..e];
                 return true;
             }
 

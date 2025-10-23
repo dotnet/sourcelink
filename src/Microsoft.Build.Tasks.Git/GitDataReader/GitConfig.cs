@@ -109,7 +109,7 @@ namespace Microsoft.Build.Tasks.Git
                     break;
             }
 
-            if (!long.TryParse(multiplier > 1 ? str.Substring(0, str.Length - 1) : str, out value))
+            if (!long.TryParse(multiplier > 1 ? str[..^1] : str, out value))
             {
                 return false;
             }

@@ -22,7 +22,7 @@ namespace Microsoft.SourceLink.AzureRepos.Git
         {
             var gitHost = gitUri.GetHost();
             return AzureDevOpsUrlParser.IsVisualStudioHostedServer(gitHost) ?
-                new Uri($"{gitUri.Scheme}://{gitHost.Substring(0, gitHost.IndexOf('.'))}.{authority}", UriKind.Absolute) :
+                new Uri($"{gitUri.Scheme}://{gitHost[..gitHost.IndexOf('.')]}.{authority}", UriKind.Absolute) :
                 new Uri($"{gitUri.Scheme}://{authority}", UriKind.Absolute);
         }
 

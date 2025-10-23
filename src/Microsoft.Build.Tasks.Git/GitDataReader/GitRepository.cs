@@ -465,7 +465,7 @@ namespace Microsoft.Build.Tasks.Git
                 throw new InvalidDataException(string.Format(Resources.FormatOfFileIsInvalid, path));
             }
 
-            var link = content.Substring(GitDirPrefix.Length).TrimEnd(CharUtils.AsciiWhitespace);
+            var link = content[GitDirPrefix.Length..].TrimEnd(CharUtils.AsciiWhitespace);
 
             try
             {

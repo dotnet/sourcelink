@@ -95,7 +95,7 @@ namespace Microsoft.Build.Tasks.Git
                         throw invalidData();
                     }
 
-                    var dereferencedTagObjectId = line.Substring(1);
+                    var dereferencedTagObjectId = line[1..];
                     if (!IsObjectId(dereferencedTagObjectId))
                     {
                         throw invalidData();
@@ -112,14 +112,14 @@ namespace Microsoft.Build.Tasks.Git
                     throw invalidData();
                 }
 
-                var objectId = line.Substring(0, separator);
+                var objectId = line[..separator];
                 if (!IsObjectId(objectId))
                 {
                     throw invalidData();
                 }
 
                 var nextSeparator = line.IndexOfAny(CharUtils.WhitespaceSeparators, separator + 1);
-                var reference = (nextSeparator >= 0) ? line.Substring(separator + 1, nextSeparator - separator - 1) : line.Substring(separator + 1);
+                var reference = (nextSeparator >= 0) ? line.Substring(separator + 1, nextSeparator - separator - 1) : line[(separator + 1)..];
 
                 if (reference.Length == 0)
                 {
@@ -171,7 +171,7 @@ namespace Microsoft.Build.Tasks.Git
             const string refPrefix = "ref: ";
             if (reference.StartsWith(refPrefix + RefsPrefix, StringComparison.Ordinal))
             {
-                name = reference.Substring(refPrefix.Length);
+                name = reference[refPrefix.Length..];
                 return true;
             }
 

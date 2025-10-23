@@ -20,7 +20,7 @@ namespace Microsoft.Build.Tasks.SourceControl
         public static string Combine(string baseUrl, string relativeUrl)
             => string.IsNullOrEmpty(relativeUrl) ? baseUrl : 
                 baseUrl.EndsWith("/")
-                    ? (relativeUrl.StartsWith("/") ? baseUrl + relativeUrl.Substring(1) : baseUrl + relativeUrl)
+                    ? (relativeUrl.StartsWith("/") ? baseUrl + relativeUrl[1..] : baseUrl + relativeUrl)
                     : (relativeUrl.StartsWith("/") ? baseUrl + relativeUrl : baseUrl + "/" + relativeUrl);
 
         public static bool UrlStartsWith(string url, string prefix)

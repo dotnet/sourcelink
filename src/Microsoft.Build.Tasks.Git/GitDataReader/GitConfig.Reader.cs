@@ -276,7 +276,7 @@ namespace Microsoft.Build.Tasks.Git
                 if (relativePath.Length >= 2 && relativePath[0] == '~' && PathUtils.IsDirectorySeparator(relativePath[1]))
                 {
                     root = _environment.GetHomeDirectoryForPathExpansion(relativePath);
-                    relativePath = relativePath.Substring(2);
+                    relativePath = relativePath[2..];
                 }
                 else
                 {
@@ -315,12 +315,12 @@ namespace Microsoft.Build.Tasks.Git
 
                     if (key.SubsectionName.StartsWith(caseSensitiveGitDirPrefix, StringComparison.Ordinal))
                     {
-                        pattern = key.SubsectionName.Substring(caseSensitiveGitDirPrefix.Length);
+                        pattern = key.SubsectionName[caseSensitiveGitDirPrefix.Length..];
                         ignoreCase = false;
                     }
                     else if (key.SubsectionName.StartsWith(caseInsensitiveGitDirPrefix, StringComparison.Ordinal))
                     {
-                        pattern = key.SubsectionName.Substring(caseInsensitiveGitDirPrefix.Length);
+                        pattern = key.SubsectionName[caseInsensitiveGitDirPrefix.Length..];
                         ignoreCase = true;
                     }
                     else
@@ -331,12 +331,12 @@ namespace Microsoft.Build.Tasks.Git
                     if (pattern.Length >= 2 && pattern[0] == '.' && pattern[1] == '/')
                     {
                         // leading './' is substituted with the path to the directory containing the current config file.
-                        pattern = PathUtils.CombinePosixPaths(PathUtils.ToPosixPath(Path.GetDirectoryName(configFilePath)!), pattern.Substring(2));
+                        pattern = PathUtils.CombinePosixPaths(PathUtils.ToPosixPath(Path.GetDirectoryName(configFilePath)!), pattern[2..]);
                     }
                     else if (pattern.Length >= 2 && pattern[0] == '~' && pattern[1] == '/')
                     {
                         // leading '~/' is substituted with HOME path
-                        pattern = PathUtils.CombinePosixPaths(PathUtils.ToPosixPath(_environment.GetHomeDirectoryForPathExpansion(pattern)), pattern.Substring(2));
+                        pattern = PathUtils.CombinePosixPaths(PathUtils.ToPosixPath(_environment.GetHomeDirectoryForPathExpansion(pattern)), pattern[2..]);
                     }
                     else if (!PathUtils.IsAbsolute(pattern))
                     {
@@ -408,8 +408,8 @@ namespace Microsoft.Build.Tasks.Git
                     // "[x.]" parses to section "x.", subsection "" (lookups "X..var" and "x..var" suceed)
                     // "[x..]" parses to section "x", subsection "." (lookups "X...var" and "x...var" suceed)
 
-                    var prefix = (firstDot == name.Length - 1) ? name : name.Substring(0, firstDot);
-                    var suffix = name.Substring(firstDot + 1);
+                    var prefix = (firstDot == name.Length - 1) ? name : name[..firstDot];
+                    var suffix = name[(firstDot + 1)..];
 
                     subsectionName = (subsectionName.Length > 0) ? suffix + "." + subsectionName : suffix;
                     name = prefix;

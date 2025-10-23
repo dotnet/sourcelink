@@ -135,7 +135,7 @@ namespace Microsoft.Build.Tasks.Git
                 }
             }
 
-            return (longestPrefixLength >= 0) ? replacement + url.Substring(longestPrefixLength) : url;
+            return (longestPrefixLength >= 0) ? replacement + url[longestPrefixLength..] : url;
         }
 
         internal static Uri? NormalizeUrl(GitRepository repository, string url)
@@ -234,7 +234,7 @@ namespace Microsoft.Build.Tasks.Git
             }
 
             // [user@]server:path
-            var url = "ssh://" + value.Substring(0, colon) + "/" + value.Substring(colon + 1);
+            var url = "ssh://" + value[..colon] + "/" + value[(colon + 1)..];
             return Uri.TryCreate(url, UriKind.Absolute, out uri);
         }
 

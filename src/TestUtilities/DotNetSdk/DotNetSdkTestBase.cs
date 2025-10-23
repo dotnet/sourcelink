@@ -276,8 +276,8 @@ $@"<Project>
                     var index = expected.IndexOf(ellipsis);
                     return (index == -1) ? expected == actual :
                         actual.Length > expected.Length - ellipsis.Length &&
-                        expected.Substring(0, index) == actual.Substring(0, index) &&
-                        expected.Substring(index + ellipsis.Length) == actual.Substring(actual.Length - (expected.Length - index - ellipsis.Length));
+                        expected[..index] == actual[..index] &&
+                        expected[(index + ellipsis.Length)..] == actual[^(expected.Length - index - ellipsis.Length)..];
                 }
 
                 var outputLines = buildResult.Output.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
