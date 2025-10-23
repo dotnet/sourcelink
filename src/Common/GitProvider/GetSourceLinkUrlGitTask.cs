@@ -121,11 +121,11 @@ namespace Microsoft.Build.Tasks.SourceControl
                 return;
             }
 
-            static bool isHexDigit(char c)
+            static bool IsHexDigit(char c)
                 => c is >= '0' and <= '9' or >= 'a' and <= 'f' or >= 'A' and <= 'F';
 
             string revisionId = SourceRoot.GetMetadata(Names.SourceRoot.RevisionId);
-            if (revisionId == null || revisionId.Length != 40 || !revisionId.All(isHexDigit))
+            if (revisionId == null || revisionId.Length != 40 || !revisionId.All(IsHexDigit))
             {
                 Log.LogError(CommonResources.ValueOfWithIdentityIsNotValidCommitHash, Names.SourceRoot.RevisionIdFullName, SourceRoot.ItemSpec, revisionId);
                 return;
@@ -134,10 +134,10 @@ namespace Microsoft.Build.Tasks.SourceControl
             var relativeUrl = gitUri.GetPath().TrimEnd('/');
 
             // The URL may or may not end with '.git' (case-sensitive), but content URLs do not include '.git' suffix:
-            const string gitUrlSuffix = ".git";
-            if (relativeUrl.EndsWith(gitUrlSuffix, StringComparison.Ordinal) && !relativeUrl.EndsWith("/" + gitUrlSuffix, StringComparison.Ordinal))
+            const string GitUrlSuffix = ".git";
+            if (relativeUrl.EndsWith(GitUrlSuffix, StringComparison.Ordinal) && !relativeUrl.EndsWith("/" + GitUrlSuffix, StringComparison.Ordinal))
             {
-                relativeUrl = relativeUrl.Substring(0, relativeUrl.Length - gitUrlSuffix.Length);
+                relativeUrl = relativeUrl.Substring(0, relativeUrl.Length - GitUrlSuffix.Length);
             }
 
             SourceLinkUrl = BuildSourceLinkUrl(contentUri, gitUri, relativeUrl, revisionId, hostItem);
@@ -167,7 +167,7 @@ namespace Microsoft.Build.Tasks.SourceControl
 
         private IEnumerable<UrlMapping> GetUrlMappings(Uri gitUri)
         {
-            static bool isValidContentUri(Uri uri)
+            static bool IsValidContentUri(Uri uri)
                 => uri.GetHost() != "" && uri.Query == "" && uri.UserInfo == "";
 
             if (Hosts != null)
@@ -189,7 +189,7 @@ namespace Microsoft.Build.Tasks.SourceControl
                     {
                         contentUri = GetDefaultContentUriFromHostUri(hostUri.GetAuthority(), gitUri);
                     }
-                    else if (!Uri.TryCreate(contentUrl, UriKind.Absolute, out contentUri) || !isValidContentUri(contentUri))
+                    else if (!Uri.TryCreate(contentUrl, UriKind.Absolute, out contentUri) || !IsValidContentUri(contentUri))
                     {
                         Log.LogError(CommonResources.ValuePassedToTaskParameterNotValidHostUri, nameof(Hosts), contentUrl);
                         continue;
@@ -224,7 +224,7 @@ namespace Microsoft.Build.Tasks.SourceControl
 
         private static bool TryGetMatchingContentUri(UrlMapping[] mappings, Uri repoUri, [NotNullWhen(true)]out Uri? contentUri, out ITaskItem? hostItem)
         {
-            UrlMapping? findMatch(bool exactHost)
+            UrlMapping? FindMatch(bool exactHost)
             {
                 UrlMapping? candidate = null;
 
@@ -250,7 +250,7 @@ namespace Microsoft.Build.Tasks.SourceControl
                 return candidate;
             }
 
-            var result = findMatch(exactHost: true) ?? findMatch(exactHost: false);
+            var result = FindMatch(exactHost: true) ?? FindMatch(exactHost: false);
             if (result == null)
             {
                 contentUri = null;
