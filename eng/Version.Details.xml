@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Dependencies>
-  <Source Uri="https://github.com/dotnet/dotnet" Mapping="sourcelink" Sha="7b29526f2107416f68578bcb9deaca74fcfcf7f0" BarId="288435" />
+  <Source Uri="https://github.com/dotnet/dotnet" Mapping="sourcelink" Sha="bbafab7b91a3596cc48c8a29cf1c8b8f9cb06c05" BarId="288919" />
   <ProductDependencies>
     <Dependency Name="System.CommandLine" Version="2.0.0">
       <Uri>https://github.com/dotnet/dotnet</Uri>
-      <Sha>7b29526f2107416f68578bcb9deaca74fcfcf7f0</Sha>
+      <Sha>bbafab7b91a3596cc48c8a29cf1c8b8f9cb06c05</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="10.0.0-beta.25523.113">
+    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="10.0.0-beta.25528.106">
       <Uri>https://github.com/dotnet/dotnet</Uri>
-      <Sha>7b29526f2107416f68578bcb9deaca74fcfcf7f0</Sha>
+      <Sha>bbafab7b91a3596cc48c8a29cf1c8b8f9cb06c05</Sha>
     </Dependency>
     <!-- Dependencies required for source build to lift to the previously-source-built version. -->
     <Dependency Name="Microsoft.Build" Version="18.0.2">
       <Uri>https://github.com/dotnet/dotnet</Uri>
-      <Sha>7b29526f2107416f68578bcb9deaca74fcfcf7f0</Sha>
+      <Sha>bbafab7b91a3596cc48c8a29cf1c8b8f9cb06c05</Sha>
     </Dependency>
     <Dependency Name="Microsoft.Build.Tasks.Core" Version="18.0.2">
       <Uri>https://github.com/dotnet/dotnet</Uri>
-      <Sha>7b29526f2107416f68578bcb9deaca74fcfcf7f0</Sha>
+      <Sha>bbafab7b91a3596cc48c8a29cf1c8b8f9cb06c05</Sha>
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>
