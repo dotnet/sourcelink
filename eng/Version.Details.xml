@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Dependencies>
-  <Source Uri="https://github.com/dotnet/dotnet" Mapping="sourcelink" Sha="3a0c62bf027fbcb8683a13e78a5b21ae19028ca3" BarId="286911" />
+  <Source Uri="https://github.com/dotnet/dotnet" Mapping="sourcelink" Sha="cdc420f453860b662a76fcc72672ed2a65243146" BarId="288940" />
   <ProductDependencies>
     <Dependency Name="System.CommandLine" Version="2.0.0-rc.1.25529.101">
       <Uri>https://github.com/dotnet/dotnet</Uri>
@@ -13,13 +13,13 @@
       <Sha>cdc420f453860b662a76fcc72672ed2a65243146</Sha>
     </Dependency>
     <!-- Dependencies required for source build to lift to the previously-source-built version. -->
-    <Dependency Name="Microsoft.Build" Version="18.1.0-preview-25529-101">
-      <Uri>https://github.com/dotnet/dotnet</Uri>
-      <Sha>cdc420f453860b662a76fcc72672ed2a65243146</Sha>
+    <Dependency Name="Microsoft.Build" Version="17.11.31">
+      <Uri>https://github.com/dotnet/msbuild</Uri>
+      <Sha>933b72e36e86c22ba73e8b8148488f8298bb73c7</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Build.Tasks.Core" Version="18.1.0-preview-25529-101">
-      <Uri>https://github.com/dotnet/dotnet</Uri>
-      <Sha>cdc420f453860b662a76fcc72672ed2a65243146</Sha>
+    <Dependency Name="Microsoft.Build.Tasks.Core" Version="17.11.31">
+      <Uri>https://github.com/dotnet/msbuild</Uri>
+      <Sha>933b72e36e86c22ba73e8b8148488f8298bb73c7</Sha>
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>
