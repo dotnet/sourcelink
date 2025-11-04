@@ -14,6 +14,6 @@
     <!-- nuget -->
     <NuGetVersioningVersion>6.12.1</NuGetVersioningVersion>
     <!-- runtime -->
-    <SystemTextJsonVersion>8.0.5</SystemTextJsonVersion>
+    <SystemTextJsonVersion>9.0.0</SystemTextJsonVersion>
   </PropertyGroup>
 </Project>
