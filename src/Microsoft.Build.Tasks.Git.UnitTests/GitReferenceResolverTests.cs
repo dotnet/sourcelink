@@ -33,7 +33,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             Assert.Equal("0000000000000000000000000000000000000000", resolver.ResolveReference("ref: refs/heads/br1"));
             Assert.Equal("0000000000000000000000000000000000000000", resolver.ResolveReference("ref: refs/heads/br2"));
 
-            // branch without commits (emtpy repository) will have not file in refs/heads:
+            // branch without commits (empty repository) will have not file in refs/heads:
             Assert.Null(resolver.ResolveReference("ref: refs/heads/none"));
 
             Assert.Null(resolver.ResolveReference("ref: refs/heads/rec1   "));
@@ -58,8 +58,9 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var resolver = new GitReferenceResolver(gitDir.Path, commonDir.Path);
 
             // Verify SHA256 hash is accepted directly
-            Assert.Equal("0123456789ABCDEFabcdef00000000000000000000000000000000000000000000", 
-                         resolver.ResolveReference("0123456789ABCDEFabcdef00000000000000000000000000000000000000000000"));
+            Assert.Equal(
+                "0123456789ABCDEFabcdef00000000000000000000000000000000000000000000", 
+                resolver.ResolveReference("0123456789ABCDEFabcdef00000000000000000000000000000000000000000000"));
 
             Assert.Equal("0000000000000000000000000000000000000000000000000000000000000000", resolver.ResolveReference("ref: refs/heads/master"));
             Assert.Equal("0000000000000000000000000000000000000000000000000000000000000000", resolver.ResolveReference("ref: refs/heads/br1"));
@@ -85,9 +86,11 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             Assert.Throws<InvalidDataException>(() => resolver.ResolveReference("ref: xyz/heads/rec1"));
             Assert.Throws<InvalidDataException>(() => resolver.ResolveReference("ref:refs/heads/rec1"));
             Assert.Throws<InvalidDataException>(() => resolver.ResolveReference("refs/heads/rec1"));
+
             // Invalid SHA1 hash lengths
             Assert.Throws<InvalidDataException>(() => resolver.ResolveReference(new string('0', 39)));
             Assert.Throws<InvalidDataException>(() => resolver.ResolveReference(new string('0', 41)));
+
             // Invalid SHA256 hash lengths
             Assert.Throws<InvalidDataException>(() => resolver.ResolveReference(new string('0', 63)));
             Assert.Throws<InvalidDataException>(() => resolver.ResolveReference(new string('0', 65)));

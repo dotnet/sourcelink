@@ -20,6 +20,26 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             => new GitConfig.Reader(gitDirectory, gitDirectory, GitEnvironment.Empty, _ => new StringReader(configContent)).
                LoadFrom(configPath);
 
+        [Theory]
+        [InlineData("sha1", ObjectFormat.Sha1)]
+        [InlineData("sha256", ObjectFormat.Sha256)]
+        internal void TryParseObjectFormat_Valid(string str, ObjectFormat expected)
+        {
+            Assert.Equal(expected, GitConfig.ParseObjectFormat(str));
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData("Sha1")]
+        [InlineData("sha-1")]
+        [InlineData("sha-256")]
+        [InlineData("sha384")]
+        [InlineData("sha512")]
+        internal void TryParseObjectFormat_Invalid(string str)
+        {
+            Assert.Throws<InvalidDataException>(() => GitConfig.ParseObjectFormat(str));
+        }
+
         [Fact]
         public void Sections()
         {

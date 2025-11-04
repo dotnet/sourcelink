@@ -5,11 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Runtime.Serialization;
 
 namespace Microsoft.Build.Tasks.Git
 {
@@ -17,12 +15,57 @@ namespace Microsoft.Build.Tasks.Git
     {
         public static readonly GitConfig Empty = new GitConfig(ImmutableDictionary<GitVariableName, ImmutableArray<string>>.Empty);
 
+        private const int SupportedGitRepoFormatVersion = 1;
+
+        public const string CoreSectionName = "core";
+        public const string ExtensionsSectionName = "extensions";
+
+        public const string ObjectFormatVariableName = "objectFormat";
+        public const string RepositoryFormatVersionVariableName = "repositoryformatversion";
+
+        private static readonly ImmutableArray<string> s_knownExtensions = ["noop", "preciousObjects", "partialclone", "worktreeConfig", ObjectFormatVariableName];
+
         public readonly ImmutableDictionary<GitVariableName, ImmutableArray<string>> Variables;
 
+        /// <summary>
+        /// The parsed value of "extensions.objectFormat" variable.
+        /// </summary>
+        public ObjectFormat ObjectFormat { get; }
+
+        /// <exception cref="InvalidDataException"/>
         public GitConfig(ImmutableDictionary<GitVariableName, ImmutableArray<string>> variables)
         {
             NullableDebug.Assert(variables != null);
             Variables = variables;
+            
+            ObjectFormat = GetVariableValue(ExtensionsSectionName, ObjectFormatVariableName) is { } objectFormatStr 
+                ? ParseObjectFormat(objectFormatStr)
+                : ObjectFormat.Sha1;
+        }
+
+        /// <exception cref="NotSupportedException"/>
+        internal void ValidateFormat()
+        {
+            // See https://github.com/git/git/blob/master/Documentation/technical/repository-version.txt
+            string? versionStr = GetVariableValue(CoreSectionName, RepositoryFormatVersionVariableName);
+            if (TryParseInt64Value(versionStr, out var version) && version > SupportedGitRepoFormatVersion)
+            {
+                throw new NotSupportedException(string.Format(Resources.UnsupportedRepositoryVersion, versionStr, SupportedGitRepoFormatVersion));
+            }
+
+            if (version == 1)
+            {
+                // All variables defined under extensions section must be known, otherwise a git implementation is not allowed to proced.
+                foreach (var variable in Variables)
+                {
+                    if (variable.Key.SectionNameEquals(ExtensionsSectionName) &&
+                        !s_knownExtensions.Contains(variable.Key.VariableName, StringComparer.OrdinalIgnoreCase))
+                    {
+                        throw new NotSupportedException(string.Format(
+                            Resources.UnsupportedRepositoryExtension, variable.Key.VariableName, string.Join(", ", s_knownExtensions)));
+                    }
+                }
+            }
         }
 
         // for testing:
@@ -125,5 +168,14 @@ namespace Microsoft.Build.Tasks.Git
 
             return true;
         }
+
+        // internal for testing
+        internal static ObjectFormat ParseObjectFormat(string value)
+            => value switch
+            {
+                "sha1" => ObjectFormat.Sha1,
+                "sha256" => ObjectFormat.Sha256,
+                _ => throw new InvalidDataException(),
+            };
     }
 }

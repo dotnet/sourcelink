@@ -13,8 +13,6 @@ namespace Microsoft.Build.Tasks.Git
 {
     internal sealed class GitRepository
     {
-        private const int SupportedGitRepoFormatVersion = 1;
-
         private const string CommonDirFileName = "commondir";
         private const string GitDirName = ".git";
         private const string GitDirPrefix = "gitdir: ";
@@ -23,9 +21,6 @@ namespace Microsoft.Build.Tasks.Git
         internal const string GitHeadFileName = "HEAD";
 
         private const string GitModulesFileName = ".gitmodules";
-
-        private static readonly ImmutableArray<string> s_knownExtensions =
-            ImmutableArray.Create("noop", "preciousObjects", "partialclone", "worktreeConfig", "objectformat");
 
         public GitConfig Config { get; }
 
@@ -68,7 +63,7 @@ namespace Microsoft.Build.Tasks.Git
             WorkingDirectory = workingDirectory;
             Environment = environment;
 
-            _referenceResolver = new GitReferenceResolver(gitDirectory, commonDirectory);
+            _referenceResolver = new GitReferenceResolver(gitDirectory, commonDirectory, config.ObjectFormat);
             _lazySubmodules = new Lazy<(ImmutableArray<GitSubmodule>, ImmutableArray<string>)>(ReadSubmodules);
             _lazyIgnore = new Lazy<GitIgnore>(LoadIgnore);
             _lazyHeadCommitSha = new Lazy<string?>(ReadHeadCommitSha);
@@ -121,28 +116,9 @@ namespace Microsoft.Build.Tasks.Git
 
             var reader = new GitConfig.Reader(location.GitDirectory, location.CommonDirectory, environment);
             var config = reader.Load();
+            config.ValidateFormat();
 
             var workingDirectory = GetWorkingDirectory(config, location);
-
-            // See https://github.com/git/git/blob/master/Documentation/technical/repository-version.txt
-            string? versionStr = config.GetVariableValue("core", "repositoryformatversion");
-            if (GitConfig.TryParseInt64Value(versionStr, out var version) && version > SupportedGitRepoFormatVersion)
-            {
-                throw new NotSupportedException(string.Format(Resources.UnsupportedRepositoryVersion, versionStr, SupportedGitRepoFormatVersion));
-            }
-
-            if (version == 1)
-            {
-                // All variables defined under extensions section must be known, otherwise a git implementation is not allowed to proced.
-                foreach (var variable in config.Variables)
-                {
-                    if (variable.Key.SectionNameEquals("extensions") && !s_knownExtensions.Contains(variable.Key.VariableName, StringComparer.OrdinalIgnoreCase))
-                    {
-                        throw new NotSupportedException(string.Format(
-                            Resources.UnsupportedRepositoryExtension, variable.Key.VariableName, string.Join(", ", s_knownExtensions)));
-                    }
-                }
-            }
 
             return new GitRepository(environment, config, location.GitDirectory, location.CommonDirectory, workingDirectory);
         }
