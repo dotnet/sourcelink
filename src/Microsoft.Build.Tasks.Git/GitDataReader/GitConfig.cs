@@ -21,10 +21,11 @@ namespace Microsoft.Build.Tasks.Git
 
         private const string RefStorageExtensionName = "refstorage";
         private const string ObjectFormatExtensionName = "objectFormat";
+        private const string RelativeWorktreesExtensionName = "relativeWorktrees";
         private const string RepositoryFormatVersionVariableName = "repositoryformatversion";
 
         private static readonly ImmutableArray<string> s_knownExtensions =
-            ["noop", "preciousObjects", "partialclone", "worktreeConfig", RefStorageExtensionName, ObjectFormatExtensionName];
+            ["noop", "preciousObjects", "partialclone", "worktreeConfig", RefStorageExtensionName, ObjectFormatExtensionName, RelativeWorktreesExtensionName];
 
         public readonly ImmutableDictionary<GitVariableName, ImmutableArray<string>> Variables;
         public readonly ReferenceStorageFormat ReferenceStorageFormat;

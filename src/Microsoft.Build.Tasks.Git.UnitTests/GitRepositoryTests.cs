@@ -65,7 +65,9 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         {
             using var temp = new TempRoot();
 
-            var mainWorkingDir = temp.CreateDirectory();
+            var repoDir = temp.CreateDirectory();
+
+            var mainWorkingDir = repoDir.CreateDirectory("main");
             var mainWorkingSubDir = mainWorkingDir.CreateDirectory("A");
             var mainGitDir = mainWorkingDir.CreateDirectory(".git");
             mainGitDir.CreateFile("HEAD");
@@ -73,13 +75,17 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var worktreesDir = mainGitDir.CreateDirectory("worktrees");
             var worktreeGitDir = worktreesDir.CreateDirectory("myworktree");
             var worktreeGitSubDir = worktreeGitDir.CreateDirectory("B");
-            var worktreeDir = temp.CreateDirectory();
+            var worktreeDir = repoDir.CreateDirectory("worktree");
             var worktreeSubDir = worktreeDir.CreateDirectory("C");
-            var worktreeGitFile = worktreeDir.CreateFile(".git").WriteAllText("gitdir: " + worktreeGitDir + " \r\n\t\v");
+
+            // test relative path to work tree dir:
+            var worktreeGitFile = worktreeDir.CreateFile(".git").WriteAllText("gitdir: ../main/.git/worktrees/myworktree \r\n\t\v");
 
             worktreeGitDir.CreateFile("HEAD");
             worktreeGitDir.CreateFile("commondir").WriteAllText("../..\n");
-            worktreeGitDir.CreateFile("gitdir").WriteAllText(worktreeGitFile.Path + " \r\n\t\v");
+
+            // test relative path to work tree .git file:
+            worktreeGitDir.CreateFile("gitdir").WriteAllText("../../../../worktree/.git \r\n\t\v");
 
             // start under main repository directory:
             Assert.True(GitRepository.TryFindRepository(mainWorkingSubDir.Path, out var location));
@@ -226,6 +232,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
     preciousObjects = true
     partialClone = promisor_remote
     worktreeConfig = true
+    relativeWorktrees = true
     objectformat = sha256
 ");
 
@@ -338,7 +345,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             Assert.Equal(worktreeGitDir.Path, location.GitDirectory);
             Assert.Equal(mainGitDir.Path, location.CommonDirectory);
             Assert.Equal(worktreeDir.Path, location.WorkingDirectory);
-            
+
             var repository = GitRepository.OpenRepository(location, GitEnvironment.Empty);
             Assert.Equal(repository.GitDirectory, location.GitDirectory);
             Assert.Equal(repository.CommonDirectory, location.CommonDirectory);
@@ -377,7 +384,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var repository = GitRepository.OpenRepository(location, GitEnvironment.Empty);
             Assert.Equal(repository.GitDirectory, location.GitDirectory);
             Assert.Equal(repository.CommonDirectory, location.CommonDirectory);
-            
+
             // actual working dir is not affected:
             Assert.Equal(worktreeDir.Path, location.WorkingDirectory);
         }
