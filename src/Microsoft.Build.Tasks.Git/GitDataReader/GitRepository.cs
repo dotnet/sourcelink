@@ -125,7 +125,7 @@ namespace Microsoft.Build.Tasks.Git
             var workingDirectory = GetWorkingDirectory(config, location);
 
             // See https://github.com/git/git/blob/master/Documentation/technical/repository-version.txt
-            string? versionStr = config.GetVariableValue("core", "repositoryformatversion");
+            var versionStr = config.GetVariableValue("core", "repositoryformatversion");
             if (GitConfig.TryParseInt64Value(versionStr, out var version) && version > SupportedGitRepoFormatVersion)
             {
                 throw new NotSupportedException(string.Format(Resources.UnsupportedRepositoryVersion, versionStr, SupportedGitRepoFormatVersion));
@@ -154,7 +154,7 @@ namespace Microsoft.Build.Tasks.Git
 
             // Working directory can be overridden by a config option.
             // See https://git-scm.com/docs/git-config#Documentation/git-config.txt-coreworktree
-            string? value = config.GetVariableValue("core", "worktree");
+            var value = config.GetVariableValue("core", "worktree");
             if (value != null)
             {
                 // git does not expand home dir relative path ("~/")
@@ -319,7 +319,7 @@ namespace Microsoft.Build.Tasks.Git
                 GroupBy(kvp => kvp.Key.SubsectionName, GitVariableName.SubsectionNameComparer).
                 OrderBy(group => group.Key))
             {
-                string name = group.Key;
+                var name = group.Key;
                 string? url = null;
                 string? path = null;
 
@@ -465,7 +465,7 @@ namespace Microsoft.Build.Tasks.Git
                 throw new InvalidDataException(string.Format(Resources.FormatOfFileIsInvalid, path));
             }
 
-            var link = content.Substring(GitDirPrefix.Length).TrimEnd(CharUtils.AsciiWhitespace);
+            var link = content[GitDirPrefix.Length..].TrimEnd(CharUtils.AsciiWhitespace);
 
             try
             {

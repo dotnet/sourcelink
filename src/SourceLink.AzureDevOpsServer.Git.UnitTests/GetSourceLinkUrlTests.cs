@@ -22,7 +22,7 @@ namespace Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests
                 SourceRoot = new MockItem("x", KVP("RepositoryUrl", "http://abc.com"), KVP("SourceControl", "git")),
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
                 "ERROR : " + string.Format(CommonResources.AtLeastOneRepositoryHostIsRequired, "SourceLinkAzureDevOpsServerGitHost", "AzureDevOpsServer.Git"), engine.Log);
@@ -45,7 +45,7 @@ namespace Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
                 "ERROR : " + string.Format(CommonResources.ValueOfWithIdentityIsInvalid, "SourceRoot.RepositoryUrl", "/src/", "http://tfs.com/tfs/zzz"), engine.Log);
@@ -73,7 +73,7 @@ namespace Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
                 "ERROR : " + string.Format(CommonResources.ValueOfWithIdentityIsInvalid, "SourceRoot.RepositoryUrl", "/src/", url), engine.Log);
@@ -94,7 +94,7 @@ namespace Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests
                 RepositoryUrl = "http://subdomain.tfs.com:100/tfs/collection/project/_git/repo"
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
                 "ERROR : " + string.Format(CommonResources.AtLeastOneRepositoryHostIsRequired, "SourceLinkAzureDevOpsServerGitHost", "AzureDevOpsServer.Git"), engine.Log);
@@ -121,7 +121,7 @@ namespace Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("https://domain.com/x/y/collection/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
@@ -150,7 +150,7 @@ namespace Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual($"http://contoso.com{localPath}collection/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
@@ -171,7 +171,7 @@ namespace Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("https://contoso.com:8080/tfs/collection/repo/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
@@ -192,7 +192,7 @@ namespace Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("https://contoso.com:8080/tfs/collection/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
@@ -213,7 +213,7 @@ namespace Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("https://contoso.com:8080/tfs/collection/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
@@ -234,7 +234,7 @@ namespace Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("https://contoso.com:8080/tfs/collection/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);

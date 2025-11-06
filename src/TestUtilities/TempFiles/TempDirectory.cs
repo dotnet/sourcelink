@@ -31,7 +31,7 @@ namespace TestUtilities
         {
             while (true)
             {
-                string dir = System.IO.Path.Combine(basePath, Guid.NewGuid().ToString());
+                var dir = System.IO.Path.Combine(basePath, Guid.NewGuid().ToString());
                 try
                 {
                     Directory.CreateDirectory(dir);
@@ -55,7 +55,7 @@ namespace TestUtilities
         /// <param name="name">File name.</param>
         public TempFile CreateFile(string name)
         {
-            string filePath = System.IO.Path.Combine(_path, name);
+            var filePath = System.IO.Path.Combine(_path, name);
             TempRoot.CreateStream(filePath);
             return _root.AddFile(new DisposableFile(filePath));
         }
@@ -65,7 +65,7 @@ namespace TestUtilities
         /// </summary>
         public TempFile CopyFile(string originalPath, string? name = null)
         {
-            string filePath = System.IO.Path.Combine(_path, name ?? System.IO.Path.GetFileName(originalPath));
+            var filePath = System.IO.Path.Combine(_path, name ?? System.IO.Path.GetFileName(originalPath));
             File.Copy(originalPath, filePath);
             return _root.AddFile(new DisposableFile(filePath));
         }
@@ -76,7 +76,7 @@ namespace TestUtilities
         /// <param name="name">Directory name or unrooted directory path.</param>
         public TempDirectory CreateDirectory(string name)
         {
-            string dirPath = System.IO.Path.Combine(_path, name);
+            var dirPath = System.IO.Path.Combine(_path, name);
             Directory.CreateDirectory(dirPath);
             return new TempDirectory(dirPath, _root);
         }
