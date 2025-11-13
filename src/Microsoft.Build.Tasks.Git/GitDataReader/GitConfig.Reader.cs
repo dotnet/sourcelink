@@ -60,7 +60,7 @@ namespace Microsoft.Build.Tasks.Git
             private readonly Func<string, TextReader> _fileOpener;
             private readonly GitEnvironment _environment;
 
-            public Reader(string gitDirectory, string commonDirectory, GitEnvironment environment, Func<string, TextReader>? fileOpener = null)
+            internal Reader(string gitDirectory, string commonDirectory, GitEnvironment environment, Func<string, TextReader>? fileOpener = null)
             {
                 NullableDebug.Assert(environment != null);
 
@@ -102,7 +102,7 @@ namespace Microsoft.Build.Tasks.Git
                 {
                     return Path.Combine(xdgConfigHome, "git");
                 }
-                
+
                 if (_environment.HomeDirectory != null)
                 {
                     return Path.Combine(_environment.HomeDirectory, ".config", "git");

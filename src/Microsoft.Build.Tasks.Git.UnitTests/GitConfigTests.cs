@@ -1,8 +1,10 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the License.txt file in the project root for more information.
+
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -447,6 +449,31 @@ a =
         public void TryParseBooleanValue_Error(string? str)
         {
             Assert.False(GitConfig.TryParseBooleanValue(str, out _));
+        }
+
+        [Theory]
+        [InlineData(null, ReferenceStorageFormat.LooseFiles)]
+        [InlineData("reftable", ReferenceStorageFormat.RefTable)]
+        internal void RefStorage(string? value, ReferenceStorageFormat expected)
+        {
+            var variables = ImmutableDictionary<GitVariableName, ImmutableArray<string>>.Empty;
+            if (value != null)
+            {
+                variables = variables.Add(new GitVariableName("extensions", "", "refStorage"), [value]);
+            }
+
+            Assert.Equal(expected, new GitConfig(variables).ReferenceStorageFormat);
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData("x")]
+        [InlineData("refTable")]
+        public void RefStorage_Invalid(string value)
+        {
+            Assert.Throws<InvalidDataException>(() =>
+                new GitConfig(ImmutableDictionary<GitVariableName, ImmutableArray<string>>.Empty
+                    .Add(new GitVariableName("extensions", "", "refStorage"), [value])));
         }
     }
 }
