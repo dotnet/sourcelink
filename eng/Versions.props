@@ -1,14 +1,13 @@
 <Project>
-  <Import Project="Version.Details.props" Condition="Exists('Version.Details.props')" />
+
+  <Import Project="Version.Details.props" />
 
   <PropertyGroup>
     <!-- This repo version -->
-    <VersionPrefix>10.0.0</VersionPrefix>
+    <VersionPrefix>10.2.0</VersionPrefix>
     <PreReleaseVersionLabel>beta</PreReleaseVersionLabel>
     <!-- Opt-in repo features -->
     <UsingToolSymbolUploader>true</UsingToolSymbolUploader>
-    <!-- Prohibit the usage of .NET Standard 1.x dependencies. -->
-    <FlagNetStandard1XDependencies>true</FlagNetStandard1XDependencies>
   </PropertyGroup>
   <PropertyGroup>
     <!-- nuget -->
@@ -16,4 +15,5 @@
     <!-- runtime -->
     <SystemTextJsonVersion>8.0.5</SystemTextJsonVersion>
   </PropertyGroup>
+
 </Project>
