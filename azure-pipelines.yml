@@ -1,146 +1,44 @@
-pr:
+variables:
+  - template: /eng/common/templates-official/variables/pool-providers.yml@self
+
+trigger:
+  batch: true
   branches:
     include:
-    - main
-    - release/*
-  paths:
-    exclude:
-    - README.md
-    - docs/*
-schedules:
-- cron: "0 0 * * *"
-  displayName: Daily Official Build
-  branches:
-    include:
-    - main
-- cron: "0 8 22-28 * 0" # Fourth Sunday of each month at 8:00 UTC
-  displayName: "Monthly build check"
-  branches:
-    include: 
       - main
       - release/*
-  always: true # Run even if there have been no source code changes since the last successful scheduled run
-  batch: false # Do not run the pipeline if the previously scheduled run is in-progress
 
-variables:
-- template: /eng/common/templates-official/variables/pool-providers.yml@self
-- name: _TeamName
-  value: Roslyn
-- name: TeamName
-  value: Roslyn
+pr: none
+
 resources:
   repositories:
-  - repository: MicroBuildTemplate
+  - repository: 1ESPipelineTemplates
     type: git
-    name: 1ESPipelineTemplates/MicroBuildTemplate
+    name: 1ESPipelineTemplates/1ESPipelineTemplates
     ref: refs/tags/release
 extends:
-  template: azure-pipelines/MicroBuild.1ES.Official.yml@MicroBuildTemplate
+  template: v1/1ES.Official.PipelineTemplate.yml@1ESPipelineTemplates
   parameters:
     sdl:
+      createAdoIssuesForJustificationsForDisablement: false
       sourceAnalysisPool:
         name: $(DncEngInternalBuildPool)
         image: 1es-windows-2022
         os: windows
-      sbom:
-        enabled: false
-      policheck:
-          enabled: true
-      tsa:
-        enabled: true
-        configFile: '$(Build.SourcesDirectory)/eng/TSAConfig.gdntsa'
-    customBuildTags:
-    - ES365AIMigrationTooling
     stages:
     - stage: build
       displayName: Build
       jobs:
-      - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.SourceBranch'], 'refs/heads/main')) }}:
-        - template: /eng/common/templates-official/job/onelocbuild.yml@self
-          parameters:
-            MirrorRepo: sourcelink
-            LclSource: lclFilesfromPackage
-            LclPackageId: 'LCL-JUNO-PROD-SOURCELINK'
       - template: /eng/common/templates-official/jobs/jobs.yml@self
         parameters:
-          enableMicrobuild: true
           enablePublishBuildArtifacts: true
-          enablePublishTestResults: true
-          enablePublishBuildAssets: true
-          enablePublishUsingPipelines: true
+          enablePublishBuildAssets: false
+          enablePublishTestResults: false
+          publishAssetsImmediately: true
+          isAssetlessBuild: true
           enableTelemetry: true
-          enableSourceBuild: true
-          helixRepo: dotnet/symreader
-          jobs:
-          - job: Windows
-            pool:
-              ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
-                vmImage: 'windows-latest'
-              ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-                name: $(DncEngInternalBuildPool)
-                demands: ImageOverride -equals 1es-windows-2022
-            variables:
-            - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-              - group: Publish-Build-Assets
-              - name: _OfficialBuildArgs
-                value: /p:DotNetSignType=$(_SignType) /p:DotNetPublishUsingPipelines=true /p:TeamName=$(_TeamName) /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
-            - ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
-              - name: _OfficialBuildArgs
-                value: ''
-            strategy:
-              matrix:
-                ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
-                  Debug:
-                    _BuildConfig: Debug
-                    _SignType: test
-                    _BuildArgs: ''
-                Release:
-                  _BuildConfig: Release
-                  ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
-                    _SignType: test
-                    _BuildArgs: ''
-                  ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-                    _SignType: real
-                    _BuildArgs: $(_OfficialBuildArgs)
-            steps:
-            - checkout: self
-              clean: true
-            - script: eng\cibuild.cmd -configuration $(_BuildConfig) -prepareMachine $(_BuildArgs)
-              displayName: Build and Test
-          - ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
-            - job: MacOS
-              displayName: 'MacOS'
-              pool:
-                vmImage: 'macOS-latest'
-              strategy:
-                matrix:
-                  Debug:
-                    _BuildConfig: Debug
-                    _SignType: none
-                  Release:
-                    _BuildConfig: Release
-                    _SignType: none
-              steps:
-              - checkout: self
-                clean: true
-              - script: eng/cibuild.sh --configuration $(_BuildConfig) --prepareMachine
-                displayName: Build and Test
-            - job: Linux
-              displayName: 'Linux'
-              pool:
-                vmImage: 'ubuntu-latest'
-              strategy:
-                matrix:
-                  Debug:
-                    _BuildConfig: Debug
-                    _SignType: none
-                  Release:
-                    _BuildConfig: Release
-                    _SignType: none
-              steps:
-              - checkout: self
-                clean: true
-              - script: eng/cibuild.sh --configuration $(_BuildConfig) --prepareMachine
-                displayName: Build and Test
-    - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-      - template: /eng/common/templates-official/post-build/post-build.yml@self
+      - template: /eng/common/templates-official/job/onelocbuild.yml@self
+        parameters:
+          MirrorRepo: sourcelink
+          LclSource: lclFilesfromPackage
+          LclPackageId: 'LCL-JUNO-PROD-SOURCELINK'
