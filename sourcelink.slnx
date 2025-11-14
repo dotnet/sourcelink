@@ -1,0 +1,54 @@
+<Solution>
+  <Folder Name="/Common/" />
+  <Folder Name="/Common/AzureDevOps/">
+    <File Path="src/Common/AzureDevOps/AzureDevOpsUrlParser.cs" />
+    <File Path="src/Common/AzureDevOps/Items.props" />
+  </Folder>
+  <Folder Name="/Common/GitProvider/">
+    <File Path="src/Common/GitProvider/CommonResources.resx" />
+    <File Path="src/Common/GitProvider/GetSourceLinkUrlGitTask.cs" />
+    <File Path="src/Common/GitProvider/Items.props" />
+    <File Path="src/Common/GitProvider/TranslateRepositoryUrlGitTask.cs" />
+  </Folder>
+  <Folder Name="/Common/Utilities/">
+    <File Path="src/Common/Utilities/Hash.cs" />
+    <File Path="src/Common/Utilities/Index.cs" />
+    <File Path="src/Common/Utilities/IsExternalInit.cs" />
+    <File Path="src/Common/Utilities/Names.cs" />
+    <File Path="src/Common/Utilities/NullableAttributes.cs" />
+    <File Path="src/Common/Utilities/PathUtilities.cs" />
+    <File Path="src/Common/Utilities/Range.cs" />
+    <File Path="src/Common/Utilities/RequiredMemberAttribute.cs" />
+    <File Path="src/Common/Utilities/SequenceComparer.cs" />
+    <File Path="src/Common/Utilities/SetsRequiredMembersAttribute.cs" />
+    <File Path="src/Common/Utilities/UriUtilities.cs" />
+    <File Path="src/Common/Utilities/ValueTuple.cs" />
+  </Folder>
+  <Project Path="src/dotnet-sourcelink/dotnet-sourcelink.csproj" />
+  <Project Path="src/Microsoft.Build.StandardCI/Microsoft.Build.StandardCI.csproj" />
+  <Project Path="src/Microsoft.Build.Tasks.Git.UnitTests/Microsoft.Build.Tasks.Git.UnitTests.csproj" />
+  <Project Path="src/Microsoft.Build.Tasks.Git/Microsoft.Build.Tasks.Git.csproj" />
+  <Project Path="src/SourceLink.AzureDevOpsServer.Git.UnitTests/Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests.csproj" />
+  <Project Path="src/SourceLink.AzureDevOpsServer.Git/Microsoft.SourceLink.AzureDevOpsServer.Git.csproj" />
+  <Project Path="src/SourceLink.AzureRepos.Git.UnitTests/Microsoft.SourceLink.AzureRepos.Git.UnitTests.csproj" />
+  <Project Path="src/SourceLink.AzureRepos.Git/Microsoft.SourceLink.AzureRepos.Git.csproj" />
+  <Project Path="src/SourceLink.Bitbucket.Git.UnitTests/Microsoft.SourceLink.Bitbucket.Git.UnitTests.csproj" />
+  <Project Path="src/SourceLink.Bitbucket.Git/Microsoft.SourceLink.Bitbucket.Git.csproj" />
+  <Project Path="src/SourceLink.Common.UnitTests/Microsoft.SourceLink.Common.UnitTests.csproj" />
+  <Project Path="src/SourceLink.Common/Microsoft.SourceLink.Common.csproj" />
+  <Project Path="src/SourceLink.Git.IntegrationTests/Microsoft.SourceLink.Git.IntegrationTests.csproj" />
+  <Project Path="src/SourceLink.Gitea.UnitTests/Microsoft.SourceLink.Gitea.UnitTests.csproj" />
+  <Project Path="src/SourceLink.Gitea/Microsoft.SourceLink.Gitea.csproj" />
+  <Project Path="src/SourceLink.Gitee.UnitTests/Microsoft.SourceLink.Gitee.UnitTests.csproj" />
+  <Project Path="src/SourceLink.Gitee/Microsoft.SourceLink.Gitee.csproj" />
+  <Project Path="src/SourceLink.GitHub.UnitTests/Microsoft.SourceLink.GitHub.UnitTests.csproj" />
+  <Project Path="src/SourceLink.GitHub/Microsoft.SourceLink.GitHub.csproj" />
+  <Project Path="src/SourceLink.GitLab.UnitTests/Microsoft.SourceLink.GitLab.UnitTests.csproj" />
+  <Project Path="src/SourceLink.GitLab/Microsoft.SourceLink.GitLab.csproj" />
+  <Project Path="src/SourceLink.GitWeb.UnitTests/Microsoft.SourceLink.GitWeb.UnitTests.csproj" />
+  <Project Path="src/SourceLink.GitWeb/Microsoft.SourceLink.GitWeb.csproj" />
+  <Project Path="src/SourceLink.Tools.UnitTests/Microsoft.SourceLink.Tools.UnitTests.csproj" />
+  <Project Path="src/SourceLink.Tools/Microsoft.SourceLink.Tools.Package.csproj" />
+  <Project Path="src/SourceLink.Tools/Microsoft.SourceLink.Tools.shproj" />
+  <Project Path="src/TestUtilities/TestUtilities.csproj" />
+</Solution>
