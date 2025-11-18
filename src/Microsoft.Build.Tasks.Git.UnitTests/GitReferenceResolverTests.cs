@@ -33,7 +33,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             Assert.Equal("0000000000000000000000000000000000000000", resolver.ResolveReference("ref: refs/heads/br1"));
             Assert.Equal("0000000000000000000000000000000000000000", resolver.ResolveReference("ref: refs/heads/br2"));
 
-            // branch without commits (empty repository) will have not file in refs/heads:
+            // branch without commits (empty repository) will have no file in refs/heads:
             Assert.Null(resolver.ResolveReference("ref: refs/heads/none"));
 
             Assert.Null(resolver.ResolveReference("ref: refs/heads/rec1   "));
