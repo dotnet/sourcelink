@@ -475,5 +475,34 @@ a =
                 new GitConfig(ImmutableDictionary<GitVariableName, ImmutableArray<string>>.Empty
                     .Add(new GitVariableName("extensions", "", "refStorage"), [value])));
         }
+
+        [Theory]
+        [InlineData(null, ObjectNameFormat.Sha1)]
+        [InlineData("sha1", ObjectNameFormat.Sha1)]
+        [InlineData("sha256", ObjectNameFormat.Sha256)]
+        internal void ParseObjectFormat(string? value, ObjectNameFormat expected)
+        {
+            var variables = ImmutableDictionary<GitVariableName, ImmutableArray<string>>.Empty;
+            if (value != null)
+            {
+                variables = variables.Add(new GitVariableName("extensions", "", "objectFormat"), [value]);
+            }
+
+            Assert.Equal(expected, new GitConfig(variables).ObjectNameFormat);
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData("Sha1")]
+        [InlineData("sha-1")]
+        [InlineData("sha-256")]
+        [InlineData("sha384")]
+        [InlineData("sha512")]
+        internal void ParseObjectFormat_Invalid(string value)
+        {
+            Assert.Throws<InvalidDataException>(() =>
+                new GitConfig(ImmutableDictionary<GitVariableName, ImmutableArray<string>>.Empty
+                    .Add(new GitVariableName("extensions", "", "objectFormat"), [value])));
+        }
     }
 }
