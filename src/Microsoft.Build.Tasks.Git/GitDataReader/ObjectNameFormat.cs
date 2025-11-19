@@ -6,6 +6,10 @@ using System;
 
 namespace Microsoft.Build.Tasks.Git;
 
+/// <summary>
+/// Format of object names.
+/// https://git-scm.com/docs/hash-function-transition.html#_object_format
+/// </summary>
 internal enum ObjectNameFormat
 {
     Sha1,

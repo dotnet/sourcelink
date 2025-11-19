@@ -61,7 +61,7 @@ namespace Microsoft.Build.Tasks.Git
             WorkingDirectory = workingDirectory;
             Environment = environment;
 
-            _referenceResolver = new GitReferenceResolver(gitDirectory, commonDirectory, config.ReferenceStorageFormat);
+            _referenceResolver = new GitReferenceResolver(gitDirectory, commonDirectory, config.ReferenceStorageFormat, config.ObjectNameFormat);
             _lazySubmodules = new(ReadSubmodules);
             _lazyIgnore = new(LoadIgnore);
             _lazyHeadCommitSha = new(ReadHeadCommitSha);
@@ -191,7 +191,7 @@ namespace Microsoft.Build.Tasks.Git
             }
 
             var config = GitConfig.ReadRepositoryConfig(gitDirectory, commonDirectory, environment);
-            return new GitReferenceResolver(gitDirectory, commonDirectory, config.ReferenceStorageFormat);
+            return new GitReferenceResolver(gitDirectory, commonDirectory, config.ReferenceStorageFormat, config.ObjectNameFormat);
         }
 
         private string GetWorkingDirectory()
