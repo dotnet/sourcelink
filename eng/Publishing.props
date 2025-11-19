@@ -1,0 +1,7 @@
+<Project>
+
+  <PropertyGroup>
+    <ProducesDotNetReleaseShippingAssets>true</ProducesDotNetReleaseShippingAssets>
+  </PropertyGroup>
+
+</Project>
