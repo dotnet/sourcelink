@@ -3,13 +3,20 @@
   <Import Project="Version.Details.props" />
 
   <PropertyGroup>
-    <!-- This repo version -->
-    <VersionPrefix>10.2.0</VersionPrefix>
-    <PreReleaseVersionLabel>beta</PreReleaseVersionLabel>
+    <VersionPrefix>10.0.200</VersionPrefix>
+    <PreReleaseVersionLabel>alpha</PreReleaseVersionLabel>
+    <PreReleaseVersionIteration></PreReleaseVersionIteration>
+    <!-- Allowed values: '', 'prerelease', 'release'. Set to 'release' when stabilizing. -->
+    <DotNetFinalVersionKind></DotNetFinalVersionKind>
+
     <!-- Opt-in repo features -->
     <UsingToolSymbolUploader>true</UsingToolSymbolUploader>
   </PropertyGroup>
+
   <PropertyGroup>
+    <!-- msbuild -->
+    <MicrosoftBuildVersion>17.11.48</MicrosoftBuildVersion>
+    <MicrosoftBuildTasksCoreVersion>17.11.48</MicrosoftBuildTasksCoreVersion>
     <!-- nuget -->
     <NuGetVersioningVersion>6.12.1</NuGetVersioningVersion>
     <!-- runtime -->
