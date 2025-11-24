@@ -8,7 +8,10 @@ This file should be imported by eng/Versions.props
     <!-- dotnet/dotnet dependencies -->
     <MicrosoftDotNetArcadeSdkPackageVersion>11.0.0-beta.25571.109</MicrosoftDotNetArcadeSdkPackageVersion>
     <SystemCommandLinePackageVersion>3.0.0-alpha.1.25571.109</SystemCommandLinePackageVersion>
-    <SystemIOHashingPackageVersion>10.0.0-rc.2.25502.107</SystemIOHashingPackageVersion>
+    <SystemIOHashingPackageVersion>10.0.0-rc.3.25571.109</SystemIOHashingPackageVersion>
+    <!-- dotnet/msbuild dependencies -->
+    <MicrosoftBuildPackageVersion>17.11.48</MicrosoftBuildPackageVersion>
+    <MicrosoftBuildTasksCorePackageVersion>17.11.48</MicrosoftBuildTasksCorePackageVersion>
   </PropertyGroup>
   <!--Property group for alternate package version names-->
   <PropertyGroup>
@@ -16,5 +19,8 @@ This file should be imported by eng/Versions.props
     <MicrosoftDotNetArcadeSdkVersion>$(MicrosoftDotNetArcadeSdkPackageVersion)</MicrosoftDotNetArcadeSdkVersion>
     <SystemCommandLineVersion>$(SystemCommandLinePackageVersion)</SystemCommandLineVersion>
     <SystemIOHashingVersion>$(SystemIOHashingPackageVersion)</SystemIOHashingVersion>
+    <!-- dotnet/msbuild dependencies -->
+    <MicrosoftBuildVersion>$(MicrosoftBuildPackageVersion)</MicrosoftBuildVersion>
+    <MicrosoftBuildTasksCoreVersion>$(MicrosoftBuildTasksCorePackageVersion)</MicrosoftBuildTasksCoreVersion>
   </PropertyGroup>
 </Project>
