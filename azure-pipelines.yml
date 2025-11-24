@@ -37,8 +37,10 @@ extends:
           publishAssetsImmediately: true
           isAssetlessBuild: true
           enableTelemetry: true
-      - template: /eng/common/templates-official/job/onelocbuild.yml@self
-        parameters:
-          MirrorRepo: sourcelink
-          LclSource: lclFilesfromPackage
-          LclPackageId: 'LCL-JUNO-PROD-SOURCELINK'
+      # The localization setup for main branch. Note difference in package ID. Should not be used with release/ branches.
+      - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+        - template: /eng/common/templates-official/job/onelocbuild.yml@self
+          parameters:
+            MirrorRepo: sourcelink
+            LclSource: lclFilesfromPackage
+            LclPackageId: 'LCL-JUNO-PROD-SOURCELINK'
