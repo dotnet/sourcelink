@@ -60,7 +60,7 @@ namespace Microsoft.Build.Tasks.Git
             private readonly Func<string, TextReader> _fileOpener;
             private readonly GitEnvironment _environment;
 
-            public Reader(string gitDirectory, string commonDirectory, GitEnvironment environment, Func<string, TextReader>? fileOpener = null)
+            internal Reader(string gitDirectory, string commonDirectory, GitEnvironment environment, Func<string, TextReader>? fileOpener = null)
             {
                 NullableDebug.Assert(environment != null);
 
@@ -102,7 +102,7 @@ namespace Microsoft.Build.Tasks.Git
                 {
                     return Path.Combine(xdgConfigHome, "git");
                 }
-                
+
                 if (_environment.HomeDirectory != null)
                 {
                     return Path.Combine(_environment.HomeDirectory, ".config", "git");
@@ -221,14 +221,14 @@ namespace Microsoft.Build.Tasks.Git
                 {
                     var reader = new LineCountingReader(textReader, path);
 
-                    string sectionName = "";
-                    string subsectionName = "";
+                    var sectionName = "";
+                    var subsectionName = "";
 
                     while (true)
                     {
                         SkipMultilineWhitespace(reader);
 
-                        int c = reader.Peek();
+                        var c = reader.Peek();
                         if (c == -1)
                         {
                             break;
@@ -262,7 +262,7 @@ namespace Microsoft.Build.Tasks.Git
                         // Spec https://git-scm.com/docs/git-config#_includes:
                         if (IsIncludePath(key, path))
                         {
-                            string includedConfigPath = NormalizeRelativePath(relativePath: variableValue, basePath: path, key);
+                            var includedConfigPath = NormalizeRelativePath(relativePath: variableValue, basePath: path, key);
                             LoadVariablesFrom(includedConfigPath, variables, includeDepth + 1);
                         }
                     }
@@ -276,7 +276,7 @@ namespace Microsoft.Build.Tasks.Git
                 if (relativePath.Length >= 2 && relativePath[0] == '~' && PathUtils.IsDirectorySeparator(relativePath[1]))
                 {
                     root = _environment.GetHomeDirectoryForPathExpansion(relativePath);
-                    relativePath = relativePath.Substring(2);
+                    relativePath = relativePath[2..];
                 }
                 else
                 {
@@ -315,12 +315,12 @@ namespace Microsoft.Build.Tasks.Git
 
                     if (key.SubsectionName.StartsWith(caseSensitiveGitDirPrefix, StringComparison.Ordinal))
                     {
-                        pattern = key.SubsectionName.Substring(caseSensitiveGitDirPrefix.Length);
+                        pattern = key.SubsectionName[caseSensitiveGitDirPrefix.Length..];
                         ignoreCase = false;
                     }
                     else if (key.SubsectionName.StartsWith(caseInsensitiveGitDirPrefix, StringComparison.Ordinal))
                     {
-                        pattern = key.SubsectionName.Substring(caseInsensitiveGitDirPrefix.Length);
+                        pattern = key.SubsectionName[caseInsensitiveGitDirPrefix.Length..];
                         ignoreCase = true;
                     }
                     else
@@ -331,12 +331,12 @@ namespace Microsoft.Build.Tasks.Git
                     if (pattern.Length >= 2 && pattern[0] == '.' && pattern[1] == '/')
                     {
                         // leading './' is substituted with the path to the directory containing the current config file.
-                        pattern = PathUtils.CombinePosixPaths(PathUtils.ToPosixPath(Path.GetDirectoryName(configFilePath)!), pattern.Substring(2));
+                        pattern = PathUtils.CombinePosixPaths(PathUtils.ToPosixPath(Path.GetDirectoryName(configFilePath)!), pattern[2..]);
                     }
                     else if (pattern.Length >= 2 && pattern[0] == '~' && pattern[1] == '/')
                     {
                         // leading '~/' is substituted with HOME path
-                        pattern = PathUtils.CombinePosixPaths(PathUtils.ToPosixPath(_environment.GetHomeDirectoryForPathExpansion(pattern)), pattern.Substring(2));
+                        pattern = PathUtils.CombinePosixPaths(PathUtils.ToPosixPath(_environment.GetHomeDirectoryForPathExpansion(pattern)), pattern[2..]);
                     }
                     else if (!PathUtils.IsAbsolute(pattern))
                     {
@@ -359,7 +359,7 @@ namespace Microsoft.Build.Tasks.Git
             {
                 var nameBuilder = reusableBuffer.Clear();
 
-                int c = reader.Read();
+                var c = reader.Read();
                 Debug.Assert(c == '[');
 
                 while (true)
@@ -400,7 +400,7 @@ namespace Microsoft.Build.Tasks.Git
                 name = name.ToLowerInvariant();
 
                 // Deprecated syntax: [section.subsection]
-                int firstDot = name.IndexOf('.');
+                var firstDot = name.IndexOf('.');
                 if (firstDot != -1)
                 {
                     // "[.x]" parses to section "", subsection ".x" (lookup ".x.var" suceeds, ".X.var" fails)
@@ -408,8 +408,8 @@ namespace Microsoft.Build.Tasks.Git
                     // "[x.]" parses to section "x.", subsection "" (lookups "X..var" and "x..var" suceed)
                     // "[x..]" parses to section "x", subsection "." (lookups "X...var" and "x...var" suceed)
 
-                    var prefix = (firstDot == name.Length - 1) ? name : name.Substring(0, firstDot);
-                    var suffix = name.Substring(firstDot + 1);
+                    var prefix = (firstDot == name.Length - 1) ? name : name[..firstDot];
+                    var suffix = name[(firstDot + 1)..];
 
                     subsectionName = (subsectionName.Length > 0) ? suffix + "." + subsectionName : suffix;
                     name = prefix;
@@ -420,7 +420,7 @@ namespace Microsoft.Build.Tasks.Git
             {
                 SkipWhitespace(reader);
 
-                int c = reader.Read();
+                var c = reader.Read();
                 if (c != '"')
                 {
                     reader.UnexpectedCharacter(c);
@@ -470,7 +470,7 @@ namespace Microsoft.Build.Tasks.Git
                 // name         #
                 // = value
 
-                int c = reader.Peek();
+                var c = reader.Peek();
                 if (c == -1 || IsCommentStart(c) || IsEndOfLine(c))
                 {
                     ReadToLineEnd(reader);
@@ -524,13 +524,13 @@ namespace Microsoft.Build.Tasks.Git
                 //    bc                   `a bc`
 
                 // read until comment/eoln, quote
-                bool inQuotes = false;
+                var inQuotes = false;
                 var builder = reusableBuffer.Clear();
-                int lengthIgnoringTrailingWhitespace = 0;
+                var lengthIgnoringTrailingWhitespace = 0;
 
                 while (true)
                 {
-                    int c = reader.Read();
+                    var c = reader.Read();
                     if (c == -1)
                     {
                         if (inQuotes)
@@ -640,7 +640,7 @@ namespace Microsoft.Build.Tasks.Git
             {
                 while (true)
                 {
-                    int c = reader.Read();
+                    var c = reader.Read();
                     if (c == -1)
                     {
                         return;

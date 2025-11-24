@@ -10,7 +10,7 @@ namespace TestUtilities
     {
         public static IEnumerable<S> SelectWithIndex<T, S>(this IEnumerable<T> items, Func<T, int, S> selector)
         {
-            int i = 0;
+            var i = 0;
             foreach (var item in items)
             {
                 yield return selector(item, i++);
