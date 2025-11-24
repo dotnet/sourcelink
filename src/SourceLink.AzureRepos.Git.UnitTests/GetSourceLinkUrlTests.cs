@@ -22,7 +22,7 @@ namespace Microsoft.SourceLink.AzureRepos.Git.UnitTests
                 SourceRoot = new MockItem("x", KVP("RepositoryUrl", "http://abc.com"), KVP("SourceControl", "git")),
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
                 "ERROR : " + string.Format(CommonResources.AtLeastOneRepositoryHostIsRequired, "SourceLinkAzureReposGitHost", "AzureRepos.Git"), engine.Log);
@@ -49,7 +49,7 @@ namespace Microsoft.SourceLink.AzureRepos.Git.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("https://domain.com/x/y/account/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
@@ -70,7 +70,7 @@ namespace Microsoft.SourceLink.AzureRepos.Git.UnitTests
                 Hosts = new[] { new MockItem(host) }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
 
             // ERROR : The value of SourceRoot.RepositoryUrl with identity '/src/' is invalid: 'http://account.visualstudio.com/_git'""
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
@@ -94,7 +94,7 @@ namespace Microsoft.SourceLink.AzureRepos.Git.UnitTests
                 Hosts = new[] { new MockItem(host) }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual($"http://{domainAndAccount}/repo/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
@@ -115,7 +115,7 @@ namespace Microsoft.SourceLink.AzureRepos.Git.UnitTests
                 Hosts = new[] { new MockItem(host) }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual($"https://{domainAndAccount}/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
@@ -135,7 +135,7 @@ namespace Microsoft.SourceLink.AzureRepos.Git.UnitTests
                 Hosts = new[] { new MockItem(host) }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual($"https://{domainAndAccount}/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
@@ -153,7 +153,7 @@ namespace Microsoft.SourceLink.AzureRepos.Git.UnitTests
                 Hosts = new[] { new MockItem("contoso.com") }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
 
             // ERROR : The value of SourceRoot.RepositoryUrl with identity '/src/' is invalid: 'http://contoso.com/account/project/team/_git/repo'""
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
@@ -176,7 +176,7 @@ namespace Microsoft.SourceLink.AzureRepos.Git.UnitTests
                 Hosts = new[] { new MockItem(host) }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual($"https://{domain}/repo/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
 
@@ -197,7 +197,7 @@ namespace Microsoft.SourceLink.AzureRepos.Git.UnitTests
                 Hosts = new[] { new MockItem(host) }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual($"https://{domain}/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
@@ -217,7 +217,7 @@ namespace Microsoft.SourceLink.AzureRepos.Git.UnitTests
                 Hosts = new[] { new MockItem(host) }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual($"https://{domain}/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
@@ -238,7 +238,7 @@ namespace Microsoft.SourceLink.AzureRepos.Git.UnitTests
                 RepositoryUrl = $"https://{domain}/DefaultCollection/project/_git/repo"
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual($"https://{domain}/repo/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
@@ -259,7 +259,7 @@ namespace Microsoft.SourceLink.AzureRepos.Git.UnitTests
                 RepositoryUrl = $"https://{domain}/DefaultCollection/project/_git/repo"
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual($"https://{domain}/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
@@ -280,7 +280,7 @@ namespace Microsoft.SourceLink.AzureRepos.Git.UnitTests
                 RepositoryUrl = $"https://{domain}/DefaultCollection/project/_git/repo"
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual($"https://{domain}/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);

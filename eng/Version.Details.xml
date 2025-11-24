@@ -13,13 +13,17 @@
       <Sha>cc7f6e84d8dae36ad9ea51a5112627b8235982cc</Sha>
     </Dependency>
     <!-- Dependencies required for source build to lift to the previously-source-built version. -->
-    <Dependency Name="Microsoft.Build" Version="17.11.31">
+    <Dependency Name="Microsoft.Build" Version="17.11.48">
       <Uri>https://github.com/dotnet/msbuild</Uri>
-      <Sha>933b72e36e86c22ba73e8b8148488f8298bb73c7</Sha>
+      <Sha>02bf66295b64ab368d12933041f7281aad186a2d</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Build.Tasks.Core" Version="17.11.31">
+    <Dependency Name="Microsoft.Build.Tasks.Core" Version="17.11.48">
       <Uri>https://github.com/dotnet/msbuild</Uri>
-      <Sha>933b72e36e86c22ba73e8b8148488f8298bb73c7</Sha>
+      <Sha>02bf66295b64ab368d12933041f7281aad186a2d</Sha>
+    </Dependency>
+    <Dependency Name="System.IO.Hashing" Version="10.0.0-rc.2.25502.107">
+      <Uri>https://github.com/dotnet/dotnet</Uri>
+      <Sha>be28ec777bf12db631725399c442448d52093087</Sha>
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>
