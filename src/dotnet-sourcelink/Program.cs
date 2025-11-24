@@ -106,12 +106,12 @@ namespace Microsoft.SourceLink.Tools
 
             test.SetAction((parseResult, cancellationToken) =>
             {
-                string path = parseResult.GetValue(pathArg)!;
-                string? authMethod = parseResult.GetValue(authArg);
+                var path = parseResult.GetValue(pathArg)!;
+                var authMethod = parseResult.GetValue(authArg);
                 Encoding? authEncoding = parseResult.GetValue(authEncodingArg);
-                string? user = parseResult.GetValue(userArg);
-                string? password = parseResult.GetValue(passwordArg);
-                bool offline = parseResult.GetValue(offlineArg);
+                var user = parseResult.GetValue(userArg);
+                var password = parseResult.GetValue(passwordArg);
+                var offline = parseResult.GetValue(offlineArg);
 
                 return TestAsync(path, authMethod, authEncoding, user, password, offline, parseResult, cancellationToken);
             });
@@ -291,10 +291,10 @@ namespace Microsoft.SourceLink.Tools
 
         private static byte[]? TryCalculateHashWithLineBreakSubstituted(byte[] content, IncrementalHash incrementalHash)
         {
-            int index = 0;
+            var index = 0;
             while (true)
             {
-                int lf = Array.IndexOf(content, (byte)'\n', index);
+                var lf = Array.IndexOf(content, (byte)'\n', index);
                 if (lf < 0)
                 {
                     incrementalHash.AppendData(content, index, content.Length - index);
@@ -370,7 +370,7 @@ namespace Microsoft.SourceLink.Tools
             var resolvedDocuments = new List<DocumentInfo>();
             ReadAndResolveDocuments(path, resolvedDocuments);            
 
-            int unresolvedCount = 0;
+            var unresolvedCount = 0;
             foreach (var document in resolvedDocuments)
             {
                 if (document.IsEmbedded)
@@ -441,7 +441,7 @@ namespace Microsoft.SourceLink.Tools
             if (!ReadPdbMetadata(path, (filePath, metadataReader) =>
             {
                 var documents = new List<(string name, ImmutableArray<byte> hash, Guid hashAlgorithm, bool isEmbedded)>();
-                bool hasUnembeddedDocument = false;
+                var hasUnembeddedDocument = false;
 
                 foreach (var documentHandle in metadataReader.Documents)
                 {
@@ -482,7 +482,7 @@ namespace Microsoft.SourceLink.Tools
 
                 foreach (var (name, hash, hashAlgorithm, isEmbedded) in documents)
                 {
-                    string? uri = isEmbedded ? null : sourceLinkMap.TryGetUri(name, out var mappedUri) ? mappedUri : null;
+                    var uri = isEmbedded ? null : sourceLinkMap.TryGetUri(name, out var mappedUri) ? mappedUri : null;
                     resolvedDocuments.Add(new DocumentInfo(filePath, name, uri, isEmbedded, hash, hashAlgorithm));
                 }
             }))

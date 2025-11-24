@@ -46,7 +46,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 Hosts = new[] { new MockItem(domain) }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
                 "ERROR : " + string.Format(CommonResources.ValuePassedToTaskParameterNotValidDomainName, "Hosts", domain), engine.Log);
@@ -69,7 +69,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 IsSingleProvider = true,
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
                 "ERROR : " + string.Format(CommonResources.ValuePassedToTaskParameterNotValidUri, "RepositoryUrl", repositoryUrl), engine.Log);
@@ -91,7 +91,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 IsSingleProvider = true,
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
                 "ERROR : " + string.Format(CommonResources.ValuePassedToTaskParameterNotValidHostUri, "RepositoryUrl", repositoryUrl), engine.Log);
@@ -117,7 +117,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 Hosts = new[] { new MockItem("abc.com", KVP("ContentUrl", url)) }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
                 "ERROR : " + string.Format(CommonResources.ValuePassedToTaskParameterNotValidHostUri, "Hosts", url), engine.Log);
@@ -138,7 +138,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", url), KVP("SourceControl", "git")),
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
                 "ERROR : " + string.Format(CommonResources.ValueOfWithIdentityIsInvalid, "SourceRoot.RepositoryUrl", "/src/", url), engine.Log);
@@ -164,7 +164,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 Hosts = new[] { new MockItem("contoso.com", KVP("ContentUrl", "https://contoso.com")) }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
                 "ERROR : " + string.Format(CommonResources.ValueOfWithIdentityIsNotValidCommitHash, "SourceRoot.RevisionId", "/src/", revisionId), engine.Log);
@@ -184,7 +184,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 Hosts = new[] { new MockItem("contoso.com", KVP("ContentUrl", "https://contoso.com")) }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             Assert.Equal("N/A", task.SourceLinkUrl);
             Assert.True(result);
@@ -202,7 +202,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 Hosts = new[] { new MockItem("github.com", KVP("ContentUrl", "https://contoso.com")) }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             Assert.Equal("N/A", task.SourceLinkUrl);
             Assert.True(result);
@@ -219,7 +219,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 SourceRoot = new MockItem("x", KVP("RepositoryUrl", ""), KVP("SourceControl", "git")),
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
                 "WARNING : " + string.Format(CommonResources.UnableToDetermineRepositoryUrl), engine.Log);
@@ -244,7 +244,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             Assert.Equal("N/A", task.SourceLinkUrl);
             Assert.True(result);
@@ -265,7 +265,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("ContentUrl='http://contoso.com:1234/host-default' GitUrl='http://subdomain.contoso.com:1234/a/b' RelativeUrl='/a/b' RevisionId='0123456789abcdefABCDEF000000000000000000'", task.SourceLinkUrl);
             Assert.True(result);
@@ -284,7 +284,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 IsSingleProvider = true,
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("ContentUrl='http://contoso.com:1234/repo-default' GitUrl='http://subdomain.contoso.com:1234/a/b' RelativeUrl='/a/b' RevisionId='0123456789abcdefABCDEF000000000000000000'", task.SourceLinkUrl);
             Assert.True(result);
@@ -305,7 +305,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("ContentUrl='https://othercontoso.com/' GitUrl='http://subdomain.contoso.com:1234/a/b' RelativeUrl='/a/b' RevisionId='0123456789abcdefABCDEF000000000000000000'", task.SourceLinkUrl);
             Assert.True(result);
@@ -330,7 +330,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("ContentUrl='https://subdomain.contoso.com1:777/' GitUrl='http://subdomain.contoso.com:1234/a/b' RelativeUrl='/a/b' RevisionId='0123456789abcdefABCDEF000000000000000000'", task.SourceLinkUrl);
             Assert.True(result);
@@ -357,7 +357,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
 
             // explicit host is preferred over the implicit one 
@@ -385,7 +385,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("ContentUrl='https://domain.com:4/' GitUrl='http://subdomain.contoso.com:100/a/b' RelativeUrl='/a/b' RevisionId='0123456789abcdefABCDEF000000000000000000'", task.SourceLinkUrl);
             Assert.True(result);
@@ -411,7 +411,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("ContentUrl='https://domain.com:2/' GitUrl='http://subdomain.contoso.com:123/a/b' RelativeUrl='/a/b' RevisionId='0123456789abcdefABCDEF000000000000000000'", task.SourceLinkUrl);
             Assert.True(result);
@@ -437,7 +437,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("ContentUrl='https://domain.com:1/' GitUrl='http://subdomain.contoso.com:100/a/b' RelativeUrl='/a/b' RevisionId='0123456789abcdefABCDEF000000000000000000'", task.SourceLinkUrl);
             Assert.True(result);
@@ -460,7 +460,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("ContentUrl='https://zzz.com/' GitUrl='http://subdomain.contoso.com/a/b' RelativeUrl='/a/b' RevisionId='0123456789abcdefABCDEF000000000000000000'", task.SourceLinkUrl);
             Assert.True(result);
@@ -483,7 +483,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("ContentUrl='https://domain.com:1/' GitUrl='http://subdomain.contoso.com/a/b' RelativeUrl='/a/b' RevisionId='0123456789abcdefABCDEF000000000000000000'", task.SourceLinkUrl);
             Assert.True(result);
@@ -506,7 +506,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("ContentUrl='https://domain.com:2/' GitUrl='https://subdomain.contoso.com/a/b' RelativeUrl='/a/b' RevisionId='0123456789abcdefABCDEF000000000000000000'", task.SourceLinkUrl);
             Assert.True(result);
@@ -524,7 +524,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 Hosts = new[] { new MockItem("contoso.com") }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("ContentUrl='http://contoso.com/host-default' GitUrl='http://contoso.com/a/b.git' RelativeUrl='/a/b' RevisionId='0000000000000000000000000000000000000000'", task.SourceLinkUrl);
             Assert.True(result);
@@ -542,7 +542,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 Hosts = new[] { new MockItem("contoso.com") }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("ContentUrl='http://contoso.com/host-default' GitUrl='http://contoso.com/a/b.GIT' RelativeUrl='/a/b.GIT' RevisionId='0000000000000000000000000000000000000000'", task.SourceLinkUrl);
             Assert.True(result);
@@ -560,7 +560,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 Hosts = new[] { new MockItem("contoso.com") }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("ContentUrl='http://contoso.com/host-default' GitUrl='http://contoso.com/a/.git' RelativeUrl='/a/.git' RevisionId='0000000000000000000000000000000000000000'", task.SourceLinkUrl);
             Assert.True(result);
