@@ -13,32 +13,15 @@
     <PackageVersion Include="System.CommandLine.NamingConventionBinder" Version="$(SystemCommandLineNamingConventionBinderVersion)" />
     <PackageVersion Include="System.CommandLine.Rendering" Version="$(SystemCommandLineRenderingVersion)" />
 
+    <!-- MSBuild dependencies -->
+    <PackageVersion Include="Microsoft.Build" Version="$(MicrosoftBuildVersion)" />
+    <PackageVersion Include="Microsoft.Build.Tasks.Core" Version="$(MicrosoftBuildTasksCoreVersion)" />
+
     <!-- NuGet dependencies -->
     <PackageVersion Include="NuGet.Versioning" Version="$(NuGetVersioningVersion)" />
 
     <!-- Runtime dependencies -->
     <PackageVersion Include="System.Text.Json" Version="$(SystemTextJsonVersion)" />
-  </ItemGroup>
-
-  <!--
-    MSBuild - need to use older packages when targeting net8.0 since the newer versions only support net472 and net9.0+.
-    When tareting the latest .NET the version must also be lower or equal to one specified in
-    https://github.com/dotnet/sdk/blob/main/src/Layout/redist/minimumMSBuildVersion#L1
-  -->
-
-  <ItemGroup Condition="'$(DotNetBuildSourceOnly)' == 'true'">
-    <PackageVersion Include="Microsoft.Build" Version="17.11.31" />
-    <PackageVersion Include="Microsoft.Build.Tasks.Core" Version="17.11.31" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(DotNetBuildSourceOnly)' != 'true' and '$(TargetFramework)' != 'net472'">
-    <PackageVersion Include="Microsoft.Build" Version="17.11.31" />
-    <PackageVersion Include="Microsoft.Build.Tasks.Core" Version="17.11.31" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(DotNetBuildSourceOnly)' != 'true' and '$(TargetFramework)' == 'net472'">
-    <PackageVersion Include="Microsoft.Build" Version="17.15.0-preview-25353-11" />
-    <PackageVersion Include="Microsoft.Build.Tasks.Core" Version="17.15.0-preview-25353-11" />
   </ItemGroup>
 
   <!-- External dependencies -->
