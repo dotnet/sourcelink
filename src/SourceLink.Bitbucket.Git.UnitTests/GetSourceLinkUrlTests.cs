@@ -23,7 +23,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
                 SourceRoot = new MockItem("x", KVP("RepositoryUrl", "http://abc.com"), KVP("SourceControl", "git")),
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
                 "ERROR : " + string.Format(CommonResources.AtLeastOneRepositoryHostIsRequired, "SourceLinkBitbucketGitHost", "Bitbucket.Git"), engine.Log);
@@ -76,7 +76,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("https://api.domain.com/x/y/2.0/repositories/a/b/src/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
             Assert.True(result);
@@ -96,7 +96,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("https://bitbucket.domain.tools/projects/abc/repos/project1/raw/*?at=0123456789abcdefABCDEF000000000000000000", task.SourceLinkUrl);
             Assert.True(result);
@@ -116,7 +116,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
                 "ERROR : " + string.Format(CommonResources.ValueOfWithIdentityIsInvalid, "SourceRoot.RepositoryUrl", "/src/", "http://subdomain.mybitbucket.org/a"), engine.Log);
@@ -139,7 +139,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("https://bitbucket.domain.com/projects/a/repos/b/raw/*?at=0123456789abcdefABCDEF000000000000000000", task.SourceLinkUrl);
             Assert.True(result);
@@ -169,7 +169,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("https://bitbucket.domain.com/projects/a/repos/b/browse/*?at=0123456789abcdefABCDEF000000000000000000&raw", task.SourceLinkUrl);
             Assert.True(result);
@@ -199,7 +199,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("https://bitbucket.domain.com/base/projects/a/repos/b/browse/*?at=0123456789abcdefABCDEF000000000000000000&raw", task.SourceLinkUrl);
             Assert.True(result);
@@ -230,7 +230,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("https://bitbucket.domain.com/projects/a/repos/b/raw/*?at=0123456789abcdefABCDEF000000000000000000", task.SourceLinkUrl);
             Assert.True(result);
@@ -261,7 +261,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("https://bitbucket.domain.com/projects/a/repos/b/raw/*?at=0123456789abcdefABCDEF000000000000000000", task.SourceLinkUrl);
             Assert.True(result);
@@ -283,7 +283,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
                 "ERROR : " + string.Format(CommonResources.ItemOfItemGroupMustSpecifyMetadata, "domain.com", "SourceLinkBitbucketGitHost", "Version"), engine.Log);
