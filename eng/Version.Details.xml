@@ -12,14 +12,5 @@
       <Uri>https://github.com/dotnet/dotnet</Uri>
       <Sha>1483376c1a0ffb1e5f197266578dbce1e4098783</Sha>
     </Dependency>
-    <!-- Dependencies required for source build to lift to the previously-source-built version. -->
-    <Dependency Name="Microsoft.Build" Version="17.11.48">
-      <Uri>https://github.com/dotnet/msbuild</Uri>
-      <Sha>02bf66295b64ab368d12933041f7281aad186a2d</Sha>
-    </Dependency>
-    <Dependency Name="Microsoft.Build.Tasks.Core" Version="17.11.48">
-      <Uri>https://github.com/dotnet/msbuild</Uri>
-      <Sha>02bf66295b64ab368d12933041f7281aad186a2d</Sha>
-    </Dependency>
   </ToolsetDependencies>
 </Dependencies>
