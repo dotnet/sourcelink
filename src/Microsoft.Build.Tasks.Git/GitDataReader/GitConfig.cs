@@ -5,24 +5,98 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace Microsoft.Build.Tasks.Git
 {
     internal sealed partial class GitConfig
     {
-        public static readonly GitConfig Empty = new GitConfig(ImmutableDictionary<GitVariableName, ImmutableArray<string>>.Empty);
+        public static readonly GitConfig Empty = new(ImmutableDictionary<GitVariableName, ImmutableArray<string>>.Empty);
+
+        private const int SupportedGitRepoFormatVersion = 1;
+
+        private const string CoreSectionName = "core";
+        private const string ExtensionsSectionName = "extensions";
+
+        private const string RefStorageExtensionName = "refstorage";
+        private const string ObjectFormatExtensionName = "objectFormat";
+        private const string RelativeWorktreesExtensionName = "relativeWorktrees";
+        private const string RepositoryFormatVersionVariableName = "repositoryformatversion";
+
+        private static readonly ImmutableArray<string> s_knownExtensions =
+            ["noop", "preciousObjects", "partialclone", "worktreeConfig", RefStorageExtensionName, ObjectFormatExtensionName, RelativeWorktreesExtensionName];
 
         public readonly ImmutableDictionary<GitVariableName, ImmutableArray<string>> Variables;
+        public readonly ReferenceStorageFormat ReferenceStorageFormat;
 
+        /// <summary>
+        /// The parsed value of "extensions.objectFormat" variable.
+        /// </summary>
+        public ObjectNameFormat ObjectNameFormat { get; }
+
+        /// <exception cref="InvalidDataException"/>
         public GitConfig(ImmutableDictionary<GitVariableName, ImmutableArray<string>> variables)
         {
-            NullableDebug.Assert(variables != null);
             Variables = variables;
+
+            ReferenceStorageFormat = GetVariableValue(ExtensionsSectionName, RefStorageExtensionName) switch
+            {
+                null => ReferenceStorageFormat.LooseFiles,
+                "reftable" => ReferenceStorageFormat.RefTable,
+                _ => throw new InvalidDataException(),
+            };
+
+            ObjectNameFormat = GetVariableValue(ExtensionsSectionName, ObjectFormatExtensionName) switch
+            {
+                null or "sha1" => ObjectNameFormat.Sha1,
+                "sha256" => ObjectNameFormat.Sha256,
+                _ => throw new InvalidDataException(),
+            };
+        }
+
+        /// <exception cref="IOException"/>
+        /// <exception cref="InvalidDataException"/>
+        /// <exception cref="NotSupportedException"/>
+        public static GitConfig ReadRepositoryConfig(string gitDirectory, string commonDirectory, GitEnvironment environment)
+        {
+            var reader = new Reader(gitDirectory, commonDirectory, environment);
+            var config = reader.Load();
+            config.ValidateRepositoryConfig();
+            return config;
+        }
+
+        /// <exception cref="IOException"/>
+        /// <exception cref="InvalidDataException"/>
+        /// <exception cref="NotSupportedException"/>
+        public static GitConfig ReadSubmoduleConfig(string gitDirectory, string commonDirectory, GitEnvironment environment, string submodulesFile)
+        {
+            var reader = new Reader(gitDirectory, commonDirectory, environment);
+            return reader.LoadFrom(submodulesFile);
+        }
+
+        private void ValidateRepositoryConfig()
+        {
+            // See https://github.com/git/git/blob/master/Documentation/technical/repository-version.txt
+            var versionStr = GetVariableValue(CoreSectionName, RepositoryFormatVersionVariableName);
+            if (TryParseInt64Value(versionStr, out var version) && version > SupportedGitRepoFormatVersion)
+            {
+                throw new NotSupportedException(string.Format(Resources.UnsupportedRepositoryVersion, versionStr, SupportedGitRepoFormatVersion));
+            }
+
+            if (version == 1)
+            {
+                // All variables defined under extensions section must be known, otherwise a git implementation is not allowed to proceed.
+                foreach (var variable in Variables)
+                {
+                    if (variable.Key.SectionNameEquals(ExtensionsSectionName) &&
+                        !s_knownExtensions.Contains(variable.Key.VariableName, StringComparer.OrdinalIgnoreCase))
+                    {
+                        throw new NotSupportedException(string.Format(
+                            Resources.UnsupportedRepositoryExtension, variable.Key.VariableName, string.Join(", ", s_knownExtensions)));
+                    }
+                }
+            }
         }
 
         // for testing:
@@ -109,7 +183,7 @@ namespace Microsoft.Build.Tasks.Git
                     break;
             }
 
-            if (!long.TryParse(multiplier > 1 ? str.Substring(0, str.Length - 1) : str, out value))
+            if (!long.TryParse(multiplier > 1 ? str[..^1] : str, out value))
             {
                 return false;
             }

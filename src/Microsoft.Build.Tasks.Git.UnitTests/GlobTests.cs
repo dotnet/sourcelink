@@ -107,10 +107,10 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [InlineData("[a-]]", new char[0])]
         public void MatchingRange(string pattern, char[] matchingChars, char[]? matchingCharsWildCardMatchesSeparator = null)
         {
-            for (int i = 0; i < 255; i++)
+            for (var i = 0; i < 255; i++)
             {
                 var c = (char)i;
-                bool shouldMatch = Array.IndexOf(matchingChars, c) >= 0;
+                var shouldMatch = Array.IndexOf(matchingChars, c) >= 0;
 
                 Assert.True(shouldMatch == Glob.IsMatch(pattern, c.ToString(), ignoreCase: false, matchWildCardWithDirectorySeparator: false), 
                     $"character: '{(i != 0 ? c.ToString() : "\\0")}' (0x{i:X2})");
@@ -130,10 +130,10 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [InlineData("[^--0]", new[] { '-', '.', '/', '0' })]  // range contains '-', '.', '/', '0'
         public void NonMatchingRange(string pattern, char[] nonMatchingChars)
         {
-            for (int i = 0; i < 255; i++)
+            for (var i = 0; i < 255; i++)
             {
                 var c = (char)i;
-                bool shouldMatch = Array.IndexOf(nonMatchingChars, c) < 0;
+                var shouldMatch = Array.IndexOf(nonMatchingChars, c) < 0;
                 Assert.True(shouldMatch == Glob.IsMatch(pattern, c.ToString(), ignoreCase: false, matchWildCardWithDirectorySeparator: false),
                     $"character: '{(i != 0 ? c.ToString() : "\\0")}' (0x{i:X2})");
 
@@ -146,10 +146,10 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [InlineData("[!]a-]", new[] { ']', 'a', '-', '/' })]
         public void NonMatchingRange_WildCardDoesNotMatchDirectorySeparator(string pattern, char[] nonMatchingChars)
         {
-            for (int i = 0; i < 255; i++)
+            for (var i = 0; i < 255; i++)
             {
                 var c = (char)i;
-                bool shouldMatch = Array.IndexOf(nonMatchingChars, c) < 0;
+                var shouldMatch = Array.IndexOf(nonMatchingChars, c) < 0;
                 Assert.True(shouldMatch == Glob.IsMatch(pattern, c.ToString(), ignoreCase: false, matchWildCardWithDirectorySeparator: false),
                     $"character: '{(i != 0 ? c.ToString() : "\\0")}' (0x{i:X2})");
             }
@@ -159,10 +159,10 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [InlineData("[!]a-]", new[] { ']', 'a', '-' })]
         public void NonMatchingRange_WildCardMatchesDirectorySeparator(string pattern, char[] nonMatchingChars)
         {
-            for (int i = 0; i < 255; i++)
+            for (var i = 0; i < 255; i++)
             {
                 var c = (char)i;
-                bool shouldMatch = Array.IndexOf(nonMatchingChars, c) < 0;
+                var shouldMatch = Array.IndexOf(nonMatchingChars, c) < 0;
                 Assert.True(shouldMatch == Glob.IsMatch(pattern, c.ToString(), ignoreCase: false, matchWildCardWithDirectorySeparator: true),
                     $"character: '{(i != 0 ? c.ToString() : "\\0")}' (0x{i:X2})");
             }
@@ -174,10 +174,10 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [InlineData("[b-a]", new[] { 'b', 'B' })]
         public void MatchingRangeIgnoreCase(string pattern, char[] matchingChars)
         {
-            for (int i = 0; i < 255; i++)
+            for (var i = 0; i < 255; i++)
             {
                 var c = (char)i;
-                bool shouldMatch = Array.IndexOf(matchingChars, c) >= 0;
+                var shouldMatch = Array.IndexOf(matchingChars, c) >= 0;
                 Assert.True(shouldMatch == Glob.IsMatch(pattern, c.ToString(), ignoreCase: true, matchWildCardWithDirectorySeparator: false),
                     $"character: '{(i != 0 ? c.ToString() : "\\0")}' (0x{i:X2})");
 

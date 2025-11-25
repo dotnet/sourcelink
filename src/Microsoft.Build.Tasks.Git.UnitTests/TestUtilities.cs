@@ -3,6 +3,8 @@
 // See the License.txt file in the project root for more information.
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using Microsoft.Build.Framework;
 
 namespace Microsoft.Build.Tasks.Git.UnitTests
