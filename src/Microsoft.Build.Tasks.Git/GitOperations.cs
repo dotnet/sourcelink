@@ -249,6 +249,8 @@ namespace Microsoft.Build.Tasks.Git
             var revisionId = repository.GetHeadCommitSha();
             if (revisionId != null)
             {
+                var revisionTimestamp = repository.GetHeadCommitTimestamp()?.ToString("O");
+
                 // Don't report a warning since it has already been reported by GetRepositoryUrl task.
                 var repositoryUrl = GetRepositoryUrl(repository, remoteName, logWarning: null);
                 var branchName = repository.GetBranchName();
@@ -260,6 +262,7 @@ namespace Microsoft.Build.Tasks.Git
                 item.SetMetadata(Names.SourceRoot.SourceControl, SourceControlName);
                 item.SetMetadata(Names.SourceRoot.ScmRepositoryUrl, Evaluation.ProjectCollection.Escape(repositoryUrl));
                 item.SetMetadata(Names.SourceRoot.RevisionId, revisionId);
+                item.SetMetadata(Names.SourceRoot.RevisionTimestamp, revisionTimestamp);
                 item.SetMetadata(Names.SourceRoot.BranchName, Evaluation.ProjectCollection.Escape(branchName));
                 result.Add(item);
             }

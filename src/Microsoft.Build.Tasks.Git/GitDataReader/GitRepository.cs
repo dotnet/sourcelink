@@ -46,6 +46,7 @@ namespace Microsoft.Build.Tasks.Git
         private readonly Lazy<(ImmutableArray<GitSubmodule> Submodules, ImmutableArray<string> Diagnostics)> _lazySubmodules;
         private readonly Lazy<GitIgnore> _lazyIgnore;
         private readonly Lazy<string?> _lazyHeadCommitSha;
+        private readonly Lazy<DateTimeOffset?> _lazyHeadCommitTimestamp;
         private readonly Lazy<string?> _lazyBranchName;
         private readonly GitReferenceResolver _referenceResolver;
 
@@ -65,6 +66,7 @@ namespace Microsoft.Build.Tasks.Git
             _lazySubmodules = new(ReadSubmodules);
             _lazyIgnore = new(LoadIgnore);
             _lazyHeadCommitSha = new(ReadHeadCommitSha);
+            _lazyHeadCommitTimestamp = new(ReadHeadCommitTimestamp);
             _lazyBranchName = new(ReadBranchName);
         }
 
@@ -79,12 +81,14 @@ namespace Microsoft.Build.Tasks.Git
             ImmutableArray<string> submoduleDiagnostics,
             GitIgnore ignore,
             string? headCommitSha,
+            DateTimeOffset? headCommitTimestamp,
             string? branchName)
             : this(environment, config, gitDirectory, commonDirectory, workingDirectory)
         {
             _lazySubmodules = new(() => (submodules, submoduleDiagnostics));
             _lazyIgnore = new(() => ignore);
             _lazyHeadCommitSha = new(() => headCommitSha);
+            _lazyHeadCommitTimestamp = new(() => headCommitTimestamp);
             _lazyBranchName = new(() => branchName);
         }
 
@@ -160,6 +164,28 @@ namespace Microsoft.Build.Tasks.Git
         /// <exception cref="InvalidDataException"/>
         private string? ReadHeadCommitSha()
             => _referenceResolver.ResolveHeadReference();
+
+        /// <summary>
+        /// Returns the commit timestamp of the current HEAD tip.
+        /// </summary>
+        /// <exception cref="IOException"/>
+        /// <exception cref="InvalidDataException"/>
+        /// <returns>Null if the HEAD tip reference can't be resolved.</returns>
+        public DateTimeOffset? GetHeadCommitTimestamp()
+            => _lazyHeadCommitTimestamp.Value;
+
+        private DateTimeOffset? ReadHeadCommitTimestamp()
+        {
+            var headSha = GetHeadCommitSha();
+            if (headSha == null)
+            {
+                return null;
+            }
+
+            var obj = GitCommit.FromHash(GitDirectory, headSha);
+            var timestamp = obj.CommitTimestamp;
+            return timestamp;
+        }
 
         public string? GetBranchName()
             => _lazyBranchName.Value;

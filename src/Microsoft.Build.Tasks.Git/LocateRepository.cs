@@ -45,6 +45,12 @@ namespace Microsoft.Build.Tasks.Git
         public string? RevisionId { get; private set; }
 
         /// <summary>
+        /// Head tip commit Timestamp.
+        /// </summary>
+        [Output]
+        public string? RevisionTimestamp { get; private set; }
+
+        /// <summary>
         /// Branch name.
         /// </summary>
         [Output]
@@ -62,6 +68,7 @@ namespace Microsoft.Build.Tasks.Git
             Url = GitOperations.GetRepositoryUrl(repository, RemoteName, warnOnMissingOrUnsupportedRemote: !NoWarnOnMissingInfo, Log.LogWarning);
             Roots = GitOperations.GetSourceRoots(repository, RemoteName, warnOnMissingCommitOrUnsupportedUri: !NoWarnOnMissingInfo, Log.LogWarning);
             RevisionId = repository.GetHeadCommitSha();
+            RevisionTimestamp = repository.GetHeadCommitTimestamp()?.ToString("O");
             BranchName = repository.GetBranchName();
         }
     }

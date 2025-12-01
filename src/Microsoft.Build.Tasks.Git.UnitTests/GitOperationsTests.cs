@@ -25,6 +25,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             string? workingDir = null,
             GitConfig? config = null,
             string? commitSha = null,
+            DateTimeOffset? timestamp = null,
             string? branchName = null,
             ImmutableArray<GitSubmodule> submodules = default,
             GitIgnore? ignore = null)
@@ -41,6 +42,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 submoduleDiagnostics: ImmutableArray<string>.Empty,
                 ignore ?? new GitIgnore(root: null, workingDir, ignoreCase: false),
                 commitSha,
+                timestamp,
                 branchName);
         }
 

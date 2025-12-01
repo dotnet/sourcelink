@@ -32,6 +32,7 @@
       <Output TaskParameter="Url" PropertyName="ScmRepositoryUrl" />
       <Output TaskParameter="Roots" ItemName="SourceRoot" />
       <Output TaskParameter="RevisionId" PropertyName="SourceRevisionId" Condition="'$(SourceRevisionId)' == ''" />
+      <Output TaskParameter="RevisionTimeStamp" PropertyName="SourceRevisionTimeStamp" Condition="'$(SourceRevisionTimeStamp)' == ''" />
       <Output TaskParameter="BranchName" PropertyName="SourceBranchName" />
     </Microsoft.Build.Tasks.Git.LocateRepository>
 
