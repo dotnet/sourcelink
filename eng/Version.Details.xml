@@ -13,11 +13,11 @@
       <Sha>feff871cec763e9a9f8e9ace212f0fd6041d479f</Sha>
     </Dependency>
     <!-- Dependencies required for source build to lift to the previously-source-built version. -->
-    <Dependency Name="Microsoft.Build" Version="17.11.31">
+    <Dependency Name="Microsoft.Build" Version="17.11.48">
       <Uri>https://github.com/dotnet/msbuild</Uri>
       <Sha>933b72e36e86c22ba73e8b8148488f8298bb73c7</Sha>
     </Dependency>
-    <Dependency Name="Microsoft.Build.Tasks.Core" Version="17.11.31">
+    <Dependency Name="Microsoft.Build.Tasks.Core" Version="17.11.48">
       <Uri>https://github.com/dotnet/msbuild</Uri>
       <Sha>933b72e36e86c22ba73e8b8148488f8298bb73c7</Sha>
     </Dependency>
