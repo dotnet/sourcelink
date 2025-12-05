@@ -3,11 +3,25 @@
     "merge-flow-configurations": {
         "release/10.0.1xx":{
             "MergeToBranch": "release/10.0.2xx",
-            "ExtraSwitches": "-QuietComments"
+            "ExtraSwitches": "-QuietComments",
+            "ResetToTargetPaths": [
+                "eng/Version.Details.xml",
+                "eng/Version.Details.props",
+                "eng/common/*",
+                "NuGet.config",
+                "global.json"
+            ]
         },
         "release/10.0.2xx":{
             "MergeToBranch": "main",
-            "ExtraSwitches": "-QuietComments"
+            "ExtraSwitches": "-QuietComments",
+            "ResetToTargetPaths": [
+                "eng/Version.Details.xml",
+                "eng/Version.Details.props",
+                "eng/common/*",
+                "NuGet.config",
+                "global.json"
+            ]
         }
     }
 }
