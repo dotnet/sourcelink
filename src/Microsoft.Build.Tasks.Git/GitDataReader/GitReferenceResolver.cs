@@ -12,30 +12,54 @@ using System.Linq;
 
 namespace Microsoft.Build.Tasks.Git
 {
-    internal sealed class GitReferenceResolver
+    internal sealed class GitReferenceResolver : IDisposable
     {
         // See https://git-scm.com/docs/gitrepository-layout#Documentation/gitrepository-layout.txt-HEAD
 
         private const string PackedRefsFileName = "packed-refs";
+        private const string TablesListFileName = "tables.list";
         private const string RefsPrefix = "refs/";
+        private const string RefTableDirectoryName = "reftable";
 
         private readonly string _commonDirectory;
         private readonly string _gitDirectory;
+        private readonly ReferenceStorageFormat _storageFormat;
+        private readonly ObjectNameFormat _objectNameFormat;
 
         // maps refs/heads references to the correspondign object ids:
         private readonly Lazy<ImmutableDictionary<string, string>> _lazyPackedReferences;
+        private readonly Lazy<IEnumerable<GitRefTableReader>> _lazyRefTableReferenceReaders;
 
-        public GitReferenceResolver(string gitDirectory, string commonDirectory)
+        // lock on access:
+        private readonly List<GitRefTableReader> _openedRefTableReaders = [];
+
+        public GitReferenceResolver(string gitDirectory, string commonDirectory, ReferenceStorageFormat storageFormat, ObjectNameFormat objectNameFormat)
         {
             Debug.Assert(PathUtils.IsNormalized(gitDirectory));
             Debug.Assert(PathUtils.IsNormalized(commonDirectory));
 
             _gitDirectory = gitDirectory;
             _commonDirectory = commonDirectory;
-            _lazyPackedReferences = new Lazy<ImmutableDictionary<string, string>>(() => ReadPackedReferences(_gitDirectory));
+            _storageFormat = storageFormat;
+            _objectNameFormat = objectNameFormat;
+            _lazyPackedReferences = new(() => ReadPackedReferences(_gitDirectory));
+            _lazyRefTableReferenceReaders = new(() => CreateRefTableReaders(_gitDirectory, _openedRefTableReaders));
         }
 
-        private static ImmutableDictionary<string, string> ReadPackedReferences(string gitDirectory)
+        public void Dispose()
+        {
+            lock (_openedRefTableReaders)
+            {
+                foreach (var reader in _openedRefTableReaders)
+                {
+                    reader.Dispose();
+                }
+
+                _openedRefTableReaders.Clear();
+            }
+        }
+
+        private ImmutableDictionary<string, string> ReadPackedReferences(string gitDirectory)
         {
             // https://git-scm.com/docs/git-pack-refs
 
@@ -62,7 +86,7 @@ namespace Microsoft.Build.Tasks.Git
         }
 
         // internal for testing
-        internal static ImmutableDictionary<string, string> ReadPackedReferences(TextReader reader, string path)
+        internal ImmutableDictionary<string, string> ReadPackedReferences(TextReader reader, string path)
         {
             var builder = ImmutableDictionary.CreateBuilder<string, string>();
 
@@ -95,7 +119,7 @@ namespace Microsoft.Build.Tasks.Git
                         throw invalidData();
                     }
 
-                    var dereferencedTagObjectId = line.Substring(1);
+                    var dereferencedTagObjectId = line[1..];
                     if (!IsObjectId(dereferencedTagObjectId))
                     {
                         throw invalidData();
@@ -106,20 +130,20 @@ namespace Microsoft.Build.Tasks.Git
                     continue;
                 }
 
-                int separator = line.IndexOfAny(CharUtils.WhitespaceSeparators);
+                var separator = line.IndexOfAny(CharUtils.WhitespaceSeparators);
                 if (separator == -1)
                 {
                     throw invalidData();
                 }
 
-                var objectId = line.Substring(0, separator);
+                var objectId = line[..separator];
                 if (!IsObjectId(objectId))
                 {
                     throw invalidData();
                 }
 
-                int nextSeparator = line.IndexOfAny(CharUtils.WhitespaceSeparators, separator + 1);
-                var reference = (nextSeparator >= 0) ? line.Substring(separator + 1, nextSeparator - separator - 1) : line.Substring(separator + 1);
+                var nextSeparator = line.IndexOfAny(CharUtils.WhitespaceSeparators, separator + 1);
+                var reference = (nextSeparator >= 0) ? line.Substring(separator + 1, nextSeparator - separator - 1) : line[(separator + 1)..];
 
                 if (reference.Length == 0)
                 {
@@ -150,20 +174,67 @@ namespace Microsoft.Build.Tasks.Git
 
         /// <exception cref="IOException"/>
         /// <exception cref="InvalidDataException"/>
-        public string? ResolveHeadReference()
-            => ResolveReference(ReadReferenceFromFile(Path.Combine(_gitDirectory, GitRepository.GitHeadFileName)));
-
-        public string? GetBranchForHead()
+        private static IEnumerable<GitRefTableReader> CreateRefTableReaders(string gitDirectory, List<GitRefTableReader> openReaders)
         {
-            string reference = ReadReferenceFromFile(Path.Combine(_gitDirectory, GitRepository.GitHeadFileName));
+            var refTableDirectory = Path.Combine(gitDirectory, RefTableDirectoryName);
+            var tablesFilePath = Path.Combine(refTableDirectory, TablesListFileName);
 
-            return TryGetReferenceName(reference, out var name) ? name : null;
+            // Create lazily-evaluated sequence of readers for each entry in the tables.list file (in reverse order).
+            // Only evaluate the first one that exists.
+            // Reference resolution will open the subsequent files as needed.
+
+            var readers = File.ReadAllLines(tablesFilePath)
+                .Where(fileName => fileName.EndsWith(".ref"))
+                .Reverse()
+                .Select(fileName =>
+                {
+                    var path = Path.Combine(refTableDirectory, fileName);
+
+                    Stream stream;
+                    try
+                    {
+                        stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete);
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        return null;
+                    }
+
+                    var reader = new GitRefTableReader(stream);
+                    lock (openReaders)
+                    {
+                        openReaders.Add(reader);
+                    }
+
+                    return reader;
+                })
+                .Where(s => s != null);
+
+            if (!readers.Any())
+            {
+                throw new InvalidDataException();
+            }
+
+            return readers!;
         }
 
+        public string? GetBranchForHead()
+            => FindHeadReference().referenceName;
+
+        /// <exception cref="IOException"/>
+        /// <exception cref="InvalidDataException"/>
+        public string? ResolveHeadReference()
+        {
+            var (objectName, referenceName) = FindHeadReference();
+            return objectName ?? ResolveReferenceName(referenceName!);
+        }
+
+        /// <exception cref="IOException"/>
+        /// <exception cref="InvalidDataException"/>
         public string? ResolveReference(string reference)
         {
-            HashSet<string>? lazyVisitedReferences = null;
-            return ResolveReference(reference, ref lazyVisitedReferences);
+            var (objectName, referenceName) = ParseObjectNameOrReference(reference);
+            return objectName ?? ResolveReferenceName(referenceName!);
         }
 
         private static bool TryGetReferenceName(string reference, [NotNullWhen(true)] out string? name)
@@ -171,7 +242,7 @@ namespace Microsoft.Build.Tasks.Git
             const string refPrefix = "ref: ";
             if (reference.StartsWith(refPrefix + RefsPrefix, StringComparison.Ordinal))
             {
-                name = reference.Substring(refPrefix.Length);
+                name = reference[refPrefix.Length..];
                 return true;
             }
 
@@ -179,24 +250,101 @@ namespace Microsoft.Build.Tasks.Git
             return false;
         }
 
+        private (string? objectName, string? referenceName) ParseObjectNameOrReference(string value)
+        {
+            if (TryGetReferenceName(value, out var referenceName))
+            {
+                return (objectName: null, referenceName);
+            }
+
+            if (IsObjectId(value))
+            {
+                return (value, referenceName: null);
+            }
+
+            throw new InvalidDataException(string.Format(Resources.InvalidReference, value));
+        }
+
         /// <exception cref="IOException"/>
         /// <exception cref="InvalidDataException"/>
-        private string? ResolveReference(string reference, ref HashSet<string>? lazyVisitedReferences)
+        private string? ResolveReferenceName(string referenceName)
         {
-            // See https://git-scm.com/docs/gitrepository-layout#Documentation/gitrepository-layout.txt-HEAD
+            HashSet<string>? lazyVisitedReferences = null;
+            return Recurse(referenceName);
 
-            if (TryGetReferenceName(reference, out var symRef))
+            string? Recurse(string currentReferenceName)
             {
-                if (lazyVisitedReferences != null && !lazyVisitedReferences.Add(symRef))
+                // See https://git-scm.com/docs/gitrepository-layout#Documentation/gitrepository-layout.txt-HEAD
+
+                if (lazyVisitedReferences != null && !lazyVisitedReferences.Add(currentReferenceName))
                 {
                     // infinite recursion
-                    throw new InvalidDataException(string.Format(Resources.RecursionDetectedWhileResolvingReference, reference));
+                    throw new InvalidDataException(string.Format(Resources.RecursionDetectedWhileResolvingReference, referenceName));
                 }
 
+                var (objectName, foundReferenceName) = FindReference(currentReferenceName);
+                if (objectName != null)
+                {
+                    return objectName;
+                }
+
+                if (foundReferenceName == null)
+                {
+                    return null;
+                }
+
+                lazyVisitedReferences ??= [];
+                return Recurse(foundReferenceName);
+            }
+        }
+
+        private (string? objectName, string? referenceName) FindHeadReference()
+            => _storageFormat switch
+            {
+                ReferenceStorageFormat.LooseFiles => ParseObjectNameOrReference(ReadReferenceFromFile(Path.Combine(_gitDirectory, GitRepository.GitHeadFileName))),
+                ReferenceStorageFormat.RefTable => FindReferenceInRefTable(GitRepository.GitHeadFileName),
+                _ => throw new InvalidOperationException(),
+            };
+
+        private (string? objectName, string? referenceName) FindReference(string referenceName)
+            => _storageFormat switch
+            {
+                ReferenceStorageFormat.LooseFiles => FindReferenceInLooseFile(referenceName),
+                ReferenceStorageFormat.RefTable => FindReferenceInRefTable(referenceName),
+                _ => throw new InvalidOperationException()
+            };
+
+        private (string? objectName, string? referenceName) FindReferenceInRefTable(string referenceName)
+        {
+            foreach (var reader in _lazyRefTableReferenceReaders.Value)
+            {
+                if (!reader.TryFindReference(referenceName, out var objectName, out var symbolicReference))
+                {
+                    continue;
+                }
+
+                return (objectName, symbolicReference);
+            }
+
+            return default;
+        }
+
+        private (string? objectName, string? referenceName) FindReferenceInLooseFile(string referenceName)
+        {
+            var content = Find() ?? FindPackedReference(referenceName);
+            if (content == null)
+            {
+                return default;
+            }
+
+            return ParseObjectNameOrReference(content);
+
+            string? Find()
+            {
                 string path;
                 try
                 {
-                    path = Path.Combine(_commonDirectory, symRef);
+                    path = Path.Combine(_commonDirectory, referenceName);
                 }
                 catch
                 {
@@ -205,36 +353,19 @@ namespace Microsoft.Build.Tasks.Git
 
                 if (!File.Exists(path))
                 {
-                    return ResolvePackedReference(symRef);
+                    return null;
                 }
 
-                string content;
                 try
                 {
-                    content = ReadReferenceFromFile(path);
+                    return ReadReferenceFromFile(path);
                 }
                 catch (Exception e) when (e is ArgumentException or FileNotFoundException or DirectoryNotFoundException)
                 {
                     // invalid path or file doesn't exist:
-                    return ResolvePackedReference(symRef);
+                    return null;
                 }
-
-                if (IsObjectId(content))
-                {
-                    return content;
-                }
-
-                lazyVisitedReferences ??= new HashSet<string>();
-
-                return ResolveReference(content, ref lazyVisitedReferences);
             }
-
-            if (IsObjectId(reference))
-            {
-                return reference;
-            }
-
-            throw new InvalidDataException(string.Format(Resources.InvalidReference, reference));
         }
 
         /// <exception cref="ArgumentException"/>
@@ -251,10 +382,10 @@ namespace Microsoft.Build.Tasks.Git
             }
         }
 
-        private string? ResolvePackedReference(string reference)
+        private string? FindPackedReference(string reference)
             => _lazyPackedReferences.Value.TryGetValue(reference, out var objectId) ? objectId : null;
 
-        private static bool IsObjectId(string reference)
-            => reference.Length == 40 && reference.All(CharUtils.IsHexadecimalDigit);
+        private bool IsObjectId(string reference)
+            => reference.Length == _objectNameFormat.HashSize * 2 && reference.All(CharUtils.IsHexadecimalDigit);
     }
 }

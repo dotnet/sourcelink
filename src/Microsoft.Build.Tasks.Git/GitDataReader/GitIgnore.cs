@@ -155,7 +155,7 @@ namespace Microsoft.Build.Tasks.Git
             // Trailing spaces are ignored unless '\'-escaped.
             // Leading spaces are significant.
             // Other whitespace (\t, \v, \f) is significant. 
-            int e = line.Length - 1;
+            var e = line.Length - 1;
             while (e >= 0 && line[e] == ' ')
             {
                 e--;
@@ -175,7 +175,7 @@ namespace Microsoft.Build.Tasks.Git
                 e++;
             }
 
-            int s = 0;
+            var s = 0;
 
             // Skip comment.
             if (line[s] == '#')
@@ -221,17 +221,17 @@ namespace Microsoft.Build.Tasks.Git
                 return false;
             }
 
-            int escape = line.IndexOf('\\', s, e - s);
+            var escape = line.IndexOf('\\', s, e - s);
             if (escape < 0)
             {
-                glob = line.Substring(s, e - s);
+                glob = line[s..e];
                 return true;
             }
 
             reusableBuffer.Clear();
             reusableBuffer.Append(line, s, escape - s);
 
-            int i = escape;
+            var i = escape;
             while (i < e)
             {
                 var c = line[i++];
