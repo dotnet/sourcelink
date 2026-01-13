@@ -156,7 +156,7 @@ D1/c.cs
                 "/Repo/A/B: False",
                 "/Repo/A: False",
                 "/Repo: False"
-            }, matcher.DirectoryIgnoreStateCache.Select(kvp => $"{kvp.Key.Substring(rootDir.Path.Length)}: {kvp.Value}"));
+            }, matcher.DirectoryIgnoreStateCache.Select(kvp => $"{kvp.Key[rootDir.Path.Length..]}: {kvp.Value}"));
         }
 
         [Fact]
@@ -213,7 +213,7 @@ dir/
                 "/Repo/A/DIr: True",
                 "/Repo/A: False",
                 "/Repo: False",
-            }, matcher.DirectoryIgnoreStateCache.Select(kvp => $"{kvp.Key.Substring(rootDir.Path.Length)}: {kvp.Value}"));
+            }, matcher.DirectoryIgnoreStateCache.Select(kvp => $"{kvp.Key[rootDir.Path.Length..]}: {kvp.Value}"));
         }
     }
 }
