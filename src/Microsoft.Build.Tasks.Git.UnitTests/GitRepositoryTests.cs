@@ -131,6 +131,46 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         }
 
         [Fact]
+        public void Worktree_Packed_GetHeadCommitSha()
+        {
+            using var temp = new TempRoot();
+
+            var mainWorkingDir = temp.CreateDirectory();
+            var mainWorkingSubDir = mainWorkingDir.CreateDirectory("A");
+            var mainGitDir = mainWorkingDir.CreateDirectory(".git");
+            mainGitDir.CreateFile("HEAD");
+            mainGitDir.CreateFile("packed-refs").WriteAllText(
+@"# pack-refs with: peeled fully-peeled sorted
+1111111111111111111111111111111111111111 refs/heads/master
+2222222222222222222222222222222222222222 refs/heads/br2
+");
+
+            var worktreesDir = mainGitDir.CreateDirectory("worktrees");
+            var worktreeGitDir = worktreesDir.CreateDirectory("C");
+            var worktreeGitSubDir = worktreeGitDir.CreateDirectory("B");
+            var worktreeDir = temp.CreateDirectory();
+            var worktreeSubDir = worktreeDir.CreateDirectory("C");
+            var worktreeGitFile = worktreeDir.CreateFile(".git").WriteAllText("gitdir: " + worktreeGitDir + " \r\n\t\v");
+
+            worktreeGitDir.CreateFile("HEAD").WriteAllText("ref: refs/heads/br2\n");
+            worktreeGitDir.CreateFile("commondir").WriteAllText("../..\n");
+            worktreeGitDir.CreateFile("gitdir").WriteAllText(worktreeGitFile.Path + " \r\n\t\v");
+
+            // start under worktree directory:
+            Assert.True(GitRepository.TryFindRepository(worktreeSubDir.Path, out var location));
+            Assert.Equal(worktreeGitDir.Path, location.GitDirectory);
+            Assert.Equal(mainGitDir.Path, location.CommonDirectory);
+            Assert.Equal(worktreeDir.Path, location.WorkingDirectory);
+
+            var repository = GitRepository.OpenRepository(location, GitEnvironment.Empty);
+            Assert.Equal(location.GitDirectory, repository.GitDirectory);
+            Assert.Equal(location.WorkingDirectory, repository.WorkingDirectory);
+            Assert.Equal(location.CommonDirectory, repository.CommonDirectory);
+
+            Assert.Equal("2222222222222222222222222222222222222222", repository.GetHeadCommitSha());
+        }
+
+        [Fact]
         public void LocateRepository_Submodule()
         {
             using var temp = new TempRoot();
