@@ -1,0 +1,6 @@
+<Project>
+  <ItemGroup>
+    <!-- Ensure that MacOS sourcelink shims get signed properly -->
+    <FileSignInfo Include="sourcelink" CertificateName="MacDeveloperHarden" ExecutableType="MachO" />
+  </ItemGroup>
+</Project>
