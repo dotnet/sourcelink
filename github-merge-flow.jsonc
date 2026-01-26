@@ -13,6 +13,17 @@
             ]
         },
         "release/10.0.2xx":{
+            "MergeToBranch": "release/10.0.3xx",
+            "ExtraSwitches": "-QuietComments",
+            "ResetToTargetPaths": [
+                "eng/Version.Details.xml",
+                "eng/Version.Details.props",
+                "eng/common/*",
+                "NuGet.config",
+                "global.json"
+            ]
+        },
+        "release/10.0.3xx":{
             "MergeToBranch": "main",
             "ExtraSwitches": "-QuietComments",
             "ResetToTargetPaths": [
