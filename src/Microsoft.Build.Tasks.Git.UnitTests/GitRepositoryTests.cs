@@ -65,7 +65,9 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         {
             using var temp = new TempRoot();
 
-            var mainWorkingDir = temp.CreateDirectory();
+            var repoDir = temp.CreateDirectory();
+
+            var mainWorkingDir = repoDir.CreateDirectory("main");
             var mainWorkingSubDir = mainWorkingDir.CreateDirectory("A");
             var mainGitDir = mainWorkingDir.CreateDirectory(".git");
             mainGitDir.CreateFile("HEAD");
@@ -73,13 +75,17 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var worktreesDir = mainGitDir.CreateDirectory("worktrees");
             var worktreeGitDir = worktreesDir.CreateDirectory("myworktree");
             var worktreeGitSubDir = worktreeGitDir.CreateDirectory("B");
-            var worktreeDir = temp.CreateDirectory();
+            var worktreeDir = repoDir.CreateDirectory("worktree");
             var worktreeSubDir = worktreeDir.CreateDirectory("C");
-            var worktreeGitFile = worktreeDir.CreateFile(".git").WriteAllText("gitdir: " + worktreeGitDir + " \r\n\t\v");
+
+            // test relative path to work tree dir:
+            var worktreeGitFile = worktreeDir.CreateFile(".git").WriteAllText("gitdir: ../main/.git/worktrees/myworktree \r\n\t\v");
 
             worktreeGitDir.CreateFile("HEAD");
             worktreeGitDir.CreateFile("commondir").WriteAllText("../..\n");
-            worktreeGitDir.CreateFile("gitdir").WriteAllText(worktreeGitFile.Path + " \r\n\t\v");
+
+            // test relative path to work tree .git file:
+            worktreeGitDir.CreateFile("gitdir").WriteAllText("../../../../worktree/.git \r\n\t\v");
 
             // start under main repository directory:
             Assert.True(GitRepository.TryFindRepository(mainWorkingSubDir.Path, out var location));
@@ -226,6 +232,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
     preciousObjects = true
     partialClone = promisor_remote
     worktreeConfig = true
+    relativeWorktrees = true
+    objectformat = sha256
 ");
 
             Assert.True(GitRepository.TryFindRepository(gitDir.Path, out var location));
@@ -262,6 +270,36 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var src = workingDir.CreateDirectory("src");
 
             Assert.Throws<NotSupportedException>(() => GitRepository.OpenRepository(src.Path, new GitEnvironment(homeDir.Path)));
+        }
+
+        [Fact]
+        public void OpenRepository_Version1_ObjectFormatExtension()
+        {
+            using var temp = new TempRoot();
+
+            var homeDir = temp.CreateDirectory();
+
+            var workingDir = temp.CreateDirectory();
+            var gitDir = workingDir.CreateDirectory(".git");
+
+            gitDir.CreateFile("HEAD").WriteAllText("ref: refs/heads/master");
+            gitDir.CreateDirectory("refs").CreateDirectory("heads").CreateFile("master").WriteAllText("0000000000000000000000000000000000000000");
+            gitDir.CreateDirectory("objects");
+
+            gitDir.CreateFile("config").WriteAllText(@"
+[core]
+	repositoryformatversion = 1
+[extensions]
+	objectformat = sha256");
+
+            var src = workingDir.CreateDirectory("src");
+
+            // Should not throw - objectformat extension should be supported
+            var repository = GitRepository.OpenRepository(src.Path, new GitEnvironment(homeDir.Path));
+            Assert.NotNull(repository);
+            Assert.Equal(gitDir.Path, repository.GitDirectory);
+            Assert.Equal(gitDir.Path, repository.CommonDirectory);
+            Assert.Equal(workingDir.Path, repository.WorkingDirectory);
         }
 
         [Fact]
@@ -307,7 +345,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             Assert.Equal(worktreeGitDir.Path, location.GitDirectory);
             Assert.Equal(mainGitDir.Path, location.CommonDirectory);
             Assert.Equal(worktreeDir.Path, location.WorkingDirectory);
-            
+
             var repository = GitRepository.OpenRepository(location, GitEnvironment.Empty);
             Assert.Equal(repository.GitDirectory, location.GitDirectory);
             Assert.Equal(repository.CommonDirectory, location.CommonDirectory);
@@ -346,7 +384,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var repository = GitRepository.OpenRepository(location, GitEnvironment.Empty);
             Assert.Equal(repository.GitDirectory, location.GitDirectory);
             Assert.Equal(repository.CommonDirectory, location.CommonDirectory);
-            
+
             // actual working dir is not affected:
             Assert.Equal(worktreeDir.Path, location.WorkingDirectory);
         }
@@ -503,7 +541,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             submoduleGitDir.CreateFile("HEAD").WriteAllText("ref: refs/heads/master");
 
             Assert.Equal("0000000000000000000000000000000000000000",
-                GitRepository.GetSubmoduleReferenceResolver(submoduleWorkingDir.Path)?.ResolveHeadReference());
+                GitRepository.GetSubmoduleReferenceResolver(submoduleWorkingDir.Path, GitEnvironment.Empty)?.ResolveHeadReference());
         }
 
         [Fact]
@@ -523,7 +561,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             oldStyleSubmoduleGitDir.CreateFile("HEAD").WriteAllText("ref: refs/heads/branch1");
 
             Assert.Equal("1111111111111111111111111111111111111111",
-                GitRepository.GetSubmoduleReferenceResolver(oldStyleSubmoduleWorkingDir.Path)?.ResolveHeadReference());
+                GitRepository.GetSubmoduleReferenceResolver(oldStyleSubmoduleWorkingDir.Path, GitEnvironment.Empty)?.ResolveHeadReference());
         }
 
         [Fact]
@@ -537,7 +575,38 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var submoduleGitDir = temp.CreateDirectory();
             var submoduleWorkingDir = workingDir.CreateDirectory("sub").CreateDirectory("abc");
 
-            Assert.Null(GitRepository.GetSubmoduleReferenceResolver(submoduleWorkingDir.Path)?.ResolveHeadReference());
+            Assert.Null(GitRepository.GetSubmoduleReferenceResolver(submoduleWorkingDir.Path, GitEnvironment.Empty)?.ResolveHeadReference());
+        }
+
+        [Fact]
+        public void GetSubmoduleHeadCommitSha_RefTable()
+        {
+            using var temp = new TempRoot();
+
+            var gitDir = temp.CreateDirectory();
+            var workingDir = temp.CreateDirectory();
+
+            var submoduleGitDir = temp.CreateDirectory();
+
+            var submoduleWorkingDir = workingDir.CreateDirectory("sub").CreateDirectory("abc");
+            submoduleWorkingDir.CreateFile(".git").WriteAllText("gitdir: " + submoduleGitDir.Path + "\t \v\f\r\n\n\r");
+            submoduleGitDir.CreateFile("HEAD").WriteAllText("ref: refs/heads/.invalid");
+
+            submoduleGitDir.CreateFile("config").WriteAllText("""
+                [core]
+                    repositoryformatversion = 1
+                [extensions]
+                    refStorage = reftable
+                """);
+
+            var refTableDir = submoduleGitDir.CreateDirectory("reftable");
+            refTableDir.CreateFile("tables.list").WriteAllText("1.ref");
+            var ref1 = refTableDir.CreateFile("1.ref").WriteAllBytes(GitRefTableTestWriter.GetRefTableBlob([("HEAD", "refs/heads/main"), ("refs/heads/main", 0x01)]));
+
+            var resolver = GitRepository.GetSubmoduleReferenceResolver(submoduleWorkingDir.Path, GitEnvironment.Empty);
+            Assert.NotNull(resolver);
+            Assert.Equal("0100000000000000000000000000000000000000", resolver.ResolveHeadReference());
+            Assert.Equal("refs/heads/main", resolver.GetBranchForHead());
         }
 
         [Fact]

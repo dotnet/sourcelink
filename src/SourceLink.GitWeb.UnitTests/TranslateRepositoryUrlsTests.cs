@@ -33,7 +33,7 @@ namespace Microsoft.SourceLink.GitWeb.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
 
             AssertEx.AreEqual("ssh://git@src.intranet.company.com/root_dir_name/sub_dirs/reponame.git", task.TranslatedRepositoryUrl);
