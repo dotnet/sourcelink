@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>$(NetToolMinimum)</TargetFramework>
+    <TargetFramework>$(NetMinimum)</TargetFramework>
     <!-- Allow tool to roll forward to a newer major version. -->
     <RollForward>Major</RollForward>
 
