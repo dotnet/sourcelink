@@ -333,7 +333,7 @@ namespace Microsoft.SourceLink.AzureRepos.Git.UnitTests
             Assert.True(result);
             Assert.False(string.IsNullOrEmpty(task.SourceLinkUrl));
 
-            return task.SourceLinkUrl;
+            return task.SourceLinkUrl!;
         }
     }
 }
