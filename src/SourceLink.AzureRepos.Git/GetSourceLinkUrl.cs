@@ -32,7 +32,7 @@ namespace Microsoft.SourceLink.AzureRepos.Git
 
         protected override string? BuildSourceLinkUrl(Uri contentUri, Uri gitUri, string relativeUrl, string revisionId, ITaskItem? hostItem)
         {
-            if (!AzureDevOpsUrlParser.TryParseHostedHttp(gitUri.GetHost(), relativeUrl, out var projectPath, out var repositoryName))
+            if (!AzureDevOpsUrlParser.TryParseHostedHttp(gitUri.GetHost(), gitUri.GetPath(), out var projectPath, out var repositoryName))
             {
                 Log.LogError(CommonResources.ValueOfWithIdentityIsInvalid, Names.SourceRoot.RepositoryUrlFullName, SourceRoot!.ItemSpec, gitUri);
                 return null;
