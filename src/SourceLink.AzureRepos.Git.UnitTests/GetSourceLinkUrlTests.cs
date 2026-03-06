@@ -1,275 +1,390 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the License.txt file in the project root for more information.
-
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
+using Microsoft.Build.Tasks.SourceControl;
+using TestUtilities;
+using Xunit;
+using static TestUtilities.KeyValuePairUtils;
 
-namespace Microsoft.Build.Tasks.SourceControl
+namespace Microsoft.SourceLink.AzureRepos.Git.UnitTests
 {
-    public abstract class GetSourceLinkUrlGitTask : Task
+    public class GetSourceLinkUrlTests
     {
-        private const string SourceControlName = "git";
-        protected const string NotApplicableValue = "N/A";
-        private const string ContentUrlMetadataName = "ContentUrl";
-
-        /// <summary>
-        /// Optional, but null is elimated when the task starts executing.
-        /// </summary>
-        public ITaskItem? SourceRoot { get; set; }
-
-        /// <summary>
-        /// List of additional repository hosts for which the task produces SourceLink URLs.
-        /// Each item maps a domain of a repository host (stored in the item identity) to a URL of the server that provides source file content (stored in <c>ContentUrl</c> metadata).
-        /// <c>ContentUrl</c> is optional.
-        /// </summary>
-        public ITaskItem[]? Hosts { get; set; }
-
-        public string? RepositoryUrl { get; set; }
-
-        public bool IsSingleProvider { get; set; }
-
-        [Output]
-        public string? SourceLinkUrl { get; set; }
-
-        internal GetSourceLinkUrlGitTask() { }
-
-        protected abstract string ProviderDisplayName { get; }
-        protected abstract string HostsItemGroupName { get; }
-        protected virtual bool SupportsImplicitHost => true;
-
-        /// <summary>
-        /// Get the default content URL for given host and git URL.
-        /// </summary>
-        /// <param name="authority">The host authority.</param>
-        /// <param name="gitUri">Remote or submodule URL translated by <see cref="TranslateRepositoryUrlsGitTask"/>.</param>
-        /// <remarks>
-        /// Use the <paramref name="gitUri"/> scheme. Some servers might not support https, so we can't default to https.
-        /// </remarks>
-        protected virtual Uri GetDefaultContentUriFromHostUri(string authority, Uri gitUri)
-            => new($"{gitUri.Scheme}://{authority}", UriKind.Absolute);
-
-        protected virtual Uri GetDefaultContentUriFromRepositoryUri(Uri repositoryUri)
-            => GetDefaultContentUriFromHostUri(repositoryUri.GetAuthority(), repositoryUri);
-
-        protected abstract string? BuildSourceLinkUrl(Uri contentUrl, Uri gitUri, string relativeUrl, string revisionId, ITaskItem? hostItem);
-
-        public override bool Execute()
+        [Fact]
+        public void EmptyHosts()
         {
-            ExecuteImpl();
-            return !Log.HasLoggedErrors;
+            var engine = new MockEngine();
+
+            var task = new GetSourceLinkUrl()
+            {
+                BuildEngine = engine,
+                SourceRoot = new MockItem("x", KVP("RepositoryUrl", "http://abc.com"), KVP("SourceControl", "git")),
+            };
+
+            var result = task.Execute();
+
+            AssertEx.AssertEqualToleratingWhitespaceDifferences(
+                "ERROR : " + string.Format(CommonResources.AtLeastOneRepositoryHostIsRequired, "SourceLinkAzureReposGitHost", "AzureRepos.Git"), engine.Log);
+
+            Assert.False(result);
         }
 
-        private void ExecuteImpl()
+        [Theory]
+        [InlineData("", "")]
+        [InlineData("", "/")]
+        [InlineData("/", "")]
+        [InlineData("/", "/")]
+        public void BuildSourceLinkUrl(string s1, string s2)
         {
-            // Avoid errors when no SourceRoot is specified, _InitializeXyzGitSourceLinkUrl target will simply not update any SourceRoots.
-            if (SourceRoot == null)
-            {
-                return;
-            }
+            var engine = new MockEngine();
 
-            // skip SourceRoot that already has SourceLinkUrl set, or its SourceControl is not "git":
-            if (!string.IsNullOrEmpty(SourceRoot.GetMetadata(Names.SourceRoot.SourceLinkUrl)) ||
-                !string.Equals(SourceRoot.GetMetadata(Names.SourceRoot.SourceControl), SourceControlName, StringComparison.OrdinalIgnoreCase))
+            var task = new GetSourceLinkUrl()
             {
-                SourceLinkUrl = NotApplicableValue;
-                return;
-            }
-
-            var gitUrl = SourceRoot.GetMetadata(Names.SourceRoot.RepositoryUrl);
-            if (string.IsNullOrEmpty(gitUrl))
-            {
-                SourceLinkUrl = NotApplicableValue;
-
-                // If SourceRoot has commit sha but not repository URL the source control info is available,
-                // but the remote for the repo has not been defined yet. We already reported missing remote in that case
-                // (unless suppressed).
-                if (string.IsNullOrEmpty(SourceRoot.GetMetadata(Names.SourceRoot.RevisionId)))
+                BuildEngine = engine,
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.contoso.com:100/account/project/_git/repo" + s1), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                Hosts = new[]
                 {
-                    Log.LogWarning(CommonResources.UnableToDetermineRepositoryUrl);
+                    new MockItem("contoso.com", KVP("ContentUrl", "https://domain.com/x/y" + s2)),
                 }
+            };
 
-                return;
-            }
-
-            if (!Uri.TryCreate(gitUrl, UriKind.Absolute, out var gitUri))
-            {
-                Log.LogError(CommonResources.ValueOfWithIdentityIsInvalid, Names.SourceRoot.RepositoryUrlFullName, SourceRoot.ItemSpec, gitUrl);
-                return;
-            }
-
-            var mappings = GetUrlMappings(gitUri).ToArray();
-            if (Log.HasLoggedErrors)
-            {
-                return;
-            }
-
-            if (mappings.Length == 0)
-            {
-                Log.LogError(CommonResources.AtLeastOneRepositoryHostIsRequired, HostsItemGroupName, ProviderDisplayName);
-                return;
-            }
-
-            if (!TryGetMatchingContentUri(mappings, gitUri, out var contentUri, out var hostItem))
-            {
-                SourceLinkUrl = NotApplicableValue;
-                return;
-            }
-
-            static bool IsHexDigit(char c)
-                => c is >= '0' and <= '9' or >= 'a' and <= 'f' or >= 'A' and <= 'F';
-
-            var revisionId = SourceRoot.GetMetadata(Names.SourceRoot.RevisionId);
-            if (revisionId == null || revisionId.Length != 40 || !revisionId.All(IsHexDigit))
-            {
-                Log.LogError(CommonResources.ValueOfWithIdentityIsNotValidCommitHash, Names.SourceRoot.RevisionIdFullName, SourceRoot.ItemSpec, revisionId);
-                return;
-            }
-
-            var relativeUrl = gitUri.GetPath().TrimEnd('/');
-
-            // The URL may or may not end with '.git' (case-sensitive), but content URLs do not include '.git' suffix:
-            const string GitUrlSuffix = ".git";
-            if (relativeUrl.EndsWith(GitUrlSuffix, StringComparison.Ordinal) && !relativeUrl.EndsWith("/" + GitUrlSuffix, StringComparison.Ordinal))
-            {
-                relativeUrl = relativeUrl[..^GitUrlSuffix.Length];
-            }
-
-            SourceLinkUrl = BuildSourceLinkUrl(contentUri, gitUri, relativeUrl, revisionId, hostItem);
+            var result = task.Execute();
+            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            AssertEx.AreEqual("https://domain.com/x/y/account/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
+            Assert.True(result);
         }
 
-        private readonly struct UrlMapping
+        [Theory]
+        [InlineData("account.visualstudio.com", "visualstudio.com")]
+        [InlineData("account.vsts.me", "vsts.me")]
+        [InlineData("contoso.com/account", "contoso.com")]
+        public void BadUrl(string domainAndAccount, string host)
         {
-            public readonly string Host;
-            public readonly ITaskItem? HostItem;
-            public readonly int Port;
-            public readonly Uri ContentUri;
-            public readonly bool HasDefaultContentUri;
+            var engine = new MockEngine();
 
-            public UrlMapping(string host, ITaskItem? hostItem, int port, Uri contentUri, bool hasDefaultContentUri)
+            var task = new GetSourceLinkUrl()
             {
-                NullableDebug.Assert(port >= -1);
-                NullableDebug.Assert(!string.IsNullOrEmpty(host));
-                NullableDebug.Assert(contentUri != null);
+                BuildEngine = engine,
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", $"http://{domainAndAccount}/_git"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                Hosts = new[] { new MockItem(host) }
+            };
 
-                Host = host;
-                Port = port;
-                HostItem = hostItem;
-                ContentUri = contentUri;
-                HasDefaultContentUri = hasDefaultContentUri;
-            }
+            var result = task.Execute();
+
+            // ERROR : The value of SourceRoot.RepositoryUrl with identity '/src/' is invalid: 'http://account.visualstudio.com/_git'""
+            AssertEx.AssertEqualToleratingWhitespaceDifferences(
+                "ERROR : " + string.Format(CommonResources.ValueOfWithIdentityIsInvalid, "SourceRoot.RepositoryUrl", "/src/", $"http://{domainAndAccount}/_git"), engine.Log);
+
+            Assert.False(result);
         }
 
-        private IEnumerable<UrlMapping> GetUrlMappings(Uri gitUri)
+        [Theory]
+        [InlineData("account.visualstudio.com", "visualstudio.com")]
+        [InlineData("account.vsts.me", "vsts.me")]
+        [InlineData("contoso.com/account", "contoso.com")]
+        public void RepoOnly(string domainAndAccount, string host)
         {
-            static bool IsValidContentUri(Uri uri)
-                => uri.GetHost() != "" && uri.Query == "" && uri.UserInfo == "";
+            var engine = new MockEngine();
 
-            if (Hosts != null)
+            var task = new GetSourceLinkUrl()
             {
-                foreach (var item in Hosts)
-                {
-                    var hostUrl = item.ItemSpec;
+                BuildEngine = engine,
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", $"http://{domainAndAccount}/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                Hosts = new[] { new MockItem(host) }
+            };
 
-                    if (!UriUtilities.TryParseAuthority(hostUrl, out var hostUri))
-                    {
-                        Log.LogError(CommonResources.ValuePassedToTaskParameterNotValidDomainName, nameof(Hosts), item.ItemSpec);
-                        continue;
-                    }
-
-                    Uri? contentUri;
-                    var contentUrl = item.GetMetadata(ContentUrlMetadataName);
-                    var hasDefaultContentUri = string.IsNullOrEmpty(contentUrl);
-                    if (hasDefaultContentUri)
-                    {
-                        contentUri = GetDefaultContentUriFromHostUri(hostUri.GetAuthority(), gitUri);
-                    }
-                    else if (!Uri.TryCreate(contentUrl, UriKind.Absolute, out contentUri) || !IsValidContentUri(contentUri))
-                    {
-                        Log.LogError(CommonResources.ValuePassedToTaskParameterNotValidHostUri, nameof(Hosts), contentUrl);
-                        continue;
-                    }
-
-                    yield return new UrlMapping(hostUri.GetHost(), item, hostUri.Port, contentUri, hasDefaultContentUri);
-                }
-            }
-
-            // Add implicit host last, so that matching prefers explicitly listed hosts over the implicit one.
-            if (SupportsImplicitHost && IsSingleProvider)
-            {
-                if (Uri.TryCreate(RepositoryUrl, UriKind.Absolute, out var uri))
-                {
-                    // If the URL is a local path the host will be empty.
-                    var host = uri.GetHost();
-                    if (host != "")
-                    {
-                        yield return new UrlMapping(host, hostItem: null, uri.GetExplicitPort(), GetDefaultContentUriFromRepositoryUri(uri), hasDefaultContentUri: true);
-                    }
-                    else
-                    {
-                        Log.LogError(CommonResources.ValuePassedToTaskParameterNotValidHostUri, nameof(RepositoryUrl), RepositoryUrl);
-                    }
-                }
-                else
-                {
-                    Log.LogError(CommonResources.ValuePassedToTaskParameterNotValidUri, nameof(RepositoryUrl), RepositoryUrl);
-                }
-            }
+            var result = task.Execute();
+            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            AssertEx.AreEqual($"http://{domainAndAccount}/repo/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
+            Assert.True(result);
         }
 
-        private static bool TryGetMatchingContentUri(UrlMapping[] mappings, Uri repoUri, [NotNullWhen(true)] out Uri? contentUri, out ITaskItem? hostItem)
+        [Theory]
+        [InlineData("account.visualstudio.com", "visualstudio.com")]
+        [InlineData("account.vsts.me", "vsts.me")]
+        [InlineData("contoso.com/account", "contoso.com")]
+        public void Project(string domainAndAccount, string host)
         {
-            UrlMapping? FindMatch(bool exactHost)
-            {
-                UrlMapping? candidate = null;
+            var engine = new MockEngine();
 
-                foreach (var mapping in mappings)
+            var task = new GetSourceLinkUrl()
+            {
+                BuildEngine = engine,
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", $"https://{domainAndAccount}/project/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                Hosts = new[] { new MockItem(host) }
+            };
+
+            var result = task.Execute();
+            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            AssertEx.AreEqual($"https://{domainAndAccount}/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
+            Assert.True(result);
+        }
+
+        [Theory]
+        [InlineData("account.visualstudio.com", "visualstudio.com")]
+        [InlineData("account.vsts.me", "vsts.me")]
+        public void Project_Team(string domainAndAccount, string host)
+        {
+            var engine = new MockEngine();
+
+            var task = new GetSourceLinkUrl()
+            {
+                BuildEngine = engine,
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", $"https://{domainAndAccount}/project/team/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                Hosts = new[] { new MockItem(host) }
+            };
+
+            var result = task.Execute();
+            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            AssertEx.AreEqual($"https://{domainAndAccount}/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void Project_Team_NonVisualStudioHost()
+        {
+            var engine = new MockEngine();
+
+            var task = new GetSourceLinkUrl()
+            {
+                BuildEngine = engine,
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://contoso.com/account/project/team/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                Hosts = new[] { new MockItem("contoso.com") }
+            };
+
+            var result = task.Execute();
+
+            // ERROR : The value of SourceRoot.RepositoryUrl with identity '/src/' is invalid: 'http://contoso.com/account/project/team/_git/repo'""
+            AssertEx.AssertEqualToleratingWhitespaceDifferences(
+                "ERROR : " + string.Format(CommonResources.ValueOfWithIdentityIsInvalid, "SourceRoot.RepositoryUrl", "/src/", "http://contoso.com/account/project/team/_git/repo"), engine.Log);
+
+            Assert.False(result);
+        }
+
+        [Theory]
+        [InlineData("account.visualstudio.com", "visualstudio.com")]
+        [InlineData("account.vsts.me", "vsts.me")]
+        public void VisualStudioHost_DefaultCollection(string domain, string host)
+        {
+            var engine = new MockEngine();
+
+            var task = new GetSourceLinkUrl()
+            {
+                BuildEngine = engine,
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", $"https://{domain}/DefaultCollection/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                Hosts = new[] { new MockItem(host) }
+            };
+
+            var result = task.Execute();
+            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            AssertEx.AreEqual($"https://{domain}/repo/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
+
+            Assert.True(result);
+        }
+
+        [Theory]
+        [InlineData("account.visualstudio.com", "visualstudio.com")]
+        [InlineData("account.vsts.me", "vsts.me")]
+        public void VisualStudioHost_DefaultCollection_Project(string domain, string host)
+        {
+            var engine = new MockEngine();
+
+            var task = new GetSourceLinkUrl()
+            {
+                BuildEngine = engine,
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", $"https://{domain}/DefaultCollection/project/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                Hosts = new[] { new MockItem(host) }
+            };
+
+            var result = task.Execute();
+            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            AssertEx.AreEqual($"https://{domain}/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
+            Assert.True(result);
+        }
+
+        [Theory]
+        [InlineData("account.visualstudio.com", "visualstudio.com")]
+        [InlineData("account.vsts.me", "vsts.me")]
+        public void VisualStudioHost_DefaultCollection_Project_Team(string domain, string host)
+        {
+            var engine = new MockEngine();
+
+            var task = new GetSourceLinkUrl()
+            {
+                BuildEngine = engine,
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", $"https://{domain}/DefaultCollection/project/team/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                Hosts = new[] { new MockItem(host) }
+            };
+
+            var result = task.Execute();
+            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            AssertEx.AreEqual($"https://{domain}/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
+            Assert.True(result);
+        }
+
+        [Theory]
+        [InlineData("account.visualstudio.com")]
+        [InlineData("account.vsts.me")]
+        public void VisualStudioHost_ImplicitHost_DeafultCollection(string domain)
+        {
+            var engine = new MockEngine();
+
+            var task = new GetSourceLinkUrl()
+            {
+                BuildEngine = engine,
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", $"https://{domain}/DefaultCollection/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                IsSingleProvider = true,
+                RepositoryUrl = $"https://{domain}/DefaultCollection/project/_git/repo"
+            };
+
+            var result = task.Execute();
+            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            AssertEx.AreEqual($"https://{domain}/repo/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
+            Assert.True(result);
+        }
+
+        [Theory]
+        [InlineData("account.visualstudio.com")]
+        [InlineData("account.vsts.me")]
+        public void VisualStudioHost_ImplicitHost_DeafultCollection_Project(string domain)
+        {
+            var engine = new MockEngine();
+
+            var task = new GetSourceLinkUrl()
+            {
+                BuildEngine = engine,
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", $"https://{domain}/DefaultCollection/project/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                IsSingleProvider = true,
+                RepositoryUrl = $"https://{domain}/DefaultCollection/project/_git/repo"
+            };
+
+            var result = task.Execute();
+            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            AssertEx.AreEqual($"https://{domain}/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
+            Assert.True(result);
+        }
+
+        [Theory]
+        [InlineData("account.visualstudio.com")]
+        [InlineData("account.vsts.me")]
+        public void VisualStudioHost_ImplicitHost_DeafultCollection_Project_Team(string domain)
+        {
+            var engine = new MockEngine();
+
+            var task = new GetSourceLinkUrl()
+            {
+                BuildEngine = engine,
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", $"https://{domain}/DefaultCollection/project/team/_git/repo"), KVP("SourceControl", "git"), KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                IsSingleProvider = true,
+                RepositoryUrl = $"https://{domain}/DefaultCollection/project/_git/repo"
+            };
+
+            var result = task.Execute();
+            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            AssertEx.AreEqual($"https://{domain}/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void DevAzureCom_RepositoryName_WithDotGit_IsNotIgnored()
+        {
+            var urlWithoutDotGit = ExecuteDevAzureCom("https://dev.azure.com/org/project/_git/repo");
+            var urlWithDotGit = ExecuteDevAzureCom("https://dev.azure.com/org/project/_git/repo.git");
+
+            Assert.True(
+                !string.Equals(urlWithoutDotGit, urlWithDotGit, StringComparison.Ordinal),
+                $"Repository name is ignored: URLs are identical.\n" +
+                $"Input without .git: https://dev.azure.com/org/project/_git/repo\n" +
+                $"Input with .git:    https://dev.azure.com/org/project/_git/repo.git\n" +
+                $"Output:             {urlWithoutDotGit}");
+        }
+
+        [Fact]
+        public void DevAzureCom_RepositoryName_WithDotGit_IsPreservedInOutput()
+        {
+            var url = ExecuteDevAzureCom("https://dev.azure.com/org/project/_git/repo.git");
+
+            // Ensure the '.git' suffix is preserved in the repository segment of the URL, not just anywhere.
+            Assert.Contains(
+                "project/_apis/git/repositories/repo.git/items",
+                url);
+        }
+
+        private static string ExecuteDevAzureCom(string repositoryUrl)
+        {
+            var engine = new MockEngine();
+
+            var task = new GetSourceLinkUrl()
+            {
+                BuildEngine = engine,
+                SourceRoot = new MockItem("/src/",
+                    KVP("RepositoryUrl", repositoryUrl),
+                    KVP("SourceControl", "git"),
+                    KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                Hosts = new[]
                 {
-                    if (exactHost && repoUri.GetHost().Equals(mapping.Host, StringComparison.OrdinalIgnoreCase) ||
-                        !exactHost && repoUri.GetHost().EndsWith("." + mapping.Host, StringComparison.OrdinalIgnoreCase))
-                    {
-                        // Port matches exactly:
-                        if (repoUri.Port == mapping.Port)
-                        {
-                            return mapping;
-                        }
-
-                        // Port not specified:
-                        if (candidate == null && mapping.Port == -1)
-                        {
-                            candidate = mapping;
-                        }
-                    }
+                    new MockItem("dev.azure.com")
                 }
+            };
 
-                return candidate;
-            }
+            var result = task.Execute();
 
-            var result = FindMatch(exactHost: true) ?? FindMatch(exactHost: false);
-            if (result == null)
+            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            Assert.True(result);
+            Assert.False(string.IsNullOrEmpty(task.SourceLinkUrl));
+
+            return task.SourceLinkUrl!;
+        }
+
+        [Fact]
+        public void DevAzureCom_RepositoryName_WithDotGit_IsNotIgnored()
+        {
+            var urlWithoutDotGit = ExecuteDevAzureCom("https://dev.azure.com/org/project/_git/repo");
+            var urlWithDotGit = ExecuteDevAzureCom("https://dev.azure.com/org/project/_git/repo.git");
+
+            Assert.True(
+                !string.Equals(urlWithoutDotGit, urlWithDotGit, StringComparison.Ordinal),
+                $"Repository name is ignored: URLs are identical.\n" +
+                $"Input without .git: https://dev.azure.com/org/project/_git/repo\n" +
+                $"Input with .git:    https://dev.azure.com/org/project/_git/repo.git\n" +
+                $"Output:             {urlWithoutDotGit}");
+        }
+
+        [Fact]
+        public void DevAzureCom_RepositoryName_WithDotGit_IsPreservedInOutput()
+        {
+            var url = ExecuteDevAzureCom("https://dev.azure.com/org/project/_git/repo.git");
+
+            Assert.Contains(
+                "project/_apis/git/repositories/repo.git/items",
+                url);
+        }
+
+        private static string ExecuteDevAzureCom(string repositoryUrl)
+        {
+            var engine = new MockEngine();
+
+            var task = new GetSourceLinkUrl()
             {
-                contentUri = null;
-                hostItem = null;
-                return false;
-            }
+                BuildEngine = engine,
+                SourceRoot = new MockItem("/src/",
+                    KVP("RepositoryUrl", repositoryUrl),
+                    KVP("SourceControl", "git"),
+                    KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                Hosts = new[]
+                {
+            new MockItem("dev.azure.com")
+        }
+            };
 
-            var value = result.Value;
-            contentUri = value.ContentUri;
-            hostItem = value.HostItem;
+            var result = task.Execute();
 
-            // If the mapping did not specify ContentUrl and did not specify port,
-            // use the port from the RepositoryUrl, if a non-default is specified.
-            if (value.HasDefaultContentUri && value.Port == -1 && !repoUri.IsDefaultPort && contentUri.Port != repoUri.Port)
-            {
-                contentUri = new Uri($"{contentUri.Scheme}://{contentUri.Host}:{repoUri.Port}{contentUri.PathAndQuery}");
-            }
+            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            Assert.True(result);
+            Assert.False(string.IsNullOrEmpty(task.SourceLinkUrl));
 
-            return true;
+            return task.SourceLinkUrl!;
         }
     }
 }
