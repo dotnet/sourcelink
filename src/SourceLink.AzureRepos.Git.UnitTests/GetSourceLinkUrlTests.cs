@@ -324,8 +324,8 @@ namespace Microsoft.SourceLink.AzureRepos.Git.UnitTests
                     KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
-            new MockItem("dev.azure.com")
-        }
+                    new MockItem("dev.azure.com")
+                }
             };
 
             var result = task.Execute();
