@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the License.txt file in the project root for more information.
 
@@ -133,12 +133,11 @@ namespace Microsoft.Build.Tasks.SourceControl
 
             var relativeUrl = gitUri.GetPath().TrimEnd('/');
 
-            // Only strip ".git" when it is a dedicated path segment ("/.git").
-            // Do not strip ".git" from repository names (e.g. "repo.git").
-            const string DotGitSegment = "/.git";
-            if (relativeUrl.EndsWith(DotGitSegment, StringComparison.Ordinal))
+            // The URL may or may not end with '.git' (case-sensitive), but content URLs do not include '.git' suffix:
+            const string GitUrlSuffix = ".git";
+            if (relativeUrl.EndsWith(GitUrlSuffix, StringComparison.Ordinal) && !relativeUrl.EndsWith("/" + GitUrlSuffix, StringComparison.Ordinal))
             {
-                relativeUrl = relativeUrl[..^DotGitSegment.Length];
+                relativeUrl = relativeUrl[..^GitUrlSuffix.Length];
             }
 
             SourceLinkUrl = BuildSourceLinkUrl(contentUri, gitUri, relativeUrl, revisionId, hostItem);
@@ -223,7 +222,7 @@ namespace Microsoft.Build.Tasks.SourceControl
             }
         }
 
-        private static bool TryGetMatchingContentUri(UrlMapping[] mappings, Uri repoUri, [NotNullWhen(true)]out Uri? contentUri, out ITaskItem? hostItem)
+        private static bool TryGetMatchingContentUri(UrlMapping[] mappings, Uri repoUri, [NotNullWhen(true)] out Uri? contentUri, out ITaskItem? hostItem)
         {
             UrlMapping? FindMatch(bool exactHost)
             {
