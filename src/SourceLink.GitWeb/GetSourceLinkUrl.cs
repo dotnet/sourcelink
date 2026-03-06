@@ -24,14 +24,20 @@ namespace Microsoft.SourceLink.GitWeb
 
         protected override string BuildSourceLinkUrl(Uri contentUri, Uri gitUri, string relativeUrl, string revisionId, ITaskItem? hostItem)
         {
-            var trimLeadingSlash = relativeUrl.TrimStart('/');
+            var projectPath = relativeUrl.TrimStart('/');
             var trimmedContentUrl = contentUri.ToString().TrimEnd('/', '\\');
+
+            const string GitSuffix = ".git";
+            if (!projectPath.EndsWith(GitSuffix, StringComparison.Ordinal))
+            {
+                projectPath += GitSuffix;
+            }
 
             // p = project/path
             // a = action
             // hb = SHA/revision
             // f = repo file path
-            var gitwebRawUrl = UriUtilities.Combine(trimmedContentUrl, $"?p={trimLeadingSlash}.git;a=blob_plain;hb={revisionId};f=*");
+            var gitwebRawUrl = UriUtilities.Combine(trimmedContentUrl, $"?p={projectPath};a=blob_plain;hb={revisionId};f=*");
             return gitwebRawUrl;
         }
     }
