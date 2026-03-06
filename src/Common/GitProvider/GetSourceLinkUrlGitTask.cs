@@ -133,11 +133,12 @@ namespace Microsoft.Build.Tasks.SourceControl
 
             var relativeUrl = gitUri.GetPath().TrimEnd('/');
 
-            // The URL may or may not end with '.git' (case-sensitive), but content URLs do not include '.git' suffix:
-            const string GitUrlSuffix = ".git";
-            if (relativeUrl.EndsWith(GitUrlSuffix, StringComparison.Ordinal) && !relativeUrl.EndsWith("/" + GitUrlSuffix, StringComparison.Ordinal))
+            // Only strip ".git" when it is a dedicated path segment ("/.git").
+            // Do not strip ".git" from repository names (e.g. "repo.git").
+            const string DotGitSegment = "/.git";
+            if (relativeUrl.EndsWith(DotGitSegment, StringComparison.Ordinal))
             {
-                relativeUrl = relativeUrl[..^GitUrlSuffix.Length];
+                relativeUrl = relativeUrl[..^DotGitSegment.Length];
             }
 
             SourceLinkUrl = BuildSourceLinkUrl(contentUri, gitUri, relativeUrl, revisionId, hostItem);

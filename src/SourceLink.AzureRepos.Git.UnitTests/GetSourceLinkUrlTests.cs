@@ -285,5 +285,55 @@ namespace Microsoft.SourceLink.AzureRepos.Git.UnitTests
             AssertEx.AreEqual($"https://{domain}/project/_apis/git/repositories/repo/items?api-version=1.0&versionType=commit&version=0123456789abcdefABCDEF000000000000000000&path=/*", task.SourceLinkUrl);
             Assert.True(result);
         }
+
+        [Fact]
+        public void DevAzureCom_RepositoryName_WithDotGit_IsNotIgnored()
+        {
+            var urlWithoutDotGit = ExecuteDevAzureCom("https://dev.azure.com/org/project/_git/repo");
+            var urlWithDotGit = ExecuteDevAzureCom("https://dev.azure.com/org/project/_git/repo.git");
+
+            Assert.True(
+                !string.Equals(urlWithoutDotGit, urlWithDotGit, StringComparison.Ordinal),
+                $"Repository name is ignored: URLs are identical.\n" +
+                $"Input without .git: https://dev.azure.com/org/project/_git/repo\n" +
+                $"Input with .git:    https://dev.azure.com/org/project/_git/repo.git\n" +
+                $"Output:             {urlWithoutDotGit}");
+        }
+
+        [Fact]
+        public void DevAzureCom_RepositoryName_WithDotGit_IsPreservedInOutput()
+        {
+            var url = ExecuteDevAzureCom("https://dev.azure.com/org/project/_git/repo.git");
+
+            Assert.True(
+                url.Contains("repo.git", StringComparison.Ordinal),
+                $"Repository suffix '.git' was not preserved in SourceLinkUrl.\nOutput: {url}");
+        }
+
+        private static string ExecuteDevAzureCom(string repositoryUrl)
+        {
+            var engine = new MockEngine();
+
+            var task = new GetSourceLinkUrl()
+            {
+                BuildEngine = engine,
+                SourceRoot = new MockItem("/src/",
+                    KVP("RepositoryUrl", repositoryUrl),
+                    KVP("SourceControl", "git"),
+                    KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
+                Hosts = new[]
+                {
+            new MockItem("dev.azure.com")
+        }
+            };
+
+            var result = task.Execute();
+
+            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            Assert.True(result);
+            Assert.False(string.IsNullOrEmpty(task.SourceLinkUrl));
+
+            return task.SourceLinkUrl;
+        }
     }
 }
