@@ -305,9 +305,10 @@ namespace Microsoft.SourceLink.AzureRepos.Git.UnitTests
         {
             var url = ExecuteDevAzureCom("https://dev.azure.com/org/project/_git/repo.git");
 
-            Assert.True(
-                url.Contains("repo.git", StringComparison.Ordinal),
-                $"Repository suffix '.git' was not preserved in SourceLinkUrl.\nOutput: {url}");
+            // Ensure the '.git' suffix is preserved in the repository segment of the URL, not just anywhere.
+            Assert.Contains(
+                "project/_apis/git/repositories/repo.git/items",
+                url);
         }
 
         private static string ExecuteDevAzureCom(string repositoryUrl)
@@ -323,8 +324,8 @@ namespace Microsoft.SourceLink.AzureRepos.Git.UnitTests
                     KVP("RevisionId", "0123456789abcdefABCDEF000000000000000000")),
                 Hosts = new[]
                 {
-            new MockItem("dev.azure.com")
-        }
+                    new MockItem("dev.azure.com")
+                }
             };
 
             var result = task.Execute();
