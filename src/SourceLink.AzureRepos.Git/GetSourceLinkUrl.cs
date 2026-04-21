@@ -32,6 +32,9 @@ namespace Microsoft.SourceLink.AzureRepos.Git
 
         protected override string? BuildSourceLinkUrl(Uri contentUri, Uri gitUri, string relativeUrl, string revisionId, ITaskItem? hostItem)
         {
+            // Azure DevOps does not support optional ".git" suffix in repository URLs and adding it may result in 404.
+            // Unlike other providers (GitHub, GitLab, etc.), relativeUrl may include the ".git" suffix,
+            // so use gitUri.GetPath() here instead.
             if (!AzureDevOpsUrlParser.TryParseHostedHttp(gitUri.GetHost(), gitUri.GetPath(), out var projectPath, out var repositoryName))
             {
                 Log.LogError(CommonResources.ValueOfWithIdentityIsInvalid, Names.SourceRoot.RepositoryUrlFullName, SourceRoot!.ItemSpec, gitUri);
