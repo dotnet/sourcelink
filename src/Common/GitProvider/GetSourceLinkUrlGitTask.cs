@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the License.txt file in the project root for more information.
 
@@ -222,7 +222,7 @@ namespace Microsoft.Build.Tasks.SourceControl
             }
         }
 
-        private static bool TryGetMatchingContentUri(UrlMapping[] mappings, Uri repoUri, [NotNullWhen(true)]out Uri? contentUri, out ITaskItem? hostItem)
+        private static bool TryGetMatchingContentUri(UrlMapping[] mappings, Uri repoUri, [NotNullWhen(true)] out Uri? contentUri, out ITaskItem? hostItem)
         {
             UrlMapping? FindMatch(bool exactHost)
             {
