@@ -106,13 +106,13 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             using var temp = new TempRoot();
 
             var gitDir = temp.CreateDirectory();
+            var commonDir = temp.CreateDirectory();
 
-            gitDir.CreateFile("packed-refs").WriteAllText(
+            commonDir.CreateFile("packed-refs").WriteAllText(
 @"# pack-refs with: peeled fully-peeled sorted
 1111111111111111111111111111111111111111 refs/heads/master
 2222222222222222222222222222222222222222 refs/heads/br2
 ");
-            var commonDir = temp.CreateDirectory();
             var refsHeadsDir = commonDir.CreateDirectory("refs").CreateDirectory("heads");
 
             refsHeadsDir.CreateFile("br1").WriteAllText("ref: refs/heads/br2");
@@ -130,14 +130,14 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             using var temp = new TempRoot();
 
             var gitDir = temp.CreateDirectory();
+            var commonDir = temp.CreateDirectory();
 
             // Packed refs with SHA256 hashes (64 characters)
-            gitDir.CreateFile("packed-refs").WriteAllText(
+            commonDir.CreateFile("packed-refs").WriteAllText(
 @"# pack-refs with: peeled fully-peeled sorted
 1111111111111111111111111111111111111111111111111111111111111111 refs/heads/master
 2222222222222222222222222222222222222222222222222222222222222222 refs/heads/br2
 ");
-            var commonDir = temp.CreateDirectory();
             var refsHeadsDir = commonDir.CreateDirectory("refs").CreateDirectory("heads");
 
             refsHeadsDir.CreateFile("br1").WriteAllText("ref: refs/heads/br2");
@@ -230,7 +230,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var gitDir = temp.CreateDirectory();
             var commonDir = temp.CreateDirectory();
 
-            var refTableDir = gitDir.CreateDirectory("reftable");
+            var refTableDir = commonDir.CreateDirectory("reftable");
 
             refTableDir.CreateFile("tables.list").WriteAllText("""
                 2.ref
