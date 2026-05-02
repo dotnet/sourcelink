@@ -42,8 +42,8 @@ namespace Microsoft.Build.Tasks.Git
             _commonDirectory = commonDirectory;
             _storageFormat = storageFormat;
             _objectNameFormat = objectNameFormat;
-            _lazyPackedReferences = new(() => ReadPackedReferences(_gitDirectory));
-            _lazyRefTableReferenceReaders = new(() => CreateRefTableReaders(_gitDirectory, _openedRefTableReaders));
+            _lazyPackedReferences = new(() => ReadPackedReferences(_commonDirectory));
+            _lazyRefTableReferenceReaders = new(() => CreateRefTableReaders(_commonDirectory, _openedRefTableReaders));
         }
 
         public void Dispose()
@@ -59,11 +59,15 @@ namespace Microsoft.Build.Tasks.Git
             }
         }
 
-        private ImmutableDictionary<string, string> ReadPackedReferences(string gitDirectory)
+        private ImmutableDictionary<string, string> ReadPackedReferences(string commonDirectory)
         {
             // https://git-scm.com/docs/git-pack-refs
 
-            var packedRefsPath = Path.Combine(gitDirectory, PackedRefsFileName);
+            // Although the above doc specifies 'packaged-refs' file is in GIT_DIR, 
+            // it is actually in the common directory as specified in
+            // https://git-scm.com/docs/gitrepository-layout#Documentation/gitrepository-layout.txt-packed-refs
+
+            var packedRefsPath = Path.Combine(commonDirectory, PackedRefsFileName);
             if (!File.Exists(packedRefsPath))
             {
                 return ImmutableDictionary<string, string>.Empty;
@@ -174,9 +178,12 @@ namespace Microsoft.Build.Tasks.Git
 
         /// <exception cref="IOException"/>
         /// <exception cref="InvalidDataException"/>
-        private static IEnumerable<GitRefTableReader> CreateRefTableReaders(string gitDirectory, List<GitRefTableReader> openReaders)
+        private static IEnumerable<GitRefTableReader> CreateRefTableReaders(string commonDirectory, List<GitRefTableReader> openReaders)
         {
-            var refTableDirectory = Path.Combine(gitDirectory, RefTableDirectoryName);
+            // Although https://git-scm.com/docs/reftable#_layout specifies reftable to be in GIT_DIR,
+            // it is actually in the common directory. This is currently not documented.
+
+            var refTableDirectory = Path.Combine(commonDirectory, RefTableDirectoryName);
             var tablesFilePath = Path.Combine(refTableDirectory, TablesListFileName);
 
             // Create lazily-evaluated sequence of readers for each entry in the tables.list file (in reverse order).
