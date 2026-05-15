@@ -164,7 +164,28 @@ namespace Microsoft.Build.Tasks.Git
         private static bool IsSupportedScheme(string scheme)
             => scheme is "http" or "https" or "ssh" or "git";
 
+        // internal for testing
         internal static Uri? NormalizeUrl(string url, string root)
+        {
+            var normalizedUrl = NormalizeUrlImpl(url, root);
+            if (normalizedUrl == null)
+            {
+                return null;
+            }
+
+            // remove user info to avoid embedding access tokens to build artifacts:
+            var builder = new UriBuilder(normalizedUrl)
+            {
+                // If user name is not specified in SSH URL, the local user name is used for connecting to the repo.
+                // Use "git" placeholder instead of a specific user name.
+                UserName = normalizedUrl.Scheme is "ssh" ? "git" : null,
+                Password = null,
+            };
+
+            return builder.Uri;
+        }
+
+        private static Uri? NormalizeUrlImpl(string url, string root)
         {
             // Since git supports scp-like syntax for SSH URLs we convert it here, 
             // so that RepositoryUrl is actually a valid URL in that case.

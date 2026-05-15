@@ -110,11 +110,17 @@ namespace Microsoft.SourceLink
             return true;
         }
 
-        public static bool TryParseHostedSsh(Uri uri, [NotNullWhen(true)]out string? account, [NotNullWhen(true)]out string? repositoryPath, [NotNullWhen(true)]out string? repositoryName)
+        public static bool TryParseHostedSsh(
+            Uri uri,
+            [NotNullWhen(true)] out string? account,
+            [NotNullWhen(true)] out string? repositoryPath,
+            [NotNullWhen(true)] out string? repositoryName,
+            out bool isUnsupportedFormat)
         {
             NullableDebug.Assert(uri != null);
 
             account = repositoryPath = repositoryName = null;
+            isUnsupportedFormat = false;
 
             // {"DefaultCollection"|""}/{repositoryPath}/"_ssh"/{"_full"|"_optimized"}/{repositoryName}
             if (!UriUtilities.TrySplitRelativeUrl(uri.GetPath(), out var parts) || parts.Length == 0)
@@ -125,38 +131,21 @@ namespace Microsoft.SourceLink
             // Check for v3 url format
             if (parts[0] == "v3" &&
                 parts.Length >= 3 &&
-                TryParsePath(parts, 2, type: null, out repositoryPath, out repositoryName) &&
+                TryParsePath(parts, startIndex: 2, type: null, out repositoryPath, out repositoryName) &&
                 repositoryPath != "")
             {
                 // ssh://{user}@{domain}:{port}/v3/{account}/{repositoryPath}/{'_full'|'_optimized'|''}/{repositoryName}
                 account = parts[1];
-            }
-            else
-            {
-                // ssh v1/v2 url formats
-                // ssh://{account}@vs-ssh.visualstudio.com/
-
-                account = uri.UserInfo;
-
-                int index = 0;
-                if (StringComparer.OrdinalIgnoreCase.Equals(parts[0], "DefaultCollection"))
-                {
-                    index++;
-                }
-
-                if (!TryParsePath(parts, index, "_ssh", out repositoryPath, out repositoryName))
-                {
-                    // Failed to parse path
-                    return false;
-                }
+                return account.Length > 0;
             }
 
-            if (account.Length == 0)
-            {
-                return false;
-            }
+            // ssh v1/v2 url formats
+            // ssh://{account}@vs-ssh.visualstudio.com/
 
-            return true;
+            // No longer supported since the format uses SSH connection user name as an account name,
+            // which means that user info could leak into Source Link.
+            isUnsupportedFormat = true;
+            return false;
         }
 
         public static bool TryParseOnPremSsh(Uri uri, [NotNullWhen(true)]out string? repositoryPath, [NotNullWhen(true)]out string? repositoryName)
