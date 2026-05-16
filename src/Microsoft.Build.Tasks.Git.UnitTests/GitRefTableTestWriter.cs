@@ -243,8 +243,6 @@ internal class GitRefTableTestWriter
                 maxUpdate: 0);
         }
 
-        var blockTypePosition = Stream.Position;
-
         Stream.WriteByte((byte)kind);
 
         // uint24(block_len)
@@ -261,7 +259,7 @@ internal class GitRefTableTestWriter
 
         Stream.Position = blockEnd;
 
-        return blockTypePosition;
+        return blockStart;
     }
 
     public static byte[] GetObjectName(byte b0, ObjectNameFormat format = ObjectNameFormat.Sha1)

@@ -56,18 +56,7 @@ internal sealed partial class GitRefTableReader(Stream stream) : IDisposable
 
     private RefRecord? FindRefRecord(string referenceName)
     {
-        Position = 0;
-
-        // Readers are required to read header and validate version it before reading the footer.
-        // https://git-scm.com/docs/reftable#_footer
-        var header = ReadHeader();
-
-        var footerPosition = Length - header.Size - Footer.SizeExcludingHeader;
-
-        // Skip ahead to read the footer.
-        // It contains a copy of header and position of the RefIndex.
-        Position = footerPosition;
-        var footer = ReadFooter();
+        var footer = ReadHeaderAndFooter();
 
         if (footer.RefIndexPosition > 0)
         {
@@ -80,6 +69,12 @@ internal sealed partial class GitRefTableReader(Stream stream) : IDisposable
             return SearchRefIndex(footer.Header, referenceName);
         }
 
+        // A reftable may be empty. In this case, the file starts with a header and is immediately followed by a footer.
+        if (footer.Position == footer.Header.Size)
+        {
+            return null;
+        }
+
         // No RefIndex, read RefBlocks sequentially.
 
         var blockStartPosition = 0L;
@@ -89,7 +84,7 @@ internal sealed partial class GitRefTableReader(Stream stream) : IDisposable
             var isFirstBlock = blockStartPosition == 0;
 
             // The first block starts with header.
-            Position = blockStartPosition + (isFirstBlock ? header.Size : 0);
+            Position = blockStartPosition + (isFirstBlock ? footer.Header.Size : 0);
             switch (ReadByte())
             {
                 case BlockTypeRef:
@@ -109,13 +104,30 @@ internal sealed partial class GitRefTableReader(Stream stream) : IDisposable
             }
 
             // If the file is unaligned the next block starts at the end of the current block,
-            // otherwise the current block its padded to block size and the next block starts after the padding.
+            // otherwise the current block is padded to block size and the next block starts after the padding.
             blockStartPosition = footer.Header.BlockSize > 0 ? blockStartPosition + footer.Header.BlockSize : blockEndPosition;
-            if (blockStartPosition >= footerPosition)
+            if (blockStartPosition >= footer.Position)
             {
                 return null;
             }
         }
+    }
+
+    // internal for testing
+    internal Footer ReadHeaderAndFooter()
+    {
+        Position = 0;
+
+        // Readers are required to read header and validate version it before reading the footer.
+        // https://git-scm.com/docs/reftable#_footer
+        var header = ReadHeader();
+
+        var footerPosition = Length - header.Size - Footer.SizeExcludingHeader;
+
+        // Skip ahead to read the footer.
+        // It contains a copy of header and position of the RefIndex.
+        Position = footerPosition;
+        return ReadFooter();
     }
 
     internal Header ReadHeader()
@@ -211,7 +223,8 @@ internal sealed partial class GitRefTableReader(Stream stream) : IDisposable
         return new Footer
         {
             Header = header,
-            RefIndexPosition = (long)refIndexPosition
+            Position = footerStartPosition,
+            RefIndexPosition = (long)refIndexPosition,
         };
     }
 
@@ -243,8 +256,7 @@ internal sealed partial class GitRefTableReader(Stream stream) : IDisposable
         if (firstGreater < 0)
         {
             // the last reference of the block is the one we are looking for:
-            Position = record.BlockPosition;
-            return SearchBlock(header, referenceName);
+            return SearchBlock(header, record.BlockPosition, referenceName);
         }
 
         // firstGreater points to the first record at a restart offset that contains references with last name larger than the searched value.
@@ -257,8 +269,7 @@ internal sealed partial class GitRefTableReader(Stream stream) : IDisposable
 
             Debug.Assert(StringComparer.Ordinal.Compare(referenceName, record.LastRefName) < 0);
 
-            Position = record.BlockPosition;
-            var result = SearchBlock(header, referenceName);
+            var result = SearchBlock(header, record.BlockPosition, referenceName);
             if (result != null)
             {
                 return result;
@@ -284,8 +295,7 @@ internal sealed partial class GitRefTableReader(Stream stream) : IDisposable
             if (StringComparer.Ordinal.Compare(referenceName, record.LastRefName) <= 0)
             {
                 // the last reference of the block is the one we are looking for:
-                Position = record.BlockPosition;
-                return SearchBlock(header, referenceName);
+                return SearchBlock(header, record.BlockPosition, referenceName);
             }
 
             priorName = record.LastRefName;
@@ -294,8 +304,11 @@ internal sealed partial class GitRefTableReader(Stream stream) : IDisposable
         return null;
     }
 
-    public RefRecord? SearchBlock(Header header, string referenceName)
+    public RefRecord? SearchBlock(Header header, long blockPosition, string referenceName)
     {
+        // first block's content is preceded by the header:
+        Position = blockPosition == 0 ? header.Size : blockPosition;
+
         return ReadByte() switch
         {
             BlockTypeRef => SearchRefBlock(header, referenceName, out _),
@@ -443,7 +456,7 @@ internal sealed partial class GitRefTableReader(Stream stream) : IDisposable
         return offsets;
     }
 
-    private (string name, byte valueType) ReadNameAndValueType(string priorName)
+    private (string name, byte valueType) ReadNameAndValueType(string? priorName)
     {
         // varint(prefix_length)
         var prefixLength = ReadVarInt();
@@ -457,7 +470,7 @@ internal sealed partial class GitRefTableReader(Stream stream) : IDisposable
         var suffixBytes = ReadBytes(suffixLength);
         try
         {
-            var name = priorName[0..prefixLength] + s_utf8.GetString(suffixBytes);
+            var name = priorName?[0..prefixLength] + s_utf8.GetString(suffixBytes);
             return (name, valueType);
         }
         catch
@@ -466,7 +479,7 @@ internal sealed partial class GitRefTableReader(Stream stream) : IDisposable
         }
     }
 
-    internal RefIndexRecord ReadRefIndexRecord(string priorName)
+    internal RefIndexRecord ReadRefIndexRecord(string? priorName)
     {
         var (name, valueType) = ReadNameAndValueType(priorName);
         if (valueType != 0)
@@ -484,7 +497,7 @@ internal sealed partial class GitRefTableReader(Stream stream) : IDisposable
         };
     }
 
-    internal RefRecord ReadRefRecord(Header header, string priorName)
+    internal RefRecord ReadRefRecord(Header header, string? priorName)
     {
         var (name, valueType) = ReadNameAndValueType(priorName);
 
