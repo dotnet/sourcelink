@@ -1006,6 +1006,41 @@ public class GitRefTableReaderTests
     }
 
     [Fact]
+    public void TryFindReference_RefIndexCycle_Throws()
+    {
+        var writer = new GitRefTableTestWriter();
+
+        var header = new GitRefTableReader.Header()
+        {
+            Size = 24,
+            BlockSize = 1000,
+            ObjectNameFormat = ObjectNameFormat.Sha1
+        };
+
+        writer.WriteRefBlock(header,
+        [
+            ("", "refs/heads/a", 0x01),
+        ]);
+
+        var cyclicIndexBlock = writer.WriteBlock(header: null, 'i', (w, blockStart) =>
+        {
+            w.WriteRefIndexRecord(
+                prefixLength: 0,
+                valueType: 0,
+                suffix: Encoding.ASCII.GetBytes("refs/heads/z"),
+                blockPosition: blockStart);
+
+            w.WriteRestartOffsets(4);
+        });
+
+        writer.WriteFooter(header, cyclicIndexBlock);
+
+        using var reader = Create(writer);
+
+        Assert.Throws<InvalidDataException>(() => reader.TryFindReference("refs/heads/a", out _, out _));
+    }
+
+    [Fact]
     public void TryFindReference_RefIndex()
     {
         var writer = new GitRefTableTestWriter();
