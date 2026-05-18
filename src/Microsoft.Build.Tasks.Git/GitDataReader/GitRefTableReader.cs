@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Hashing;
@@ -72,12 +73,7 @@ internal sealed partial class GitRefTableReader(Stream stream) : IDisposable
         if (footer.RefIndexPosition > 0)
         {
             Position = footer.RefIndexPosition;
-            if (ReadByte() != BlockTypeIndex)
-            {
-                throw new InvalidDataException();
-            }
-
-            return SearchRefIndex(footer.Header, referenceName);
+            return SearchBlock(footer.Header, referenceName);
         }
 
         // No RefIndex, read RefBlocks sequentially.
@@ -218,7 +214,7 @@ internal sealed partial class GitRefTableReader(Stream stream) : IDisposable
     /// <summary>
     /// RefIndex stores the last reference name of each RefBlock.
     /// </summary>
-    private RefRecord? SearchRefIndex(Header header, string referenceName)
+    private void SearchRefIndex(Header header, string referenceName, Stack<long> blocksToSearch)
     {
         // 'i' (already read)
         // uint24(block_len)
@@ -243,34 +239,34 @@ internal sealed partial class GitRefTableReader(Stream stream) : IDisposable
         if (firstGreater < 0)
         {
             // the last reference of the block is the one we are looking for:
-            Position = record.BlockPosition;
-            return SearchBlock(header, referenceName);
+            blocksToSearch.Push(record.BlockPosition);
+            return;
         }
 
         // firstGreater points to the first record at a restart offset that contains references with last name larger than the searched value.
         // The reference is either in the record at firstGreater, or in the previous run.
 
+        long? firstCandidateBlockPosition = null;
         if (firstGreater < restartOffsets.Length - 1)
         {
             Position = blockStartPosition + restartOffsets[firstGreater];
             record = ReadRefIndexRecord(priorName: "");
 
             Debug.Assert(StringComparer.Ordinal.Compare(referenceName, record.LastRefName) < 0);
-
-            Position = record.BlockPosition;
-            var result = SearchBlock(header, referenceName);
-            if (result != null)
-            {
-                return result;
-            }
+            firstCandidateBlockPosition = record.BlockPosition;
         }
 
         firstGreater--;
 
         if (firstGreater == -1)
         {
+            if (firstCandidateBlockPosition.HasValue)
+            {
+                blocksToSearch.Push(firstCandidateBlockPosition.Value);
+            }
+
             // reference is not found - it would be ordered before the first record
-            return null;
+            return;
         }
 
         Position = blockStartPosition + restartOffsets[firstGreater];
@@ -284,24 +280,56 @@ internal sealed partial class GitRefTableReader(Stream stream) : IDisposable
             if (StringComparer.Ordinal.Compare(referenceName, record.LastRefName) <= 0)
             {
                 // the last reference of the block is the one we are looking for:
-                Position = record.BlockPosition;
-                return SearchBlock(header, referenceName);
+                blocksToSearch.Push(record.BlockPosition);
+                break;
             }
 
             priorName = record.LastRefName;
         }
 
-        return null;
+        if (firstCandidateBlockPosition.HasValue)
+        {
+            blocksToSearch.Push(firstCandidateBlockPosition.Value);
+        }
     }
 
     public RefRecord? SearchBlock(Header header, string referenceName)
     {
-        return ReadByte() switch
+        var blocksToSearch = new Stack<long>();
+        var searchedIndexBlocks = new HashSet<long>();
+        blocksToSearch.Push(Position);
+
+        while (blocksToSearch.Count > 0)
         {
-            BlockTypeRef => SearchRefBlock(header, referenceName, out _),
-            BlockTypeIndex => SearchRefIndex(header, referenceName),
-            _ => throw new InvalidDataException(),
-        };
+            var blockPosition = blocksToSearch.Pop();
+            Position = blockPosition;
+
+            switch (ReadByte())
+            {
+                case BlockTypeRef:
+                    var result = SearchRefBlock(header, referenceName, out _);
+                    if (result != null)
+                    {
+                        return result;
+                    }
+
+                    break;
+
+                case BlockTypeIndex:
+                    if (!searchedIndexBlocks.Add(blockPosition))
+                    {
+                        throw new InvalidDataException();
+                    }
+
+                    SearchRefIndex(header, referenceName, blocksToSearch);
+                    break;
+
+                default:
+                    throw new InvalidDataException();
+            }
+        }
+
+        return null;
     }
 
     private RefRecord? SearchRefBlock(Header header, string referenceName, out long blockEndPosition)
