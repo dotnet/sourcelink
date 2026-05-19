@@ -136,16 +136,32 @@ namespace Microsoft.SourceLink
             {
                 // ssh://{user}@{domain}:{port}/v3/{account}/{repositoryPath}/{'_full'|'_optimized'|''}/{repositoryName}
                 account = parts[1];
-                return account.Length > 0;
+            }
+            else
+            {
+                // ssh v1/v2 url formats
+                // ssh://{account}@vs-ssh.visualstudio.com/
+
+                int index = 0;
+                if (StringComparer.OrdinalIgnoreCase.Equals(parts[0], "DefaultCollection"))
+                {
+                    index++;
+                }
+
+                if (!TryParsePath(parts, index, "_ssh", out repositoryPath, out repositoryName))
+                {
+                    // Failed to parse path
+                    return false;
+                }
+
+                // The format uses SSH connection user name as an account name.
+                // It is no longer supported since GitOperations.GetRepositoryUrl strips the user info
+                // to prevent leaking credentials.
+                isUnsupportedFormat = true;
+                return false;
             }
 
-            // ssh v1/v2 url formats
-            // ssh://{account}@vs-ssh.visualstudio.com/
-
-            // No longer supported since the format uses SSH connection user name as an account name,
-            // which means that user info could leak into Source Link.
-            isUnsupportedFormat = true;
-            return false;
+            return account.Length > 0;
         }
 
         public static bool TryParseOnPremSsh(Uri uri, [NotNullWhen(true)]out string? repositoryPath, [NotNullWhen(true)]out string? repositoryName)
