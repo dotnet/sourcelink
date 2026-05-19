@@ -814,39 +814,39 @@ public class GitRefTableReaderTests
 
         using var reader = Create(writer);
 
-        var record = reader.SearchBlock(header, 0, "refs/heads/c");
+        var record = reader.SearchBlock(header, blockPosition: 0, "refs/heads/c");
         Assert.NotNull(record);
         Assert.Equal("refs/heads/c", record.Value.RefName);
         Assert.Equal("0300000000000000000000000000000000000000", record.Value.ObjectName);
 
-        record = reader.SearchBlock(header, 0, "refs/heads/a");
+        record = reader.SearchBlock(header, blockPosition: 0, "refs/heads/a");
         Assert.NotNull(record);
         Assert.Equal("refs/heads/a", record.Value.RefName);
         Assert.Equal("0100000000000000000000000000000000000000", record.Value.ObjectName);
 
-        record = reader.SearchBlock(header, 0, "refs/heads/b");
+        record = reader.SearchBlock(header, blockPosition: 0, "refs/heads/b");
         Assert.NotNull(record);
         Assert.Equal("refs/heads/b", record.Value.RefName);
         Assert.Equal("0200000000000000000000000000000000000000", record.Value.ObjectName);
 
-        record = reader.SearchBlock(header, 0, "refs/heads/d");
+        record = reader.SearchBlock(header, blockPosition: 0, "refs/heads/d");
         Assert.NotNull(record);
         Assert.Equal("refs/heads/d", record.Value.RefName);
         Assert.Equal("0400000000000000000000000000000000000000", record.Value.ObjectName);
 
-        record = reader.SearchBlock(header, 0, "refs/heads");
+        record = reader.SearchBlock(header, blockPosition: 0, "refs/heads");
         Assert.Null(record);
 
-        record = reader.SearchBlock(header, 0, "refs/heads/aa");
+        record = reader.SearchBlock(header, blockPosition: 0, "refs/heads/aa");
         Assert.Null(record);
 
-        record = reader.SearchBlock(header, 0, "refs/heads/bb");
+        record = reader.SearchBlock(header, blockPosition: 0, "refs/heads/bb");
         Assert.Null(record);
 
-        record = reader.SearchBlock(header, 0, "refs/heads/cc");
+        record = reader.SearchBlock(header, blockPosition: 0, "refs/heads/cc");
         Assert.Null(record);
 
-        record = reader.SearchBlock(header, 0, "refs/heads/dd");
+        record = reader.SearchBlock(header, blockPosition: 0, "refs/heads/dd");
         Assert.Null(record);
     }
 
