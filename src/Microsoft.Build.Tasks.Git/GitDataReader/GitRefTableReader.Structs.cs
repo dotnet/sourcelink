@@ -26,6 +26,7 @@ internal sealed partial class GitRefTableReader
         public const int SizeExcludingHeader = 44;
 
         public Header Header { get; init; }
+        public long Position { get; init; }
         public long RefIndexPosition { get; init; }
     }
 
@@ -34,6 +35,23 @@ internal sealed partial class GitRefTableReader
         public string RefName { get; init; }
         public string? ObjectName { get; init; }
         public string? SymbolicRef { get; init; }
+
+        public override string ToString()
+        {
+            var str = $"RefName: '{RefName}'";
+
+            if (ObjectName != null)
+            {
+                str += $", ObjectName: '{ObjectName}'";
+            }
+
+            if (SymbolicRef != null)
+            {
+                str += $", SymbolicRef: '{SymbolicRef}'";
+            }
+
+            return str;
+        }
     }
 
     internal readonly struct RefIndexRecord
@@ -47,6 +65,9 @@ internal sealed partial class GitRefTableReader
         /// Position of leaf RefBlock or next level RefIndexBlock from the start of the file.
         /// </summary>
         public long BlockPosition { get; init; }
+
+        public override string ToString()
+            => $"LastRefName: '{LastRefName}', BlockPosition: {BlockPosition}";
     }
 
 }
