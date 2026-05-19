@@ -154,8 +154,9 @@ namespace Microsoft.SourceLink
                     return false;
                 }
 
-                // No longer supported since the format uses SSH connection user name as an account name,
-                // which means that user info could leak into Source Link.
+                // The format uses SSH connection user name as an account name.
+                // It is no longer supported since GitOperations.GetRepositoryUrl strips the user info
+                // to prevent leaking credentials.
                 isUnsupportedFormat = true;
                 return false;
             }

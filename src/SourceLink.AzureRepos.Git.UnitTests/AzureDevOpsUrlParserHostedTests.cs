@@ -125,6 +125,15 @@ namespace Microsoft.SourceLink.AzureRepos.Git.UnitTests
         }
 
         [Theory]
+        [InlineData("ssh://account@vs-ssh.visualstudio.com/v4/team/_ssh")]
+        public void TryParseHostedSshV1V2_Error(string url)
+        {
+            Assert.False(AzureDevOpsUrlParser.TryParseHostedSsh(
+                new Uri(url, UriKind.Absolute), out _, out _, out _, out var isUnsupportedFormat));
+            Assert.False(isUnsupportedFormat);
+        }
+
+        [Theory]
         [InlineData("ssh://account1@vs-ssh.visualstudio.com/v3/account2/project/repo", "account2", "project", "repo")]
         [InlineData("ssh://account1@vs-ssh.visualstudio.com/v3/account2/project/team/repo", "account2", "project/team", "repo")]
         [InlineData("ssh://account1@vs-ssh.visualstudio.com/v3/account2/project/team/_full/repo", "account2", "project/team", "repo")]
