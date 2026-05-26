@@ -13,7 +13,10 @@
 
     <!-- Only upgrade NuGetAudit warnings to errors for official builds. -->
     <WarningsNotAsErrors Condition="'$(OfficialBuild)' != 'true'">$(WarningsNotAsErrors);NU1901;NU1902;NU1903;NU1904</WarningsNotAsErrors>
-    <NuGetAudit>false</NuGetAudit>
+    <!-- Disable NuGet audit in official builds. MSBuild does not correctly handle
+         WarningsNotAsErrors for NuGet warnings (https://github.com/dotnet/msbuild/issues/10801),
+         so audit findings become errors via TreatWarningsAsErrors. -->
+    <NuGetAudit Condition="'$(OfficialBuild)' == 'true'">false</NuGetAudit>
   </PropertyGroup>
 
 </Project>
