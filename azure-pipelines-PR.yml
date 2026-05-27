@@ -41,7 +41,7 @@ stages:
       enablePublishUsingPipelines: true
       enableTelemetry: true
       enableSourceBuild: true
-      helixRepo: dotnet/symreader
+      helixRepo: dotnet/sourcelink
       jobs:
       - job: Windows
         pool:
