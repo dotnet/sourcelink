@@ -17,24 +17,20 @@ variables:
 - template: /eng/common/templates-official/variables/pool-providers.yml@self
 - name: _TeamName
   value: Roslyn
-- name: TeamName
-  value: Roslyn
 resources:
   repositories:
-  - repository: MicroBuildTemplate
+  - repository: 1ESPipelineTemplates
     type: git
-    name: 1ESPipelineTemplates/MicroBuildTemplate
+    name: 1ESPipelineTemplates/1ESPipelineTemplates
     ref: refs/tags/release
 extends:
-  template: azure-pipelines/MicroBuild.1ES.Official.yml@MicroBuildTemplate
+  template: v1/1ES.Official.PipelineTemplate.yml@1ESPipelineTemplates
   parameters:
     sdl:
       sourceAnalysisPool:
         name: $(DncEngInternalBuildPool)
         image: 1es-windows-2022
         os: windows
-    customBuildTags:
-    - ES365AIMigrationTooling
     stages:
     - stage: build
       displayName: Build
@@ -54,7 +50,7 @@ extends:
           enablePublishUsingPipelines: true
           enableTelemetry: true
           enableSourceBuild: true
-          helixRepo: dotnet/symreader
+          helixRepo: dotnet/sourcelink
           jobs:
           - job: Windows
             pool:
