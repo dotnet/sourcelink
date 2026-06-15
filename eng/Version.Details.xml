@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Dependencies>
-  <Source Uri="https://github.com/dotnet/dotnet" Mapping="sourcelink" Sha="335ad8bfd7164172977b98ce3e7c1e911aa495e4" BarId="317589" />
+  <Source Uri="https://github.com/dotnet/dotnet" Mapping="sourcelink" Sha="eaab8a61968cfc0a469693faacc686c7db624ea2" BarId="318512" />
   <ProductDependencies>
-    <Dependency Name="System.CommandLine" Version="3.0.0-preview.5.26305.118">
+    <Dependency Name="System.CommandLine" Version="3.0.0-preview.5.26312.104">
       <Uri>https://github.com/dotnet/dotnet</Uri>
-      <Sha>335ad8bfd7164172977b98ce3e7c1e911aa495e4</Sha>
+      <Sha>eaab8a61968cfc0a469693faacc686c7db624ea2</Sha>
     </Dependency>
-    <Dependency Name="System.IO.Hashing" Version="11.0.0-preview.5.26305.118">
+    <Dependency Name="System.IO.Hashing" Version="11.0.0-preview.5.26312.104">
       <Uri>https://github.com/dotnet/dotnet</Uri>
-      <Sha>335ad8bfd7164172977b98ce3e7c1e911aa495e4</Sha>
+      <Sha>eaab8a61968cfc0a469693faacc686c7db624ea2</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="11.0.0-beta.26305.118">
+    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="11.0.0-beta.26312.104">
       <Uri>https://github.com/dotnet/dotnet</Uri>
-      <Sha>335ad8bfd7164172977b98ce3e7c1e911aa495e4</Sha>
+      <Sha>eaab8a61968cfc0a469693faacc686c7db624ea2</Sha>
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>
