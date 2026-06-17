@@ -20,7 +20,7 @@
     <!-- nuget -->
     <NuGetVersioningVersion>6.12.1</NuGetVersioningVersion>
     <!-- runtime -->
-    <SystemTextJsonVersion>10.0.3</SystemTextJsonVersion>
+    <SystemTextJsonVersion>10.0.9</SystemTextJsonVersion>
   </PropertyGroup>
 
 </Project>
