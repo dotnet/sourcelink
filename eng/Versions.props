@@ -15,12 +15,12 @@
 
   <PropertyGroup>
     <!-- msbuild -->
-    <MicrosoftBuildVersion>17.11.48</MicrosoftBuildVersion>
-    <MicrosoftBuildTasksCoreVersion>17.11.48</MicrosoftBuildTasksCoreVersion>
+    <MicrosoftBuildVersion>18.6.3</MicrosoftBuildVersion>
+    <MicrosoftBuildTasksCoreVersion>18.6.3</MicrosoftBuildTasksCoreVersion>
     <!-- nuget -->
     <NuGetVersioningVersion>6.12.1</NuGetVersioningVersion>
     <!-- runtime -->
-    <SystemTextJsonVersion>8.0.5</SystemTextJsonVersion>
+    <SystemTextJsonVersion>10.0.3</SystemTextJsonVersion>
   </PropertyGroup>
 
 </Project>
