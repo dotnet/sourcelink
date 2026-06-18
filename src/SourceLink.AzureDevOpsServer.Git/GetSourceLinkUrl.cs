@@ -8,6 +8,7 @@ using Microsoft.Build.Tasks.SourceControl;
 
 namespace Microsoft.SourceLink.AzureDevOpsServer.Git
 {
+    [MSBuildMultiThreadableTask]
     public sealed class GetSourceLinkUrl : GetSourceLinkUrlGitTask
     {
         protected override string HostsItemGroupName => "SourceLinkAzureDevOpsServerGitHost";
