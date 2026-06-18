@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the License.txt file in the project root for more information.
 
+using Microsoft.Build.Framework;
 using Microsoft.Build.Tasks.SourceControl;
 using System;
 
@@ -13,6 +14,7 @@ namespace Microsoft.SourceLink.GitWeb
     /// <see cref="GetSourceLinkUrl"/> Task converts the URLs to HTTP content URLs which GitWeb does
     /// support. The output of this Task is independent of <see cref="GetSourceLinkUrl"/>.
     /// </summary>
+    [MSBuildMultiThreadableTask]
     public sealed class TranslateRepositoryUrls : TranslateRepositoryUrlsGitTask
     {
         /// <summary>
