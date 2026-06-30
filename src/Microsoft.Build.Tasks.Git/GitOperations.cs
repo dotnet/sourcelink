@@ -182,7 +182,14 @@ namespace Microsoft.Build.Tasks.Git
                 Password = null,
             };
 
-            return builder.Uri;
+            try
+            {
+                return builder.Uri;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         private static Uri? NormalizeUrlImpl(string url, string root)

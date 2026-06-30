@@ -241,6 +241,9 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [InlineData("ssh://github.com/org/../repo", "ssh://git@github.com/repo")]
         [InlineData("ssh://github.com/%32/repo", "ssh://git@github.com/2/repo")]
         [InlineData("ssh://github.com/%3F/repo", "ssh://git@github.com/%3F/repo")]
+        [InlineData(@"../.:./../../relative/path", null)]
+        [InlineData(@".:/../../relative/path", null)]
+        [InlineData(@"..:/../../relative/path", null)]
         public void NormalizeUrl_PlatformAgnostic2(string url, string? expectedUrl)
         {
             AssertEx.AreEqual(expectedUrl, GitOperations.NormalizeUrl(url, s_root)?.AbsoluteUri);
