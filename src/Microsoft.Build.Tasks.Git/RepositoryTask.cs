@@ -13,11 +13,9 @@ namespace Microsoft.Build.Tasks.Git
     public abstract class RepositoryTask : Task, IMultiThreadableTask
     {
         /// <summary>
-        /// Provides project-directory-relative path resolution and environment access that is safe
-        /// to use when the task runs on the MSBuild multithreaded execution model (no reliance on the
-        /// process current working directory). Defaults to <see cref="TaskEnvironment.Fallback"/> so that
-        /// existing single-process callers and tests that do not set it preserve the original CWD-based
-        /// semantics.
+        /// Provides the execution environment for the task. Defaults to <see cref="TaskEnvironment.Fallback"/>
+        /// (single-process, current-working-directory semantics) so that code paths and unit tests that don't
+        /// explicitly set it continue to behave as before.
         /// </summary>
         public TaskEnvironment TaskEnvironment { get; set; } = TaskEnvironment.Fallback;
 
@@ -121,18 +119,18 @@ namespace Microsoft.Build.Tasks.Git
                 return null;
             }
 
-            // 'initialPath' is kept as the ORIGINAL (possibly relative) string for diagnostics (Sin 2).
-            // 'absoluteInitialPath' is resolved against the task's project directory (via TaskEnvironment)
-            // rather than the process current working directory, making repository discovery MT-safe.
-            // Passing an already-absolute path into TryFindRepository (which calls Path.GetFullPath
-            // internally) preserves canonicalization and avoids any CWD dependency.
-            // Note: for tasks whose initial path is [Required, NotNull] (e.g. ProjectDirectory), an empty
-            // string causes GetAbsolutePath("") to throw ArgumentException, matching the prior
-            // Path.GetFullPath("") behavior.
+            // Keep the original (possibly relative) path for user-facing messages (Sin 2).
             var initialPath = GetInitialPath();
+
+            // Resolve the initial path against the task's project directory rather than the process
+            // current working directory, making repository discovery safe under the multithreaded task model.
+            // Passing an already-absolute path to TryFindRepository is MT-safe because the Path.GetFullPath
+            // it calls internally only consults the CWD for relative inputs.
+            // Note: GetAbsolutePath throws ArgumentException on null/empty input, matching the previous
+            // behavior where TryFindRepository's internal Path.GetFullPath("") also threw ArgumentException.
             AbsolutePath absoluteInitialPath = TaskEnvironment.GetAbsolutePath(initialPath);
 
-            if (!GitRepository.TryFindRepository(absoluteInitialPath, out var location))
+            if (!GitRepository.TryFindRepository(absoluteInitialPath.Value, out var location))
             {
                 ReportMissingRepositoryWarning(initialPath);
                 return null;
