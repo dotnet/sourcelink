@@ -102,6 +102,8 @@ namespace Microsoft.SourceLink.AzureRepos.Git
                         yield break;
                     }
 
+                    // value! is required: Microsoft.Build.Framework annotates GetEnvironmentVariable as string?,
+                    // and net472's string.IsNullOrEmpty lacks [NotNullWhen(false)] so it doesn't narrow here.
                     yield return new KeyValuePair<string, string>(name, value!);
                     i++;
                 }
