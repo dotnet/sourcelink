@@ -266,9 +266,9 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         [InlineData(@"a:/../../relative/path", "file:///a:/relative/path")]
         [InlineData(@"Z:/a/b/../../relative/path", "file:///Z:/relative/path")]
         [InlineData(@"../.://../../relative/path", "file:///C:/src/a/relative/path")]
-        [InlineData(@"../.:./../../relative/path", "ssh://../relative/path")]
-        [InlineData(@".:/../../relative/path", "ssh://./relative/path")]
-        [InlineData(@"..:/../../relative/path", "ssh://../relative/path")]
+        [InlineData(@"../.:./../../relative/path", null)]
+        [InlineData(@".:/../../relative/path", null)]
+        [InlineData(@"..:/../../relative/path", null)]
         [InlineData(@"@:org/repo", "file:///C:/src/a/b/@:org/repo")]
         public void NormalizeUrl_Windows(string url, string expectedUrl)
         {
