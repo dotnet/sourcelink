@@ -4,12 +4,19 @@
 using System;
 using System.IO;
 using System.Text;
+using Microsoft.Build.Framework;
 using Xunit;
 using TestUtilities;
 using static TestUtilities.KeyValuePairUtils;
 
 namespace Microsoft.SourceLink.Common.UnitTests
 {
+    [CollectionDefinition(nameof(GenerateSourceLinkFileTests), DisableParallelization = true)]
+    public sealed class GenerateSourceLinkFileTestsCollection
+    {
+    }
+
+    [Collection(nameof(GenerateSourceLinkFileTests))]
     public class GenerateSourceLinkFileTests
     {
         private static string AdjustSeparatorsInJson(string json)
@@ -238,6 +245,44 @@ namespace Microsoft.SourceLink.Common.UnitTests
             var afterWriteTime = File.GetLastWriteTime(tempFile.Path);
 
             Assert.Equal(beforeWriteTime, afterWriteTime);
+        }
+
+        [Fact]
+        public void WriteSourceLinkFileResolvesRelativeOutputFileAgainstProjectDirectory()
+        {
+            using var temp = new TempRoot();
+            var projectDir = temp.CreateDirectory();
+            var decoyCwd = temp.CreateDirectory();
+            var originalCurrentDirectory = Directory.GetCurrentDirectory();
+            const string outputFile = "sourcelink.json";
+
+            try
+            {
+                Directory.SetCurrentDirectory(decoyCwd.Path);
+
+                var engine = new MockEngine();
+                var task = new GenerateSourceLinkFile()
+                {
+                    BuildEngine = engine,
+                    TaskEnvironment = TaskEnvironment.CreateWithProjectDirectoryAndEnvironment(projectDir.Path),
+                    OutputFile = outputFile,
+                    SourceRoots = new[]
+                    {
+                        new MockItem(@"/_/", KVP("SourceLinkUrl", "https://raw.githubusercontent.com/repo/*"), KVP("SourceControl", "git")),
+                    },
+                };
+
+                Assert.True(task.Execute());
+
+                Assert.True(File.Exists(Path.Combine(projectDir.Path, outputFile)));
+                Assert.False(File.Exists(Path.Combine(decoyCwd.Path, outputFile)));
+                Assert.Equal(outputFile, task.SourceLink);
+                Assert.Equal(@"{""documents"":{""/_/*"":""https://raw.githubusercontent.com/repo/*""}}", File.ReadAllText(Path.Combine(projectDir.Path, outputFile), Encoding.UTF8));
+            }
+            finally
+            {
+                Directory.SetCurrentDirectory(originalCurrentDirectory);
+            }
         }
     }
 }

@@ -13,8 +13,11 @@ using Microsoft.Build.Utilities;
 
 namespace Microsoft.SourceLink.Common
 {
-    public sealed class GenerateSourceLinkFile : Task
+    [MSBuildMultiThreadableTask]
+    public sealed class GenerateSourceLinkFile : Task, IMultiThreadableTask
     {
+        public TaskEnvironment TaskEnvironment { get; set; } = TaskEnvironment.Fallback;
+
         [Required, NotNull]
         public ITaskItem[]? SourceRoots { get; set; }
 
@@ -112,19 +115,28 @@ namespace Microsoft.SourceLink.Common
                 Log.LogWarning(Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty);
             }
 
+            AbsolutePath? outputPath = null;
             try
             {
-                if (File.Exists(OutputFile))
+                if (content == null && string.IsNullOrEmpty(OutputFile))
+                {
+                    Log.LogMessage(Resources.SourceLinkEmptyNoExistingFile, OutputFile);
+                    return;
+                }
+
+                outputPath = TaskEnvironment.GetAbsolutePath(OutputFile!);
+
+                if (File.Exists(outputPath.Value))
                 {
                     if (content == null)
                     {
                         Log.LogMessage(Resources.SourceLinkEmptyDeletingExistingFile, OutputFile);
 
-                        File.Delete(OutputFile);
+                        File.Delete(outputPath.Value);
                         return;
                     }
 
-                    var originalContent = File.ReadAllText(OutputFile);
+                    var originalContent = File.ReadAllText(outputPath.Value);
                     if (originalContent == content)
                     {
                         // Don't rewrite the file if the contents is the same, just pass it to the compiler.
@@ -143,12 +155,18 @@ namespace Microsoft.SourceLink.Common
                 }
 
                 Log.LogMessage(Resources.SourceLinkFileUpdated, OutputFile);
-                File.WriteAllText(OutputFile, content);
+                File.WriteAllText(outputPath.Value, content);
                 SourceLink = OutputFile;
             }
             catch (Exception e)
             {
-                Log.LogError(Resources.ErrorWritingToSourceLinkFile, OutputFile, e.Message);
+                var message = e.Message;
+                if (outputPath is { } path && path.Value != path.OriginalValue)
+                {
+                    message = message.Replace(path.Value, path.OriginalValue);
+                }
+
+                Log.LogError(Resources.ErrorWritingToSourceLinkFile, OutputFile, message);
             }
         }
     }
