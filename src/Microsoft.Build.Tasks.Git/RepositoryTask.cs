@@ -10,8 +10,15 @@ using Microsoft.Build.Utilities;
 
 namespace Microsoft.Build.Tasks.Git
 {
-    public abstract class RepositoryTask : Task
+    public abstract class RepositoryTask : Task, IMultiThreadableTask
     {
+        /// <summary>
+        /// Provides the execution environment for the task. Defaults to <see cref="TaskEnvironment.Fallback"/>
+        /// (single-process, current-working-directory semantics) so that code paths and unit tests that don't
+        /// explicitly set it continue to behave as before.
+        /// </summary>
+        public TaskEnvironment TaskEnvironment { get; set; } = TaskEnvironment.Fallback;
+
         private sealed class RepositoryContainer(GitRepository? repository) : IDisposable
         {
             public GitRepository? Repository
@@ -112,9 +119,20 @@ namespace Microsoft.Build.Tasks.Git
                 return null;
             }
 
+            // Keep the original (possibly relative) path for user-facing messages (Sin 2).
             var initialPath = GetInitialPath();
 
-            if (!GitRepository.TryFindRepository(initialPath, out var location))
+            // Resolve the initial path against the task's project directory rather than the process
+            // current working directory. This makes repository discovery safe under the multithreaded
+            // task model. We pass the absolutized AbsolutePath.Value (not the implicit string conversion,
+            // which preserves the original, possibly-relative input) so TryFindRepository sees an absolute
+            // path. Passing an already-absolute path to TryFindRepository is MT-safe because the
+            // Path.GetFullPath it calls internally only consults the CWD for relative inputs.
+            // Note: GetAbsolutePath throws ArgumentException on null/empty input, matching the previous
+            // behavior where TryFindRepository's internal Path.GetFullPath("") also threw ArgumentException.
+            AbsolutePath absoluteInitialPath = TaskEnvironment.GetAbsolutePath(initialPath);
+
+            if (!GitRepository.TryFindRepository(absoluteInitialPath.Value, out var location))
             {
                 ReportMissingRepositoryWarning(initialPath);
                 return null;
