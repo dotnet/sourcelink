@@ -70,5 +70,38 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 Directory.SetCurrentDirectory(originalCurrentDirectory);
             }
         }
+
+        /// <summary>
+        /// Verifies that an empty <see cref="LocateRepository.Path"/> degrades gracefully (a "missing repository"
+        /// warning and <c>Execute() == true</c>) rather than crashing the task.
+        ///
+        /// This guards the MT migration: <c>TaskEnvironment.GetAbsolutePath("")</c> throws
+        /// <see cref="System.ArgumentException"/>, which is now caught in the base <see cref="RepositoryTask"/>.
+        /// Pre-migration, the empty path flowed into <c>TryFindRepository</c>, whose internal
+        /// <c>Path.GetFullPath("")</c> threw the same exception but had it swallowed, producing the same graceful
+        /// warning. Without the catch, this path throws an unhandled exception and <c>Execute()</c> never returns.
+        /// (The MSBuild engine's <c>[Required]</c> validation blocks empty input in production, but it does not run
+        /// when <c>Execute()</c> is invoked directly, so the degenerate path is reachable and must not crash.)
+        /// </summary>
+        [Fact]
+        public void EmptyPath_DegradesGracefully_DoesNotThrow()
+        {
+            using var temp = new TempRoot();
+            var projectDir = temp.CreateDirectory();
+
+            var engine = new MockEngine();
+            var task = new LocateRepository
+            {
+                BuildEngine = engine,
+                TaskEnvironment = TaskEnvironment.CreateWithProjectDirectoryAndEnvironment(
+                    projectDir.Path,
+                    new Dictionary<string, string>()),
+                Path = "",
+            };
+
+            Assert.True(task.Execute(), engine.Log);
+            Assert.DoesNotContain("ERROR", engine.Log);
+            Assert.Null(task.WorkingDirectory);
+        }
     }
 }
