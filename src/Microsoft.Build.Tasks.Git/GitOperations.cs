@@ -350,7 +350,9 @@ namespace Microsoft.Build.Tasks.Git
 
             return files.Where(file =>
             {
-                // file.ItemSpec are relative to projectDirectory.
+                // file.ItemSpec are relative to projectDirectory, which callers pass as an absolute path
+                // (resolved against the task's project directory, not the process CWD), so the inner
+                // Path.GetFullPath only canonicalizes an already-absolute base and is MT-safe.
                 var fullPath = Path.GetFullPath(Path.Combine(projectDirectory, file.ItemSpec));
 
                 var containingDirectoryMatcher = GetContainingRepositoryMatcher(fullPath, directoryTree);

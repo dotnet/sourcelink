@@ -10,6 +10,7 @@ namespace Microsoft.Build.Tasks.Git
     /// <summary>
     /// Selects files that are under the repository root but ignored.
     /// </summary>
+    [MSBuildMultiThreadableTask]
     public sealed class GetUntrackedFiles : RepositoryTask
     {
         public string? RepositoryId { get; set; }
@@ -28,7 +29,12 @@ namespace Microsoft.Build.Tasks.Git
 
         private protected override void Execute(GitRepository repository)
         {
-            UntrackedFiles = GitOperations.GetUntrackedFiles(repository, Files, ProjectDirectory);
+            // Absolutize ProjectDirectory against the task's project directory (MT-safe) rather than the
+            // process CWD before it is used as the base for resolving the (relative) file ItemSpecs inside
+            // GitOperations.GetUntrackedFiles. The absolutized path is only used internally for the ignore
+            // check; the returned [Output] items keep their original ItemSpecs (Sin 1).
+            AbsolutePath absProjectDir = TaskEnvironment.GetAbsolutePath(ProjectDirectory);
+            UntrackedFiles = GitOperations.GetUntrackedFiles(repository, Files, absProjectDir);
         }
     }
 }
