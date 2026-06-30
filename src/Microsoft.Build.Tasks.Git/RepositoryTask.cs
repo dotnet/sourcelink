@@ -126,9 +126,22 @@ namespace Microsoft.Build.Tasks.Git
             // current working directory, making repository discovery safe under the multithreaded task model.
             // Passing an already-absolute path to TryFindRepository is MT-safe because the Path.GetFullPath
             // it calls internally only consults the CWD for relative inputs.
-            // Note: GetAbsolutePath throws ArgumentException on null/empty input, matching the previous
-            // behavior where TryFindRepository's internal Path.GetFullPath("") also threw ArgumentException.
-            AbsolutePath absoluteInitialPath = TaskEnvironment.GetAbsolutePath(initialPath);
+            //
+            // GetAbsolutePath throws ArgumentException on null/empty/whitespace input. Pre-migration, such an
+            // input flowed into TryFindRepository, whose internal Path.GetFullPath also threw ArgumentException
+            // but had that exception swallowed by its own try/catch, yielding a graceful "missing repository"
+            // warning and Execute() returning true. ExecuteImpl's catch does not handle ArgumentException, so to
+            // preserve that graceful behavior we catch it here and report the missing-repository warning.
+            AbsolutePath absoluteInitialPath;
+            try
+            {
+                absoluteInitialPath = TaskEnvironment.GetAbsolutePath(initialPath);
+            }
+            catch (ArgumentException)
+            {
+                ReportMissingRepositoryWarning(initialPath);
+                return null;
+            }
 
             if (!GitRepository.TryFindRepository(absoluteInitialPath.Value, out var location))
             {

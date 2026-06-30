@@ -4,7 +4,7 @@
 
 using Xunit;
 
-// LocateRepositoryTests temporarily changes the process current working directory to validate that
+// Some tests in this assembly temporarily change the process current working directory to validate that
 // repository discovery resolves paths against the task's project directory rather than the process CWD.
 // Disable test parallelization in this assembly so that the CWD mutation can't race with other tests.
 [assembly: CollectionBehavior(DisableTestParallelization = true)]
