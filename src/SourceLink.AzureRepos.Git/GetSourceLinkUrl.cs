@@ -11,9 +11,12 @@ using Microsoft.Build.Tasks.SourceControl;
 
 namespace Microsoft.SourceLink.AzureRepos.Git
 {
-    public sealed class GetSourceLinkUrl : GetSourceLinkUrlGitTask
+    [MSBuildMultiThreadableTask]
+    public sealed class GetSourceLinkUrl : GetSourceLinkUrlGitTask, IMultiThreadableTask
     {
         private const string UrlMapEnvironmentVariableName = "BUILD_REPOSITORY_URL_MAP";
+
+        public TaskEnvironment TaskEnvironment { get; set; } = TaskEnvironment.Fallback;
 
         protected override string HostsItemGroupName => "SourceLinkAzureReposGitHost";
         protected override string ProviderDisplayName => "AzureRepos.Git";
@@ -93,13 +96,13 @@ namespace Microsoft.SourceLink.AzureRepos.Git
                 while (true)
                 {
                     var name = UrlMapEnvironmentVariableName + (i == 0 ? "" : i.ToString());
-                    var value = Environment.GetEnvironmentVariable(name);
+                    var value = TaskEnvironment.GetEnvironmentVariable(name);
                     if (string.IsNullOrEmpty(value))
                     {
                         yield break;
                     }
 
-                    yield return new KeyValuePair<string, string>(name, value);
+                    yield return new KeyValuePair<string, string>(name, value!);
                     i++;
                 }
             }
