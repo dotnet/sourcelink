@@ -115,11 +115,8 @@ namespace Microsoft.Build.Tasks.Git
 
             var initialPath = GetInitialPath();
 
-            // Repository discovery must not depend on the process current working directory: the multithreaded
-            // task model shares a single process across projects. Only a fully-qualified path is safe here, since
-            // the discovery below hands the path to the file system as-is. A relative, drive-relative, or
-            // root-relative path would bind to whatever the process CWD/drive happens to be, so reject it with the
-            // standard "repository not found" warning instead of silently locating the wrong repository.
+            // Repository discovery must not depend on the shared process CWD/drive under the multithreaded task
+            // model, so reject a non-fully-qualified path with the standard "missing repository" warning.
             if (string.IsNullOrEmpty(initialPath) || !PathUtilities.IsPathFullyQualified(initialPath))
             {
                 ReportMissingRepositoryWarning(initialPath);

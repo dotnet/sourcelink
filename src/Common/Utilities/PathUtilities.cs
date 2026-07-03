@@ -52,16 +52,11 @@ namespace Microsoft.Build.Tasks.SourceControl
             => path.EndsWithSeparator() ? path : path + separator;
 
         /// <summary>
-        /// Determines whether <paramref name="path"/> is fully qualified, i.e. it identifies a location
-        /// without relying on the process current directory or current drive. Unlike <see cref="Path.IsPathRooted"/>,
-        /// this rejects Windows drive-relative (<c>C:foo</c>) and root-relative (<c>\foo</c>) paths, which remain
-        /// dependent on process state and are therefore unsafe under the multithreaded task model.
+        /// Determines whether <paramref name="path"/> is fully qualified (independent of the process current
+        /// directory and drive). Unlike <see cref="Path.IsPathRooted"/>, rejects Windows drive-relative
+        /// (<c>C:foo</c>) and root-relative (<c>\foo</c>) paths. Polyfills <c>Path.IsPathFullyQualified</c>,
+        /// which is unavailable on .NET Framework.
         /// </summary>
-        /// <remarks>
-        /// On modern .NET this delegates to <c>Path.IsPathFullyQualified</c>. That API is not available on
-        /// .NET Framework, so this provides a faithful reimplementation of the runtime's Windows behavior
-        /// (.NET Framework only runs on Windows).
-        /// </remarks>
         public static bool IsPathFullyQualified(string path)
         {
             if (path == null)
