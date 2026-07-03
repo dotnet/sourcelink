@@ -161,6 +161,8 @@ namespace Microsoft.SourceLink.Common
             catch (Exception e)
             {
                 var message = e.Message;
+
+                // Error messages should not contain the absolute path but the one passed into the task.
                 if (outputPath is { } path && path.Value != path.OriginalValue)
                 {
                     message = message.Replace(path.Value, path.OriginalValue);
