@@ -12,11 +12,6 @@ namespace Microsoft.Build.Tasks.Git
 {
     public abstract class RepositoryTask : Task, IMultiThreadableTask
     {
-        /// <summary>
-        /// Provides the execution environment for the task. Defaults to <see cref="TaskEnvironment.Fallback"/>
-        /// (single-process, current-working-directory semantics) so that code paths and unit tests that don't
-        /// explicitly set it continue to behave as before.
-        /// </summary>
         public TaskEnvironment TaskEnvironment { get; set; } = TaskEnvironment.Fallback;
 
         private sealed class RepositoryContainer(GitRepository? repository) : IDisposable
