@@ -6,14 +6,13 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Microsoft.Build.Framework;
+using Microsoft.Build.Tasks.SourceControl;
 using Microsoft.Build.Utilities;
 
 namespace Microsoft.Build.Tasks.Git
 {
-    public abstract class RepositoryTask : Task, IMultiThreadableTask
+    public abstract class RepositoryTask : Task
     {
-        public TaskEnvironment TaskEnvironment { get; set; } = TaskEnvironment.Fallback;
-
         private sealed class RepositoryContainer(GitRepository? repository) : IDisposable
         {
             public GitRepository? Repository
@@ -114,31 +113,20 @@ namespace Microsoft.Build.Tasks.Git
                 return null;
             }
 
-            // Keep the original (possibly relative) path for user-facing messages (Sin 2).
             var initialPath = GetInitialPath();
 
-            // Resolve the initial path against the task's project directory rather than the process
-            // current working directory, making repository discovery safe under the multithreaded task model.
-            // Passing an already-absolute path to TryFindRepository is MT-safe because the Path.GetFullPath
-            // it calls internally only consults the CWD for relative inputs.
-            //
-            // GetAbsolutePath throws ArgumentException on null/empty/whitespace input. Pre-migration, such an
-            // input flowed into TryFindRepository, whose internal Path.GetFullPath also threw ArgumentException
-            // but had that exception swallowed by its own try/catch, yielding a graceful "missing repository"
-            // warning and Execute() returning true. ExecuteImpl's catch does not handle ArgumentException, so to
-            // preserve that graceful behavior we catch it here and report the missing-repository warning.
-            AbsolutePath absoluteInitialPath;
-            try
-            {
-                absoluteInitialPath = TaskEnvironment.GetAbsolutePath(initialPath);
-            }
-            catch (ArgumentException)
+            // Repository discovery must not depend on the process current working directory: the multithreaded
+            // task model shares a single process across projects. Only a fully-qualified path is safe here, since
+            // the discovery below hands the path to the file system as-is. A relative, drive-relative, or
+            // root-relative path would bind to whatever the process CWD/drive happens to be, so reject it with the
+            // standard "repository not found" warning instead of silently locating the wrong repository.
+            if (string.IsNullOrEmpty(initialPath) || !PathUtilities.IsPathFullyQualified(initialPath))
             {
                 ReportMissingRepositoryWarning(initialPath);
                 return null;
             }
 
-            if (!GitRepository.TryFindRepository(absoluteInitialPath.Value, out var location))
+            if (!GitRepository.TryFindRepository(initialPath, out var location))
             {
                 ReportMissingRepositoryWarning(initialPath);
                 return null;

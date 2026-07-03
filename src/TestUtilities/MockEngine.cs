@@ -4,18 +4,15 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Text;
 using Microsoft.Build.Framework;
 
 namespace TestUtilities
 {
-    public sealed class MockEngine : IBuildEngine4
+    public sealed class MockEngine : IBuildEngine
     {
         private StringBuilder _log = new StringBuilder();
         public MessageImportance MinimumMessageImportance = MessageImportance.Low;
-
-        private readonly Dictionary<object, object?> _registeredTaskObjects = new();
 
         public string Log
         {
@@ -58,40 +55,5 @@ namespace TestUtilities
 
         public bool BuildProjectFile(string projectFileName, string[] targetNames, IDictionary globalProperties, IDictionary targetOutputs)
             => throw new NotImplementedException();
-
-        // IBuildEngine2
-        public bool IsRunningMultipleNodes => false;
-
-        public bool BuildProjectFile(string projectFileName, string[] targetNames, IDictionary globalProperties, IDictionary targetOutputs, string toolsVersion)
-            => throw new NotImplementedException();
-
-        public bool BuildProjectFilesInParallel(string[] projectFileNames, string[] targetNames, IDictionary[] globalProperties, IDictionary[] targetOutputsPerProject, string[] toolsVersion, bool useResultsCache, bool unloadProjectsOnCompletion)
-            => throw new NotImplementedException();
-
-        // IBuildEngine3
-        public BuildEngineResult BuildProjectFilesInParallel(string[] projectFileNames, string[] targetNames, IDictionary[] globalProperties, IList<string>[] removeGlobalProperties, string[] toolsVersion, bool returnTargetOutputs)
-            => throw new NotImplementedException();
-
-        public void Yield() { }
-
-        public void Reacquire() { }
-
-        // IBuildEngine4
-        public void RegisterTaskObject(object key, object? obj, RegisteredTaskObjectLifetime lifetime, bool allowEarlyCollection)
-            => _registeredTaskObjects[key] = obj;
-
-        public object? GetRegisteredTaskObject(object key, RegisteredTaskObjectLifetime lifetime)
-            => _registeredTaskObjects.TryGetValue(key, out var value) ? value : null;
-
-        public object? UnregisterTaskObject(object key, RegisteredTaskObjectLifetime lifetime)
-        {
-            if (_registeredTaskObjects.TryGetValue(key, out var value))
-            {
-                _registeredTaskObjects.Remove(key);
-                return value;
-            }
-
-            return null;
-        }
     }
 }
