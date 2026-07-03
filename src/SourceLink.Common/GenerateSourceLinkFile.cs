@@ -115,15 +115,15 @@ namespace Microsoft.SourceLink.Common
                 Log.LogWarning(Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty);
             }
 
+            if (content == null && string.IsNullOrEmpty(OutputFile))
+            {
+                Log.LogMessage(Resources.SourceLinkEmptyNoExistingFile, OutputFile);
+                return;
+            }
+
             AbsolutePath? outputPath = null;
             try
             {
-                if (content == null && string.IsNullOrEmpty(OutputFile))
-                {
-                    Log.LogMessage(Resources.SourceLinkEmptyNoExistingFile, OutputFile);
-                    return;
-                }
-
                 outputPath = TaskEnvironment.GetAbsolutePath(OutputFile!);
 
                 if (File.Exists(outputPath.Value))
