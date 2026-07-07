@@ -20,7 +20,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             using var temp = new TempRoot();
             var (repoDir, gitDir) = CreateMinimalRepository(temp);
 
-            var engine = new MockEngine4();
+            var engine = new MockEngine();
             var task = new LocateRepository
             {
                 BuildEngine = engine,
@@ -56,7 +56,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
                 // A CWD-dependent (pre-migration) implementation would resolve "." against this repository.
                 Directory.SetCurrentDirectory(repoDir.Path);
 
-                var engine = new MockEngine4();
+                var engine = new MockEngine();
                 var task = new LocateRepository
                 {
                     BuildEngine = engine,
