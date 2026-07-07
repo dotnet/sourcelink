@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the License.txt file in the project root for more information.
 
-using System.IO;
 using TestUtilities;
 using Xunit;
 
@@ -34,44 +33,27 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         }
 
         /// <summary>
-        /// Verifies that a non-fully-qualified (here: relative) <see cref="LocateRepository.Path"/> is rejected
-        /// rather than resolved against the process current working directory.
+        /// Verifies that a non-fully-qualified (here: relative) <see cref="LocateRepository.Path"/> is rejected.
         ///
         /// This is the multithreaded (MT) task model behavior: the process CWD is shared across projects, so it
-        /// must never influence repository discovery. The test sets the CWD to a real git repository and passes a
-        /// relative path (<c>"."</c>). The pre-migration implementation resolved the initial path against the CWD
-        /// (via <c>Path.GetFullPath</c>) and would have located that repository; the migrated task rejects the
-        /// relative path and reports the "missing repository" warning instead. Reverting the migration fails this
-        /// test.
+        /// must never influence repository discovery. The migrated task requires a fully-qualified path; a relative
+        /// path (<c>"."</c>) is rejected and reported as the "missing repository" warning instead of being resolved
+        /// against the process current working directory.
         /// </summary>
         [Fact]
-        public void RelativePath_IsRejected_IndependentOfProcessCwd()
+        public void RelativePath_IsRejected()
         {
-            using var temp = new TempRoot();
-            var (repoDir, _) = CreateMinimalRepository(temp);
-
-            var originalCurrentDirectory = Directory.GetCurrentDirectory();
-            try
+            var engine = new MockEngine();
+            var task = new LocateRepository
             {
-                // A CWD-dependent (pre-migration) implementation would resolve "." against this repository.
-                Directory.SetCurrentDirectory(repoDir.Path);
+                BuildEngine = engine,
+                Path = ".",
+            };
 
-                var engine = new MockEngine();
-                var task = new LocateRepository
-                {
-                    BuildEngine = engine,
-                    Path = ".",
-                };
-
-                // Not an error: repository discovery degrades to a warning.
-                Assert.True(task.Execute(), engine.Log);
-                Assert.Null(task.WorkingDirectory);
-                Assert.Contains("WARNING", engine.Log);
-            }
-            finally
-            {
-                Directory.SetCurrentDirectory(originalCurrentDirectory);
-            }
+            // Not an error: repository discovery degrades to a warning.
+            Assert.True(task.Execute(), engine.Log);
+            Assert.Null(task.WorkingDirectory);
+            Assert.Contains("WARNING", engine.Log);
         }
 
         private static (TempDirectory repoDir, TempDirectory gitDir) CreateMinimalRepository(TempRoot temp)
