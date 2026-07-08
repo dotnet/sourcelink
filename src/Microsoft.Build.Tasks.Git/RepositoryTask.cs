@@ -6,6 +6,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Microsoft.Build.Framework;
+using Microsoft.Build.Tasks.SourceControl;
 using Microsoft.Build.Utilities;
 
 namespace Microsoft.Build.Tasks.Git
@@ -113,6 +114,14 @@ namespace Microsoft.Build.Tasks.Git
             }
 
             var initialPath = GetInitialPath();
+
+            // Repository discovery must not depend on the shared process CWD/drive under the multithreaded task
+            // model, so reject a non-fully-qualified path with the standard "missing repository" warning.
+            if (string.IsNullOrEmpty(initialPath) || !PathUtilities.IsPathFullyQualified(initialPath))
+            {
+                ReportMissingRepositoryWarning(initialPath);
+                return null;
+            }
 
             if (!GitRepository.TryFindRepository(initialPath, out var location))
             {
