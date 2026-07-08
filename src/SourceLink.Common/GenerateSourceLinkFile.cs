@@ -14,10 +14,8 @@ using Microsoft.Build.Utilities;
 namespace Microsoft.SourceLink.Common
 {
     [MSBuildMultiThreadableTask]
-    public sealed class GenerateSourceLinkFile : Task, IMultiThreadableTask
+    public sealed class GenerateSourceLinkFile : Task
     {
-        public TaskEnvironment TaskEnvironment { get; set; } = TaskEnvironment.Fallback;
-
         [Required, NotNull]
         public ITaskItem[]? SourceRoots { get; set; }
 
@@ -115,28 +113,27 @@ namespace Microsoft.SourceLink.Common
                 Log.LogWarning(Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty);
             }
 
-            if (content == null && string.IsNullOrEmpty(OutputFile))
-            {
-                Log.LogMessage(Resources.SourceLinkEmptyNoExistingFile, OutputFile);
-                return;
-            }
-
-            AbsolutePath? outputPath = null;
             try
             {
-                outputPath = TaskEnvironment.GetAbsolutePath(OutputFile!);
+                // OutputFile is required to be a fully qualified path. It is set by the SourceLink targets from
+                // _SourceLinkFilePath, so file access must not (and does not need to) depend on the shared process
+                // current directory under the multithreaded task model. Reject a path that isn't fully qualified.
+                if (string.IsNullOrEmpty(OutputFile) || !PathUtilities.IsPathFullyQualified(OutputFile))
+                {
+                    throw new ArgumentException($"The path '{OutputFile}' must be fully qualified.", nameof(OutputFile));
+                }
 
-                if (File.Exists(outputPath.Value))
+                if (File.Exists(OutputFile))
                 {
                     if (content == null)
                     {
                         Log.LogMessage(Resources.SourceLinkEmptyDeletingExistingFile, OutputFile);
 
-                        File.Delete(outputPath.Value);
+                        File.Delete(OutputFile);
                         return;
                     }
 
-                    var originalContent = File.ReadAllText(outputPath.Value);
+                    var originalContent = File.ReadAllText(OutputFile);
                     if (originalContent == content)
                     {
                         // Don't rewrite the file if the contents is the same, just pass it to the compiler.
@@ -155,20 +152,12 @@ namespace Microsoft.SourceLink.Common
                 }
 
                 Log.LogMessage(Resources.SourceLinkFileUpdated, OutputFile);
-                File.WriteAllText(outputPath.Value, content);
+                File.WriteAllText(OutputFile, content);
                 SourceLink = OutputFile;
             }
             catch (Exception e)
             {
-                var message = e.Message;
-
-                // Error messages should not contain the absolute path but the one passed into the task.
-                if (outputPath is { } path && path.Value != path.OriginalValue)
-                {
-                    message = message.Replace(path.Value, path.OriginalValue);
-                }
-
-                Log.LogError(Resources.ErrorWritingToSourceLinkFile, OutputFile, message);
+                Log.LogError(Resources.ErrorWritingToSourceLinkFile, OutputFile, e.Message);
             }
         }
     }
