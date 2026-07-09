@@ -8,6 +8,7 @@ using Microsoft.Build.Framework;
 
 namespace Microsoft.Build.Tasks.Git
 {
+    [MSBuildMultiThreadableTask]
     public sealed class LocateRepository : RepositoryTask
     {
         public string? RemoteName { get; set; }
