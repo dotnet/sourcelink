@@ -301,10 +301,10 @@ namespace Microsoft.SourceLink.IntegrationTests
                     ProjectSourceRoot,
                     $"https://raw.githubusercontent.com/test-org/{repoName}/{commitSha}/*",
                     "refs/heads/main",
-                    s_relativeSourceLinkJsonPath,
+                    SourceLinkFilePath,
                     $"https://github.com/test-org/{repoName}",
                     $"https://github.com/test-org/{repoName}",
-                    s_relativeSourceLinkJsonPath
+                    SourceLinkFilePath
                 });
 
             AssertEx.AreEqual(
@@ -361,7 +361,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     ProjectSourceRoot,
                     $"https://test.{host}/test-org/_apis/git/repositories/{repoName}/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*",
                     "refs/heads/main",
-                    s_relativeSourceLinkJsonPath,
+                    SourceLinkFilePath,
                     $"https://test.{host}/test-org/_git/{repoName}",
                     $"https://test.{host}/test-org/_git/{repoName}",
                 });
@@ -405,7 +405,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     ProjectSourceRoot,
                     $"https://{host}/test/test-org/_apis/git/repositories/{repoName}/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*",
                     "refs/heads/main",
-                    s_relativeSourceLinkJsonPath,
+                    SourceLinkFilePath,
                     $"https://{host}/test/test-org/_git/{repoName}",
                     $"https://{host}/test/test-org/_git/{repoName}",
                 });
