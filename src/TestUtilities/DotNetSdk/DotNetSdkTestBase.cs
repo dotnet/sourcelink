@@ -75,6 +75,10 @@ $@"<?xml version=""1.0"" encoding=""utf-8""?>
         protected readonly string DotNetPath;
         protected readonly Dictionary<string, string> EnvironmentVariables;
 
+        // Absolute path of the generated source link file. The source link targets pass an absolute OutputFile
+        // to the GenerateSourceLinkFile task, so $(SourceLink) (and the corresponding FileWrites item) is absolute.
+        protected readonly string SourceLinkFilePath;
+
         protected static readonly string s_relativeSourceLinkJsonPath = Path.Combine("obj", "Debug", "netstandard2.0", "test.sourcelink.json");
         protected static readonly string s_relativeOutputFilePath = Path.Combine("obj", "Debug", "netstandard2.0", "test.dll");
         protected static readonly string s_relativePackagePath = Path.Combine("bin", "Debug", "test.1.0.0.nupkg");
@@ -213,6 +217,8 @@ $@"<Project>
 
             Project = ProjectDir.CreateFile(ProjectFileName).WriteAllText(s_projectSource);
             ProjectDir.CreateFile("TestClass.cs").WriteAllText(s_classSource);
+
+            SourceLinkFilePath = Path.Combine(ProjectDir.Path, s_relativeSourceLinkJsonPath);
         }
 
         public static string EnsureTrailingDirectorySeparator(string path)

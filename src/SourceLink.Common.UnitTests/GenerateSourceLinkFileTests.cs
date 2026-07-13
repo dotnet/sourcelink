@@ -239,5 +239,26 @@ namespace Microsoft.SourceLink.Common.UnitTests
 
             Assert.Equal(beforeWriteTime, afterWriteTime);
         }
+
+        [Fact]
+        public void WriteSourceLinkFileRejectsRelativeOutputFile()
+        {
+            var engine = new MockEngine();
+            var task = new GenerateSourceLinkFile()
+            {
+                BuildEngine = engine,
+                // OutputFile must be fully qualified: file access must not depend on the shared process
+                // current directory under the multithreaded task model, so a relative path is rejected.
+                OutputFile = "sourcelink.json",
+                SourceRoots = new[]
+                {
+                    new MockItem(@"/_/", KVP("SourceLinkUrl", "https://raw.githubusercontent.com/repo/*"), KVP("SourceControl", "git")),
+                },
+            };
+
+            Assert.False(task.Execute());
+            Assert.Null(task.SourceLink);
+            Assert.Contains("ERROR", engine.Log);
+        }
     }
 }

@@ -54,7 +54,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     ProjectSourceRoot,
                     $"https://tfs.{TestStrings.DomainName}.local:8080/tfs/DefaultCollection/project/_apis/git/repositories/{repoName}/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*",
                     "refs/heads/main",
-                    s_relativeSourceLinkJsonPath,
+                    SourceLinkFilePath,
                     $"https://tfs.{TestStrings.DomainName}.local:8080/tfs/DefaultCollection/project/_git/{repoName}",
                     $"https://tfs.{TestStrings.DomainName}.local:8080/tfs/DefaultCollection/project/_git/{repoName}",
                 });
@@ -114,7 +114,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     ProjectSourceRoot,
                     $"https://tfs.{TestStrings.DomainName}.local/tfs/DefaultCollection/project/_apis/git/repositories/{repoName}/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*",
                     "refs/heads/main",
-                    s_relativeSourceLinkJsonPath,
+                    SourceLinkFilePath,
                     $"https://tfs.{TestStrings.DomainName}.local/tfs/DefaultCollection/project/_git/{repoName}",
                     $"https://tfs.{TestStrings.DomainName}.local/tfs/DefaultCollection/project/_git/{repoName}",
                 });
