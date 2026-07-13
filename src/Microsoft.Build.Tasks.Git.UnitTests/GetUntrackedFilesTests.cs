@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the License.txt file in the project root for more information.
 
-using System.IO;
 using System.Linq;
 using Microsoft.Build.Framework;
 using TestUtilities;
@@ -42,51 +41,6 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             AssertEx.Equal(
                 new[] { MockItem.AdjustSeparators("ignored_file.cs") },
                 task.UntrackedFiles.Select(item => item.ItemSpec));
-        }
-
-        /// <summary>
-        /// Verifies that a relative <see cref="GetUntrackedFiles.ProjectDirectory"/> (with no
-        /// <see cref="GetUntrackedFiles.RepositoryId"/>) is rejected end-to-end rather than resolved against the
-        /// process current working directory. The CWD is pointed at a real git repository; a CWD-dependent
-        /// (pre-migration) implementation would resolve <c>"."</c> against it, locate the repository, populate the
-        /// output, and log no warning. The migrated code rejects the relative path and reports the "missing
-        /// repository" warning instead.
-        ///
-        /// Note: on this path (RepositoryId not set) either the base <see cref="RepositoryTask"/> guard or the
-        /// <see cref="GetUntrackedFiles"/> guard suffices, so this test does not isolate the base guard on its own
-        /// (the sibling LocateRepository PR covers the base guard in isolation, and
-        /// <see cref="RelativeProjectDirectory_OnCachedRepository_IsRejected"/> covers the task guard on the
-        /// cached path). It documents the observable end-to-end behavior.
-        /// </summary>
-        [Fact]
-        public void RelativeProjectDirectory_IsRejected_IndependentOfProcessCwd()
-        {
-            using var temp = new TempRoot();
-            var repoDir = CreateRepository(temp);
-
-            var originalCurrentDirectory = Directory.GetCurrentDirectory();
-            try
-            {
-                Directory.SetCurrentDirectory(repoDir.Path);
-
-                var engine = new MockEngine();
-                var task = new GetUntrackedFiles
-                {
-                    BuildEngine = engine,
-                    ConfigurationScope = "local",
-                    ProjectDirectory = ".",
-                    Files = new ITaskItem[] { new MockItem("ignored_file.cs") },
-                };
-
-                Assert.True(task.Execute());
-                Assert.DoesNotContain("ERROR", engine.Log);
-                Assert.Contains("WARNING", engine.Log);
-                Assert.Null(task.UntrackedFiles);
-            }
-            finally
-            {
-                Directory.SetCurrentDirectory(originalCurrentDirectory);
-            }
         }
 
         /// <summary>
