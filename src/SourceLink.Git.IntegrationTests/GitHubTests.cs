@@ -68,7 +68,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     SourceRoot,
                     $"https://raw.githubusercontent.com/test-org/test-repo2/{commitSha}/*",
                     "refs/heads/main",
-                    s_relativeSourceLinkJsonPath,
+                    SourceLinkFilePath,
                     $"http://github.com/test-org/test-repo2",
                 },
                 // the second project should reuse the repository info cached by the first project:
@@ -216,7 +216,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     ProjectSourceRoot,
                     $"https://raw.githubusercontent.com/test-org/{repoName}/{commitSha}/*",
                     "refs/heads/main",
-                    s_relativeSourceLinkJsonPath,
+                    SourceLinkFilePath,
                     $"http://github.com/test-org/{repoName}",
                     $"http://github.com/test-org/{repoName}"
                 });
@@ -274,7 +274,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     ProjectSourceRoot,
                     $"https://raw.githubusercontent.com/test-org/{repoName}/{commitSha}/*",
                     "refs/heads/main",
-                    s_relativeSourceLinkJsonPath,
+                    SourceLinkFilePath,
                     $"https://github.com/test-org/{repoName}",
                     $"https://github.com/test-org/{repoName}"
                 });

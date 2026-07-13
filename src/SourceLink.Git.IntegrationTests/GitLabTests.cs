@@ -54,7 +54,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     ProjectSourceRoot,
                     $"https://{TestStrings.DomainName}.com/test-org/{repoName}/-/raw/{commitSha}/*",
                     "refs/heads/main",
-                    s_relativeSourceLinkJsonPath,
+                    SourceLinkFilePath,
                     $"https://{TestStrings.DomainName}.com/test-org/{repoName}",
                     $"https://{TestStrings.DomainName}.com/test-org/{repoName}"
                 });
@@ -114,7 +114,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     ProjectSourceRoot,
                     $"https://{TestStrings.DomainName}.com/test-org/{repoName}/-/raw/{commitSha}/*",
                     "refs/heads/main",
-                    s_relativeSourceLinkJsonPath,
+                    SourceLinkFilePath,
                     $"https://{TestStrings.DomainName}.com/test-org/{repoName}",
                     $"https://{TestStrings.DomainName}.com/test-org/{repoName}"
                 });

@@ -57,7 +57,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     ProjectSourceRoot,
                     $"https://{TestStrings.DomainName}.com/gitweb/?p={repoName};a=blob_plain;hb={commitSha};f=*",
                     "refs/heads/main",
-                    s_relativeSourceLinkJsonPath,
+                    SourceLinkFilePath,
                     $"ssh://git@{TestStrings.DomainName}.com/{repoNameFullyEscaped}",
                     $"ssh://git@{TestStrings.DomainName}.com/{repoNameFullyEscaped}"
                 });
