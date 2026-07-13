@@ -350,11 +350,8 @@ namespace Microsoft.Build.Tasks.Git
 
             return files.Where(file =>
             {
-                // file.ItemSpec values are relative to projectDirectory, which callers pass as a fully-qualified
-                // path (GetUntrackedFiles rejects a non-fully-qualified ProjectDirectory). For relative or
-                // absolute item specs the inner Path.GetFullPath only canonicalizes an already-rooted path and is
-                // MT-safe. Drive-/root-relative item specs (never produced by @(Compile)) would bypass the base
-                // via Path.Combine and remain CWD/drive-dependent, but that is out of contract.
+                // projectDirectory is fully qualified (enforced by GetUntrackedFiles), so this Path.GetFullPath
+                // only canonicalizes an already-rooted path and is MT-safe.
                 var fullPath = Path.GetFullPath(Path.Combine(projectDirectory, file.ItemSpec));
 
                 var containingDirectoryMatcher = GetContainingRepositoryMatcher(fullPath, directoryTree);

@@ -12,9 +12,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
     public class GetUntrackedFilesTests
     {
         /// <summary>
-        /// Verifies historical behavior is preserved: a fully-qualified <see cref="GetUntrackedFiles.ProjectDirectory"/>
-        /// is used as the base for resolving the relative file item specs, and only the file ignored by the
-        /// repository is reported as untracked. The original (relative) ItemSpec is preserved on the output item.
+        /// A fully-qualified <see cref="GetUntrackedFiles.ProjectDirectory"/> resolves the relative file item
+        /// specs, only the repository-ignored file is reported, and the original ItemSpec is preserved.
         /// </summary>
         [Fact]
         public void AbsoluteProjectDirectory_ReportsIgnoredFileAsUntracked()
@@ -44,12 +43,10 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         }
 
         /// <summary>
-        /// Verifies the belt-and-suspenders guard in <see cref="GetUntrackedFiles"/>: when the repository is taken
-        /// from the cache (RepositoryId provided), the base <see cref="RepositoryTask"/> does not validate the
-        /// initial path, so the task itself must reject a relative <see cref="GetUntrackedFiles.ProjectDirectory"/>
-        /// before using it to resolve the file item specs. A LocateRepository run primes the shared cache, then a
-        /// GetUntrackedFiles run reuses it with a relative project directory. Because ProjectDirectory is expected
-        /// to be absolute on this path, a non-absolute value is reported as an error (Execute returns false).
+        /// On the cached-repository path (RepositoryId set) the base <see cref="RepositoryTask"/> skips path
+        /// validation, so <see cref="GetUntrackedFiles"/> must reject a relative
+        /// <see cref="GetUntrackedFiles.ProjectDirectory"/> itself: a LocateRepository run primes the cache, then
+        /// a GetUntrackedFiles run reusing it with a relative directory fails with an error.
         /// </summary>
         [Fact]
         public void RelativeProjectDirectory_OnCachedRepository_IsRejected()
@@ -80,7 +77,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             };
 
             Assert.False(task.Execute());
-            Assert.Contains("ERROR", engine.Log);
+            Assert.Contains(Resources.PathMustBeAbsolute, engine.Log);
             Assert.Null(task.UntrackedFiles);
         }
 

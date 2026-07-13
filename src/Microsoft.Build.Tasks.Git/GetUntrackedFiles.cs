@@ -30,13 +30,9 @@ namespace Microsoft.Build.Tasks.Git
 
         private protected override void Execute(GitRepository repository)
         {
-            // ProjectDirectory is the base for resolving the (relative) file ItemSpecs below, so it must be
-            // fully qualified: a relative base would be resolved against the shared process current working
-            // directory, which is unsafe under the multithreaded task model. Reaching this method with a
-            // non-fully-qualified ProjectDirectory is only possible on the cached-repository path (RepositoryId
-            // set), where the base RepositoryTask serves the repository from the cache without validating the
-            // initial path. ProjectDirectory is expected to be absolute ($(MSBuildProjectDirectory) in the
-            // shipped targets), so a non-absolute value is an error rather than a "missing repository" condition.
+            // ProjectDirectory is the base for resolving the relative file ItemSpecs below. A relative base
+            // would resolve against the shared process CWD, which is unsafe under the multithreaded model. On
+            // the cached-repository path the base RepositoryTask skips validating it, so guard here.
             if (!PathUtilities.IsPathFullyQualified(ProjectDirectory))
             {
                 Log.LogError(Resources.PathMustBeAbsolute);
