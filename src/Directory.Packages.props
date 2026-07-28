@@ -21,6 +21,7 @@
     <PackageVersion Include="NuGet.Versioning" Version="$(NuGetVersioningVersion)" />
 
     <!-- Runtime dependencies -->
+    <PackageVersion Include="System.Security.Cryptography.Xml" Version="$(SystemSecurityCryptographyXmlVersion)" />
     <PackageVersion Include="System.Text.Json" Version="$(SystemTextJsonVersion)" />
   </ItemGroup>
 
