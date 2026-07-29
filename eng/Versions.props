@@ -5,7 +5,7 @@
   <PropertyGroup>
     <VersionPrefix>11.0.100</VersionPrefix>
     <PreReleaseVersionLabel>preview</PreReleaseVersionLabel>
-    <PreReleaseVersionIteration>6</PreReleaseVersionIteration>
+    <PreReleaseVersionIteration>7</PreReleaseVersionIteration>
     <!-- Allowed values: '', 'prerelease', 'release'. Set to 'release' when stabilizing. -->
     <DotNetFinalVersionKind></DotNetFinalVersionKind>
 
@@ -19,8 +19,6 @@
     <MicrosoftBuildTasksCoreVersion>18.6.3</MicrosoftBuildTasksCoreVersion>
     <!-- nuget -->
     <NuGetVersioningVersion>6.12.1</NuGetVersioningVersion>
-    <!-- runtime -->
-    <SystemTextJsonVersion>10.0.9</SystemTextJsonVersion>
   </PropertyGroup>
 
 </Project>
