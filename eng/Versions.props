@@ -19,8 +19,6 @@
     <MicrosoftBuildTasksCoreVersion>17.11.48</MicrosoftBuildTasksCoreVersion>
     <!-- nuget -->
     <NuGetVersioningVersion>6.12.1</NuGetVersioningVersion>
-    <!-- runtime -->
-    <SystemTextJsonVersion>8.0.5</SystemTextJsonVersion>
   </PropertyGroup>
 
 </Project>
