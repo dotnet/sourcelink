@@ -41,7 +41,7 @@ namespace Microsoft.Build.Tasks.SourceControl
 
         public static bool EndsWithSeparator(this string path)
         {
-            char last = path[path.Length - 1];
+            var last = path[path.Length - 1];
             return last == Path.DirectorySeparatorChar || last == Path.AltDirectorySeparatorChar;
         }
 

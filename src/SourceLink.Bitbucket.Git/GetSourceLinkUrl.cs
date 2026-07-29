@@ -28,7 +28,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git
         {
             // The SourceLinkBitbucketGitHost item for bitbucket.org specifies EnterpriseEdition="false".
             // Other items that may be specified by the project default to EnterpriseEdition="true" without specifying it.
-            bool isCloud = bool.TryParse(hostItem?.GetMetadata(IsEnterpriseEditionMetadataName), out var isEnterpriseEdition) && !isEnterpriseEdition;
+            var isCloud = bool.TryParse(hostItem?.GetMetadata(IsEnterpriseEditionMetadataName), out var isEnterpriseEdition) && !isEnterpriseEdition;
 
             if (isCloud)
             {
@@ -109,7 +109,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git
             UriBuilder apiUriBuilder = new UriBuilder(contentUri);
             apiUriBuilder.Host = $"api.{apiUriBuilder.Host}";
 
-            string relativeApiUrl = UriUtilities.Combine(UriUtilities.Combine("2.0/repositories", relativeUrl), $"src/{revisionId}/*");
+            var relativeApiUrl = UriUtilities.Combine(UriUtilities.Combine("2.0/repositories", relativeUrl), $"src/{revisionId}/*");
 
             return UriUtilities.Combine(apiUriBuilder.Uri.ToString(), relativeApiUrl);
         }

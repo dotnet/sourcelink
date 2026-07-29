@@ -13,5 +13,8 @@ namespace Microsoft.Build.Tasks.Git
 
         public static bool IsHexadecimalDigit(char c)
             => c is >= '0' and <= '9' or >= 'A' and <= 'F' or >= 'a' and <= 'f';
+
+        public static char ToHexDigit(byte nibble)
+            => nibble < 10 ? (char)('0' + nibble) : (char)('a' + (nibble - 10));
     }
 }

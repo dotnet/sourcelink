@@ -21,7 +21,7 @@ namespace Microsoft.SourceLink.GitWeb.UnitTests
                 SourceRoot = new MockItem("x", KVP("RepositoryUrl", "http://abc.com"), KVP("SourceControl", "git")),
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
 
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
                 "ERROR : " + string.Format(CommonResources.AtLeastOneRepositoryHostIsRequired, "SourceLinkGitWebHost", "GitWeb"), engine.Log);
@@ -48,7 +48,7 @@ namespace Microsoft.SourceLink.GitWeb.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
             AssertEx.AreEqual("https://src.intranet.company.com/gitweb/?p=root_dir_name/sub_dirs/reponame.git;a=blob_plain;hb=0123456789abcdefABCDEF000000000000000000;f=*", task.SourceLinkUrl);
             Assert.True(result);

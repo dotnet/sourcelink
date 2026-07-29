@@ -90,8 +90,8 @@ namespace TestUtilities
 
                     while (true)
                     {
-                        bool hasNextX = enumeratorX.MoveNext();
-                        bool hasNextY = enumeratorY.MoveNext();
+                        var hasNextX = enumeratorX.MoveNext();
+                        var hasNextY = enumeratorY.MoveNext();
 
                         if (!hasNextX || !hasNextY)
                         {
@@ -192,7 +192,7 @@ namespace TestUtilities
             }
             else if (!SequenceEqual(expected, actual, comparer))
             {
-                string assertMessage = GetAssertMessage(expected, actual, comparer, itemInspector, itemSeparator);
+                var assertMessage = GetAssertMessage(expected, actual, comparer, itemInspector, itemSeparator);
 
                 if (message != null)
                 {

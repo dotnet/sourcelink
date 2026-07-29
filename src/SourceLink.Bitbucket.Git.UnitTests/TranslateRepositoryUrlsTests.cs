@@ -33,7 +33,7 @@ namespace Microsoft.SourceLink.Bitbucket.Git.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
 
             AssertEx.AreEqual("https://bitbucket.org/a/b", task.TranslatedRepositoryUrl);

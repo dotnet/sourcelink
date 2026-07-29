@@ -19,18 +19,18 @@ namespace Microsoft.Build.Tasks.Git
     {
         internal static bool IsMatch(string pattern, string path, bool ignoreCase, bool matchWildCardWithDirectorySeparator)
         {
-            int patternIndex = 0;
-            int pathIndex = 0;
+            var patternIndex = 0;
+            var pathIndex = 0;
 
             // true if the next matching character must be the first character of a directory name
-            bool matchDirectoryNameStart = false;
+            var matchDirectoryNameStart = false;
 
-            bool stopAtPathSlash = false;
+            var stopAtPathSlash = false;
 
-            int nextSinglePatternIndex = -1;
-            int nextSinglePathIndex = -1;
-            int nextDoublePatternIndex = -1;
-            int nextDoublePathIndex = -1;
+            var nextSinglePatternIndex = -1;
+            var nextSinglePathIndex = -1;
+            var nextDoublePatternIndex = -1;
+            var nextDoublePathIndex = -1;
 
             bool equal(char x, char y)
                 => x == y || ignoreCase && char.ToLowerInvariant(x) == char.ToLowerInvariant(y);
@@ -42,7 +42,7 @@ namespace Microsoft.Build.Tasks.Git
                 {
                     // "a/**/*" does not match "a", although it might appear from the spec that it should.
 
-                    bool isDoubleAsterisk = patternIndex < pattern.Length && pattern[patternIndex] == '*' && 
+                    var isDoubleAsterisk = patternIndex < pattern.Length && pattern[patternIndex] == '*' && 
                                             (patternIndex == pattern.Length - 1 || pattern[patternIndex + 1] == '/') && 
                                             (patternIndex == 1 || pattern[patternIndex - 2] == '/');
 
@@ -200,9 +200,9 @@ namespace Microsoft.Build.Tasks.Git
                 pathChar = char.ToLowerInvariant(pathChar);
             }
 
-            bool negate = false;
-            bool isEmpty = true;
-            bool isMatching = false;
+            var negate = false;
+            var isEmpty = true;
+            var isMatching = false;
 
             var c = pattern[patternIndex];
             if (c is '!' or '^')

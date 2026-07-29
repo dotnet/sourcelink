@@ -33,7 +33,7 @@ namespace Microsoft.SourceLink.Gitee.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
 
             AssertEx.AreEqual("https://gitee.com/a/b", task.TranslatedRepositoryUrl);

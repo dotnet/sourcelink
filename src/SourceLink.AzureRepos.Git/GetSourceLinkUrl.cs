@@ -22,7 +22,7 @@ namespace Microsoft.SourceLink.AzureRepos.Git
         {
             var gitHost = gitUri.GetHost();
             return AzureDevOpsUrlParser.IsVisualStudioHostedServer(gitHost) ?
-                new Uri($"{gitUri.Scheme}://{gitHost.Substring(0, gitHost.IndexOf('.'))}.{authority}", UriKind.Absolute) :
+                new Uri($"{gitUri.Scheme}://{gitHost[..gitHost.IndexOf('.')]}.{authority}", UriKind.Absolute) :
                 new Uri($"{gitUri.Scheme}://{authority}", UriKind.Absolute);
         }
 
@@ -58,10 +58,10 @@ namespace Microsoft.SourceLink.AzureRepos.Git
                     return false;
                 }
 
-                for (int i = 0; i < items.Length; i += 2)
+                for (var i = 0; i < items.Length; i += 2)
                 {
-                    string originalUrl = items[i];
-                    string mappedUrl = items[i + 1];
+                    var originalUrl = items[i];
+                    var mappedUrl = items[i + 1];
 
                     if (!Uri.TryCreate(originalUrl, UriKind.Absolute, out var originalUri) || originalUri.Query != "")
                     {
@@ -86,7 +86,7 @@ namespace Microsoft.SourceLink.AzureRepos.Git
 
             IEnumerable<KeyValuePair<string, string>> enumerateVariables()
             {
-                int i = 0;
+                var i = 0;
                 while (true)
                 {
                     var name = UrlMapEnvironmentVariableName + (i == 0 ? "" : i.ToString());

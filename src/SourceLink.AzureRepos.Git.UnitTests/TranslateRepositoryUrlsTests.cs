@@ -40,7 +40,7 @@ namespace Microsoft.SourceLink.AzureRepos.Git.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
 
             AssertEx.AreEqual("https://account.visualstudio.com/project/team/_git/repo", task.TranslatedRepositoryUrl);

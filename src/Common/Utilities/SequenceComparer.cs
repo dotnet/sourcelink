@@ -24,7 +24,7 @@ namespace Microsoft.Build.Tasks.SourceControl
         public int Compare(T[] left, int leftLength, T[] right, int rightLength)
         {
             var minLength = Math.Min(leftLength, rightLength);
-            for (int i = 0; i < minLength; i++)
+            for (var i = 0; i < minLength; i++)
             {
                 var result = _comparer.Compare(left[i], right[i]);
                 if (result != 0)
