@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(NetToolMinimum);$(NetFrameworkToolCurrent)</TargetFrameworks>
+    <TargetFrameworks>$(NetMinimum);$(NetFrameworkToolCurrent)</TargetFrameworks>
     <PackageDescription>Generates source link for Azure DevOps Server (formerly known as TFS) Git repositories.</PackageDescription>
     <PackageTags>MSBuild Tasks Azure DepOps Server TFS Git source link</PackageTags>
     <IsBuildTaskProject>true</IsBuildTaskProject>

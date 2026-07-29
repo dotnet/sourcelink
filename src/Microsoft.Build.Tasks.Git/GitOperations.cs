@@ -350,7 +350,8 @@ namespace Microsoft.Build.Tasks.Git
 
             return files.Where(file =>
             {
-                // file.ItemSpec are relative to projectDirectory.
+                // projectDirectory is fully qualified (enforced by GetUntrackedFiles), so this Path.GetFullPath
+                // only canonicalizes an already-rooted path and is MT-safe.
                 var fullPath = Path.GetFullPath(Path.Combine(projectDirectory, file.ItemSpec));
 
                 var containingDirectoryMatcher = GetContainingRepositoryMatcher(fullPath, directoryTree);

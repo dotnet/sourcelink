@@ -13,6 +13,7 @@ namespace Microsoft.SourceLink.GitHub
     /// If the SourceRoot is associated with a git repository with a recognized domain the <see cref="SourceLinkUrl"/>
     /// output property is set to the content URL corresponding to the domain, otherwise it is set to string "N/A".
     /// </summary>
+    [MSBuildMultiThreadableTask]
     public sealed class GetSourceLinkUrl : GetSourceLinkUrlGitTask
     {
         protected override string HostsItemGroupName => "SourceLinkGitHubHost";

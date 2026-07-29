@@ -3,10 +3,12 @@
 // See the License.txt file in the project root for more information.
 
 using System;
+using Microsoft.Build.Framework;
 using Microsoft.Build.Tasks.SourceControl;
 
 namespace Microsoft.SourceLink.AzureDevOpsServer.Git
 {
+    [MSBuildMultiThreadableTask]
     public sealed class TranslateRepositoryUrls : TranslateRepositoryUrlsGitTask
     {
         // Translates

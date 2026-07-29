@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(NetToolMinimum);$(NetFrameworkToolCurrent)</TargetFrameworks>
+    <TargetFrameworks>$(NetMinimum);$(NetFrameworkToolCurrent)</TargetFrameworks>
     <PackageDescription>Generates source link for Azure Repos (formerly known as VSTS) Git repositories.</PackageDescription>
     <PackageTags>MSBuild Tasks Azure DevOps Repos VSTS Git source link</PackageTags>
     <IsBuildTaskProject>true</IsBuildTaskProject>

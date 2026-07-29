@@ -802,7 +802,7 @@ public class GitRefTableReaderTests
             ObjectNameFormat = ObjectNameFormat.Sha1
         };
 
-        var refBlock1 = writer.WriteRefBlock(header: null,
+        var refBlock1 = writer.WriteRefBlock(header,
         [
             ("", "refs/heads/a", 0x01),
             ("refs/heads/", "b", 0x02),
@@ -810,50 +810,43 @@ public class GitRefTableReaderTests
             ("", "refs/heads/d", 0x04),
         ]);
 
+        Assert.Equal(0, refBlock1);
+
         using var reader = Create(writer);
 
-        writer.Position = refBlock1;
-        var record = reader.SearchBlock(header, "refs/heads/c");
+        var record = reader.SearchBlock(header, blockPosition: 0, "refs/heads/c");
         Assert.NotNull(record);
         Assert.Equal("refs/heads/c", record.Value.RefName);
         Assert.Equal("0300000000000000000000000000000000000000", record.Value.ObjectName);
 
-        writer.Position = 0;
-        record = reader.SearchBlock(header, "refs/heads/a");
+        record = reader.SearchBlock(header, blockPosition: 0, "refs/heads/a");
         Assert.NotNull(record);
         Assert.Equal("refs/heads/a", record.Value.RefName);
         Assert.Equal("0100000000000000000000000000000000000000", record.Value.ObjectName);
 
-        writer.Position = 0;
-        record = reader.SearchBlock(header, "refs/heads/b");
+        record = reader.SearchBlock(header, blockPosition: 0, "refs/heads/b");
         Assert.NotNull(record);
         Assert.Equal("refs/heads/b", record.Value.RefName);
         Assert.Equal("0200000000000000000000000000000000000000", record.Value.ObjectName);
 
-        writer.Position = 0;
-        record = reader.SearchBlock(header, "refs/heads/d");
+        record = reader.SearchBlock(header, blockPosition: 0, "refs/heads/d");
         Assert.NotNull(record);
         Assert.Equal("refs/heads/d", record.Value.RefName);
         Assert.Equal("0400000000000000000000000000000000000000", record.Value.ObjectName);
 
-        writer.Position = 0;
-        record = reader.SearchBlock(header, "refs/heads");
+        record = reader.SearchBlock(header, blockPosition: 0, "refs/heads");
         Assert.Null(record);
 
-        writer.Position = 0;
-        record = reader.SearchBlock(header, "refs/heads/aa");
+        record = reader.SearchBlock(header, blockPosition: 0, "refs/heads/aa");
         Assert.Null(record);
 
-        writer.Position = 0;
-        record = reader.SearchBlock(header, "refs/heads/bb");
+        record = reader.SearchBlock(header, blockPosition: 0, "refs/heads/bb");
         Assert.Null(record);
 
-        writer.Position = 0;
-        record = reader.SearchBlock(header, "refs/heads/cc");
+        record = reader.SearchBlock(header, blockPosition: 0, "refs/heads/cc");
         Assert.Null(record);
 
-        writer.Position = 0;
-        record = reader.SearchBlock(header, "refs/heads/dd");
+        record = reader.SearchBlock(header, blockPosition: 0, "refs/heads/dd");
         Assert.Null(record);
     }
 
@@ -924,85 +917,89 @@ public class GitRefTableReaderTests
 
         using var reader = Create(writer);
 
-        writer.Position = refIndexBlock3;
-        var record = reader.SearchBlock(header, "refs/heads/a");
+        var record = reader.SearchBlock(header, refIndexBlock3, "refs/heads/a");
         Assert.NotNull(record);
         Assert.Equal("0100000000000000000000000000000000000000", record.Value.ObjectName);
 
-        writer.Position = refIndexBlock3;
-        record = reader.SearchBlock(header, "refs/heads/b");
+        record = reader.SearchBlock(header, refIndexBlock3, "refs/heads/b");
         Assert.NotNull(record);
         Assert.Equal("0200000000000000000000000000000000000000", record.Value.ObjectName);
 
-        writer.Position = refIndexBlock3;
-        record = reader.SearchBlock(header, "refs/heads/c");
+        record = reader.SearchBlock(header, refIndexBlock3, "refs/heads/c");
         Assert.NotNull(record);
         Assert.Equal("0300000000000000000000000000000000000000", record.Value.ObjectName);
 
-        writer.Position = refIndexBlock3;
-        record = reader.SearchBlock(header, "refs/heads/d");
+        record = reader.SearchBlock(header, refIndexBlock3, "refs/heads/d");
         Assert.NotNull(record);
         Assert.Equal("0400000000000000000000000000000000000000", record.Value.ObjectName);
 
-        writer.Position = refIndexBlock3;
-        record = reader.SearchBlock(header, "refs/heads/e");
+        record = reader.SearchBlock(header, refIndexBlock3, "refs/heads/e");
         Assert.NotNull(record);
         Assert.Equal("0500000000000000000000000000000000000000", record.Value.ObjectName);
 
-        writer.Position = refIndexBlock3;
-        record = reader.SearchBlock(header, "refs/heads/f");
+        record = reader.SearchBlock(header, refIndexBlock3, "refs/heads/f");
         Assert.NotNull(record);
         Assert.Equal("0600000000000000000000000000000000000000", record.Value.ObjectName);
 
-        writer.Position = refIndexBlock3;
-        record = reader.SearchBlock(header, "refs/heads/g");
+        record = reader.SearchBlock(header, refIndexBlock3, "refs/heads/g");
         Assert.NotNull(record);
         Assert.Equal("0700000000000000000000000000000000000000", record.Value.ObjectName);
 
-        writer.Position = refIndexBlock3;
-        record = reader.SearchBlock(header, "refs/heads/h");
+        record = reader.SearchBlock(header, refIndexBlock3, "refs/heads/h");
         Assert.NotNull(record);
         Assert.Equal("0800000000000000000000000000000000000000", record.Value.ObjectName);
 
-        writer.Position = refIndexBlock3;
-        record = reader.SearchBlock(header, "refs/heads");
+        record = reader.SearchBlock(header, refIndexBlock3, "refs/heads");
         Assert.Null(record);
 
-        writer.Position = refIndexBlock3;
-        record = reader.SearchBlock(header, "refs/heads/aa");
+        record = reader.SearchBlock(header, refIndexBlock3, "refs/heads/aa");
         Assert.Null(record);
 
-        writer.Position = refIndexBlock3;
-        record = reader.SearchBlock(header, "refs/heads/bb");
+        record = reader.SearchBlock(header, refIndexBlock3, "refs/heads/bb");
         Assert.Null(record);
 
-        writer.Position = refIndexBlock3;
-        record = reader.SearchBlock(header, "refs/heads/cc");
+        record = reader.SearchBlock(header, refIndexBlock3, "refs/heads/cc");
         Assert.Null(record);
 
-        writer.Position = refIndexBlock3;
-        record = reader.SearchBlock(header, "refs/heads/dd");
+        record = reader.SearchBlock(header, refIndexBlock3, "refs/heads/dd");
         Assert.Null(record);
 
-        writer.Position = refIndexBlock3;
-        record = reader.SearchBlock(header, "refs/heads/ee");
+        record = reader.SearchBlock(header, refIndexBlock3, "refs/heads/ee");
         Assert.Null(record);
 
-        writer.Position = refIndexBlock3;
-        record = reader.SearchBlock(header, "refs/heads/ff");
+        record = reader.SearchBlock(header, refIndexBlock3, "refs/heads/ff");
         Assert.Null(record);
 
-        writer.Position = refIndexBlock3;
-        record = reader.SearchBlock(header, "refs/heads/gg");
+        record = reader.SearchBlock(header, refIndexBlock3, "refs/heads/gg");
         Assert.Null(record);
 
-        writer.Position = refIndexBlock3;
-        record = reader.SearchBlock(header, "refs/heads/hh");
+        record = reader.SearchBlock(header, refIndexBlock3, "refs/heads/hh");
         Assert.Null(record);
 
-        writer.Position = refIndexBlock3;
-        record = reader.SearchBlock(header, "refs/heads/z");
+        record = reader.SearchBlock(header, refIndexBlock3, "refs/heads/z");
         Assert.Null(record);
+    }
+
+    [Fact]
+    public void TryFindReference_Empty()
+    {
+        var writer = new GitRefTableTestWriter();
+
+        var header = new GitRefTableReader.Header()
+        {
+            Size = 24,
+            BlockSize = 1000,
+            ObjectNameFormat = ObjectNameFormat.Sha1
+        };
+
+        writer.WriteHeader(header);
+        writer.WriteFooter(header, 0);
+
+        using var reader = Create(writer);
+
+        Assert.False(reader.TryFindReference("refs/heads/c", out var objectName, out var symRef));
+        Assert.Null(symRef);
+        Assert.Null(objectName);
     }
 
     [Fact]

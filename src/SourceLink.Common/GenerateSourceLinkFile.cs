@@ -13,6 +13,7 @@ using Microsoft.Build.Utilities;
 
 namespace Microsoft.SourceLink.Common
 {
+    [MSBuildMultiThreadableTask]
     public sealed class GenerateSourceLinkFile : Task
     {
         [Required, NotNull]
@@ -114,6 +115,14 @@ namespace Microsoft.SourceLink.Common
 
             try
             {
+                // OutputFile is required to be a fully qualified path. It is set by the SourceLink targets from
+                // _SourceLinkFilePath, so file access must not (and does not need to) depend on the shared process
+                // current directory under the multithreaded task model. Reject a path that isn't fully qualified.
+                if (string.IsNullOrEmpty(OutputFile) || !PathUtilities.IsPathFullyQualified(OutputFile))
+                {
+                    throw new ArgumentException($"The path '{OutputFile}' must be fully qualified.", nameof(OutputFile));
+                }
+
                 if (File.Exists(OutputFile))
                 {
                     if (content == null)

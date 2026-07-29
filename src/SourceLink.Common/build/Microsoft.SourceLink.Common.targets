@@ -6,7 +6,12 @@
 
   <Target Name="_SetSourceLinkFilePath">
     <PropertyGroup>
-      <_SourceLinkFilePath>$(IntermediateOutputPath)$(MSBuildProjectName).sourcelink.json</_SourceLinkFilePath>
+      <!--
+        All source link tasks require absolute paths so that file access does not depend on the process
+        current directory (which is not reliable under the multithreaded task model). IntermediateOutputPath
+        is typically relative to the project directory, so make _SourceLinkFilePath absolute here.
+      -->
+      <_SourceLinkFilePath>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(IntermediateOutputPath)', '$(MSBuildProjectName).sourcelink.json'))</_SourceLinkFilePath>
     </PropertyGroup>
   </Target>
 

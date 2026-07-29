@@ -14,6 +14,7 @@ namespace Microsoft.SourceLink.GitWeb
     /// property is set to the content URL corresponding to the domain, otherwise it is set to
     /// string "N/A".
     /// </summary>
+    [MSBuildMultiThreadableTask]
     public sealed class GetSourceLinkUrl : GetSourceLinkUrlGitTask
     {
         protected override string HostsItemGroupName => "SourceLinkGitWebHost";
