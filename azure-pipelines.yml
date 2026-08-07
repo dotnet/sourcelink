@@ -61,7 +61,6 @@ extends:
                 demands: ImageOverride -equals 1es-windows-2022
             variables:
             - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
-              - group: Publish-Build-Assets
               - name: _OfficialBuildArgs
                 value: /p:DotNetSignType=$(_SignType) /p:DotNetPublishUsingPipelines=true /p:TeamName=$(_TeamName) /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
             - ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
