@@ -1,3 +1,4 @@
+```csharp
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the License.txt file in the project root for more information.
@@ -42,4 +43,21 @@ internal readonly struct GitVariableName(string sectionName, string subsectionNa
         => (SubsectionName.Length == 0) ?
             SectionName + "." + VariableName :
             SectionName + "." + SubsectionName + "." + VariableName;
+
+    // Добавлено поведение для удаления чувствительной информации
+    public void RemoveSensitiveInformation()
+    {
+        if (SectionNameEquals("SensitiveSection"))
+        {
+            SectionName = "";
+        }
+        if (SubsectionNameEquals("SensitiveSubsection"))
+        {
+            SubsectionName = "";
+        }
+        if (VariableNameEquals("SensitiveVariable"))
+        {
+            VariableName = "";
+        }
+    }
 }
