@@ -21,7 +21,7 @@ namespace Microsoft.SourceLink.IntegrationTests
         {
             // Test non-ascii characters and escapes in the URL. Escaped URI reserved characters
             // should remain escaped, non-reserved characters unescaped in the results.
-            var repoUrl = $"ssh://git@噸.com/test-%72epo\u1234%24%2572%2F.git";
+            var repoUrl = $"ssh://user@噸.com/test-%72epo\u1234%24%2572%2F.git";
             var repoName = "test-repo\u1234%24%2572%2F.git";
 
             var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
@@ -55,6 +55,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     ProjectSourceRoot,
                     $"https://噸.com/gitweb/?p={repoName};a=blob_plain;hb={commitSha};f=*",
                     s_relativeSourceLinkJsonPath,
+                    // note that "user" was replaced with "git" to avoid leaking user info
                     $"ssh://git@噸.com/{repoName}",
                     $"ssh://git@噸.com/{repoName}"
                 });
@@ -67,6 +68,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 Path.Combine(ProjectDir.Path, s_relativeOutputFilePath),
                 "1.0.0+" + commitSha);
 
+            // note that "user" was replaced with "git" to avoid leaking user info
             TestUtilities.ValidateNuSpecRepository(
                 Path.Combine(ProjectDir.Path, s_relativePackagePath),
                 type: "git",
