@@ -224,23 +224,26 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         }
 
         [Theory]
-        [InlineData("https://github.com/org/repo")]
-        [InlineData("http://github.com/org/repo")]
-        [InlineData("http://github.com:102/org/repo")]
-        [InlineData("ssh://user@github.com/org/repo")]
-        [InlineData("abc://user@github.com/org/repo")]
-        public void NormalizeUrl_PlatformAgnostic1(string url)
+        [InlineData("https://github.com/org/repo", "https://github.com/org/repo")]
+        [InlineData("http://github.com/org/repo", "http://github.com/org/repo")]
+        [InlineData("http://github.com:102/org/repo", "http://github.com:102/org/repo")]
+        [InlineData("ssh://user@github.com/org/repo", "ssh://git@github.com/org/repo")] // "user" replaced with "git" in SSH URL
+        [InlineData("abc://user@github.com/org/repo", "abc://github.com/org/repo")]
+        public void NormalizeUrl_PlatformAgnostic1(string url, string expected)
         {
-            AssertEx.AreEqual(url, GitOperations.NormalizeUrl(url, s_root)?.AbsoluteUri);
+            AssertEx.AreEqual(expected, GitOperations.NormalizeUrl(url, s_root)?.AbsoluteUri);
         }
 
         [Theory]
         [InlineData("http://?", null)]
         [InlineData("https://github.com/org/repo/./.", "https://github.com/org/repo/")]
         [InlineData("http://github.com/org/" + TestStrings.RepoName, "http://github.com/org/" + TestStrings.RepoNameFullyEscaped)]
-        [InlineData("ssh://github.com/org/../repo", "ssh://github.com/repo")]
-        [InlineData("ssh://github.com/%32/repo", "ssh://github.com/2/repo")]
-        [InlineData("ssh://github.com/%3F/repo", "ssh://github.com/%3F/repo")]
+        [InlineData("ssh://github.com/org/../repo", "ssh://git@github.com/repo")]
+        [InlineData("ssh://github.com/%32/repo", "ssh://git@github.com/2/repo")]
+        [InlineData("ssh://github.com/%3F/repo", "ssh://git@github.com/%3F/repo")]
+        [InlineData(@"../.:./../../relative/path", null)]
+        [InlineData(@".:/../../relative/path", null)]
+        [InlineData(@"..:/../../relative/path", null)]
         public void NormalizeUrl_PlatformAgnostic2(string url, string? expectedUrl)
         {
             AssertEx.AreEqual(expectedUrl, GitOperations.NormalizeUrl(url, s_root)?.AbsoluteUri);
@@ -269,14 +272,14 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         }
 
         [Theory]
-        [InlineData("abc:org/repo", "ssh://abc/org/repo")]
-        [InlineData("abc:org/x%20y", "ssh://abc/org/x%20y")]
-        [InlineData("ABC:ORG/REPO/X/Y", "ssh://abc/ORG/REPO/X/Y")]
-        [InlineData("github.com:org/repo", "ssh://github.com/org/repo")]
-        [InlineData("git@github.com:org/repo", "ssh://git@github.com/org/repo")]
-        [InlineData("@github.com:org/repo", "ssh://@github.com/org/repo")]
-        [InlineData("http:x//y", "ssh://http/x//y")]
-        public void GetRepositoryUrl_ScpSyntax(string url, string expectedUrl)
+        [InlineData("abc:org/repo", "ssh://git@abc/org/repo")]
+        [InlineData("abc:org/x%20y", "ssh://git@abc/org/x%20y")]
+        [InlineData("ABC:ORG/REPO/X/Y", "ssh://git@abc/ORG/REPO/X/Y")]
+        [InlineData("github.com:org/repo", "ssh://git@github.com/org/repo")]
+        [InlineData("user@github.com:org/repo", "ssh://git@github.com/org/repo")] // "user" replaced with "git" in SSH URL
+        [InlineData("@github.com:org/repo", "ssh://git@github.com/org/repo")]
+        [InlineData("http:x//y", "ssh://git@http/x//y")]
+        public void NormalizeUrl_ScpSyntax(string url, string expectedUrl)
         {
             Assert.Equal(expectedUrl, GitOperations.NormalizeUrl(url, s_root)?.AbsoluteUri);
         }
@@ -398,7 +401,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             // URLs listed in .submodules are ignored (they are used by git submodule initialize to generate URLs stored in config).
             AssertEx.Equal(new[]
             {
-                $@"'{_workingDir}{s}sub{s}1{s}' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/1/' ContainingRoot='{_workingDir}{s}' ScmRepositoryUrl='ssh://github.com/sub-1'",
+                $@"'{_workingDir}{s}sub{s}1{s}' SourceControl='git' RevisionId='1111111111111111111111111111111111111111' NestedRoot='sub/1/' ContainingRoot='{_workingDir}{s}' ScmRepositoryUrl='ssh://git@github.com/sub-1'",
                 $@"'{_workingDir}{s}sub{s}3{s}' SourceControl='git' RevisionId='3333333333333333333333333333333333333333' NestedRoot='sub/3/' ContainingRoot='{_workingDir}{s}' ScmRepositoryUrl='https://github.com/sub-3'",
                 $@"'{_workingDir}{s}sub{s}6{s}' SourceControl='git' RevisionId='6666666666666666666666666666666666666666' NestedRoot='sub/6/' ContainingRoot='{_workingDir}{s}' ScmRepositoryUrl='https://github.com/sub-6'",
             }, items.Select(TestUtilities.InspectSourceRoot));

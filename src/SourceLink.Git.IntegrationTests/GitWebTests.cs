@@ -21,7 +21,7 @@ namespace Microsoft.SourceLink.IntegrationTests
         {
             // Test non-ascii characters and escapes in the URL. Escaped URI reserved characters
             // should remain escaped, non-reserved characters unescaped in the results.
-            var repoUrl = $"ssh://git@{TestStrings.DomainName}.com/test-%72epo{TestStrings.RepoName}.git";
+            var repoUrl = $"ssh://user@{TestStrings.DomainName}.com/test-%72epo{TestStrings.RepoName}.git";
             var repoName = $"test-repo{TestStrings.RepoNameEscaped}.git";
             var repoNameFullyEscaped = $"test-repo{TestStrings.RepoNameFullyEscaped}.git";
 
@@ -58,6 +58,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                     $"https://{TestStrings.DomainName}.com/gitweb/?p={repoName};a=blob_plain;hb={commitSha};f=*",
                     "refs/heads/main",
                     s_relativeSourceLinkJsonPath,
+                    // note that "user" was replaced with "git" to avoid leaking user info
                     $"ssh://git@{TestStrings.DomainName}.com/{repoNameFullyEscaped}",
                     $"ssh://git@{TestStrings.DomainName}.com/{repoNameFullyEscaped}"
                 });
@@ -70,6 +71,7 @@ namespace Microsoft.SourceLink.IntegrationTests
                 Path.Combine(ProjectDir.Path, s_relativeOutputFilePath),
                 "1.0.0+" + commitSha);
 
+            // note that "user" was replaced with "git" to avoid leaking user info
             TestUtilities.ValidateNuSpecRepository(
                 Path.Combine(ProjectDir.Path, s_relativePackagePath),
                 type: "git",
