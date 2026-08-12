@@ -99,37 +99,33 @@ namespace Microsoft.SourceLink.AzureRepos.Git.UnitTests
         }
 
         [Theory]
-        [InlineData("ssh://account@vs-ssh.visualstudio.com/project/_ssh/repo", "account", "project", "repo")]
-        [InlineData("ssh://account@vs-ssh.visualstudio.com/project/team/_ssh/repo", "account", "project/team", "repo")]
-        [InlineData("ssh://account@vs-ssh.visualstudio.com/DefaultCollection/project/_ssh/repo", "account", "project", "repo")]
-        [InlineData("ssh://account@vs-ssh.visualstudio.com/DefaultCollection/project/team/_ssh/repo", "account", "project/team", "repo")]
-        [InlineData("ssh://account@vs-ssh.visualstudio.com/DefaultCollection/project/team/_ssh/_full/repo", "account", "project/team", "repo")]
-        [InlineData("ssh://account@vs-ssh.visualstudio.com/DefaultCollection/project/team/_ssh/_optimized/repo", "account", "project/team", "repo")]
-        [InlineData("ssh://account@vs-ssh.visualstudio.com/DefaultCollection/_ssh/repo", "account", "", "repo")]
-        [InlineData("ssh://account@vs-ssh.visualstudio.com/_ssh/repo", "account", "", "repo")]
-
-        [InlineData("ssh://account@vs-ssh.vsts.me/project/_ssh/repo", "account", "project", "repo")]
-        [InlineData("ssh://account@vs-ssh.vsts.me/project/team/_ssh/repo", "account", "project/team", "repo")]
-        [InlineData("ssh://account@vs-ssh.vsts.me/DefaultCollection/project/_ssh/repo", "account", "project", "repo")]
-        [InlineData("ssh://account@vs-ssh.vsts.me/DefaultCollection/project/team/_ssh/repo", "account", "project/team", "repo")]
-        [InlineData("ssh://account@vs-ssh.vsts.me/DefaultCollection/project/team/_ssh/_full/repo", "account", "project/team", "repo")]
-        [InlineData("ssh://account@vs-ssh.vsts.me/DefaultCollection/project/team/_ssh/_optimized/repo", "account", "project/team", "repo")]
-        [InlineData("ssh://account@vs-ssh.vsts.me/DefaultCollection/_ssh/repo", "account", "", "repo")]
-        [InlineData("ssh://account@vs-ssh.vsts.me/_ssh/repo", "account", "", "repo")]
-
-        [InlineData("ssh://account@ssh.contoso.com/project/_ssh/repo", "account", "project", "repo")]
-        [InlineData("ssh://account@ssh.contoso.com/project/team/_ssh/repo", "account", "project/team", "repo")]
-        [InlineData("ssh://account@ssh.contoso.com/project/team/_ssh/_full/repo", "account", "project/team", "repo")]
-        [InlineData("ssh://account@ssh.contoso.com/project/team/_ssh/_optimized/repo", "account", "project/team", "repo")]
-
-        [InlineData("ssh://account@vs-ssh.visualstudio.com/v3/_ssh/repo", "account", "v3", "repo")]
-        [InlineData("ssh://account@vs-ssh.visualstudio.com/v3/team/_ssh/repo", "account", "v3/team", "repo")]
-        public void TryParseHostedSshV1V2_Success(string url, string account, string repositoryPath, string repositoryName)
+        [InlineData("ssh://account@vs-ssh.visualstudio.com/project/_ssh/repo")]
+        [InlineData("ssh://account@vs-ssh.visualstudio.com/project/team/_ssh/repo")]
+        [InlineData("ssh://account@vs-ssh.visualstudio.com/DefaultCollection/project/_ssh/repo")]
+        [InlineData("ssh://account@vs-ssh.visualstudio.com/DefaultCollection/project/team/_ssh/repo")]
+        [InlineData("ssh://account@vs-ssh.visualstudio.com/DefaultCollection/project/team/_ssh/_full/repo")]
+        [InlineData("ssh://account@vs-ssh.visualstudio.com/DefaultCollection/project/team/_ssh/_optimized/repo")]
+        [InlineData("ssh://account@vs-ssh.visualstudio.com/DefaultCollection/_ssh/repo")]
+        [InlineData("ssh://account@vs-ssh.visualstudio.com/_ssh/repo")]
+        [InlineData("ssh://account@vs-ssh.vsts.me/project/_ssh/repo")]
+        [InlineData("ssh://account@vs-ssh.vsts.me/project/team/_ssh/repo")]
+        [InlineData("ssh://account@vs-ssh.vsts.me/DefaultCollection/project/_ssh/repo")]
+        [InlineData("ssh://account@vs-ssh.vsts.me/DefaultCollection/project/team/_ssh/repo")]
+        [InlineData("ssh://account@vs-ssh.vsts.me/DefaultCollection/project/team/_ssh/_full/repo")]
+        [InlineData("ssh://account@vs-ssh.vsts.me/DefaultCollection/project/team/_ssh/_optimized/repo")]
+        [InlineData("ssh://account@vs-ssh.vsts.me/DefaultCollection/_ssh/repo")]
+        [InlineData("ssh://account@vs-ssh.vsts.me/_ssh/repo")]
+        [InlineData("ssh://account@ssh.contoso.com/project/_ssh/repo")]
+        [InlineData("ssh://account@ssh.contoso.com/project/team/_ssh/repo")]
+        [InlineData("ssh://account@ssh.contoso.com/project/team/_ssh/_full/repo")]
+        [InlineData("ssh://account@ssh.contoso.com/project/team/_ssh/_optimized/repo")]
+        [InlineData("ssh://account@vs-ssh.visualstudio.com/v3/_ssh/repo")]
+        [InlineData("ssh://account@vs-ssh.visualstudio.com/v3/team/_ssh/repo")]
+        public void TryParseHostedSshV1V2_Success(string url)
         {
-            Assert.True(AzureDevOpsUrlParser.TryParseHostedSsh(new Uri(url, UriKind.Absolute), out var actualAccount, out var actualRepositoryPath, out var actualRepositoryName));
-            Assert.Equal(account, actualAccount);
-            Assert.Equal(repositoryPath, actualRepositoryPath);
-            Assert.Equal(repositoryName, actualRepositoryName);
+            Assert.False(AzureDevOpsUrlParser.TryParseHostedSsh(
+                new Uri(url, UriKind.Absolute), out _, out _, out _, out var isUnsupportedFormat));
+            Assert.True(isUnsupportedFormat);
         }
 
         [Theory]
@@ -149,7 +145,9 @@ namespace Microsoft.SourceLink.AzureRepos.Git.UnitTests
         [InlineData("ssh://account1@ssh.contoso.com/v3/account2/project/team/_optimized/repo", "account2", "project/team", "repo")]
         public void TryParseHostedSshV3_Success(string url, string account, string repositoryPath, string repositoryName)
         {
-            Assert.True(AzureDevOpsUrlParser.TryParseHostedSsh(new Uri(url, UriKind.Absolute), out var actualAccount, out var actualRepositoryPath, out var actualRepositoryName));
+            Assert.True(AzureDevOpsUrlParser.TryParseHostedSsh(
+                new Uri(url, UriKind.Absolute), out var actualAccount, out var actualRepositoryPath, out var actualRepositoryName, out var isUnsupportedFormat));
+            Assert.False(isUnsupportedFormat);
             Assert.Equal(account, actualAccount);
             Assert.Equal(repositoryPath, actualRepositoryPath);
             Assert.Equal(repositoryName, actualRepositoryName);
