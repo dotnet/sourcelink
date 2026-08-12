@@ -247,7 +247,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         }
 
         [ConditionalTheory(typeof(UnixOnly))]
-        [InlineData(@"C:org/repo", @"ssh://c/org/repo")]
+        [InlineData(@"C:org/repo", @"ssh://git@c/org/repo")]
         [InlineData(@"/xyz/src", @"file:///xyz/src")]
         // [InlineData(@"/a%20b", @"file:///a%2520b")] // https://github.com/dotnet/sourcelink/issues/439
         [InlineData(@"\path\a\b", @"file:///path/a/b")]
@@ -259,9 +259,9 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         // [InlineData(@"../relative/path*<>|\0%00", @"file:///usr/src/a/relative/path*%3C%3E%7C/0%2500")] // https://github.com/dotnet/sourcelink/issues/439
         [InlineData(@"../../../../relative/path", @"file:///relative/path")]
         [InlineData(@"../.://../../relative/path", "file:///usr/src/a/relative/path")]
-        [InlineData(@"../.:./../../relative/path", "ssh://../relative/path")]
-        [InlineData(@".:/../../relative/path", "ssh://./relative/path")]
-        [InlineData(@"..:/../../relative/path", "ssh://../relative/path")]
+        [InlineData(@"../.:./../../relative/path", "ssh://git@../relative/path")]
+        [InlineData(@".:/../../relative/path", "ssh://git@./relative/path")]
+        [InlineData(@"..:/../../relative/path", "ssh://git@../relative/path")]
         [InlineData(@"@:org/repo", @"file:///usr/src/a/b/@:org/repo")]
         public void NormalizeUrl_Unix(string url, string expectedUrl)
         {
