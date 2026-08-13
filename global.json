@@ -13,7 +13,7 @@
     "dotnet": "10.0.400"
   },
   "msbuild-sdks": {
-    "Microsoft.DotNet.Arcade.Sdk": "10.0.0-beta.26412.112",
+    "Microsoft.DotNet.Arcade.Sdk": "10.0.0-beta.26412.118",
     "Microsoft.Build.NoTargets": "3.7.0"
   }
 }
