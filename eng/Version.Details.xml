@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Dependencies>
-  <Source Uri="https://github.com/dotnet/dotnet" Mapping="sourcelink" Sha="e775569ca8ce94c363d910311f5f889e648ddc23" BarId="331727" />
+  <Source Uri="https://github.com/dotnet/dotnet" Mapping="sourcelink" Sha="fb92951eceabe91c5015b35e49acdbc9c867aaf8" BarId="331753" />
   <ProductDependencies>
-    <Dependency Name="System.CommandLine" Version="3.0.0-rc.2.26461.110">
+    <Dependency Name="System.CommandLine" Version="3.0.0-rc.2.26461.115">
       <Uri>https://github.com/dotnet/dotnet</Uri>
-      <Sha>e775569ca8ce94c363d910311f5f889e648ddc23</Sha>
+      <Sha>fb92951eceabe91c5015b35e49acdbc9c867aaf8</Sha>
     </Dependency>
-    <Dependency Name="System.IO.Hashing" Version="11.0.0-rc.2.26461.110">
+    <Dependency Name="System.IO.Hashing" Version="11.0.0-rc.2.26461.115">
       <Uri>https://github.com/dotnet/dotnet</Uri>
-      <Sha>e775569ca8ce94c363d910311f5f889e648ddc23</Sha>
+      <Sha>fb92951eceabe91c5015b35e49acdbc9c867aaf8</Sha>
     </Dependency>
-    <Dependency Name="System.Security.Cryptography.Xml" Version="11.0.0-rc.2.26461.110">
+    <Dependency Name="System.Security.Cryptography.Xml" Version="11.0.0-rc.2.26461.115">
       <Uri>https://github.com/dotnet/dotnet</Uri>
-      <Sha>e775569ca8ce94c363d910311f5f889e648ddc23</Sha>
+      <Sha>fb92951eceabe91c5015b35e49acdbc9c867aaf8</Sha>
     </Dependency>
-    <Dependency Name="System.Text.Json" Version="11.0.0-rc.2.26461.110">
+    <Dependency Name="System.Text.Json" Version="11.0.0-rc.2.26461.115">
       <Uri>https://github.com/dotnet/dotnet</Uri>
-      <Sha>e775569ca8ce94c363d910311f5f889e648ddc23</Sha>
+      <Sha>fb92951eceabe91c5015b35e49acdbc9c867aaf8</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="11.0.0-beta.26461.110">
+    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="11.0.0-beta.26461.115">
       <Uri>https://github.com/dotnet/dotnet</Uri>
-      <Sha>e775569ca8ce94c363d910311f5f889e648ddc23</Sha>
+      <Sha>fb92951eceabe91c5015b35e49acdbc9c867aaf8</Sha>
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>
