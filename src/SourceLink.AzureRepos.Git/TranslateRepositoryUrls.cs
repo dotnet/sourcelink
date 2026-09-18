@@ -10,9 +10,9 @@ namespace Microsoft.SourceLink.AzureRepos.Git
     public sealed class TranslateRepositoryUrls : TranslateRepositoryUrlsGitTask
     {
         // Translates
-        //   ssh://{account}@{ssh-subdomain}.{domain}:{port}/{repositoryPath}/_ssh/{"_full"|"_optimized"}/{repositoryName}
+        //   ssh://{user}@{domain}:{port}/v3/{account}/{repositoryPath}/{'_full'|'_optimized'|''}/{repositoryName}
         // to
-        //   https://{http-domain}/{account}/{repositoryPath}/_git/{repositoryName}
+        //   https://.../{repositoryPath}/_git/{repositoryName}
         //
         // Dommain mapping:
         //   ssh://vs-ssh.*.com -> https://{account}.*.com 
@@ -27,8 +27,13 @@ namespace Microsoft.SourceLink.AzureRepos.Git
                 return null;
             }
 
-            if (!AzureDevOpsUrlParser.TryParseHostedSsh(uri, out var account, out var repositoryPath, out var repositoryName))
+            if (!AzureDevOpsUrlParser.TryParseHostedSsh(uri, out var account, out var repositoryPath, out var repositoryName, out var isUnsupportedFormat))
             {
+                if (isUnsupportedFormat)
+                {
+                    throw new NotSupportedException(string.Format(Resources.RemoteUrlFormatNoLongerSupported, uri.AbsoluteUri));
+                }
+
                 return null;
             }
 
