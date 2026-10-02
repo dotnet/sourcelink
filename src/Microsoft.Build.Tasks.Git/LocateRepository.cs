@@ -3,7 +3,11 @@
 // See the License.txt file in the project root for more information.
 
 using System;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.IO;
 using Microsoft.Build.Framework;
 
 namespace Microsoft.Build.Tasks.Git
@@ -46,6 +50,12 @@ namespace Microsoft.Build.Tasks.Git
         public string? RevisionId { get; private set; }
 
         /// <summary>
+        /// Commit timestamp in UTC RFC3339 format.
+        /// </summary>
+        [Output]
+        public string? RevisionTimestamp { get; private set; }
+
+        /// <summary>
         /// Branch name.
         /// </summary>
         [Output]
@@ -63,7 +73,58 @@ namespace Microsoft.Build.Tasks.Git
             Url = GitOperations.GetRepositoryUrl(repository, RemoteName, warnOnMissingOrUnsupportedRemote: !NoWarnOnMissingInfo, Log.LogWarning);
             Roots = GitOperations.GetSourceRoots(repository, RemoteName, warnOnMissingCommitOrUnsupportedUri: !NoWarnOnMissingInfo, Log.LogWarning);
             RevisionId = repository.GetHeadCommitSha();
+            RevisionTimestamp = GetRevisionTimestamp(repository, RevisionId);
             BranchName = repository.GetBranchName();
+        }
+
+        private static string? GetRevisionTimestamp(GitRepository repository, string? revisionId)
+        {
+            if (revisionId == null)
+            {
+                return null;
+            }
+
+            try
+            {
+                var startInfo = new ProcessStartInfo
+                {
+                    FileName = "git",
+                    Arguments = $"--no-pager show -s --format=%cI {revisionId}",
+                    WorkingDirectory = repository.WorkingDirectory ?? repository.GitDirectory,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    CreateNoWindow = true,
+                };
+
+                startInfo.EnvironmentVariables["GIT_DIR"] = repository.GitDirectory;
+                if (repository.WorkingDirectory != null)
+                {
+                    startInfo.EnvironmentVariables["GIT_WORK_TREE"] = repository.WorkingDirectory;
+                }
+
+                startInfo.EnvironmentVariables["GIT_OPTIONAL_LOCKS"] = "0";
+
+                using var process = Process.Start(startInfo);
+                if (process == null)
+                {
+                    return null;
+                }
+
+                var output = process.StandardOutput.ReadToEnd().Trim();
+                process.WaitForExit();
+
+                if (process.ExitCode != 0 ||
+                    !DateTimeOffset.TryParse(output, CultureInfo.InvariantCulture, DateTimeStyles.None, out var timestamp))
+                {
+                    return null;
+                }
+
+                return timestamp.ToUniversalTime().ToString("yyyy-MM-dd'T'HH:mm:ss'Z'", CultureInfo.InvariantCulture);
+            }
+            catch (Exception e) when (e is Win32Exception or InvalidOperationException or IOException or UnauthorizedAccessException)
+            {
+                return null;
+            }
         }
     }
 }
