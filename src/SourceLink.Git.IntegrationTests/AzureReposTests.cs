@@ -3,6 +3,7 @@
 // See the License.txt file in the project root for more information.
 
 using System.IO;
+using Microsoft.SourceLink.AzureRepos.Git;
 using TestUtilities;
 using Xunit;
 
@@ -79,58 +80,28 @@ namespace Microsoft.SourceLink.IntegrationTests
         [InlineData("vsts.me")]
         public void FullValidation_Ssh(string host)
         {
-            // Test non - ascii characters and escapes in the URL.
-            // Escaped URI reserved characters should remain escaped, non-reserved characters unescaped in the results.
-            var repoUrl = $"ssh://test@vs-ssh.{host}:22/test-org/_ssh/test-%72epo{TestStrings.RepoName}";
-            var repoName = $"test-repo{TestStrings.RepoNameEscaped}";
+            var repoUrl = $"ssh://user@vs-ssh.{host}:22/test-org/_ssh/test-repo";
 
             var repo = GitUtilities.CreateGitRepository(ProjectDir.Path, new[] { ProjectFileName }, repoUrl);
             var commitSha = repo.Head.Tip.Sha;
 
             VerifyValues(
                 customProps: @"
-<PropertyGroup>
-  <PublishRepositoryUrl>true</PublishRepositoryUrl>
-</PropertyGroup>
 ",
                 customTargets: "",
                 targets: new[]
                 {
-                    "Build", "Pack"
+                    "Build",
                 },
                 expressions: new[]
                 {
                     "@(SourceRoot)",
-                    "@(SourceRoot->'%(SourceLinkUrl)')",
-                    "@(SourceRoot->'%(BranchName)')",
-                    "$(SourceLink)",
-                    "$(PrivateRepositoryUrl)",
-                    "$(RepositoryUrl)"
                 },
-                expectedResults: new[]
+                expectedErrors: new[]
                 {
-                    NuGetPackageFolders,
-                    ProjectSourceRoot,
-                    $"https://test.{host}/test-org/_apis/git/repositories/{repoName}/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*",
-                    "refs/heads/main",
-                    s_relativeSourceLinkJsonPath,
-                    $"https://test.{host}/test-org/_git/{repoName}",
-                    $"https://test.{host}/test-org/_git/{repoName}",
+                    string.Format(Resources.RemoteUrlFormatNoLongerSupported,
+                        $"ssh://git@vs-ssh.{host}:22/test-org/_ssh/test-repo")
                 });
-
-            AssertEx.AreEqual(
-                $@"{{""documents"":{{""{ProjectSourceRoot.Replace(@"\", @"\\")}*"":""https://test.{host}/test-org/_apis/git/repositories/{repoName}/items?api-version=1.0&versionType=commit&version={commitSha}&path=/*""}}}}",
-                File.ReadAllText(Path.Combine(ProjectDir.Path, s_relativeSourceLinkJsonPath)));
-
-            TestUtilities.ValidateAssemblyInformationalVersion(
-                Path.Combine(ProjectDir.Path, s_relativeOutputFilePath),
-                "1.0.0+" + commitSha);
-
-            TestUtilities.ValidateNuSpecRepository(
-                Path.Combine(ProjectDir.Path, s_relativePackagePath),
-                type: "git",
-                commit: commitSha,
-                url: $"https://test.{host}/test-org/_git/{repoName}");
         }
     }
 }
