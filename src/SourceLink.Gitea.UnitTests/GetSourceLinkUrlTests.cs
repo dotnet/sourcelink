@@ -53,5 +53,26 @@ namespace Microsoft.SourceLink.Gitea.UnitTests
             AssertEx.AreEqual("https://domain.com/x/y/a/b/raw/commit/0123456789abcdefABCDEF000000000000000000/*", task.SourceLinkUrl);
             Assert.True(result);
         }
+
+        [Fact]
+        public void BuildSourceLinkUrl_Sha256()
+        {
+            var engine = new MockEngine();
+
+            var task = new GetSourceLinkUrl()
+            {
+                BuildEngine = engine,
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://subdomain.mygitea.com:100/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", "1c3250cfe685e04d039bc42c0c37cd2e632a0d9ed5d87ee761fddbb76d637b4e")),
+                Hosts = new[]
+                {
+                    new MockItem("mygitea.com", KVP("ContentUrl", "https://domain.com/x/y")),
+                }
+            };
+
+            var result = task.Execute();
+            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            AssertEx.AreEqual("https://domain.com/x/y/a/b/raw/commit/1c3250cfe685e04d039bc42c0c37cd2e632a0d9ed5d87ee761fddbb76d637b4e/*", task.SourceLinkUrl);
+            Assert.True(result);
+        }
     }
 }
