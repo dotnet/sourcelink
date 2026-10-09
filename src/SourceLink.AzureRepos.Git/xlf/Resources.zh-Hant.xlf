@@ -7,6 +7,11 @@
         <target state="translated">環境變數 {0} 的值不是正確格式的 URL 配對清單: '{1}'"</target>
         <note />
       </trans-unit>
+      <trans-unit id="RemoteUrlFormatNoLongerSupported">
+        <source>Remote URL '{0}' appears to be in a format that is no longer supported.</source>
+        <target state="new">Remote URL '{0}' appears to be in a format that is no longer supported.</target>
+        <note />
+      </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsInvalid">
         <source>The value of {0} with identity '{1}' is invalid: '{2}'"</source>
         <target state="translated">識別為 {1} 之 {0} 的值無效: '{2}'"</target>
