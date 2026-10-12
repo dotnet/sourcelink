@@ -152,6 +152,9 @@ namespace Microsoft.SourceLink.Common.UnitTests
         [InlineData("000000000000000000000000000000000000000G")]
         [InlineData("000000000000000000000000000000000000000g")]
         [InlineData("00000000000000000000000000000000000000001")]
+        [InlineData("000000000000000000000000000000000000000000000000000000000000000")]
+        [InlineData("00000000000000000000000000000000000000000000000000000000000000001")]
+        [InlineData("000000000000000000000000000000000000000000000000000000000000000G")]
         [InlineData("")]
         public void RevisionId_Errors(string revisionId)
         {
@@ -170,6 +173,26 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 "ERROR : " + string.Format(CommonResources.ValueOfWithIdentityIsNotValidCommitHash, "SourceRoot.RevisionId", "/src/", revisionId), engine.Log);
 
             Assert.False(result);
+        }
+
+        [Theory]
+        [InlineData("0123456789abcdefABCDEF000000000000000000")]
+        [InlineData("0123456789abcdefABCDEF0000000000000000000000000000000000000000ff")]
+        public void RevisionId_Sha1AndSha256(string revisionId)
+        {
+            var engine = new MockEngine();
+
+            var task = new MockGetSourceLinkUrlGitTask()
+            {
+                BuildEngine = engine,
+                SourceRoot = new MockItem("/src/", KVP("RepositoryUrl", "http://contoso.com/a/b"), KVP("SourceControl", "git"), KVP("RevisionId", revisionId)),
+                Hosts = new[] { new MockItem("contoso.com", KVP("ContentUrl", "https://contoso.com")) }
+            };
+
+            var result = task.Execute();
+            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            AssertEx.AreEqual($"ContentUrl='https://contoso.com/' GitUrl='http://contoso.com/a/b' RelativeUrl='/a/b' RevisionId='{revisionId}'", task.SourceLinkUrl);
+            Assert.True(result);
         }
 
         [Fact]
