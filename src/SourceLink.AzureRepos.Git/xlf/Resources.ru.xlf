@@ -7,6 +7,11 @@
         <target state="translated">Значение переменной среды {0} не является списком пар URL в корректном формате: "{1}"</target>
         <note />
       </trans-unit>
+      <trans-unit id="RemoteUrlFormatNoLongerSupported">
+        <source>Remote URL '{0}' appears to be in a format that is no longer supported.</source>
+        <target state="new">Remote URL '{0}' appears to be in a format that is no longer supported.</target>
+        <note />
+      </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsInvalid">
         <source>The value of {0} with identity '{1}' is invalid: '{2}'"</source>
         <target state="translated">Значение {0} с идентификатором "{1}" недопустимо: "{2}"</target>
