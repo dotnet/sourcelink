@@ -168,6 +168,9 @@
   <data name="InvalidSubmoduleUrl" xml:space="preserve">
     <value>The URL of submodule '{0}' is missing or invalid: '{1}'.</value>
   </data>
+  <data name="UnsupportedSubmoduleUrlScheme" xml:space="preserve">
+    <value>The URL of submodule '{0}' uses the unsupported scheme '{2}': '{1}'.</value>
+  </data>
   <data name="InvalidSubmodulePath" xml:space="preserve">
     <value>The path of submodule '{0}' is missing or invalid: '{1}'.</value>
   </data>
@@ -183,6 +186,9 @@
   <data name="InvalidRepositoryRemoteUrl" xml:space="preserve">
     <value>The URL of repository remote '{0}' is invalid: '{1}'.</value>
   </data>
+  <data name="UnsupportedRepositoryRemoteUrlScheme" xml:space="preserve">
+    <value>The URL of repository remote '{0}' uses the unsupported scheme '{2}': '{1}'.</value>
+  </data>
   <data name="UnableToLocateRepository" xml:space="preserve">
     <value>Unable to locate repository with working directory that contains directory '{0}'.</value>
   </data>
@@ -194,9 +200,6 @@
   </data>
   <data name="HomeRelativePathsAreNotAllowed" xml:space="preserve">
     <value>Home relative paths are not allowed when {0} is '{1}': '{2}'.</value>
-  </data>
-  <data name="RepositoryUrlEvaluationExceededMaximumAllowedDepth" xml:space="preserve">
-    <value>Repository URL evaluation exceeded maximum allowed depth of {0} local repositories.</value>
   </data>
   <data name="UnexpectedEndOfFile" xml:space="preserve">
     <value>Unexpected end of file.</value>

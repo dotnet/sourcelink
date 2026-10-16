@@ -102,11 +102,6 @@
         <target state="translated">存储库没有提交。</target>
         <note />
       </trans-unit>
-      <trans-unit id="RepositoryUrlEvaluationExceededMaximumAllowedDepth">
-        <source>Repository URL evaluation exceeded maximum allowed depth of {0} local repositories.</source>
-        <target state="translated">存储库 URL 计算超过了允许的最大深度: {0} 个本地存储库。</target>
-        <note />
-      </trans-unit>
       <trans-unit id="SourceCodeWontBeAvailableViaSourceLink">
         <source>{0} The source code won't be available via Source Link.</source>
         <target state="translated">{0} 无法通过源链接获取源代码。</target>
@@ -137,9 +132,19 @@
         <target state="translated">存储库扩展“{0}”不受支持。仅支持 {1}。</target>
         <note />
       </trans-unit>
+      <trans-unit id="UnsupportedRepositoryRemoteUrlScheme">
+        <source>The URL of repository remote '{0}' uses the unsupported scheme '{2}': '{1}'.</source>
+        <target state="new">The URL of repository remote '{0}' uses the unsupported scheme '{2}': '{1}'.</target>
+        <note />
+      </trans-unit>
       <trans-unit id="UnsupportedRepositoryVersion">
         <source>Unsupported repository version {0}. Only versions up to {1} are supported.</source>
         <target state="translated">不支持存储库版本 {0}。支持的最高版本为 {1}。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="UnsupportedSubmoduleUrlScheme">
+        <source>The URL of submodule '{0}' uses the unsupported scheme '{2}': '{1}'.</source>
+        <target state="new">The URL of submodule '{0}' uses the unsupported scheme '{2}': '{1}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfIsNotValidConfigurationScope">
