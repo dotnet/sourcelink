@@ -30,6 +30,18 @@ Starting with .NET 8, Source Link for the following source control providers is 
 
 If your project uses .NET SDK 8+ and is hosted by the above providers it does not need to reference any Source Link packages or set any build properties to include source control information in the PDB.
 
+Source Link's source control tooling also sets the `SourceRevisionId` MSBuild property to the current Git commit hash when building a project in a Git repository. For .NET SDK projects, the SDK appends this value to `InformationalVersion`, which is emitted as `AssemblyInformationalVersionAttribute`. With Source Link included in the .NET 8 SDK and later, this also applies to projects targeting earlier .NET versions.
+
+To omit the commit hash from the informational version while retaining Source Link support, set:
+
+```xml
+<PropertyGroup>
+  <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+</PropertyGroup>
+```
+
+See [SourceRevisionId](docs/README.md#sourcerevisionid) and [IncludeSourceRevisionInInformationalVersion](docs/README.md#includesourcerevisionininformationalversion) for more details about these build properties.
+
 If your project does not yet use .NET SDK 8+, or is not hosted by one of the these providers, you must add a PackageReference to a Source Link package specific to the provider:
 
 ```xml
