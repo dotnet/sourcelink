@@ -250,7 +250,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         }
 
         [ConditionalTheory(typeof(UnixOnly))]
-        [InlineData(@"C:org/repo", @"ssh://c/org/repo")]
+        [InlineData(@"C:org/repo", @"ssh://git@c/org/repo")]
         [InlineData(@"/xyz/src", @"file:///xyz/src")]
         // [InlineData(@"/a%20b", @"file:///a%2520b")] // https://github.com/dotnet/sourcelink/issues/439
         [InlineData(@"\path\a\b", @"file:///path/a/b")]
