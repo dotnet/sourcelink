@@ -7,6 +7,11 @@
         <target state="translated">Wartość zmiennej środowiskowej {0} nie jest prawidłowo sformułowaną listą par adresów URL: „{1}”"</target>
         <note />
       </trans-unit>
+      <trans-unit id="RemoteUrlFormatNoLongerSupported">
+        <source>Remote URL '{0}' appears to be in a format that is no longer supported.</source>
+        <target state="new">Remote URL '{0}' appears to be in a format that is no longer supported.</target>
+        <note />
+      </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsInvalid">
         <source>The value of {0} with identity '{1}' is invalid: '{2}'"</source>
         <target state="translated">Wartość elementu {0} z tożsamością „{1}” jest nieprawidłowa: „{2}”"</target>

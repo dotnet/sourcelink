@@ -129,4 +129,7 @@
   <data name="ValuePassedToTaskParameterNotValidDomainName" xml:space="preserve">
     <value>The value passed to task parameter {0} is not a valid domain name: '{1}'</value>
   </data>
+  <data name="RemoteUrlFormatNoLongerSupported" xml:space="preserve">
+    <value>Remote URL '{0}' appears to be in a format that is no longer supported.</value>
+  </data>
 </root>
