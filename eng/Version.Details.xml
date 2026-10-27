@@ -1,20 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Dependencies>
-  <Source Uri="https://github.com/dotnet/dotnet" Mapping="sourcelink" Sha="b50167817409d70b2d1926ca0a48247c223b32b0" BarId="338287" />
+  <Source Uri="https://github.com/dotnet/dotnet" Mapping="sourcelink" Sha="e92bbaa83d477a5ef719587310a777d1d70aff5c" BarId="327447" />
   <ProductDependencies>
-    <Dependency Name="System.CommandLine" Version="2.0.15">
-      <Uri>https://github.com/dotnet/dotnet</Uri>
-      <Sha>b50167817409d70b2d1926ca0a48247c223b32b0</Sha>
+    <Dependency Name="System.CommandLine" Version="2.0.11">
+      <Uri>https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet</Uri>
+      <Sha>e2f47b0110ed922f21a1522da67279133ce28f32</Sha>
     </Dependency>
-    <Dependency Name="System.Security.Cryptography.Xml" Version="10.0.15">
-      <Uri>https://github.com/dotnet/dotnet</Uri>
-      <Sha>b50167817409d70b2d1926ca0a48247c223b32b0</Sha>
+    <Dependency Name="System.IO.Hashing" Version="10.0.11">
+      <Uri>https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet</Uri>
+      <Sha>e2f47b0110ed922f21a1522da67279133ce28f32</Sha>
+    </Dependency>
+    <Dependency Name="System.Security.Cryptography.Xml" Version="10.0.11">
+      <Uri>https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet</Uri>
+      <Sha>e2f47b0110ed922f21a1522da67279133ce28f32</Sha>
+    </Dependency>
+    <Dependency Name="System.Text.Json" Version="10.0.11">
+      <Uri>https://dev.azure.com/dnceng/internal/_git/dotnet-dotnet</Uri>
+      <Sha>e2f47b0110ed922f21a1522da67279133ce28f32</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="10.0.0-beta.26525.101">
+    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="10.0.0-beta.26417.110">
       <Uri>https://github.com/dotnet/dotnet</Uri>
-      <Sha>b50167817409d70b2d1926ca0a48247c223b32b0</Sha>
+      <Sha>e92bbaa83d477a5ef719587310a777d1d70aff5c</Sha>
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>
