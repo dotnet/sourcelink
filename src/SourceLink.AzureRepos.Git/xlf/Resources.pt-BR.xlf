@@ -7,6 +7,11 @@
         <target state="translated">O valor da variável de ambiente {0} não é uma lista bem-formada de pares de URLs: '{1}'"</target>
         <note />
       </trans-unit>
+      <trans-unit id="RemoteUrlFormatNoLongerSupported">
+        <source>Remote URL '{0}' appears to be in a format that is no longer supported.</source>
+        <target state="new">Remote URL '{0}' appears to be in a format that is no longer supported.</target>
+        <note />
+      </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsInvalid">
         <source>The value of {0} with identity '{1}' is invalid: '{2}'"</source>
         <target state="translated">O valor de {0} com a identidade '{1}' é inválido: '{2}'"</target>
