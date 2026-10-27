@@ -55,7 +55,7 @@ namespace Microsoft.Build.Tasks.Git
                 }
                 else
                 {
-                    var parentDirectory = directory.Substring(0, directory.LastIndexOf('/', directory.Length - 2, directory.Length - 1) + 1);
+                    var parentDirectory = directory[..(directory.LastIndexOf('/', directory.Length - 2, directory.Length - 1) + 1)];
                     parent = GetPatternGroup(parentDirectory);
                 }
 
@@ -98,7 +98,7 @@ namespace Microsoft.Build.Tasks.Git
                 }
 
                 // git uses the FS case-sensitivity for checking directory existence:
-                bool isDirectoryPath = PathUtils.HasTrailingDirectorySeparator(fullPath) || Directory.Exists(fullPath);
+                var isDirectoryPath = PathUtils.HasTrailingDirectorySeparator(fullPath) || Directory.Exists(fullPath);
 
                 var fullPathNoSlash = PathUtils.TrimTrailingSlash(PathUtils.ToPosixPath(Path.GetFullPath(fullPath)));
                 if (isDirectoryPath && fullPathNoSlash.Equals(Ignore._workingDirectoryNoSlash, Ignore.PathComparison))
@@ -164,7 +164,7 @@ namespace Microsoft.Build.Tasks.Git
             private static void SplitPath(string fullPath, out string? directoryWithSlash, out string fileName)
             {
                 Debug.Assert(!PathUtils.HasTrailingSlash(fullPath));
-                int i = fullPath.LastIndexOf('/');
+                var i = fullPath.LastIndexOf('/');
                 if (i < 0)
                 {
                     directoryWithSlash = null;
@@ -172,8 +172,8 @@ namespace Microsoft.Build.Tasks.Git
                 }
                 else
                 {
-                    directoryWithSlash = fullPath.Substring(0, i + 1);
-                    fileName = fullPath.Substring(i + 1);
+                    directoryWithSlash = fullPath[..(i + 1)];
+                    fileName = fullPath[(i + 1)..];
                 }
             }
 
@@ -185,7 +185,7 @@ namespace Microsoft.Build.Tasks.Git
                     return true;
                 }
 
-                bool isIgnored = false;
+                var isIgnored = false;
                 
                 // Visit groups in reverse order.
                 // Patterns specified closer to the target file override those specified above.
@@ -196,7 +196,7 @@ namespace Microsoft.Build.Tasks.Git
                     groups.Add(patternGroup);
                 }
 
-                for (int i = groups.Count - 1; i >= 0; i--)
+                for (var i = groups.Count - 1; i >= 0; i--)
                 {
                     var patternGroup = groups[i];
 
@@ -221,8 +221,8 @@ namespace Microsoft.Build.Tasks.Git
                             continue;
                         }
 
-                        string matchPath = pattern.IsFullPathPattern ?
-                            lazyRelativePath ??= normalizedPosixPath.Substring(patternGroup.ContainingDirectory.Length) :
+                        var matchPath = pattern.IsFullPathPattern ?
+                            lazyRelativePath ??= normalizedPosixPath[patternGroup.ContainingDirectory.Length..] :
                             fileName;
 
                         if (Glob.IsMatch(pattern.Glob, matchPath, Ignore.IgnoreCase, matchWildCardWithDirectorySeparator: false))

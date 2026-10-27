@@ -5,7 +5,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Runtime.CompilerServices;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
@@ -13,6 +12,15 @@ namespace Microsoft.Build.Tasks.Git
 {
     public abstract class RepositoryTask : Task
     {
+        private sealed class RepositoryContainer(GitRepository? repository) : IDisposable
+        {
+            public GitRepository? Repository
+                => repository;
+
+            public void Dispose()
+                => repository?.Dispose();
+        }
+
         /// <summary>
         /// Sets the scope of git repository configuration. By default (no scope specified) configuration is read from environment variables
         /// and system and global user git/ssh configuration files.
@@ -144,11 +152,11 @@ namespace Microsoft.Build.Tasks.Git
 
         private bool TryGetCachedRepositoryInstance(Tuple<Type, string> cacheKey, bool requireCached, [NotNullWhen(true)]out GitRepository? repository)
         {
-            var entry = (StrongBox<GitRepository?>?)BuildEngine4.GetRegisteredTaskObject(cacheKey, RegisteredTaskObjectLifetime.Build);
+            var entry = (RepositoryContainer?)BuildEngine4.GetRegisteredTaskObject(cacheKey, RegisteredTaskObjectLifetime.Build);
             if (entry != null)
             {
                 Log.LogMessage(MessageImportance.Low, $"SourceLink: Reusing cached git repository information.");
-                repository = entry.Value;
+                repository = entry.Repository;
                 return repository != null;
             }
 
@@ -170,7 +178,7 @@ namespace Microsoft.Build.Tasks.Git
         {
             BuildEngine4.RegisterTaskObject(
                   cacheKey,
-                  new StrongBox<GitRepository?>(repository),
+                  new RepositoryContainer(repository),
                   RegisteredTaskObjectLifetime.Build,
                   allowEarlyCollection: true);
         }

@@ -141,7 +141,7 @@ namespace Microsoft.SourceLink.Tools
                 return false;
             }
 
-            int filePathStar = key.IndexOf('*');
+            var filePathStar = key.IndexOf('*');
             if (filePathStar == key.Length - 1)
             {
                 key = key.Substring(0, filePathStar);
@@ -152,7 +152,7 @@ namespace Microsoft.SourceLink.Tools
             }
 
             string uriPrefix, uriSuffix;
-            int uriStar = value.IndexOf('*');
+            var uriStar = value.IndexOf('*');
             if (uriStar >= 0)
             {
                 if (filePathStar < 0)

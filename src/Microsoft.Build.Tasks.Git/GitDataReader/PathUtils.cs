@@ -51,7 +51,7 @@ namespace Microsoft.Build.Tasks.Git
         {
             Debug.Assert(!string.IsNullOrEmpty(root));
 
-            char c = root[root.Length - 1];
+            var c = root[root.Length - 1];
             if (!IsDirectorySeparator(c) && c != VolumeSeparatorChar)
             {
                 return root + separator + relativePath;

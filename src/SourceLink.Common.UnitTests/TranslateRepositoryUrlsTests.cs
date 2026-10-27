@@ -36,7 +36,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
                $"""
                 WARNING : {string.Format(CommonResources.IgnoringInvalidHostName, "http://contoso.com")}
@@ -93,7 +93,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
 
             AssertEx.AreEqual($"https://contoso.com/{outputRelativeUrl}", task.TranslatedRepositoryUrl);

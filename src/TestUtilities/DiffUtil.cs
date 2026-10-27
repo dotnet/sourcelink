@@ -124,9 +124,9 @@ namespace TestUtilities
 
             protected IEnumerable<KeyValuePair<int, int>> GetMatchingPairs(TSequence sequenceA, int lengthA, TSequence sequenceB, int lengthB)
             {
-                int[,] d = ComputeCostMatrix(sequenceA, lengthA, sequenceB, lengthB);
-                int i = lengthA;
-                int j = lengthB;
+                var d = ComputeCostMatrix(sequenceA, lengthA, sequenceB, lengthB);
+                var i = lengthA;
+                var j = lengthB;
 
                 while (i != 0 && j != 0)
                 {
@@ -149,9 +149,9 @@ namespace TestUtilities
 
             protected IEnumerable<Edit> GetEdits(TSequence sequenceA, int lengthA, TSequence sequenceB, int lengthB)
             {
-                int[,] d = ComputeCostMatrix(sequenceA, lengthA, sequenceB, lengthB);
-                int i = lengthA;
-                int j = lengthB;
+                var d = ComputeCostMatrix(sequenceA, lengthA, sequenceB, lengthB);
+                var i = lengthA;
+                var j = lengthB;
 
                 while (i != 0 && j != 0)
                 {
@@ -203,13 +203,13 @@ namespace TestUtilities
                     return (lengthA == lengthB) ? 0.0 : 1.0;
                 }
 
-                int lcsLength = 0;
+                var lcsLength = 0;
                 foreach (var pair in GetMatchingPairs(sequenceA, lengthA, sequenceB, lengthB))
                 {
                     lcsLength++;
                 }
 
-                int max = Math.Max(lengthA, lengthB);
+                var max = Math.Max(lengthA, lengthB);
                 Debug.Assert(lcsLength <= max);
                 return 1.0 - (double)lcsLength / (double)max;
             }
@@ -244,23 +244,23 @@ namespace TestUtilities
                 var d = new int[la, lb];
 
                 d[0, 0] = 0;
-                for (int i = 1; i <= lengthA; i++)
+                for (var i = 1; i <= lengthA; i++)
                 {
                     d[i, 0] = d[i - 1, 0] + DeleteCost;
                 }
 
-                for (int j = 1; j <= lengthB; j++)
+                for (var j = 1; j <= lengthB; j++)
                 {
                     d[0, j] = d[0, j - 1] + InsertCost;
                 }
 
-                for (int i = 1; i <= lengthA; i++)
+                for (var i = 1; i <= lengthA; i++)
                 {
-                    for (int j = 1; j <= lengthB; j++)
+                    for (var j = 1; j <= lengthB; j++)
                     {
-                        int m1 = d[i - 1, j - 1] + (ItemsEqual(sequenceA, i - 1, sequenceB, j - 1) ? 0 : UpdateCost);
-                        int m2 = d[i - 1, j] + DeleteCost;
-                        int m3 = d[i, j - 1] + InsertCost;
+                        var m1 = d[i - 1, j - 1] + (ItemsEqual(sequenceA, i - 1, sequenceB, j - 1) ? 0 : UpdateCost);
+                        var m2 = d[i - 1, j] + DeleteCost;
+                        var m3 = d[i, j - 1] + InsertCost;
                         d[i, j] = Math.Min(Math.Min(m1, m2), m3);
                     }
                 }

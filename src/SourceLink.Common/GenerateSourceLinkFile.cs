@@ -44,13 +44,13 @@ namespace Microsoft.SourceLink.Common
             var result = new StringBuilder();
             result.Append("{\"documents\":{");
 
-            bool success = true;
-            bool isEmpty = true;
+            var success = true;
+            var isEmpty = true;
             foreach (var root in SourceRoots)
             {
-                string mappedPath = root.GetMetadata(Names.SourceRoot.MappedPath);
-                bool isMapped = !string.IsNullOrEmpty(mappedPath);
-                string localPath = isMapped ? mappedPath : root.ItemSpec;
+                var mappedPath = root.GetMetadata(Names.SourceRoot.MappedPath);
+                var isMapped = !string.IsNullOrEmpty(mappedPath);
+                var localPath = isMapped ? mappedPath : root.ItemSpec;
 
                 if (!localPath.EndsWithSeparator())
                 {

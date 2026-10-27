@@ -55,6 +55,10 @@ namespace Microsoft.SourceLink.AzureRepos.Git.UnitTests
         [InlineData("contoso.com", "/account/project/_git/repo", "account/project", "repo")]
         [InlineData("contoso.com", "/account/project/_git/_full/repo", "account/project", "repo")]
         [InlineData("contoso.com", "/account/project/_git/_optimized/repo", "account/project", "repo")]
+        [InlineData("dev.azure.com", "/org/project/_git/repo.git", "org/project", "repo.git")]
+        [InlineData("dev.azure.com", "/org/project/_git/repo.git/", "org/project", "repo.git")]
+        [InlineData("account.visualstudio.com", "/DefaultCollection/project/_git/repo.git", "project", "repo.git")]
+
         public void TryParseHostedHttp_Success(string host, string relativeUrl, string repositoryPath, string repositoryName)
         {
             Assert.True(AzureDevOpsUrlParser.TryParseHostedHttp(host, relativeUrl, out var actualRepositoryPath, out var actualRepositoryName));

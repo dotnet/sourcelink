@@ -29,9 +29,9 @@ namespace Microsoft.SourceLink
                 return false;
             }
 
-            int index = 0;
+            var index = 0;
             string? account;
-            bool isVisualStudioHost = IsVisualStudioHostedServer(host);
+            var isVisualStudioHost = IsVisualStudioHostedServer(host);
 
             if (isVisualStudioHost)
             {
@@ -98,7 +98,7 @@ namespace Microsoft.SourceLink
             }
 
             // collection:
-            int i = virtualDirectoryParts.Length;
+            var i = virtualDirectoryParts.Length;
             var collection = parts[i++];
 
             if (!TryParsePath(parts, i, "_git", out var projectName, out _, out repositoryName))
@@ -173,7 +173,7 @@ namespace Microsoft.SourceLink
                 return false;
             }
 
-            if (!TryParseRepositoryName(parts, out int teamNameIndex, "_ssh", out repositoryName))
+            if (!TryParseRepositoryName(parts, out var teamNameIndex, "_ssh", out repositoryName))
             {
                 return false;
             }
@@ -200,7 +200,7 @@ namespace Microsoft.SourceLink
 
             projectName = teamName = null;
 
-            if (!TryParseRepositoryName(parts, out int teamNameIndex, type, out repositoryName))
+            if (!TryParseRepositoryName(parts, out var teamNameIndex, type, out repositoryName))
             {
                 return false;
             }
@@ -233,7 +233,7 @@ namespace Microsoft.SourceLink
             repositoryName = null;
             teamNameIndex = -1;
 
-            int i = parts.Length - 1;
+            var i = parts.Length - 1;
 
             if (i < 0)
             {

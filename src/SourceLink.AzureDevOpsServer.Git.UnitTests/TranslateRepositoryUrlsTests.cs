@@ -35,7 +35,7 @@ namespace Microsoft.SourceLink.AzureDevOpsServer.Git.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
 
             // SSH translation does not need virtual directory

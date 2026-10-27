@@ -33,7 +33,7 @@ namespace Microsoft.SourceLink.GitLab.UnitTests
                 }
             };
 
-            bool result = task.Execute();
+            var result = task.Execute();
             AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
 
             AssertEx.AreEqual("https://gitlab.com/a/b", task.TranslatedRepositoryUrl);
