@@ -143,6 +143,64 @@ The default value is `true`. Set to `false` to suppress publishing `SourceRevisi
 Set by target `InitializeSourceControlInformationFromSourceControlManager` and consumed by NuGet `Pack` target and `GenerateAssemblyInfo` target. 
 May be used by custom targets that need this information.
 
+### SourceLinkUsePlaceholderValues
+
+Set `SourceLinkUsePlaceholderValues` to `true` to generate stable revision markers in the
+compiler's Source Link input and write the resolved revisions separately. The default
+is `false`. This is intended for build systems that specialize reusable compiler
+outputs before signing and publication; it does not produce publishable symbols by itself.
+
+Normal repository and provider discovery still runs, including discovery of independent
+submodule revisions and untracked sources. Linked roots require `MappedPath` metadata.
+For reusable outputs across checkouts, enable `DeterministicSourcePaths` or supply stable
+mapped paths explicitly; physical checkout paths remain checkout-specific. Source-controlled roots require
+40- or 64-character lowercase hexadecimal revisions appearing exactly once in their resolved
+URLs. Unsupported or ambiguous mappings fail the build. Fixed mappings without source-control
+or revision metadata remain unchanged.
+
+Each marker has the same width as its revision. It is the lowercase SHA-256 of the mapped
+root, a newline, and the URL with its revision replaced by `<revision>`, truncated to that
+width. With stable mapped paths, marker assignment does not depend on the checkout location,
+current revision, or root enumeration order. Repository URL and mapped-root changes remain compiler inputs.
+Source-root metadata is not modified.
+
+### SourceLinkRevisionFile
+
+When using placeholder values, this specifies the revision dictionary path, relative to the
+project directory or fully qualified. The default is
+`$(IntermediateOutputPath)$(MSBuildProjectName).sourcelink.revisions.json`. The task receives
+a normalized absolute path, independent of MSBuild's process working directory.
+
+The file is an ordinary JSON string dictionary:
+
+```json
+{"SourceLinkRevision_<marker>":"<resolved-revision>"}
+```
+
+The dictionary is refreshed from current discovery even when compilation skips. Empty
+discovery writes `{}`, removing stale values. Unchanged compiler input and dictionary
+contents retain their timestamps. The dictionary is tracked for cleaning but is not
+passed to the compiler or included in its incremental inputs.
+
+Mapping and placeholder errors are reported together during discovery. The Source Link file is
+generated and written first. Revision generation and writing only run if that succeeds.
+Duplicate mapped roots, including fixed mappings, and conflicting revision replacements
+fail before the revision dictionary is written.
+
+Any task error triggers deletion of the Source Link output and, when using placeholder values, the
+revision dictionary, including when a file write has already succeeded. Cleanup failures
+are reported as errors. The two file writes are sequential, not transactional; consumers
+must require successful task completion before using the outputs.
+
+The consuming build must regenerate this dictionary for the current checkout even when
+restoring cached binaries. It must keep real revisions out of any other reusable compiler
+inputs, including informational-version commit suffixes. Before publication, a finalizer
+must replace authorized markers in the symbols and update symbol identities and PE debug
+references consistently, without modifying cached artifacts or completed signatures.
+Equal-width revisions do not guarantee equal compressed embedded-PDB sizes; the finalizer
+must handle or explicitly reject insufficient capacity. Source Link does not implement
+binary finalization.
+
 ### SourceBranchName
 
 Set by target `InitializeSourceControlInformationFromSourceControlManager` and consumed by NuGet `Pack` target.
