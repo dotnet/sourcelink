@@ -15,6 +15,22 @@ namespace Microsoft.SourceLink.Common.UnitTests
         private static string AdjustSeparatorsInJson(string json)
             => Path.DirectorySeparatorChar == '/' ? json.Replace(@"\\", "/") : json;
 
+        [Fact]
+        public void EmptyContentDoesNotRequireOutputFile()
+        {
+            var engine = new MockEngine();
+            var task = new GenerateSourceLinkFile()
+            {
+                BuildEngine = engine,
+                SourceRoots = new MockItem[0],
+            };
+
+            var content = GenerateSourceLinkFile.GenerateSourceLinkContent(task.GetSourceLinkMappings());
+
+            Assert.Null(content);
+            Assert.Empty(engine.Log);
+        }
+
         [Theory]
         [CombinatorialData]
         public void Empty(bool noWarning)
@@ -113,9 +129,9 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 },
             };
 
-            var content = task.GenerateSourceLinkContent();
-            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            var content = GenerateSourceLinkFile.GenerateSourceLinkContent(task.GetSourceLinkMappings());
 
+            Assert.Empty(engine.Log);
             AssertEx.AreEqual(@"{""documents"":{""/_\""_/*"":""https://raw.githubusercontent.com/repo/*""}}", content);
         }
 
@@ -135,9 +151,9 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 },
             };
 
-            var content = task.GenerateSourceLinkContent();
-            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            var content = GenerateSourceLinkFile.GenerateSourceLinkContent(task.GetSourceLinkMappings());
 
+            Assert.Empty(engine.Log);
             AssertEx.AreEqual(AdjustSeparatorsInJson(
                 @"{""documents"":{" +
                 @"""C:\\src\\*"":""https://raw.githubusercontent.com/repo1/*""," +
@@ -161,9 +177,9 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 },
             };
 
-            var content = task.GenerateSourceLinkContent();
-            AssertEx.AssertEqualToleratingWhitespaceDifferences("", engine.Log);
+            var content = GenerateSourceLinkFile.GenerateSourceLinkContent(task.GetSourceLinkMappings());
 
+            Assert.Empty(engine.Log);
             AssertEx.AreEqual(
                 @"{""documents"":{" +
                 @"""/_/*"":""https://raw.githubusercontent.com/repo1/*""," + 
@@ -179,6 +195,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
             var task = new GenerateSourceLinkFile()
             {
                 BuildEngine = engine,
+                NoWarnOnMissingSourceControlInformation = true,
                 SourceRoots = new[]
                 {
                     // skipped: missing SourceLinkUrl in source-controlled root:
@@ -198,13 +215,14 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 },
             };
 
-            var content = task.GenerateSourceLinkContent();
+            Assert.Empty(task.GetSourceLinkMappings());
+            Assert.True(task.Log.HasLoggedErrors);
             AssertEx.AssertEqualToleratingWhitespaceDifferences(
                 "ERROR : " + string.Format(Resources.MustNotContainWildcard, "SourceRoot", MockItem.AdjustSeparators(@"C:\x\b\*\")) + Environment.NewLine +
                 "ERROR : " + string.Format(Resources.MustEndWithDirectorySeparator, "SourceRoot", MockItem.AdjustSeparators(@"C:\x\c")) + Environment.NewLine +
                 "ERROR : " + string.Format(Resources.MustContainSingleWildcard, "SourceRoot.SourceLinkUrl", "http://a/**"), engine.Log);
 
-            Assert.Null(content);
+            Assert.Null(task.SourceLink);
         }
 
         [Fact]
@@ -241,7 +259,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
         }
 
         [Fact]
-        public void WriteSourceLinkFileRejectsRelativeOutputFile()
+        public void WriteOutputFileRejectsRelativeOutputFile()
         {
             var engine = new MockEngine();
             var task = new GenerateSourceLinkFile()

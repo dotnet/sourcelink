@@ -3,6 +3,7 @@
 // See the License.txt file in the project root for more information.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -32,21 +33,15 @@ namespace Microsoft.SourceLink.Common
 
         public override bool Execute()
         {
-            WriteSourceLinkFile(GenerateSourceLinkContent());
+            var mappings = GetSourceLinkMappings();
+            WriteOutputFile(OutputFile, Log.HasLoggedErrors ? null : GenerateSourceLinkContent(mappings));
 
             return !Log.HasLoggedErrors;
         }
 
-        internal string? GenerateSourceLinkContent()
+        internal List<SourceLinkMapping> GetSourceLinkMappings()
         {
-            static string jsonEscape(string str)
-                => str.Replace(@"\", @"\\").Replace("\"", "\\\"");
-
-            var result = new StringBuilder();
-            result.Append("{\"documents\":{");
-
-            var success = true;
-            var isEmpty = true;
+            var mappings = new List<SourceLinkMapping>();
             foreach (var root in SourceRoots)
             {
                 var mappedPath = root.GetMetadata(Names.SourceRoot.MappedPath);
@@ -56,14 +51,12 @@ namespace Microsoft.SourceLink.Common
                 if (!localPath.EndsWithSeparator())
                 {
                     Log.LogError(Resources.MustEndWithDirectorySeparator, isMapped ? Names.SourceRoot.MappedPathFullName : Names.SourceRoot.Name, localPath);
-                    success = false;
                     continue;
                 }
 
                 if (localPath.Contains('*'))
                 {
                     Log.LogError(Resources.MustNotContainWildcard, isMapped ? Names.SourceRoot.MappedPathFullName : Names.SourceRoot.Name, localPath);
-                    success = false;
                     continue;
                 }
 
@@ -78,35 +71,50 @@ namespace Microsoft.SourceLink.Common
                 if (url.Count(c => c == '*') != 1)
                 {
                     Log.LogError(Resources.MustContainSingleWildcard, Names.SourceRoot.SourceLinkUrlFullName, url);
-                    success = false;
                     continue;
                 }
 
-                if (isEmpty)
-                {
-                    isEmpty = false;
-                }
-                else
+                mappings.Add(new SourceLinkMapping(localPath, url));
+            }
+
+            return mappings;
+        }
+
+        internal static string? GenerateSourceLinkContent(List<SourceLinkMapping> mappings)
+        {
+            static string jsonEscape(string str)
+                => str.Replace(@"\", @"\\").Replace("\"", "\\\"");
+
+            if (mappings.Count == 0)
+            {
+                return null;
+            }
+
+            var result = new StringBuilder();
+            result.Append("{\"documents\":{");
+            for (var i = 0; i < mappings.Count; i++)
+            {
+                if (i > 0)
                 {
                     result.Append(',');
                 }
 
+                var mapping = mappings[i];
                 result.Append('"');
-                result.Append(jsonEscape(localPath));
+                result.Append(jsonEscape(mapping.LocalPath));
                 result.Append('*');
                 result.Append('"');
                 result.Append(':');
                 result.Append('"');
-                result.Append(jsonEscape(url));
+                result.Append(jsonEscape(mapping.Url));
                 result.Append('"');
             }
 
             result.Append("}}");
-
-            return success && !isEmpty ? result.ToString() : null;
+            return result.ToString();
         }
 
-        private void WriteSourceLinkFile(string? content)
+        private void WriteOutputFile(string? path, string? content)
         {
             if (content == null && !NoWarnOnMissingSourceControlInformation)
             {
@@ -115,50 +123,48 @@ namespace Microsoft.SourceLink.Common
 
             try
             {
-                // OutputFile is required to be a fully qualified path. It is set by the SourceLink targets from
-                // _SourceLinkFilePath, so file access must not (and does not need to) depend on the shared process
-                // current directory under the multithreaded task model. Reject a path that isn't fully qualified.
-                if (string.IsNullOrEmpty(OutputFile) || !PathUtilities.IsPathFullyQualified(OutputFile))
+                // Relative paths must not be resolved against MSBuild's shared process working directory.
+                if (path == null || path.Length == 0 || !PathUtilities.IsPathFullyQualified(path))
                 {
-                    throw new ArgumentException($"The path '{OutputFile}' must be fully qualified.", nameof(OutputFile));
+                    throw new ArgumentException($"The path '{path}' must be fully qualified.", nameof(OutputFile));
                 }
 
-                if (File.Exists(OutputFile))
+                if (File.Exists(path))
                 {
                     if (content == null)
                     {
-                        Log.LogMessage(Resources.SourceLinkEmptyDeletingExistingFile, OutputFile);
-
-                        File.Delete(OutputFile);
+                        Log.LogMessage(Resources.SourceLinkEmptyDeletingExistingFile, path);
+                        File.Delete(path);
                         return;
                     }
 
-                    var originalContent = File.ReadAllText(OutputFile);
-                    if (originalContent == content)
+                    if (File.ReadAllText(path) == content)
                     {
-                        // Don't rewrite the file if the contents is the same, just pass it to the compiler.
-                        Log.LogMessage(Resources.SourceLinkFileUpToDate, OutputFile);
-
-                        SourceLink = OutputFile;
+                        Log.LogMessage(Resources.SourceLinkFileUpToDate, path);
+                        SourceLink = path;
                         return;
                     }
                 }
                 else if (content == null)
                 {
-                    // File doesn't exist and the output is empty:
-                    // Do not write the file and don't pass it to the compiler.
-                    Log.LogMessage(Resources.SourceLinkEmptyNoExistingFile, OutputFile);
+                    Log.LogMessage(Resources.SourceLinkEmptyNoExistingFile, path);
                     return;
                 }
 
-                Log.LogMessage(Resources.SourceLinkFileUpdated, OutputFile);
-                File.WriteAllText(OutputFile, content);
-                SourceLink = OutputFile;
+                Log.LogMessage(Resources.SourceLinkFileUpdated, path);
+                File.WriteAllText(path, content);
+                SourceLink = path;
             }
             catch (Exception e)
             {
-                Log.LogError(Resources.ErrorWritingToSourceLinkFile, OutputFile, e.Message);
+                Log.LogError(Resources.ErrorWritingToSourceLinkFile, path, e.Message);
             }
+        }
+
+        internal sealed class SourceLinkMapping(string localPath, string url)
+        {
+            public string LocalPath { get; } = localPath;
+            public string Url { get; } = url;
         }
     }
 }
