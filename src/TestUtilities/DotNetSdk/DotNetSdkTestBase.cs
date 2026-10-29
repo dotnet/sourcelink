@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using NuGet.Versioning;
 using Xunit;
 
@@ -47,17 +48,14 @@ public class TestClass
     }
 }
 ";
-        private static string GetLocalNuGetConfigContent(string packagesDir) =>
-$@"<?xml version=""1.0"" encoding=""utf-8""?>
-<configuration>
-  <packageSources>
-    <clear/>
-    <add key=""dotnet-public"" value=""https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-public/nuget/v3/index.json"" />
-    <add key=""dotnet11"" value=""https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet11/nuget/v3/index.json"" />
-    <add key=""local_packages"" value=""{packagesDir}"" />
-  </packageSources>
-</configuration>
-";
+        private static string GetLocalNuGetConfigContent(string packagesDir)
+        {
+            using var stream = typeof(DotNetSdkTestBase).Assembly.GetManifestResourceStream("TestUtilities.NuGet.config")!;
+            var config = XDocument.Load(stream);
+            config.Root!.Element("packageSources")!.Add(
+                new XElement("add", new XAttribute("key", "local_packages"), new XAttribute("value", packagesDir)));
+            return config.ToString();
+        }
 
         protected readonly TempDirectory RootDir;
         protected readonly TempDirectory ProjectDir;
