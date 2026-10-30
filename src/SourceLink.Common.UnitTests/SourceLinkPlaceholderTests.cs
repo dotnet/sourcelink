@@ -27,11 +27,11 @@ namespace Microsoft.SourceLink.Common.UnitTests
         private static GenerateSourceLinkFile CreateTask(TempRoot temp, params MockItem[] roots)
             => CreateTask(temp.CreateFile().Path, temp.CreateFile().Path, roots);
 
-        private static GenerateSourceLinkFile CreateTask(string outputFile, string revisionOutputFile, params MockItem[] roots)
+        private static GenerateSourceLinkFile CreateTask(string outputFile, string placeholderReplacementsOutputFile, params MockItem[] roots)
         {
             var task = CreateTask(roots);
             task.OutputFile = outputFile;
-            task.RevisionOutputFile = revisionOutputFile;
+            task.PlaceholderReplacementsOutputFile = placeholderReplacementsOutputFile;
             return task;
         }
 
@@ -40,12 +40,12 @@ namespace Microsoft.SourceLink.Common.UnitTests
             {
                 BuildEngine = new MockEngine(),
                 SourceRoots = roots,
-                RevisionOutputFile = "unused.revisions.json",
+                PlaceholderReplacementsOutputFile = "unused.revisions.json",
                 NoWarnOnMissingSourceControlInformation = true,
             };
 
         private static string ReadMarker(GenerateSourceLinkFile task)
-            => File.ReadAllText(task.RevisionOutputFile!).Split('"')[1].Substring("SourceLinkRevision_".Length);
+            => File.ReadAllText(task.PlaceholderReplacementsOutputFile!).Split('"')[1].Substring("SourceLinkRevision_".Length);
 
         [Theory]
         [InlineData(40)]
@@ -93,13 +93,13 @@ namespace Microsoft.SourceLink.Common.UnitTests
             using var temp = new TempRoot();
             var task = CreateTask(temp, Root(new string('a', 40)));
             Assert.True(task.Execute());
-            task = CreateTask(task.OutputFile, task.RevisionOutputFile!, Root(ReadMarker(task)));
+            task = CreateTask(task.OutputFile, task.PlaceholderReplacementsOutputFile!, Root(ReadMarker(task)));
 
             Assert.False(task.Execute());
 
             Assert.Null(task.SourceLink);
             Assert.False(File.Exists(task.OutputFile));
-            Assert.False(File.Exists(task.RevisionOutputFile));
+            Assert.False(File.Exists(task.PlaceholderReplacementsOutputFile));
         }
 
         [Theory]
@@ -113,17 +113,17 @@ namespace Microsoft.SourceLink.Common.UnitTests
             var original = File.ReadAllText(task.OutputFile);
             var marker = ReadMarker(task);
             File.SetLastWriteTimeUtc(task.OutputFile, s_oldWriteTime);
-            File.SetLastWriteTimeUtc(task.RevisionOutputFile!, s_oldWriteTime);
-            task = CreateTask(task.OutputFile, task.RevisionOutputFile!, Root(new string('b', width), directory: @"D:\other-checkout\"));
+            File.SetLastWriteTimeUtc(task.PlaceholderReplacementsOutputFile!, s_oldWriteTime);
+            task = CreateTask(task.OutputFile, task.PlaceholderReplacementsOutputFile!, Root(new string('b', width), directory: @"D:\other-checkout\"));
 
             Assert.True(task.Execute());
 
             Assert.Equal(marker, ReadMarker(task));
             Assert.Equal(original, File.ReadAllText(task.OutputFile));
             Assert.Equal(s_oldWriteTime, File.GetLastWriteTimeUtc(task.OutputFile));
-            Assert.NotEqual(s_oldWriteTime, File.GetLastWriteTimeUtc(task.RevisionOutputFile!));
-            Assert.Contains(new string('b', width), File.ReadAllText(task.RevisionOutputFile!));
-            Assert.DoesNotContain(new string('a', width), File.ReadAllText(task.RevisionOutputFile!));
+            Assert.NotEqual(s_oldWriteTime, File.GetLastWriteTimeUtc(task.PlaceholderReplacementsOutputFile!));
+            Assert.Contains(new string('b', width), File.ReadAllText(task.PlaceholderReplacementsOutputFile!));
+            Assert.DoesNotContain(new string('a', width), File.ReadAllText(task.PlaceholderReplacementsOutputFile!));
         }
 
         [Fact]
@@ -133,13 +133,13 @@ namespace Microsoft.SourceLink.Common.UnitTests
             var task = CreateTask(temp, Root(new string('a', 40)));
             Assert.True(task.Execute());
             File.SetLastWriteTimeUtc(task.OutputFile, s_oldWriteTime);
-            File.SetLastWriteTimeUtc(task.RevisionOutputFile!, s_oldWriteTime);
-            task = CreateTask(task.OutputFile, task.RevisionOutputFile!, Root(new string('a', 40)));
+            File.SetLastWriteTimeUtc(task.PlaceholderReplacementsOutputFile!, s_oldWriteTime);
+            task = CreateTask(task.OutputFile, task.PlaceholderReplacementsOutputFile!, Root(new string('a', 40)));
 
             Assert.True(task.Execute());
 
             Assert.Equal(s_oldWriteTime, File.GetLastWriteTimeUtc(task.OutputFile));
-            Assert.Equal(s_oldWriteTime, File.GetLastWriteTimeUtc(task.RevisionOutputFile!));
+            Assert.Equal(s_oldWriteTime, File.GetLastWriteTimeUtc(task.PlaceholderReplacementsOutputFile!));
         }
 
         [Theory]
@@ -153,7 +153,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
             Assert.True(task.Execute());
             var original = File.ReadAllText(task.OutputFile);
             var marker = ReadMarker(task);
-            task = CreateTask(task.OutputFile, task.RevisionOutputFile!, Root(revision, mappedPath, host));
+            task = CreateTask(task.OutputFile, task.PlaceholderReplacementsOutputFile!, Root(revision, mappedPath, host));
 
             Assert.True(task.Execute());
 
@@ -282,13 +282,13 @@ namespace Microsoft.SourceLink.Common.UnitTests
             using var temp = new TempRoot();
             var task = CreateTask(temp, Root(new string('a', 40)));
             Assert.True(task.Execute());
-            task = CreateTask(task.OutputFile, task.RevisionOutputFile!);
+            task = CreateTask(task.OutputFile, task.PlaceholderReplacementsOutputFile!);
 
             Assert.True(task.Execute());
 
             Assert.Null(task.SourceLink);
             Assert.False(File.Exists(task.OutputFile));
-            Assert.Equal("{}", File.ReadAllText(task.RevisionOutputFile!));
+            Assert.Equal("{}", File.ReadAllText(task.PlaceholderReplacementsOutputFile!));
         }
 
         [Theory]
@@ -302,13 +302,13 @@ namespace Microsoft.SourceLink.Common.UnitTests
             using var temp = new TempRoot();
             var task = CreateTask(temp, Root(revision));
             File.WriteAllText(task.OutputFile, "original input");
-            File.WriteAllText(task.RevisionOutputFile!, "original dictionary");
+            File.WriteAllText(task.PlaceholderReplacementsOutputFile!, "original dictionary");
 
             Assert.False(task.Execute());
 
             Assert.Null(task.SourceLink);
             Assert.False(File.Exists(task.OutputFile));
-            Assert.False(File.Exists(task.RevisionOutputFile));
+            Assert.False(File.Exists(task.PlaceholderReplacementsOutputFile));
             Assert.Contains("ERROR", ((MockEngine)task.BuildEngine).Log);
         }
 
@@ -321,13 +321,13 @@ namespace Microsoft.SourceLink.Common.UnitTests
             var roots = new[] { Root(new string('A', 40)), Root(new string('b', 40), mappedPath: "/_/*/") };
             var task = CreateTask(temp, reverse ? Enumerable.Reverse(roots).ToArray() : roots);
             File.WriteAllText(task.OutputFile, "original input");
-            File.WriteAllText(task.RevisionOutputFile!, "original dictionary");
+            File.WriteAllText(task.PlaceholderReplacementsOutputFile!, "original dictionary");
 
             Assert.False(task.Execute());
 
             Assert.Null(task.SourceLink);
             Assert.False(File.Exists(task.OutputFile));
-            Assert.False(File.Exists(task.RevisionOutputFile));
+            Assert.False(File.Exists(task.PlaceholderReplacementsOutputFile));
             var log = ((MockEngine)task.BuildEngine).Log;
             Assert.Contains(string.Format(Resources.InvalidSourceLinkPlaceholderRoot, roots[0].ItemSpec), log);
             Assert.Contains(string.Format(Resources.MustNotContainWildcard, "SourceRoot.MappedPath", "/_/*/"), log);
@@ -359,7 +359,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
             using var temp = new TempRoot();
             var task = CreateTask(temp, Root(new string('A', 40)));
             var directory = Path.Combine(temp.CreateDirectory().Path, "revisions");
-            task.RevisionOutputFile = Path.Combine(directory, "dictionary.json");
+            task.PlaceholderReplacementsOutputFile = Path.Combine(directory, "dictionary.json");
 
             Assert.False(task.Execute());
 
@@ -407,7 +407,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
             };
             var task = CreateTask(temp, roots);
             var directory = Path.Combine(temp.CreateDirectory().Path, "revisions");
-            task.RevisionOutputFile = Path.Combine(directory, "dictionary.json");
+            task.PlaceholderReplacementsOutputFile = Path.Combine(directory, "dictionary.json");
 
             var succeeded = task.Execute();
 
@@ -419,7 +419,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
                 var expectedRevisions = firstFixed && secondFixed
                     ? "{}"
                     : "{\"SourceLinkRevision_" + marker + "\":\"" + new string(firstFixed ? 'b' : 'a', 40) + "\"}";
-                Assert.Equal(expectedRevisions, File.ReadAllText(task.RevisionOutputFile));
+                Assert.Equal(expectedRevisions, File.ReadAllText(task.PlaceholderReplacementsOutputFile));
                 var firstUrl = roots[0].GetMetadata("SourceLinkUrl");
                 var secondUrl = roots[1].GetMetadata("SourceLinkUrl");
                 if (!firstFixed)
@@ -452,13 +452,13 @@ namespace Microsoft.SourceLink.Common.UnitTests
             using var temp = new TempRoot();
             var task = CreateTask(temp, Root(new string('a', 40), mappedPath: "/_/*/"));
             var sourceLinkFile = task.OutputFile;
-            var revisionFile = task.RevisionOutputFile!;
+            var revisionFile = task.PlaceholderReplacementsOutputFile!;
             File.WriteAllText(sourceLinkFile, "original input");
             File.WriteAllText(revisionFile, "original dictionary");
             var path = invalidCharacter ? Path.Combine(Path.GetDirectoryName(sourceLinkFile)!, "invalid.json") + '\0' : "relative.json";
             if (invalidRevisionPath)
             {
-                task.RevisionOutputFile = path;
+                task.PlaceholderReplacementsOutputFile = path;
             }
             else
             {
@@ -482,13 +482,13 @@ namespace Microsoft.SourceLink.Common.UnitTests
         {
             using var temp = new TempRoot();
             var task = CreateTask(temp, Root(new string('a', 40)));
-            File.WriteAllText(task.RevisionOutputFile!, "original dictionary");
+            File.WriteAllText(task.PlaceholderReplacementsOutputFile!, "original dictionary");
             task.OutputFile = path;
 
             Assert.False(task.Execute());
 
             Assert.Null(task.SourceLink);
-            Assert.Equal("original dictionary", File.ReadAllText(task.RevisionOutputFile!));
+            Assert.Equal("original dictionary", File.ReadAllText(task.PlaceholderReplacementsOutputFile!));
             Assert.Contains("ERROR", ((MockEngine)task.BuildEngine).Log);
         }
 
@@ -497,11 +497,11 @@ namespace Microsoft.SourceLink.Common.UnitTests
         {
             using var temp = new TempRoot();
             var task = CreateTask(temp, Root(new string('a', 40)));
-            task.RevisionOutputFile = Path.Combine(temp.CreateDirectory().Path, "revisions", "dictionary.json");
+            task.PlaceholderReplacementsOutputFile = Path.Combine(temp.CreateDirectory().Path, "revisions", "dictionary.json");
 
             Assert.True(task.Execute());
 
-            Assert.True(File.Exists(task.RevisionOutputFile));
+            Assert.True(File.Exists(task.PlaceholderReplacementsOutputFile));
             Assert.Equal(task.OutputFile, task.SourceLink);
         }
 
@@ -514,7 +514,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
             var task = CreateTask(temp, Root(new string('a', 40)));
             if (!usePlaceholderValues)
             {
-                task.RevisionOutputFile = null;
+                task.PlaceholderReplacementsOutputFile = null;
             }
 
             var directory = Path.Combine(temp.CreateDirectory().Path, "missing");
@@ -536,7 +536,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
             var task = CreateTask(temp);
             if (!usePlaceholderValues)
             {
-                task.RevisionOutputFile = null;
+                task.PlaceholderReplacementsOutputFile = null;
             }
 
             var directory = Path.Combine(temp.CreateDirectory().Path, "missing");
@@ -555,7 +555,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
             using var temp = new TempRoot();
             var task = CreateTask(temp, Root(new string('a', 40)));
             File.WriteAllText(task.OutputFile, "original input");
-            task.RevisionOutputFile = Path.Combine(Path.GetDirectoryName(task.OutputFile)!, "subdirectory", "..", Path.GetFileName(task.OutputFile));
+            task.PlaceholderReplacementsOutputFile = Path.Combine(Path.GetDirectoryName(task.OutputFile)!, "subdirectory", "..", Path.GetFileName(task.OutputFile));
 
             Assert.False(task.Execute());
 
@@ -569,12 +569,12 @@ namespace Microsoft.SourceLink.Common.UnitTests
         {
             using var temp = new TempRoot();
             var task = CreateTask(temp, Root(new string('a', 40)));
-            task.RevisionOutputFile = temp.CreateDirectory().Path;
+            task.PlaceholderReplacementsOutputFile = temp.CreateDirectory().Path;
 
             Assert.False(task.Execute());
             Assert.Null(task.SourceLink);
             Assert.False(File.Exists(task.OutputFile));
-            Assert.True(Directory.Exists(task.RevisionOutputFile));
+            Assert.True(Directory.Exists(task.PlaceholderReplacementsOutputFile));
             Assert.Contains("ERROR", ((MockEngine)task.BuildEngine).Log);
         }
 
@@ -588,7 +588,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
             Assert.False(task.Execute());
 
             Assert.Null(task.SourceLink);
-            Assert.False(File.Exists(task.RevisionOutputFile));
+            Assert.False(File.Exists(task.PlaceholderReplacementsOutputFile));
             Assert.True(Directory.Exists(task.OutputFile));
             Assert.Contains(task.OutputFile, ((MockEngine)task.BuildEngine).Log);
         }
@@ -601,7 +601,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
             var task = CreateTask(temp, roots);
             task.OutputFile = temp.CreateDirectory().Path;
             var directory = Path.Combine(temp.CreateDirectory().Path, "revisions");
-            task.RevisionOutputFile = Path.Combine(directory, "dictionary.json");
+            task.PlaceholderReplacementsOutputFile = Path.Combine(directory, "dictionary.json");
 
             Assert.False(task.Execute());
 
@@ -618,17 +618,17 @@ namespace Microsoft.SourceLink.Common.UnitTests
             using var temp = new TempRoot();
             var task = CreateTask(temp, Root(new string('a', 40)), Root(new string('b', 40)));
             task.NoWarnOnMissingSourceControlInformation = false;
-            File.WriteAllText(task.RevisionOutputFile!, "original dictionary");
+            File.WriteAllText(task.PlaceholderReplacementsOutputFile!, "original dictionary");
 
             Assert.False(task.Execute());
 
             Assert.Null(task.SourceLink);
             Assert.False(File.Exists(task.OutputFile));
-            Assert.False(File.Exists(task.RevisionOutputFile));
+            Assert.False(File.Exists(task.PlaceholderReplacementsOutputFile));
             var log = ((MockEngine)task.BuildEngine).Log;
             Assert.Contains("ERROR", log);
             Assert.DoesNotContain(Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty, log);
-            Assert.DoesNotContain(string.Format(Resources.SourceLinkEmptyDeletingExistingFile, task.RevisionOutputFile), log);
+            Assert.DoesNotContain(string.Format(Resources.SourceLinkEmptyDeletingExistingFile, task.PlaceholderReplacementsOutputFile), log);
         }
 
         [Fact]
@@ -642,7 +642,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
 
             Assert.Null(task.SourceLink);
             Assert.True(Directory.Exists(task.OutputFile));
-            Assert.False(File.Exists(task.RevisionOutputFile));
+            Assert.False(File.Exists(task.PlaceholderReplacementsOutputFile));
             Assert.Contains(task.OutputFile, ((MockEngine)task.BuildEngine).Log);
         }
 
@@ -653,13 +653,13 @@ namespace Microsoft.SourceLink.Common.UnitTests
         {
             using var temp = new TempRoot();
             var task = CreateTask(temp);
-            var revisionFile = task.RevisionOutputFile!;
+            var revisionFile = task.PlaceholderReplacementsOutputFile!;
             File.WriteAllText(task.OutputFile, "original input");
             File.WriteAllText(revisionFile, "original dictionary");
             task.SourceRoots = [new ThrowingSourceRoot()];
             if (!usePlaceholderValues)
             {
-                task.RevisionOutputFile = null;
+                task.PlaceholderReplacementsOutputFile = null;
             }
 
             var exception = Assert.Throws<InvalidOperationException>(() => task.Execute());
@@ -678,8 +678,8 @@ namespace Microsoft.SourceLink.Common.UnitTests
             using var temp = new TempRoot();
             var root = Root(new string('a', 40));
             var task = CreateTask(temp, root);
-            var revisionFile = task.RevisionOutputFile!;
-            task.RevisionOutputFile = revisionPath;
+            var revisionFile = task.PlaceholderReplacementsOutputFile!;
+            task.PlaceholderReplacementsOutputFile = revisionPath;
             File.WriteAllText(revisionFile, "unchanged");
 
             Assert.True(task.Execute());
@@ -695,8 +695,8 @@ namespace Microsoft.SourceLink.Common.UnitTests
         {
             using var temp = new TempRoot();
             var task = CreateTask(temp, Root(new string('a', 40), mappedPath: "/_/*/"));
-            var revisionFile = task.RevisionOutputFile!;
-            task.RevisionOutputFile = revisionPath;
+            var revisionFile = task.PlaceholderReplacementsOutputFile!;
+            task.PlaceholderReplacementsOutputFile = revisionPath;
             File.WriteAllText(task.OutputFile, "original input");
             File.WriteAllText(revisionFile, "original dictionary");
 

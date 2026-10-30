@@ -12,8 +12,8 @@
         is typically relative to the project directory, so make _SourceLinkFilePath absolute here.
       -->
       <_SourceLinkFilePath>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(IntermediateOutputPath)', '$(MSBuildProjectName).sourcelink.json'))</_SourceLinkFilePath>
-      <SourceLinkRevisionFile Condition="'$(SourceLinkGeneratePlaceholders)' == 'true' and '$(SourceLinkRevisionFile)' == ''">$(IntermediateOutputPath)$(MSBuildProjectName).sourcelink.revisions.json</SourceLinkRevisionFile>
-      <_SourceLinkRevisionFilePath Condition="'$(SourceLinkGeneratePlaceholders)' == 'true'">$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(SourceLinkRevisionFile)'))</_SourceLinkRevisionFilePath>
+      <SourceLinkPlaceholderReplacementsFile Condition="'$(SourceLinkGeneratePlaceholders)' == 'true' and '$(SourceLinkPlaceholderReplacementsFile)' == ''">$(IntermediateOutputPath)$(MSBuildProjectName).sourcelink.revisions.json</SourceLinkPlaceholderReplacementsFile>
+      <_SourceLinkPlaceholderReplacementsFilePath Condition="'$(SourceLinkGeneratePlaceholders)' == 'true'">$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(SourceLinkPlaceholderReplacementsFile)'))</_SourceLinkPlaceholderReplacementsFilePath>
     </PropertyGroup>
   </Target>
 
@@ -63,7 +63,7 @@
     <Microsoft.SourceLink.Common.GenerateSourceLinkFile
       SourceRoots="@(SourceRoot)"
       NoWarnOnMissingSourceControlInformation="$(PkgMicrosoft_SourceLink_Common.Equals(''))"
-      RevisionOutputFile="$(_SourceLinkRevisionFilePath)"
+      PlaceholderReplacementsOutputFile="$(_SourceLinkPlaceholderReplacementsFilePath)"
       OutputFile="$(_SourceLinkFilePath)">
 
       <!-- Set SourceLink property passed to compilers -->
@@ -77,8 +77,8 @@
     <ItemGroup Condition="'$(SourceLink)' != ''">
       <FileWrites Include="$(SourceLink)" />
     </ItemGroup>
-    <ItemGroup Condition="'$(_SourceLinkRevisionFilePath)' != ''">
-      <FileWrites Include="$(_SourceLinkRevisionFilePath)" />
+    <ItemGroup Condition="'$(_SourceLinkPlaceholderReplacementsFilePath)' != ''">
+      <FileWrites Include="$(_SourceLinkPlaceholderReplacementsFilePath)" />
     </ItemGroup>
 
     <!-- C++ Link task currently doesn't recognize SourceLink property -->

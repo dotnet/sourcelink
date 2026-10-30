@@ -162,7 +162,7 @@ The dictionary is refreshed even when compilation is skipped and is not a compil
 A build may use this information to finalize cached artifacts with the same stable identifiers.
 Source Link does not perform finalization.
 
-### SourceLinkRevisionFile
+### SourceLinkPlaceholderReplacementsFile
 
 Overrides the default revision dictionary path used when `SourceLinkGeneratePlaceholders` is `true`.
 The path can be relative to the project directory or fully qualified.

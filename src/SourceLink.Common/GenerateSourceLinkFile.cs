@@ -33,10 +33,10 @@ namespace Microsoft.SourceLink.Common
         public bool NoWarnOnMissingSourceControlInformation { get; set; }
 
         /// <summary>
-        /// Fully qualified path of the marker-to-revision dictionary.
+        /// Fully qualified path of the placeholder replacement dictionary.
         /// When non-empty, emit stable revision markers in the compiler's Source Link input.
         /// </summary>
-        public string? RevisionOutputFile { get; set; }
+        public string? PlaceholderReplacementsOutputFile { get; set; }
 
         public override bool Execute()
         {
@@ -55,9 +55,9 @@ namespace Microsoft.SourceLink.Common
                 }
 
                 SourceLink = WriteOutputFile(OutputFile, GenerateSourceLinkContent(mappings));
-                if (!NullableString.IsNullOrEmpty(RevisionOutputFile) && !Log.HasLoggedErrors)
+                if (!NullableString.IsNullOrEmpty(PlaceholderReplacementsOutputFile) && !Log.HasLoggedErrors)
                 {
-                    WriteOutputFile(RevisionOutputFile, GenerateRevisionFileContent(mappings));
+                    WriteOutputFile(PlaceholderReplacementsOutputFile, GenerateRevisionFileContent(mappings));
                 }
 
                 succeeded = !Log.HasLoggedErrors;
@@ -86,9 +86,9 @@ namespace Microsoft.SourceLink.Common
                 }
 
                 var outputPath = Path.GetFullPath(path);
-                if (!NullableString.IsNullOrEmpty(RevisionOutputFile))
+                if (!NullableString.IsNullOrEmpty(PlaceholderReplacementsOutputFile))
                 {
-                    path = RevisionOutputFile;
+                    path = PlaceholderReplacementsOutputFile;
                     if (!PathUtilities.IsPathFullyQualified(path))
                     {
                         Log.LogError(Resources.ErrorWritingToSourceLinkFile, path, $"The path '{path}' must be fully qualified.");
@@ -149,7 +149,7 @@ namespace Microsoft.SourceLink.Common
 
                 var revision = "";
                 string? placeholder = null;
-                if (!NullableString.IsNullOrEmpty(RevisionOutputFile))
+                if (!NullableString.IsNullOrEmpty(PlaceholderReplacementsOutputFile))
                 {
                     if (TryGetRevision(root, mappedPath, url, out revision, out placeholder))
                     {
@@ -344,9 +344,9 @@ namespace Microsoft.SourceLink.Common
             }
 
             deleteFile(OutputFile);
-            if (!NullableString.IsNullOrEmpty(RevisionOutputFile))
+            if (!NullableString.IsNullOrEmpty(PlaceholderReplacementsOutputFile))
             {
-                deleteFile(RevisionOutputFile);
+                deleteFile(PlaceholderReplacementsOutputFile);
             }
         }
 

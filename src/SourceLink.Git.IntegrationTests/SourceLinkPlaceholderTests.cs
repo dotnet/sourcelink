@@ -38,7 +38,7 @@ namespace Microsoft.SourceLink.IntegrationTests
   <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   <SourceLinkGeneratePlaceholders>true</SourceLinkGeneratePlaceholders>
-  {(absoluteRevisionFile.HasValue ? $"<SourceLinkRevisionFile>{revisionFileValue}</SourceLinkRevisionFile>" : "")}
+  {(absoluteRevisionFile.HasValue ? $"<SourceLinkPlaceholderReplacementsFile>{revisionFileValue}</SourceLinkPlaceholderReplacementsFile>" : "")}
 </PropertyGroup>
 ";
 
@@ -50,8 +50,8 @@ namespace Microsoft.SourceLink.IntegrationTests
                 {
                     "@(SourceRoot->'%(SourceLinkUrl)')",
                     "$(SourceRevisionId)",
-                    "$(_SourceLinkRevisionFilePath)",
-                    "@(FileWrites->WithMetadataValue('Identity', '$(_SourceLinkRevisionFilePath)'))"
+                    "$(_SourceLinkPlaceholderReplacementsFilePath)",
+                    "@(FileWrites->WithMetadataValue('Identity', '$(_SourceLinkPlaceholderReplacementsFilePath)'))"
                 },
                 expectedResults: new[]
                 {
@@ -120,7 +120,7 @@ namespace Microsoft.SourceLink.IntegrationTests
 <PropertyGroup>
   <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   {(generatePlaceholders != null ? $"<SourceLinkGeneratePlaceholders>{generatePlaceholders}</SourceLinkGeneratePlaceholders>" : "")}
-  {(customRevisionFile ? $"<SourceLinkRevisionFile>{relativeRevisionFile}</SourceLinkRevisionFile>" : "")}
+  {(customRevisionFile ? $"<SourceLinkPlaceholderReplacementsFile>{relativeRevisionFile}</SourceLinkPlaceholderReplacementsFile>" : "")}
 </PropertyGroup>
 ";
 
@@ -130,8 +130,8 @@ namespace Microsoft.SourceLink.IntegrationTests
                 targets: new[] { "Build" },
                 expressions: new[]
                 {
-                    "$(SourceLinkRevisionFile)",
-                    "$(_SourceLinkRevisionFilePath)",
+                    "$(SourceLinkPlaceholderReplacementsFile)",
+                    "$(_SourceLinkPlaceholderReplacementsFilePath)",
                     $"@(FileWrites->WithMetadataValue('Identity', '{revisionFile}'))"
                 },
                 expectedResults: new[] { customRevisionFile ? relativeRevisionFile : "", "", "" });
