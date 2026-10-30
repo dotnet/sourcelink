@@ -68,7 +68,7 @@
 
   <!-- Do not export dependencies to assemblies that are used only by the build task and copied locally. -->
   <ItemGroup>
-    <PackageReference Update="System.IO.Hashing" Local="true" />
+    <PackageReference Update="System.IO.Hashing" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
@@ -78,7 +78,7 @@
      -->
     <PackageReference Update="@(PackageReference)">
       <Publish Condition="'%(PackageReference.Publish)' == ''">true</Publish>
-      <PrivateAssets Condition="'%(PackageReference.Publish)' == 'false' OR '%(PackageReference.Local)' == 'true'">all</PrivateAssets>
+      <PrivateAssets Condition="'%(PackageReference.Publish)' == 'false'">all</PrivateAssets>
       <ExcludeAssets Condition="'%(PackageReference.Publish)' == 'false'">runtime</ExcludeAssets>
     </PackageReference>
 
