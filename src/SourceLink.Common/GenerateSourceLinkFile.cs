@@ -3,9 +3,11 @@
 // See the License.txt file in the project root for more information.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Tasks.SourceControl;
@@ -30,23 +32,89 @@ namespace Microsoft.SourceLink.Common
 
         public bool NoWarnOnMissingSourceControlInformation { get; set; }
 
+        /// <summary>
+        /// Fully qualified path of the placeholder replacement dictionary.
+        /// When non-empty, emit stable revision markers in the compiler's Source Link input.
+        /// </summary>
+        public string? PlaceholderReplacementsOutputFile { get; set; }
+
         public override bool Execute()
         {
-            WriteSourceLinkFile(GenerateSourceLinkContent());
+            if (!ValidateOutputPaths())
+            {
+                return false;
+            }
 
-            return !Log.HasLoggedErrors;
+            var succeeded = false;
+            try
+            {
+                var mappings = GetSourceLinkMappings();
+                if (Log.HasLoggedErrors)
+                {
+                    return false;
+                }
+
+                SourceLink = WriteOutputFile(OutputFile, GenerateSourceLinkContent(mappings));
+                if (!NullableString.IsNullOrEmpty(PlaceholderReplacementsOutputFile) && !Log.HasLoggedErrors)
+                {
+                    WriteOutputFile(PlaceholderReplacementsOutputFile, GenerateRevisionFileContent(mappings));
+                }
+
+                succeeded = !Log.HasLoggedErrors;
+                return succeeded;
+            }
+            finally
+            {
+                if (!succeeded)
+                {
+                    DeleteOutputFiles();
+                    SourceLink = null;
+                }
+            }
         }
 
-        internal string? GenerateSourceLinkContent()
+        private bool ValidateOutputPaths()
         {
-            static string jsonEscape(string str)
-                => str.Replace(@"\", @"\\").Replace("\"", "\\\"");
+            var path = OutputFile;
+            try
+            {
+                // Relative paths must not be resolved against MSBuild's shared process working directory.
+                if (path == null || !PathUtilities.IsPathFullyQualified(path))
+                {
+                    Log.LogError(Resources.ErrorWritingToSourceLinkFile, path, $"The path '{path}' must be fully qualified.");
+                    return false;
+                }
 
-            var result = new StringBuilder();
-            result.Append("{\"documents\":{");
+                var outputPath = Path.GetFullPath(path);
+                if (!NullableString.IsNullOrEmpty(PlaceholderReplacementsOutputFile))
+                {
+                    path = PlaceholderReplacementsOutputFile;
+                    if (!PathUtilities.IsPathFullyQualified(path))
+                    {
+                        Log.LogError(Resources.ErrorWritingToSourceLinkFile, path, $"The path '{path}' must be fully qualified.");
+                        return false;
+                    }
 
-            var success = true;
-            var isEmpty = true;
+                    var comparison = Path.DirectorySeparatorChar == '\\' ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+                    if (string.Equals(outputPath, Path.GetFullPath(path), comparison))
+                    {
+                        Log.LogError(Resources.ErrorWritingToSourceLinkFile, path, Resources.SourceLinkRevisionFilesMustDiffer);
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Log.LogError(Resources.ErrorWritingToSourceLinkFile, path, e.Message);
+                return false;
+            }
+        }
+
+        internal List<SourceLinkMapping> GetSourceLinkMappings()
+        {
+            var mappings = new List<SourceLinkMapping>();
             foreach (var root in SourceRoots)
             {
                 var mappedPath = root.GetMetadata(Names.SourceRoot.MappedPath);
@@ -56,14 +124,12 @@ namespace Microsoft.SourceLink.Common
                 if (!localPath.EndsWithSeparator())
                 {
                     Log.LogError(Resources.MustEndWithDirectorySeparator, isMapped ? Names.SourceRoot.MappedPathFullName : Names.SourceRoot.Name, localPath);
-                    success = false;
                     continue;
                 }
 
                 if (localPath.Contains('*'))
                 {
                     Log.LogError(Resources.MustNotContainWildcard, isMapped ? Names.SourceRoot.MappedPathFullName : Names.SourceRoot.Name, localPath);
-                    success = false;
                     continue;
                 }
 
@@ -78,87 +144,219 @@ namespace Microsoft.SourceLink.Common
                 if (url.Count(c => c == '*') != 1)
                 {
                     Log.LogError(Resources.MustContainSingleWildcard, Names.SourceRoot.SourceLinkUrlFullName, url);
-                    success = false;
                     continue;
                 }
 
-                if (isEmpty)
+                var revision = "";
+                string? placeholder = null;
+                if (!NullableString.IsNullOrEmpty(PlaceholderReplacementsOutputFile))
                 {
-                    isEmpty = false;
+                    if (TryGetRevision(root, mappedPath, url, out revision, out placeholder))
+                    {
+                        url = url.Replace(revision, placeholder);
+                    }
                 }
-                else
+
+                mappings.Add(new SourceLinkMapping(root, localPath, url, revision, placeholder));
+            }
+
+            return mappings;
+        }
+
+        private bool TryGetRevision(ITaskItem root, string mappedPath, string url, out string revision, [NotNullWhen(true)] out string? placeholder)
+        {
+            revision = "";
+            placeholder = null;
+
+            if (string.IsNullOrEmpty(mappedPath))
+            {
+                Log.LogError(Resources.InvalidSourceLinkPlaceholderRoot, root.ItemSpec);
+                return false;
+            }
+
+            revision = root.GetMetadata(Names.SourceRoot.RevisionId);
+
+            // A mapping without source control may omit its revision; there is nothing to replace.
+            if (string.IsNullOrEmpty(revision) && string.IsNullOrEmpty(root.GetMetadata(Names.SourceRoot.SourceControl)))
+            {
+                return false;
+            }
+
+            var revisionStart = string.IsNullOrEmpty(revision) ? -1 : url.IndexOf(revision, StringComparison.Ordinal);
+
+            // Fixed-width revisions allow in-place substitution in uncompressed metadata.
+            // A unique occurrence avoids replacing unrelated URL text.
+            if (!GitUtilities.IsValidObjectId(revision) ||
+                revision.Any(c => c is >= 'A' and <= 'F') ||
+                revisionStart < 0 ||
+                url.IndexOf(revision, revisionStart + revision.Length, StringComparison.Ordinal) >= 0)
+            {
+                Log.LogError(Resources.InvalidSourceLinkPlaceholderRoot, root.ItemSpec);
+                return false;
+            }
+
+            var template = url.Substring(0, revisionStart) + "<revision>" + url.Substring(revisionStart + revision.Length);
+
+            // The placeholder depends on the mapped path and revision-independent URL, so changes to either
+            // update the Source Link compiler input. SHA256 is truncated to the revision width for substitution;
+            // NUL separates the path and URL because it is not a valid path character.
+            using (var sha = SHA256.Create())
+            {
+                placeholder = BitConverter.ToString(sha.ComputeHash(Encoding.UTF8.GetBytes(mappedPath + "\0" + template)))
+                    .Replace("-", "").ToLowerInvariant().Substring(0, revision.Length);
+            }
+
+            if (placeholder == revision)
+            {
+                Log.LogError(Resources.InvalidSourceLinkPlaceholderRoot, root.ItemSpec);
+                return false;
+            }
+
+            return true;
+        }
+
+        internal string? GenerateRevisionFileContent(List<SourceLinkMapping> mappings)
+        {
+            var revisions = new SortedDictionary<string, string>(StringComparer.Ordinal);
+            var mappedPaths = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var mapping in mappings)
+            {
+                if (mapping.Placeholder == null)
+                {
+                    continue;
+                }
+
+                if (!mappedPaths.Add(mapping.LocalPath))
+                {
+                    Log.LogError(Resources.InvalidSourceLinkPlaceholderRoot, mapping.Root.ItemSpec);
+                    continue;
+                }
+
+                var key = "SourceLinkRevision_" + mapping.Placeholder;
+
+                // A placeholder must identify one replacement across all mappings.
+                if (revisions.TryGetValue(key, out var existing) && existing != mapping.Revision)
+                {
+                    Log.LogError(Resources.InvalidSourceLinkPlaceholderRoot, mapping.Root.ItemSpec);
+                    continue;
+                }
+
+                revisions[key] = mapping.Revision;
+            }
+
+            // Both keys and values contain only the validated hexadecimal revision and a fixed ASCII prefix.
+            return !Log.HasLoggedErrors ? "{" + string.Join(",", revisions.Select(pair => "\"" + pair.Key + "\":\"" + pair.Value + "\"")) + "}" : null;
+        }
+
+        internal static string? GenerateSourceLinkContent(List<SourceLinkMapping> mappings)
+        {
+            static string jsonEscape(string str)
+                => str.Replace(@"\", @"\\").Replace("\"", "\\\"");
+
+            if (mappings.Count == 0)
+            {
+                return null;
+            }
+
+            var result = new StringBuilder();
+            result.Append("{\"documents\":{");
+            for (var i = 0; i < mappings.Count; i++)
+            {
+                if (i > 0)
                 {
                     result.Append(',');
                 }
 
+                var mapping = mappings[i];
                 result.Append('"');
-                result.Append(jsonEscape(localPath));
+                result.Append(jsonEscape(mapping.LocalPath));
                 result.Append('*');
                 result.Append('"');
                 result.Append(':');
                 result.Append('"');
-                result.Append(jsonEscape(url));
+                result.Append(jsonEscape(mapping.Url));
                 result.Append('"');
             }
 
             result.Append("}}");
-
-            return success && !isEmpty ? result.ToString() : null;
+            return result.ToString();
         }
 
-        private void WriteSourceLinkFile(string? content)
+        private string? WriteOutputFile(string path, string? content)
         {
-            if (content == null && !NoWarnOnMissingSourceControlInformation)
+            if (Log.HasLoggedErrors)
             {
-                Log.LogWarning(Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty);
+                return null;
             }
 
             try
             {
-                // OutputFile is required to be a fully qualified path. It is set by the SourceLink targets from
-                // _SourceLinkFilePath, so file access must not (and does not need to) depend on the shared process
-                // current directory under the multithreaded task model. Reject a path that isn't fully qualified.
-                if (string.IsNullOrEmpty(OutputFile) || !PathUtilities.IsPathFullyQualified(OutputFile))
+                if (content == null && !NoWarnOnMissingSourceControlInformation)
                 {
-                    throw new ArgumentException($"The path '{OutputFile}' must be fully qualified.", nameof(OutputFile));
+                    Log.LogWarning(Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty);
                 }
 
-                if (File.Exists(OutputFile))
+                if (File.Exists(path))
                 {
                     if (content == null)
                     {
-                        Log.LogMessage(Resources.SourceLinkEmptyDeletingExistingFile, OutputFile);
-
-                        File.Delete(OutputFile);
-                        return;
+                        Log.LogMessage(Resources.SourceLinkEmptyDeletingExistingFile, path);
+                        File.Delete(path);
+                        return null;
                     }
 
-                    var originalContent = File.ReadAllText(OutputFile);
-                    if (originalContent == content)
+                    if (File.ReadAllText(path) == content)
                     {
-                        // Don't rewrite the file if the contents is the same, just pass it to the compiler.
-                        Log.LogMessage(Resources.SourceLinkFileUpToDate, OutputFile);
-
-                        SourceLink = OutputFile;
-                        return;
+                        Log.LogMessage(Resources.SourceLinkFileUpToDate, path);
+                        return path;
                     }
                 }
                 else if (content == null)
                 {
-                    // File doesn't exist and the output is empty:
-                    // Do not write the file and don't pass it to the compiler.
-                    Log.LogMessage(Resources.SourceLinkEmptyNoExistingFile, OutputFile);
-                    return;
+                    Log.LogMessage(Resources.SourceLinkEmptyNoExistingFile, path);
+                    return null;
                 }
 
-                Log.LogMessage(Resources.SourceLinkFileUpdated, OutputFile);
-                File.WriteAllText(OutputFile, content);
-                SourceLink = OutputFile;
+                Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+                Log.LogMessage(Resources.SourceLinkFileUpdated, path);
+                File.WriteAllText(path, content);
+                return path;
             }
             catch (Exception e)
             {
-                Log.LogError(Resources.ErrorWritingToSourceLinkFile, OutputFile, e.Message);
+                Log.LogError(Resources.ErrorWritingToSourceLinkFile, path, e.Message);
+                return null;
             }
+        }
+
+        private void DeleteOutputFiles()
+        {
+            void deleteFile(string path)
+            {
+                try
+                {
+                    File.Delete(path);
+                }
+                catch (Exception e)
+                {
+                    Log.LogErrorFromException(e);
+                }
+            }
+
+            deleteFile(OutputFile);
+            if (!NullableString.IsNullOrEmpty(PlaceholderReplacementsOutputFile))
+            {
+                deleteFile(PlaceholderReplacementsOutputFile);
+            }
+        }
+
+        internal readonly struct SourceLinkMapping(ITaskItem root, string localPath, string url, string revision, string? placeholder)
+        {
+            public ITaskItem Root { get; } = root;
+            public string LocalPath { get; } = localPath;
+            public string Url { get; } = url;
+            public string Revision { get; } = revision;
+            public string? Placeholder { get; } = placeholder;
         }
     }
 }

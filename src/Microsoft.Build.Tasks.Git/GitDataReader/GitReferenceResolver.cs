@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using Microsoft.Build.Tasks.SourceControl;
 
 namespace Microsoft.Build.Tasks.Git
 {
@@ -393,6 +394,6 @@ namespace Microsoft.Build.Tasks.Git
             => _lazyPackedReferences.Value.TryGetValue(reference, out var objectId) ? objectId : null;
 
         private bool IsObjectId(string reference)
-            => reference.Length == _objectNameFormat.HashSize * 2 && reference.All(CharUtils.IsHexadecimalDigit);
+            => reference.Length == _objectNameFormat.HashSize * 2 && GitUtilities.IsValidObjectId(reference);
     }
 }

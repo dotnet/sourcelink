@@ -143,6 +143,30 @@ The default value is `true`. Set to `false` to suppress publishing `SourceRevisi
 Set by target `InitializeSourceControlInformationFromSourceControlManager` and consumed by NuGet `Pack` target and `GenerateAssemblyInfo` target. 
 May be used by custom targets that need this information.
 
+### SourceLinkGeneratePlaceholders
+
+Set to `true` to use stable, equal-width revision placeholders in the compiler's Source Link input.
+The default is `false`.
+
+Resolved revisions are written to
+`$(IntermediateOutputPath)$(MSBuildProjectName).sourcelink.revisions.json` by default:
+
+```json
+{"SourceLinkRevision_<marker>":"<resolved-revision>"}
+```
+
+Use `DeterministicSourcePaths` or stable `MappedPath` values. Roots using placeholders require unique
+mapped paths and lowercase 40- or 64-character hexadecimal revisions appearing exactly once in their URLs.
+
+The dictionary is refreshed even when compilation is skipped and is not a compiler input.
+A build may use this information to finalize cached artifacts with the same stable identifiers.
+Source Link does not perform finalization.
+
+### SourceLinkPlaceholderReplacementsFile
+
+Overrides the default revision dictionary path used when `SourceLinkGeneratePlaceholders` is `true`.
+The path can be relative to the project directory or fully qualified.
+
 ### SourceBranchName
 
 Set by target `InitializeSourceControlInformationFromSourceControlManager` and consumed by NuGet `Pack` target.
