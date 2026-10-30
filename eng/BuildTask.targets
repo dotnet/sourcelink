@@ -66,6 +66,11 @@
     <PackageReference Update="System.ValueTuple" Publish="false" />
   </ItemGroup>
 
+  <!-- Do not export dependencies to assemblies that are used only by the build task and copied locally. -->
+  <ItemGroup>
+    <PackageReference Update="System.IO.Hashing" Local="true" />
+  </ItemGroup>
+
   <ItemGroup>
     <!--
       Update all PackageReference items to default Publish to true.
@@ -73,7 +78,7 @@
      -->
     <PackageReference Update="@(PackageReference)">
       <Publish Condition="'%(PackageReference.Publish)' == ''">true</Publish>
-      <PrivateAssets Condition="'%(PackageReference.Publish)' == 'false'">all</PrivateAssets>
+      <PrivateAssets Condition="'%(PackageReference.Publish)' == 'false' OR '%(PackageReference.Local)' == 'true'">all</PrivateAssets>
       <ExcludeAssets Condition="'%(PackageReference.Publish)' == 'false'">runtime</ExcludeAssets>
     </PackageReference>
 
