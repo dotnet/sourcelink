@@ -148,7 +148,7 @@
     <value>Error writing to source link file '{0}': {1}</value>
   </data>
   <data name="InvalidSourceLinkPlaceholderRoot" xml:space="preserve">
-    <value>Source root '{0}' cannot use placeholder values. Each linked root must have a unique MappedPath. Source-controlled roots must have a 40- or 64-character lowercase hexadecimal RevisionId occurring exactly once in SourceLinkUrl and different from its stable marker.</value>
+    <value>Source root '{0}' cannot use placeholder values. Each linked root must have a MappedPath. Roots using placeholders must have unique MappedPath values. Source-controlled roots must have a 40- or 64-character lowercase hexadecimal RevisionId occurring exactly once in SourceLinkUrl and different from its stable marker.</value>
   </data>
   <data name="SourceLinkRevisionFilesMustDiffer" xml:space="preserve">
     <value>The Source Link compiler input and revision dictionary must use different files.</value>

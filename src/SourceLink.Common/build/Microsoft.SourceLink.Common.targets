@@ -12,8 +12,8 @@
         is typically relative to the project directory, so make _SourceLinkFilePath absolute here.
       -->
       <_SourceLinkFilePath>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(IntermediateOutputPath)', '$(MSBuildProjectName).sourcelink.json'))</_SourceLinkFilePath>
-      <SourceLinkRevisionFile Condition="'$(SourceLinkUsePlaceholderValues)' == 'true' and '$(SourceLinkRevisionFile)' == ''">$(IntermediateOutputPath)$(MSBuildProjectName).sourcelink.revisions.json</SourceLinkRevisionFile>
-      <_SourceLinkRevisionFilePath Condition="'$(SourceLinkUsePlaceholderValues)' == 'true'">$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(SourceLinkRevisionFile)'))</_SourceLinkRevisionFilePath>
+      <SourceLinkRevisionFile Condition="'$(SourceLinkGeneratePlaceholders)' == 'true' and '$(SourceLinkRevisionFile)' == ''">$(IntermediateOutputPath)$(MSBuildProjectName).sourcelink.revisions.json</SourceLinkRevisionFile>
+      <_SourceLinkRevisionFilePath Condition="'$(SourceLinkGeneratePlaceholders)' == 'true'">$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(SourceLinkRevisionFile)'))</_SourceLinkRevisionFilePath>
     </PropertyGroup>
   </Target>
 
@@ -63,7 +63,6 @@
     <Microsoft.SourceLink.Common.GenerateSourceLinkFile
       SourceRoots="@(SourceRoot)"
       NoWarnOnMissingSourceControlInformation="$(PkgMicrosoft_SourceLink_Common.Equals(''))"
-      UsePlaceholderValues="$(SourceLinkUsePlaceholderValues)"
       RevisionOutputFile="$(_SourceLinkRevisionFilePath)"
       OutputFile="$(_SourceLinkFilePath)">
 
@@ -78,7 +77,7 @@
     <ItemGroup Condition="'$(SourceLink)' != ''">
       <FileWrites Include="$(SourceLink)" />
     </ItemGroup>
-    <ItemGroup Condition="'$(SourceLinkUsePlaceholderValues)' == 'true'">
+    <ItemGroup Condition="'$(_SourceLinkRevisionFilePath)' != ''">
       <FileWrites Include="$(_SourceLinkRevisionFilePath)" />
     </ItemGroup>
 

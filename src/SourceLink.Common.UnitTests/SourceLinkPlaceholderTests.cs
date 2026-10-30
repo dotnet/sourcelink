@@ -3,8 +3,10 @@
 // See the License.txt file in the project root for more information.
 
 using System;
+using System.Collections;
 using System.IO;
 using System.Linq;
+using Microsoft.Build.Framework;
 using TestUtilities;
 using Xunit;
 using static TestUtilities.KeyValuePairUtils;
@@ -38,7 +40,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
             {
                 BuildEngine = new MockEngine(),
                 SourceRoots = roots,
-                UsePlaceholderValues = true,
+                RevisionOutputFile = "unused.revisions.json",
                 NoWarnOnMissingSourceControlInformation = true,
             };
 
@@ -69,16 +71,17 @@ namespace Microsoft.SourceLink.Common.UnitTests
             Assert.Empty(((MockEngine)task.BuildEngine).Log);
         }
 
-        [Fact]
-        public void MarkerMatchesDocumentedAlgorithm()
+        [Theory]
+        [InlineData(40, "d0efab0058fb9849f56a9c0d7073dbdf295a764c")]
+        [InlineData(64, "d0efab0058fb9849f56a9c0d7073dbdf295a764cbf0aa1c1e14cef60715551e2")]
+        public void MarkerMatchesExpectedHash(int width, string marker)
         {
-            var revision = new string('a', 40);
+            var revision = new string('a', width);
             var root = Root(revision);
             var task = CreateTask(root);
 
             var mappings = task.GetSourceLinkMappings();
 
-            const string marker = "d5a3fd71b094fd0142f152459be3bcbc84162ba9";
             Assert.Equal("{\"SourceLinkRevision_" + marker + "\":\"" + revision + "\"}", task.GenerateRevisionFileContent(mappings));
             Assert.Equal("{\"documents\":{\"/_/*\":\"" + root.GetMetadata("SourceLinkUrl").Replace(revision, marker) + "\"}}", GenerateSourceLinkFile.GenerateSourceLinkContent(mappings));
             Assert.Empty(((MockEngine)task.BuildEngine).Log);
@@ -203,7 +206,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
         }
 
         [Fact]
-        public void EmptyContentDoesNotRequireOutputFiles()
+        public void EmptyContentDoesNotRequireValidOutputPaths()
         {
             var task = CreateTask();
             var mappings = task.GetSourceLinkMappings();
@@ -218,18 +221,33 @@ namespace Microsoft.SourceLink.Common.UnitTests
         [InlineData(false, true)]
         [InlineData(true, false)]
         [InlineData(true, true)]
-        public void DuplicateMappedRootsCannotGenerateRevisionContent(bool firstFixed, bool secondFixed)
+        public void DuplicateMappedRootsOnlyRejectPlaceholderPairsInRevisionContent(bool firstFixed, bool secondFixed)
         {
             var task = CreateTask(
                 firstFixed ? FixedRoot("/_/") : Root(new string('a', 40)),
-                secondFixed ? FixedRoot("/_/") : Root(new string('b', 40)));
+                secondFixed ? FixedRoot("/_/") : Root(new string('a', 40)));
             var mappings = task.GetSourceLinkMappings();
 
             var content = task.GenerateRevisionFileContent(mappings);
 
-            Assert.Null(content);
-            Assert.True(task.Log.HasLoggedErrors);
-            Assert.Contains("ERROR", ((MockEngine)task.BuildEngine).Log);
+            if (firstFixed || secondFixed)
+            {
+                var expected = "{}";
+                if (!firstFixed || !secondFixed)
+                {
+                    var mapping = Assert.Single(mappings, mapping => mapping.Placeholder != null);
+                    expected = "{\"SourceLinkRevision_" + mapping.Placeholder + "\":\"" + mapping.Revision + "\"}";
+                }
+
+                Assert.Equal(expected, content);
+                Assert.Empty(((MockEngine)task.BuildEngine).Log);
+            }
+            else
+            {
+                Assert.Null(content);
+                Assert.True(task.Log.HasLoggedErrors);
+                Assert.Contains("ERROR", ((MockEngine)task.BuildEngine).Log);
+            }
         }
 
         [Theory]
@@ -316,6 +334,26 @@ namespace Microsoft.SourceLink.Common.UnitTests
         }
 
         [Fact]
+        public void RevisionErrorsDoNotRemoveMappings()
+        {
+            var roots = new[] { Root(new string('A', 40)), FixedRoot(), Root(new string('b', 40), "/_/other/") };
+            var task = CreateTask(roots);
+
+            var mappings = task.GetSourceLinkMappings();
+
+            Assert.Equal(roots, mappings.Select(mapping => mapping.Root));
+            Assert.Null(mappings[0].Placeholder);
+            Assert.Equal(roots[0].GetMetadata("SourceLinkUrl"), mappings[0].Url);
+            Assert.Null(mappings[1].Placeholder);
+            var placeholder = mappings[2].Placeholder;
+            Assert.NotNull(placeholder);
+            Assert.Equal(roots[2].GetMetadata("SourceLinkUrl").Replace(mappings[2].Revision, placeholder), mappings[2].Url);
+            Assert.True(task.Log.HasLoggedErrors);
+            Assert.Contains(string.Format(Resources.InvalidSourceLinkPlaceholderRoot, roots[0].ItemSpec), ((MockEngine)task.BuildEngine).Log);
+            Assert.Null(task.GenerateRevisionFileContent(mappings));
+        }
+
+        [Fact]
         public void RevisionErrorsDoNotCreateDictionaryDirectory()
         {
             using var temp = new TempRoot();
@@ -359,36 +397,98 @@ namespace Microsoft.SourceLink.Common.UnitTests
         [InlineData(false, true)]
         [InlineData(true, false)]
         [InlineData(true, true)]
-        public void DuplicateMappedRootsFailBeforeWritingDictionary(bool firstFixed, bool secondFixed)
+        public void DuplicateMappedRootsOnlyRejectPlaceholderPairsDuringExecution(bool firstFixed, bool secondFixed)
         {
             using var temp = new TempRoot();
-            var task = CreateTask(temp,
+            var roots = new[]
+            {
                 firstFixed ? FixedRoot("/_/") : Root(new string('a', 40)),
-                secondFixed ? FixedRoot("/_/") : Root(new string('b', 40)));
+                secondFixed ? FixedRoot("/_/") : Root(new string('b', 40))
+            };
+            var task = CreateTask(temp, roots);
             var directory = Path.Combine(temp.CreateDirectory().Path, "revisions");
             task.RevisionOutputFile = Path.Combine(directory, "dictionary.json");
+
+            var succeeded = task.Execute();
+
+            if (firstFixed || secondFixed)
+            {
+                Assert.True(succeeded);
+                Assert.Equal(task.OutputFile, task.SourceLink);
+                var marker = firstFixed && secondFixed ? "" : ReadMarker(task);
+                var expectedRevisions = firstFixed && secondFixed
+                    ? "{}"
+                    : "{\"SourceLinkRevision_" + marker + "\":\"" + new string(firstFixed ? 'b' : 'a', 40) + "\"}";
+                Assert.Equal(expectedRevisions, File.ReadAllText(task.RevisionOutputFile));
+                var firstUrl = roots[0].GetMetadata("SourceLinkUrl");
+                var secondUrl = roots[1].GetMetadata("SourceLinkUrl");
+                if (!firstFixed)
+                {
+                    firstUrl = firstUrl.Replace(new string('a', 40), marker);
+                }
+
+                if (!secondFixed)
+                {
+                    secondUrl = secondUrl.Replace(new string('b', 40), marker);
+                }
+
+                Assert.Equal("{\"documents\":{\"/_/*\":\"" + firstUrl + "\",\"/_/*\":\"" + secondUrl + "\"}}",
+                    File.ReadAllText(task.OutputFile));
+            }
+            else
+            {
+                Assert.False(succeeded);
+                Assert.Null(task.SourceLink);
+                Assert.False(File.Exists(task.OutputFile));
+                Assert.False(Directory.Exists(directory));
+                Assert.Contains("ERROR", ((MockEngine)task.BuildEngine).Log);
+            }
+        }
+
+        [Theory]
+        [CombinatorialData]
+        public void InvalidOutputPathPreservesExistingFiles(bool invalidRevisionPath, bool invalidCharacter)
+        {
+            using var temp = new TempRoot();
+            var task = CreateTask(temp, Root(new string('a', 40), mappedPath: "/_/*/"));
+            var sourceLinkFile = task.OutputFile;
+            var revisionFile = task.RevisionOutputFile!;
+            File.WriteAllText(sourceLinkFile, "original input");
+            File.WriteAllText(revisionFile, "original dictionary");
+            var path = invalidCharacter ? Path.Combine(Path.GetDirectoryName(sourceLinkFile)!, "invalid.json") + '\0' : "relative.json";
+            if (invalidRevisionPath)
+            {
+                task.RevisionOutputFile = path;
+            }
+            else
+            {
+                task.OutputFile = path;
+            }
 
             Assert.False(task.Execute());
 
             Assert.Null(task.SourceLink);
-            Assert.False(File.Exists(task.OutputFile));
-            Assert.False(Directory.Exists(directory));
-            Assert.Contains("ERROR", ((MockEngine)task.BuildEngine).Log);
+            Assert.Equal("original input", File.ReadAllText(sourceLinkFile));
+            Assert.Equal("original dictionary", File.ReadAllText(revisionFile));
+            var log = ((MockEngine)task.BuildEngine).Log;
+            Assert.Contains("ERROR", log);
+            Assert.DoesNotContain(string.Format(Resources.MustNotContainWildcard, "SourceRoot.MappedPath", "/_/*/"), log);
         }
 
         [Theory]
         [InlineData(null)]
         [InlineData("")]
-        [InlineData("relative.json")]
-        public void RevisionOutputRequiresFullyQualifiedPath(string? path)
+        public void MissingSourceLinkOutputPreservesRevisionDictionary(string? path)
         {
             using var temp = new TempRoot();
             var task = CreateTask(temp, Root(new string('a', 40)));
-            task.RevisionOutputFile = path;
+            File.WriteAllText(task.RevisionOutputFile!, "original dictionary");
+            task.OutputFile = path;
 
             Assert.False(task.Execute());
+
             Assert.Null(task.SourceLink);
-            Assert.False(File.Exists(task.OutputFile));
+            Assert.Equal("original dictionary", File.ReadAllText(task.RevisionOutputFile!));
             Assert.Contains("ERROR", ((MockEngine)task.BuildEngine).Log);
         }
 
@@ -408,20 +508,45 @@ namespace Microsoft.SourceLink.Common.UnitTests
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public void SourceLinkOutputDoesNotCreateMissingDirectory(bool usePlaceholderValues)
+        public void SourceLinkOutputCreatesMissingDirectory(bool usePlaceholderValues)
         {
             using var temp = new TempRoot();
             var task = CreateTask(temp, Root(new string('a', 40)));
-            task.UsePlaceholderValues = usePlaceholderValues;
+            if (!usePlaceholderValues)
+            {
+                task.RevisionOutputFile = null;
+            }
+
             var directory = Path.Combine(temp.CreateDirectory().Path, "missing");
             task.OutputFile = Path.Combine(directory, "sourcelink.json");
 
-            Assert.False(task.Execute());
+            Assert.True(task.Execute());
+
+            Assert.Equal(task.OutputFile, task.SourceLink);
+            Assert.True(File.Exists(task.OutputFile));
+            Assert.False(task.Log.HasLoggedErrors);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void EmptyDiscoveryDoesNotCreateSourceLinkDirectory(bool usePlaceholderValues)
+        {
+            using var temp = new TempRoot();
+            var task = CreateTask(temp);
+            if (!usePlaceholderValues)
+            {
+                task.RevisionOutputFile = null;
+            }
+
+            var directory = Path.Combine(temp.CreateDirectory().Path, "missing");
+            task.OutputFile = Path.Combine(directory, "sourcelink.json");
+
+            Assert.True(task.Execute());
 
             Assert.Null(task.SourceLink);
             Assert.False(Directory.Exists(directory));
-            Assert.Equal(!usePlaceholderValues, File.Exists(task.RevisionOutputFile));
-            Assert.Contains(task.OutputFile, ((MockEngine)task.BuildEngine).Log);
+            Assert.False(task.Log.HasLoggedErrors);
         }
 
         [Fact]
@@ -429,11 +554,14 @@ namespace Microsoft.SourceLink.Common.UnitTests
         {
             using var temp = new TempRoot();
             var task = CreateTask(temp, Root(new string('a', 40)));
+            File.WriteAllText(task.OutputFile, "original input");
             task.RevisionOutputFile = Path.Combine(Path.GetDirectoryName(task.OutputFile)!, "subdirectory", "..", Path.GetFileName(task.OutputFile));
 
             Assert.False(task.Execute());
+
             Assert.Null(task.SourceLink);
-            Assert.False(File.Exists(task.OutputFile));
+            Assert.Equal("original input", File.ReadAllText(task.OutputFile));
+            Assert.Contains(Resources.SourceLinkRevisionFilesMustDiffer, ((MockEngine)task.BuildEngine).Log);
         }
 
         [Fact]
@@ -485,6 +613,25 @@ namespace Microsoft.SourceLink.Common.UnitTests
         }
 
         [Fact]
+        public void RevisionGenerationFailureSkipsDictionaryWriter()
+        {
+            using var temp = new TempRoot();
+            var task = CreateTask(temp, Root(new string('a', 40)), Root(new string('b', 40)));
+            task.NoWarnOnMissingSourceControlInformation = false;
+            File.WriteAllText(task.RevisionOutputFile!, "original dictionary");
+
+            Assert.False(task.Execute());
+
+            Assert.Null(task.SourceLink);
+            Assert.False(File.Exists(task.OutputFile));
+            Assert.False(File.Exists(task.RevisionOutputFile));
+            var log = ((MockEngine)task.BuildEngine).Log;
+            Assert.Contains("ERROR", log);
+            Assert.DoesNotContain(Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty, log);
+            Assert.DoesNotContain(string.Format(Resources.SourceLinkEmptyDeletingExistingFile, task.RevisionOutputFile), log);
+        }
+
+        [Fact]
         public void CleanupFailureIsReportedAndDoesNotSkipOtherOutput()
         {
             using var temp = new TempRoot();
@@ -499,36 +646,78 @@ namespace Microsoft.SourceLink.Common.UnitTests
             Assert.Contains(task.OutputFile, ((MockEngine)task.BuildEngine).Log);
         }
 
-        [Fact]
-        public void DefaultModeDoesNotWriteRevisionDictionary()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void UnexpectedMappingExceptionCleansUpOutputs(bool usePlaceholderValues)
+        {
+            using var temp = new TempRoot();
+            var task = CreateTask(temp);
+            var revisionFile = task.RevisionOutputFile!;
+            File.WriteAllText(task.OutputFile, "original input");
+            File.WriteAllText(revisionFile, "original dictionary");
+            task.SourceRoots = [new ThrowingSourceRoot()];
+            if (!usePlaceholderValues)
+            {
+                task.RevisionOutputFile = null;
+            }
+
+            var exception = Assert.Throws<InvalidOperationException>(() => task.Execute());
+
+            Assert.Equal("Metadata read failed.", exception.Message);
+            Assert.Null(task.SourceLink);
+            Assert.False(File.Exists(task.OutputFile));
+            Assert.Equal(!usePlaceholderValues, File.Exists(revisionFile));
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        public void EmptyRevisionPathUsesResolvedSourceLinkWithoutWritingDictionary(string? revisionPath)
         {
             using var temp = new TempRoot();
             var root = Root(new string('a', 40));
             var task = CreateTask(temp, root);
-            task.UsePlaceholderValues = false;
-            File.WriteAllText(task.RevisionOutputFile!, "unchanged");
+            var revisionFile = task.RevisionOutputFile!;
+            task.RevisionOutputFile = revisionPath;
+            File.WriteAllText(revisionFile, "unchanged");
 
             Assert.True(task.Execute());
 
-            Assert.Equal("unchanged", File.ReadAllText(task.RevisionOutputFile!));
+            Assert.Equal("unchanged", File.ReadAllText(revisionFile));
             Assert.Contains(root.GetMetadata("SourceLinkUrl"), File.ReadAllText(task.OutputFile));
         }
 
-        [Fact]
-        public void DefaultModeMappingErrorsDeleteExistingCompilerInputWithoutChangingRevisionDictionary()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        public void DefaultModeMappingErrorsDeleteExistingCompilerInputWithoutChangingRevisionDictionary(string? revisionPath)
         {
             using var temp = new TempRoot();
             var task = CreateTask(temp, Root(new string('a', 40), mappedPath: "/_/*/"));
-            task.UsePlaceholderValues = false;
+            var revisionFile = task.RevisionOutputFile!;
+            task.RevisionOutputFile = revisionPath;
             File.WriteAllText(task.OutputFile, "original input");
-            File.WriteAllText(task.RevisionOutputFile!, "original dictionary");
+            File.WriteAllText(revisionFile, "original dictionary");
 
             Assert.False(task.Execute());
 
             Assert.Null(task.SourceLink);
             Assert.False(File.Exists(task.OutputFile));
-            Assert.Equal("original dictionary", File.ReadAllText(task.RevisionOutputFile!));
+            Assert.Equal("original dictionary", File.ReadAllText(revisionFile));
             Assert.Contains("ERROR", ((MockEngine)task.BuildEngine).Log);
+        }
+
+        private sealed class ThrowingSourceRoot : ITaskItem
+        {
+            public string ItemSpec { get; set; } = "unused";
+            public ICollection MetadataNames => throw new NotImplementedException();
+            public int MetadataCount => throw new NotImplementedException();
+            public string GetMetadata(string metadataName) => throw new InvalidOperationException("Metadata read failed.");
+            public void SetMetadata(string metadataName, string metadataValue) => throw new NotImplementedException();
+            public void RemoveMetadata(string metadataName) => throw new NotImplementedException();
+            public void CopyMetadataTo(ITaskItem destinationItem) => throw new NotImplementedException();
+            public IDictionary CloneCustomMetadata() => throw new NotImplementedException();
         }
     }
 }

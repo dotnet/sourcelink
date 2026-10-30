@@ -91,6 +91,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             Assert.Throws<InvalidDataException>(() => resolver1.ResolveReference(new string('0', ObjectNameFormat.Sha1.HashSize * 2 - 1)));
             Assert.Throws<InvalidDataException>(() => resolver1.ResolveReference(new string('0', ObjectNameFormat.Sha1.HashSize * 2 + 1)));
             Assert.Throws<InvalidDataException>(() => resolver1.ResolveReference(new string('0', ObjectNameFormat.Sha256.HashSize * 2)));
+            Assert.Throws<InvalidDataException>(() => resolver1.ResolveReference(new string('g', ObjectNameFormat.Sha1.HashSize * 2)));
 
             using var resolver2 = new GitReferenceResolver(gitDir.Path, commonDir.Path, ReferenceStorageFormat.LooseFiles, ObjectNameFormat.Sha256);
 
@@ -98,6 +99,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             Assert.Throws<InvalidDataException>(() => resolver2.ResolveReference(new string('0', ObjectNameFormat.Sha256.HashSize * 2 - 1)));
             Assert.Throws<InvalidDataException>(() => resolver2.ResolveReference(new string('0', ObjectNameFormat.Sha256.HashSize * 2 + 1)));
             Assert.Throws<InvalidDataException>(() => resolver2.ResolveReference(new string('0', ObjectNameFormat.Sha1.HashSize * 2)));
+            Assert.Throws<InvalidDataException>(() => resolver2.ResolveReference(new string('g', ObjectNameFormat.Sha256.HashSize * 2)));
         }
 
         [Fact]

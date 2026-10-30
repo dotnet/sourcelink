@@ -20,23 +20,25 @@ namespace Microsoft.SourceLink.IntegrationTests
         }
 
         [ConditionalTheory(typeof(DotNetSdkAvailable))]
+        [InlineData(null)]
         [InlineData(false)]
         [InlineData(true)]
-        public void CommitOnlyChangeRefreshesRevisionsWithoutCompiling(bool customRevisionFile)
+        public void CommitOnlyChangeRefreshesRevisionsWithoutCompiling(bool? absoluteRevisionFile)
         {
             using var repo = GitUtilities.CreateGitRepository(
                 ProjectDir.Path, new[] { ProjectFileName, "TestClass.cs" }, "https://github.com/test-org/test-repo");
             var revision = repo.Head.Tip.Sha;
-            var relativeRevisionFile = customRevisionFile
+            var relativeRevisionFile = absoluteRevisionFile.HasValue
                 ? Path.Combine("obj", "Debug", TargetFramework, "unused", "..", "custom.revisions.json")
                 : Path.Combine("obj", "Debug", TargetFramework, "test.sourcelink.revisions.json");
             var revisionFile = Path.GetFullPath(Path.Combine(ProjectDir.Path, relativeRevisionFile));
+            var revisionFileValue = absoluteRevisionFile == true ? Path.Combine(ProjectDir.Path, relativeRevisionFile) : relativeRevisionFile;
             var customProps = $@"
 <PropertyGroup>
   <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
-  <SourceLinkUsePlaceholderValues>true</SourceLinkUsePlaceholderValues>
-  {(customRevisionFile ? $"<SourceLinkRevisionFile>{relativeRevisionFile}</SourceLinkRevisionFile>" : "")}
+  <SourceLinkGeneratePlaceholders>true</SourceLinkGeneratePlaceholders>
+  {(absoluteRevisionFile.HasValue ? $"<SourceLinkRevisionFile>{revisionFileValue}</SourceLinkRevisionFile>" : "")}
 </PropertyGroup>
 ";
 
@@ -100,6 +102,44 @@ namespace Microsoft.SourceLink.IntegrationTests
                 additionalEnvironmentVars: EnvironmentVariables);
             Assert.True(clean.ExitCode == 0, clean.Output + clean.Errors);
             Assert.False(File.Exists(revisionFile));
+        }
+
+        [ConditionalTheory(typeof(DotNetSdkAvailable))]
+        [InlineData(null, false)]
+        [InlineData(null, true)]
+        [InlineData("false", false)]
+        [InlineData("false", true)]
+        public void DisabledPlaceholderGenerationUsesResolvedSourceLink(string? generatePlaceholders, bool customRevisionFile)
+        {
+            using var repo = GitUtilities.CreateGitRepository(
+                ProjectDir.Path, new[] { ProjectFileName, "TestClass.cs" }, "https://github.com/test-org/test-repo");
+            var revision = repo.Head.Tip.Sha;
+            var relativeRevisionFile = Path.Combine("obj", "custom.revisions.json");
+            var revisionFile = Path.GetFullPath(Path.Combine(ProjectDir.Path, relativeRevisionFile));
+            var customProps = $@"
+<PropertyGroup>
+  <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  {(generatePlaceholders != null ? $"<SourceLinkGeneratePlaceholders>{generatePlaceholders}</SourceLinkGeneratePlaceholders>" : "")}
+  {(customRevisionFile ? $"<SourceLinkRevisionFile>{relativeRevisionFile}</SourceLinkRevisionFile>" : "")}
+</PropertyGroup>
+";
+
+            VerifyValues(
+                customProps: customProps,
+                customTargets: "",
+                targets: new[] { "Build" },
+                expressions: new[]
+                {
+                    "$(SourceLinkRevisionFile)",
+                    "$(_SourceLinkRevisionFilePath)",
+                    $"@(FileWrites->WithMetadataValue('Identity', '{revisionFile}'))"
+                },
+                expectedResults: new[] { customRevisionFile ? relativeRevisionFile : "", "", "" });
+
+            Assert.Contains(revision, File.ReadAllText(SourceLinkFilePath));
+            Assert.False(File.Exists(revisionFile));
+            Assert.Empty(Directory.GetFiles(ProjectDir.Path, "*.sourcelink.revisions.json", SearchOption.AllDirectories));
+            Assert.Equal(1, CountTasks(Path.Combine(RootDir.Path, "build0.binlog"), "Csc"));
         }
 
         private string Build(string name)

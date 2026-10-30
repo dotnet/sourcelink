@@ -259,7 +259,7 @@ namespace Microsoft.SourceLink.Common.UnitTests
         }
 
         [Fact]
-        public void WriteOutputFileRejectsRelativeOutputFile()
+        public void ExecuteRejectsRelativeOutputFile()
         {
             var engine = new MockEngine();
             var task = new GenerateSourceLinkFile()

@@ -33,37 +33,83 @@ namespace Microsoft.SourceLink.Common
         public bool NoWarnOnMissingSourceControlInformation { get; set; }
 
         /// <summary>
-        /// Emit stable revision markers instead of resolved revisions in the compiler's Source Link input.
-        /// </summary>
-        public bool UsePlaceholderValues { get; set; }
-
-        /// <summary>
-        /// Fully qualified path of the marker-to-revision dictionary. Required when using placeholder values.
+        /// Fully qualified path of the marker-to-revision dictionary.
+        /// When non-empty, emit stable revision markers in the compiler's Source Link input.
         /// </summary>
         public string? RevisionOutputFile { get; set; }
 
         public override bool Execute()
         {
-            var mappings = GetSourceLinkMappings();
-            if (Log.HasLoggedErrors)
+            if (!ValidateOutputPaths())
             {
-                DeleteOutputFiles();
                 return false;
             }
 
-            SourceLink = WriteOutputFile(OutputFile, GenerateSourceLinkContent(mappings));
-            if (UsePlaceholderValues && !Log.HasLoggedErrors)
+            var succeeded = false;
+            try
             {
-                WriteOutputFile(RevisionOutputFile, GenerateRevisionFileContent(mappings));
-            }
+                var mappings = GetSourceLinkMappings();
+                if (Log.HasLoggedErrors)
+                {
+                    return false;
+                }
 
-            if (Log.HasLoggedErrors)
+                SourceLink = WriteOutputFile(OutputFile, GenerateSourceLinkContent(mappings));
+                if (!NullableString.IsNullOrEmpty(RevisionOutputFile) && !Log.HasLoggedErrors)
+                {
+                    WriteOutputFile(RevisionOutputFile, GenerateRevisionFileContent(mappings));
+                }
+
+                succeeded = !Log.HasLoggedErrors;
+                return succeeded;
+            }
+            finally
             {
-                DeleteOutputFiles();
+                if (!succeeded)
+                {
+                    DeleteOutputFiles();
+                    SourceLink = null;
+                }
+            }
+        }
+
+        private bool ValidateOutputPaths()
+        {
+            var path = OutputFile;
+            try
+            {
+                // Relative paths must not be resolved against MSBuild's shared process working directory.
+                if (path == null || !PathUtilities.IsPathFullyQualified(path))
+                {
+                    Log.LogError(Resources.ErrorWritingToSourceLinkFile, path, $"The path '{path}' must be fully qualified.");
+                    return false;
+                }
+
+                var outputPath = Path.GetFullPath(path);
+                if (!NullableString.IsNullOrEmpty(RevisionOutputFile))
+                {
+                    path = RevisionOutputFile;
+                    if (!PathUtilities.IsPathFullyQualified(path))
+                    {
+                        Log.LogError(Resources.ErrorWritingToSourceLinkFile, path, $"The path '{path}' must be fully qualified.");
+                        return false;
+                    }
+
+                    var comparison = Path.DirectorySeparatorChar == '\\' ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+                    if (string.Equals(outputPath, Path.GetFullPath(path), comparison))
+                    {
+                        Log.LogError(Resources.ErrorWritingToSourceLinkFile, path, Resources.SourceLinkRevisionFilesMustDiffer);
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Log.LogError(Resources.ErrorWritingToSourceLinkFile, path, e.Message);
                 return false;
             }
-
-            return true;
         }
 
         internal List<SourceLinkMapping> GetSourceLinkMappings()
@@ -103,47 +149,11 @@ namespace Microsoft.SourceLink.Common
 
                 var revision = "";
                 string? placeholder = null;
-                if (UsePlaceholderValues)
+                if (!NullableString.IsNullOrEmpty(RevisionOutputFile))
                 {
-                    // Stable mapped roots give placeholders checkout-independent identities.
-                    if (!isMapped)
+                    if (TryGetRevision(root, mappedPath, url, out revision, out placeholder))
                     {
-                        Log.LogError(Resources.InvalidSourceLinkPlaceholderRoot, root.ItemSpec);
-                        continue;
-                    }
-
-                    revision = root.GetMetadata(Names.SourceRoot.RevisionId);
-
-                    // Fixed mappings are not tied to source-control revisions and need no placeholder.
-                    if (!string.IsNullOrEmpty(revision) || !string.IsNullOrEmpty(root.GetMetadata("SourceControl")))
-                    {
-                        var revisionStart = string.IsNullOrEmpty(revision) ? -1 : url.IndexOf(revision, StringComparison.Ordinal);
-
-                        // Fixed-width revisions allow in-place substitution in uncompressed metadata.
-                        // A unique occurrence avoids replacing unrelated URL text.
-                        if ((revision.Length != 40 && revision.Length != 64) ||
-                            revision.Any(c => !(c is >= '0' and <= '9' or >= 'a' and <= 'f')) ||
-                            revisionStart < 0 ||
-                            url.IndexOf(revision, revisionStart + revision.Length, StringComparison.Ordinal) >= 0)
-                        {
-                            Log.LogError(Resources.InvalidSourceLinkPlaceholderRoot, root.ItemSpec);
-                            continue;
-                        }
-
-                        var template = url.Substring(0, revisionStart) + "<revision>" + url.Substring(revisionStart + revision.Length);
-                        using (var sha = SHA256.Create())
-                        {
-                            placeholder = BitConverter.ToString(sha.ComputeHash(Encoding.UTF8.GetBytes(mappedPath + "\n" + template)))
-                                .Replace("-", "").ToLowerInvariant().Substring(0, revision.Length);
-                        }
-
-                        if (placeholder == revision)
-                        {
-                            Log.LogError(Resources.InvalidSourceLinkPlaceholderRoot, root.ItemSpec);
-                            continue;
-                        }
-
-                        url = url.Substring(0, revisionStart) + placeholder + url.Substring(revisionStart + revision.Length);
+                        url = url.Replace(revision, placeholder);
                     }
                 }
 
@@ -153,21 +163,72 @@ namespace Microsoft.SourceLink.Common
             return mappings;
         }
 
+        private bool TryGetRevision(ITaskItem root, string mappedPath, string url, out string revision, [NotNullWhen(true)] out string? placeholder)
+        {
+            revision = "";
+            placeholder = null;
+
+            if (string.IsNullOrEmpty(mappedPath))
+            {
+                Log.LogError(Resources.InvalidSourceLinkPlaceholderRoot, root.ItemSpec);
+                return false;
+            }
+
+            revision = root.GetMetadata(Names.SourceRoot.RevisionId);
+
+            // A mapping without source control may omit its revision; there is nothing to replace.
+            if (string.IsNullOrEmpty(revision) && string.IsNullOrEmpty(root.GetMetadata(Names.SourceRoot.SourceControl)))
+            {
+                return false;
+            }
+
+            var revisionStart = string.IsNullOrEmpty(revision) ? -1 : url.IndexOf(revision, StringComparison.Ordinal);
+
+            // Fixed-width revisions allow in-place substitution in uncompressed metadata.
+            // A unique occurrence avoids replacing unrelated URL text.
+            if (!GitUtilities.IsValidObjectId(revision) ||
+                revision.Any(c => c is >= 'A' and <= 'F') ||
+                revisionStart < 0 ||
+                url.IndexOf(revision, revisionStart + revision.Length, StringComparison.Ordinal) >= 0)
+            {
+                Log.LogError(Resources.InvalidSourceLinkPlaceholderRoot, root.ItemSpec);
+                return false;
+            }
+
+            var template = url.Substring(0, revisionStart) + "<revision>" + url.Substring(revisionStart + revision.Length);
+
+            // The placeholder depends on the mapped path and revision-independent URL, so changes to either
+            // update the Source Link compiler input. SHA256 is truncated to the revision width for substitution;
+            // NUL separates the path and URL because it is not a valid path character.
+            using (var sha = SHA256.Create())
+            {
+                placeholder = BitConverter.ToString(sha.ComputeHash(Encoding.UTF8.GetBytes(mappedPath + "\0" + template)))
+                    .Replace("-", "").ToLowerInvariant().Substring(0, revision.Length);
+            }
+
+            if (placeholder == revision)
+            {
+                Log.LogError(Resources.InvalidSourceLinkPlaceholderRoot, root.ItemSpec);
+                return false;
+            }
+
+            return true;
+        }
+
         internal string? GenerateRevisionFileContent(List<SourceLinkMapping> mappings)
         {
             var revisions = new SortedDictionary<string, string>(StringComparer.Ordinal);
             var mappedPaths = new HashSet<string>(StringComparer.Ordinal);
             foreach (var mapping in mappings)
             {
-                // Duplicate roots make document mappings ambiguous, including fixed mappings.
-                if (!mappedPaths.Add(mapping.LocalPath))
+                if (mapping.Placeholder == null)
                 {
-                    Log.LogError(Resources.InvalidSourceLinkPlaceholderRoot, mapping.Root.ItemSpec);
                     continue;
                 }
 
-                if (mapping.Placeholder == null)
+                if (!mappedPaths.Add(mapping.LocalPath))
                 {
+                    Log.LogError(Resources.InvalidSourceLinkPlaceholderRoot, mapping.Root.ItemSpec);
                     continue;
                 }
 
@@ -183,13 +244,8 @@ namespace Microsoft.SourceLink.Common
                 revisions[key] = mapping.Revision;
             }
 
-            if (Log.HasLoggedErrors)
-            {
-                return null;
-            }
-
             // Both keys and values contain only the validated hexadecimal revision and a fixed ASCII prefix.
-            return "{" + string.Join(",", revisions.Select(pair => "\"" + pair.Key + "\":\"" + pair.Value + "\"")) + "}";
+            return !Log.HasLoggedErrors ? "{" + string.Join(",", revisions.Select(pair => "\"" + pair.Key + "\":\"" + pair.Value + "\"")) + "}" : null;
         }
 
         internal static string? GenerateSourceLinkContent(List<SourceLinkMapping> mappings)
@@ -226,7 +282,7 @@ namespace Microsoft.SourceLink.Common
             return result.ToString();
         }
 
-        private string? WriteOutputFile(string? path, string? content)
+        private string? WriteOutputFile(string path, string? content)
         {
             if (Log.HasLoggedErrors)
             {
@@ -238,35 +294,6 @@ namespace Microsoft.SourceLink.Common
                 if (content == null && !NoWarnOnMissingSourceControlInformation)
                 {
                     Log.LogWarning(Resources.SourceControlInformationIsNotAvailableGeneratedSourceLinkEmpty);
-                }
-
-                // Relative paths must not be resolved against MSBuild's shared process working directory.
-                if (path == null || path.Length == 0 || !PathUtilities.IsPathFullyQualified(path))
-                {
-                    throw new ArgumentException($"The path '{path}' must be fully qualified.", nameof(path));
-                }
-
-                var isRevisionFile = UsePlaceholderValues && path == RevisionOutputFile;
-                if (UsePlaceholderValues)
-                {
-                    // Validate both destinations before either output is written.
-                    var otherPath = isRevisionFile ? OutputFile : RevisionOutputFile;
-                    if (otherPath == null || otherPath.Length == 0 || !PathUtilities.IsPathFullyQualified(otherPath))
-                    {
-                        throw new ArgumentException($"The path '{otherPath}' must be fully qualified.",
-                            isRevisionFile ? nameof(OutputFile) : nameof(RevisionOutputFile));
-                    }
-
-                    var comparison = Path.DirectorySeparatorChar == '\\' ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
-                    if (string.Equals(Path.GetFullPath(path), Path.GetFullPath(otherPath), comparison))
-                    {
-                        throw new ArgumentException(Resources.SourceLinkRevisionFilesMustDiffer, nameof(RevisionOutputFile));
-                    }
-                }
-
-                if (isRevisionFile)
-                {
-                    Directory.CreateDirectory(Path.GetDirectoryName(path)!);
                 }
 
                 if (File.Exists(path))
@@ -290,6 +317,7 @@ namespace Microsoft.SourceLink.Common
                     return null;
                 }
 
+                Directory.CreateDirectory(Path.GetDirectoryName(path)!);
                 Log.LogMessage(Resources.SourceLinkFileUpdated, path);
                 File.WriteAllText(path, content);
                 return path;
@@ -303,14 +331,8 @@ namespace Microsoft.SourceLink.Common
 
         private void DeleteOutputFiles()
         {
-            void deleteFile(string? path)
+            void deleteFile(string path)
             {
-                // Invalid paths must not be resolved against MSBuild's shared process working directory.
-                if (path == null || path.Length == 0 || !PathUtilities.IsPathFullyQualified(path))
-                {
-                    return;
-                }
-
                 try
                 {
                     File.Delete(path);
@@ -322,15 +344,13 @@ namespace Microsoft.SourceLink.Common
             }
 
             deleteFile(OutputFile);
-            if (UsePlaceholderValues)
+            if (!NullableString.IsNullOrEmpty(RevisionOutputFile))
             {
                 deleteFile(RevisionOutputFile);
             }
-
-            SourceLink = null;
         }
 
-        internal sealed class SourceLinkMapping(ITaskItem root, string localPath, string url, string revision, string? placeholder)
+        internal readonly struct SourceLinkMapping(ITaskItem root, string localPath, string url, string revision, string? placeholder)
         {
             public ITaskItem Root { get; } = root;
             public string LocalPath { get; } = localPath;
