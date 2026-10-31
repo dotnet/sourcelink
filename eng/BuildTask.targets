@@ -66,6 +66,11 @@
     <PackageReference Update="System.ValueTuple" Publish="false" />
   </ItemGroup>
 
+  <!-- Do not export dependencies to assemblies that are used only by the build task and copied locally. -->
+  <ItemGroup>
+    <PackageReference Update="System.IO.Hashing" PrivateAssets="all" />
+  </ItemGroup>
+
   <ItemGroup>
     <!--
       Update all PackageReference items to default Publish to true.
