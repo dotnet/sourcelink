@@ -9,7 +9,7 @@
       </trans-unit>
       <trans-unit id="RemoteUrlFormatNoLongerSupported">
         <source>Remote URL '{0}' appears to be in a format that is no longer supported.</source>
-        <target state="new">Remote URL '{0}' appears to be in a format that is no longer supported.</target>
+        <target state="translated">Удаленный URL-адрес "{0}" использует формат, который больше не поддерживается.</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfWithIdentityIsInvalid">
