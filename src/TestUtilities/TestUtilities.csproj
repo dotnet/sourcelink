@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <Compile Include="..\Common\Utilities\*.cs" Link="Common\%(FileName).cs" />
+    <EmbeddedResource Include="$(RepoRoot)NuGet.config" LogicalName="TestUtilities.NuGet.config" />
   </ItemGroup>
 
   <Target Name="_GenerateSdkVersionAttribute" BeforeTargets="CoreCompile" Outputs="$(IntermediateOutputPath)$(_DotNetSdkBuildIInfoFile)">
