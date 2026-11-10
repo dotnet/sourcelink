@@ -6,11 +6,11 @@ This file should be imported by eng/Versions.props
 <Project>
   <PropertyGroup>
     <!-- dotnet-dotnet dependencies -->
-    <MicrosoftDotNetArcadeSdkPackageVersion>11.0.0-beta.26555.108</MicrosoftDotNetArcadeSdkPackageVersion>
-    <SystemCommandLinePackageVersion>3.0.0</SystemCommandLinePackageVersion>
-    <SystemIOHashingPackageVersion>11.0.0</SystemIOHashingPackageVersion>
-    <SystemSecurityCryptographyXmlPackageVersion>11.0.0</SystemSecurityCryptographyXmlPackageVersion>
-    <SystemTextJsonPackageVersion>11.0.0</SystemTextJsonPackageVersion>
+    <MicrosoftDotNetArcadeSdkPackageVersion>11.0.0-beta.26559.106</MicrosoftDotNetArcadeSdkPackageVersion>
+    <SystemCommandLinePackageVersion>3.0.1</SystemCommandLinePackageVersion>
+    <SystemIOHashingPackageVersion>11.0.1</SystemIOHashingPackageVersion>
+    <SystemSecurityCryptographyXmlPackageVersion>11.0.1</SystemSecurityCryptographyXmlPackageVersion>
+    <SystemTextJsonPackageVersion>11.0.1</SystemTextJsonPackageVersion>
   </PropertyGroup>
   <!--Property group for alternate package version names-->
   <PropertyGroup>
