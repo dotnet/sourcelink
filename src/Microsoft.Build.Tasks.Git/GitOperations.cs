@@ -44,8 +44,7 @@ namespace Microsoft.Build.Tasks.Git
             {
                 if (warnOnMissingOrUnsupportedRemote)
                 {
-                    // TODO: Better message https://github.com/dotnet/sourcelink/issues/1149
-                    logWarning?.Invoke(Resources.InvalidRepositoryRemoteUrl, new[] { remoteName, remoteUrl });
+                    logWarning?.Invoke(Resources.UnsupportedRepositoryRemoteUrlScheme, new[] { remoteName, remoteUrl, uri.Scheme });
                 }
 
                 return null;
@@ -327,9 +326,8 @@ namespace Microsoft.Build.Tasks.Git
                 {
                     if (warnOnMissingCommitOrUnsupportedUri)
                     {
-                        // TODO: Better message https://github.com/dotnet/sourcelink/issues/1149
                         logWarning(Resources.SourceCodeWontBeAvailableViaSourceLink,
-                            new[] { string.Format(Resources.InvalidSubmoduleUrl, submodule.Name, submoduleConfigUrl) });
+                            new[] { string.Format(Resources.UnsupportedSubmoduleUrlScheme, submodule.Name, submoduleConfigUrl, submoduleUri.Scheme) });
                     }
 
                     continue;

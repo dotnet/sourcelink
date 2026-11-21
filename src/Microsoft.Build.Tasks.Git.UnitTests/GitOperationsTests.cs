@@ -195,10 +195,13 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
         }
 
         [Theory]
-        [InlineData("local")]
-        [InlineData("file")]
-        [InlineData("xyz://a/b")]
-        public void GetRepositoryUrl_UnsupportedUrl(string kind)
+        [InlineData("local", "file", true)]
+        [InlineData("file", "file", true)]
+        [InlineData("xyz://a/b", "xyz", true)]
+        [InlineData("local", "file", false)]
+        [InlineData("file", "file", false)]
+        [InlineData("xyz://a/b", "xyz", false)]
+        public void GetRepositoryUrl_UnsupportedUrl(string kind, string scheme, bool warnOnMissingOrUnsupportedRemote)
         {
             using var temp = new TempRoot();
 
@@ -208,7 +211,7 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             var url = kind switch
             {
                 "local" => originRepoPath,
-                "file" => new Uri(originRepoPath).AbsolutePath,
+                "file" => new Uri(originRepoPath).AbsoluteUri,
                 _ => kind
             };
 
@@ -218,9 +221,16 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             })));
 
             var warnings = new List<(string, object?[])>();
-            var uri = GitOperations.GetRepositoryUrl(repo, remoteName: null, warnOnMissingOrUnsupportedRemote: true, logWarning: (message, args) => warnings.Add((message, args)));
+            var uri = GitOperations.GetRepositoryUrl(repo, remoteName: null, warnOnMissingOrUnsupportedRemote, logWarning: (message, args) => warnings.Add((message, args)));
             Assert.Null(uri);
-            AssertEx.Equal(new[] { string.Format(Resources.InvalidRepositoryRemoteUrl, "origin", url) }, warnings.Select(TestUtilities.InspectDiagnostic));
+            if (warnOnMissingOrUnsupportedRemote)
+            {
+                AssertEx.Equal(new[] { string.Format(Resources.UnsupportedRepositoryRemoteUrlScheme, "origin", url, scheme) }, warnings.Select(TestUtilities.InspectDiagnostic));
+            }
+            else
+            {
+                Assert.Empty(warnings);
+            }
         }
 
         [Theory]
@@ -479,8 +489,8 @@ namespace Microsoft.Build.Tasks.Git.UnitTests
             {
                 AssertEx.Equal(new[]
                 {
-                    string.Format(Resources.SourceCodeWontBeAvailableViaSourceLink, string.Format(Resources.InvalidSubmoduleUrl, "1", "../1")),
-                    string.Format(Resources.SourceCodeWontBeAvailableViaSourceLink, string.Format(Resources.InvalidSubmoduleUrl, "2", "xyz://a/b"))
+                    string.Format(Resources.SourceCodeWontBeAvailableViaSourceLink, string.Format(Resources.UnsupportedSubmoduleUrlScheme, "1", "../1", "file")),
+                    string.Format(Resources.SourceCodeWontBeAvailableViaSourceLink, string.Format(Resources.UnsupportedSubmoduleUrlScheme, "2", "xyz://a/b", "xyz"))
                 }, warnings.Select(TestUtilities.InspectDiagnostic));
             }
             else

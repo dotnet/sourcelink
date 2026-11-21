@@ -102,11 +102,6 @@
         <target state="translated">リポジトリにコミットがありません。</target>
         <note />
       </trans-unit>
-      <trans-unit id="RepositoryUrlEvaluationExceededMaximumAllowedDepth">
-        <source>Repository URL evaluation exceeded maximum allowed depth of {0} local repositories.</source>
-        <target state="translated">リポジトリ URL の評価が、ローカル リポジトリの許容最大深度 {0} を超えました。</target>
-        <note />
-      </trans-unit>
       <trans-unit id="SourceCodeWontBeAvailableViaSourceLink">
         <source>{0} The source code won't be available via Source Link.</source>
         <target state="translated">{0} ソース リンク経由ではソース コードを使用できません。</target>
@@ -137,9 +132,19 @@
         <target state="translated">サポートされていないリポジトリ拡張機能 '{0}'。{1} のみがサポートされています。</target>
         <note />
       </trans-unit>
+      <trans-unit id="UnsupportedRepositoryRemoteUrlScheme">
+        <source>The URL of repository remote '{0}' uses the unsupported scheme '{2}': '{1}'.</source>
+        <target state="new">The URL of repository remote '{0}' uses the unsupported scheme '{2}': '{1}'.</target>
+        <note />
+      </trans-unit>
       <trans-unit id="UnsupportedRepositoryVersion">
         <source>Unsupported repository version {0}. Only versions up to {1} are supported.</source>
         <target state="translated">サポートされていないリポジトリ バージョン {0}。{1} までのバージョンのみがサポートされています。</target>
+        <note />
+      </trans-unit>
+      <trans-unit id="UnsupportedSubmoduleUrlScheme">
+        <source>The URL of submodule '{0}' uses the unsupported scheme '{2}': '{1}'.</source>
+        <target state="new">The URL of submodule '{0}' uses the unsupported scheme '{2}': '{1}'.</target>
         <note />
       </trans-unit>
       <trans-unit id="ValueOfIsNotValidConfigurationScope">
