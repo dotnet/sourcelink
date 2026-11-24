@@ -4,7 +4,7 @@
     <body>
       <trans-unit id="InvalidSourceLinkPlaceholderRoot">
         <source>Source root '{0}' cannot use placeholder values. Each linked root must have a MappedPath. Roots using placeholders must have unique MappedPath values. Source-controlled roots must have a 40- or 64-character lowercase hexadecimal RevisionId occurring exactly once in SourceLinkUrl and different from its stable marker.</source>
-        <target state="new">Source root '{0}' cannot use placeholder values. Each linked root must have a MappedPath. Roots using placeholders must have unique MappedPath values. Source-controlled roots must have a 40- or 64-character lowercase hexadecimal RevisionId occurring exactly once in SourceLinkUrl and different from its stable marker.</target>
+        <target state="translated">來源根目錄 '{0}' 無法使用預留位置值。每個連結的根目錄都必須有 MappedPath。使用預留位置的根目錄必須有唯一的 MappedPath 值。來源控制的根目錄必須有 40 或 64 個字元的小寫十六進位 RevisionId 在 SourceLinkUrl 中剛好出現一次，且與其穩定標記不同。</target>
         <note />
       </trans-unit>
       <trans-unit id="MustEndWithDirectorySeparator">
@@ -59,7 +59,7 @@
       </trans-unit>
       <trans-unit id="SourceLinkRevisionFilesMustDiffer">
         <source>The Source Link compiler input and revision dictionary must use different files.</source>
-        <target state="new">The Source Link compiler input and revision dictionary must use different files.</target>
+        <target state="translated">Source Link 編譯器輸入和修訂字典必須使用不同的檔案。</target>
         <note />
       </trans-unit>
     </body>
