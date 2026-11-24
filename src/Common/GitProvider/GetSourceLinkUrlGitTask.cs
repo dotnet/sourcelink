@@ -125,7 +125,8 @@ namespace Microsoft.Build.Tasks.SourceControl
                 => c is >= '0' and <= '9' or >= 'a' and <= 'f' or >= 'A' and <= 'F';
 
             var revisionId = SourceRoot.GetMetadata(Names.SourceRoot.RevisionId);
-            if (revisionId == null || revisionId.Length != 40 || !revisionId.All(IsHexDigit))
+            // SHA-1 (40 hex digits) or SHA-256 (64 hex digits) object name.
+            if (revisionId == null || revisionId.Length is not (40 or 64) || !revisionId.All(IsHexDigit))
             {
                 Log.LogError(CommonResources.ValueOfWithIdentityIsNotValidCommitHash, Names.SourceRoot.RevisionIdFullName, SourceRoot.ItemSpec, revisionId);
                 return;
