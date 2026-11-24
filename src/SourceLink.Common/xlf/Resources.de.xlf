@@ -4,7 +4,7 @@
     <body>
       <trans-unit id="InvalidSourceLinkPlaceholderRoot">
         <source>Source root '{0}' cannot use placeholder values. Each linked root must have a MappedPath. Roots using placeholders must have unique MappedPath values. Source-controlled roots must have a 40- or 64-character lowercase hexadecimal RevisionId occurring exactly once in SourceLinkUrl and different from its stable marker.</source>
-        <target state="new">Source root '{0}' cannot use placeholder values. Each linked root must have a MappedPath. Roots using placeholders must have unique MappedPath values. Source-controlled roots must have a 40- or 64-character lowercase hexadecimal RevisionId occurring exactly once in SourceLinkUrl and different from its stable marker.</target>
+        <target state="translated">Der Quellstamm „{0}“ darf keine Platzhalterwerte verwenden. Jeder verknüpfte Stamm muss über einen MappedPath verfügen. Stämme, die Platzhalter verwenden, müssen eindeutige MappedPath-Werte aufweisen. Stämme unter Quellcodeverwaltung müssen über eine 40 oder 64 Zeichen lange, kleingeschriebene hexadezimale RevisionId verfügen, die genau einmal in SourceLinkUrl vorkommt und sich vom zugehörigen stabilen Marker unterscheidet.</target>
         <note />
       </trans-unit>
       <trans-unit id="MustEndWithDirectorySeparator">
@@ -59,7 +59,7 @@
       </trans-unit>
       <trans-unit id="SourceLinkRevisionFilesMustDiffer">
         <source>The Source Link compiler input and revision dictionary must use different files.</source>
-        <target state="new">The Source Link compiler input and revision dictionary must use different files.</target>
+        <target state="translated">Die Eingabedatei des Source-Link-Compilers und die Revisionswörterbuchdatei müssen unterschiedlich sein.</target>
         <note />
       </trans-unit>
     </body>

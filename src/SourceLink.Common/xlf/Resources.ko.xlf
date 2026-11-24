@@ -4,7 +4,7 @@
     <body>
       <trans-unit id="InvalidSourceLinkPlaceholderRoot">
         <source>Source root '{0}' cannot use placeholder values. Each linked root must have a MappedPath. Roots using placeholders must have unique MappedPath values. Source-controlled roots must have a 40- or 64-character lowercase hexadecimal RevisionId occurring exactly once in SourceLinkUrl and different from its stable marker.</source>
-        <target state="new">Source root '{0}' cannot use placeholder values. Each linked root must have a MappedPath. Roots using placeholders must have unique MappedPath values. Source-controlled roots must have a 40- or 64-character lowercase hexadecimal RevisionId occurring exactly once in SourceLinkUrl and different from its stable marker.</target>
+        <target state="translated">소스 루트 '{0}'은(는) 자리 표시자 값을 사용할 수 없습니다. 연결된 각 루트에는 MappedPath가 있어야 합니다. 자리 표시자를 사용하는 루트의 MappedPath 값은 고유해야 합니다. 소스 제어 루트의 RevisionId는 40자 또는 64자의 소문자 16진수여야 하며 SourceLinkUrl에 정확히 한 번만 포함되어야 하고 안정적인 마커와 달라야 합니다.</target>
         <note />
       </trans-unit>
       <trans-unit id="MustEndWithDirectorySeparator">
@@ -59,7 +59,7 @@
       </trans-unit>
       <trans-unit id="SourceLinkRevisionFilesMustDiffer">
         <source>The Source Link compiler input and revision dictionary must use different files.</source>
-        <target state="new">The Source Link compiler input and revision dictionary must use different files.</target>
+        <target state="translated">Source Link 컴파일러 입력 파일과 수정 사전 파일은 서로 다른 파일이어야 합니다.</target>
         <note />
       </trans-unit>
     </body>

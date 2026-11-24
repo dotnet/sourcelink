@@ -4,7 +4,7 @@
     <body>
       <trans-unit id="InvalidSourceLinkPlaceholderRoot">
         <source>Source root '{0}' cannot use placeholder values. Each linked root must have a MappedPath. Roots using placeholders must have unique MappedPath values. Source-controlled roots must have a 40- or 64-character lowercase hexadecimal RevisionId occurring exactly once in SourceLinkUrl and different from its stable marker.</source>
-        <target state="new">Source root '{0}' cannot use placeholder values. Each linked root must have a MappedPath. Roots using placeholders must have unique MappedPath values. Source-controlled roots must have a 40- or 64-character lowercase hexadecimal RevisionId occurring exactly once in SourceLinkUrl and different from its stable marker.</target>
+        <target state="translated">Корень источника "{0}" не может использовать значения-заполнители. Для каждого связанного корня необходимо указать MappedPath. Корни, использующие заполнители, должны иметь уникальные значения MappedPath. Для корней, управляемых системой контроля версий, необходимо указать идентификатор RevisionId в нижнем регистре, состоящий из 40 или 64 шестнадцатеричных символов. Этот идентификатор должен встречаться в SourceLinkUrl ровно один раз и отличаться от своего стабильного маркера.</target>
         <note />
       </trans-unit>
       <trans-unit id="MustEndWithDirectorySeparator">
@@ -59,7 +59,7 @@
       </trans-unit>
       <trans-unit id="SourceLinkRevisionFilesMustDiffer">
         <source>The Source Link compiler input and revision dictionary must use different files.</source>
-        <target state="new">The Source Link compiler input and revision dictionary must use different files.</target>
+        <target state="translated">Входные данные компилятора исходных ссылок и словарь редакций должны использовать разные файлы.</target>
         <note />
       </trans-unit>
     </body>
