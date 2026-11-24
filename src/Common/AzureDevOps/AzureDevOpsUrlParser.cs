@@ -140,7 +140,7 @@ namespace Microsoft.SourceLink
             else
             {
                 // ssh v1/v2 url formats
-                // ssh://{account}@vs-ssh.visualstudio.com
+                // ssh://{account}@vs-ssh.visualstudio.com/
 
                 int index = 0;
                 if (StringComparer.OrdinalIgnoreCase.Equals(parts[0], "DefaultCollection"))
