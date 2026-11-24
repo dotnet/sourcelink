@@ -17,6 +17,8 @@ Providing a good debugging experience for your project involves three main steps
 2. Including source control information in the NuGet package manifest
 3. Distributing PDBs
 
+Source Link also allows the build to [associate the output binary](#assembly-informational-version) with the exact source code it was built from. 
+
 See below for examples and best practices regarding each step.
 
 ## Using Source Link in .NET projects
@@ -29,18 +31,6 @@ Starting with .NET 8, Source Link for the following source control providers is 
 - [Bitbucket](https://bitbucket.org/) 4.7+ (for older versions see [Bitbucket settings](#bitbucket))
 
 If your project uses .NET SDK 8+ and is hosted by the above providers it does not need to reference any Source Link packages or set any build properties to include source control information in the PDB.
-
-Source Link's source control tooling also sets the `SourceRevisionId` MSBuild property to the current Git commit hash when building a project in a Git repository. For .NET SDK projects, the SDK appends this value to `InformationalVersion`, which is emitted as `AssemblyInformationalVersionAttribute`. With Source Link included in the .NET 8 SDK and later, this also applies to projects targeting earlier .NET versions.
-
-To omit the commit hash from the informational version while retaining Source Link support, set:
-
-```xml
-<PropertyGroup>
-  <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
-</PropertyGroup>
-```
-
-See [SourceRevisionId](docs/README.md#sourcerevisionid) and [IncludeSourceRevisionInInformationalVersion](docs/README.md#includesourcerevisionininformationalversion) for more details about these build properties.
 
 If your project does not yet use .NET SDK 8+, or is not hosted by one of the these providers, you must add a PackageReference to a Source Link package specific to the provider:
 
@@ -214,11 +204,27 @@ Once the packages are restored and the project built the Source Link information
 
 The only feature currently supported is mapping of source files to the source repository that is used by the debugger to find source files when stepping into the code. Source embedding and embedding commit SHA and repository URL information in the native binary are not supported for native projects.
 
-## Prerequisites for .NET projects
+## .NET projects
 
 Source Link supports classic .NET Framework projects as well as .NET SDK projects, that is projects that import `Microsoft.NET.Sdk` (e.g. like so: `<Project Sdk="Microsoft.NET.Sdk">`). The project may target .NET, .NET Framework or .NET Standard. All PDB formats are supported: Portable, Embedded and Windows PDBs.
 
 [.NET 8 SDK](https://www.microsoft.com/net/download/dotnet/8.0) or newer is required for .NET SDK projects. If building via desktop `msbuild` you'll need version 16.0 or higher.
+
+### Assembly informational version
+
+Source Link sets the `SourceRevisionId` MSBuild property to the current Git commit hash when building a project in a Git repository. For .NET SDK projects, the SDK appends this value to `InformationalVersion`, which is emitted as `AssemblyInformationalVersionAttribute`. With Source Link included in the .NET 8 SDK and later, this also applies to projects targeting earlier .NET versions.
+
+To omit the commit hash from the informational version while retaining Source Link support, set:
+
+```xml
+<PropertyGroup>
+  <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+</PropertyGroup>
+```
+
+See [SourceRevisionId](docs/README.md#sourcerevisionid) and [IncludeSourceRevisionInInformationalVersion](docs/README.md#includesourcerevisionininformationalversion) for more details about these build properties.
+
+### Classic .NET Framework projects
 
 The following features are not available in projects that do not import `Microsoft.NET.Sdk`:
 - Automatic inclusion of commit SHA in `AssemblyInformationalVersionAttribute`.
@@ -226,7 +232,7 @@ The following features are not available in projects that do not import `Microso
 
 These features can be added via custom msbuild targets.
 
-## Prerequisites for C++ projects
+## C++ projects
 
 Debugging native binary with Source Link information embedded in the PDB is supported since Visual Studio 2017 Update 9.
 
