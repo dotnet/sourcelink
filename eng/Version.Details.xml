@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Dependencies>
-  <Source Uri="https://github.com/dotnet/dotnet" Mapping="sourcelink" Sha="ff41d8ee47bfc3bd0e5e9dfe7b0a4f5e89fc385a" BarId="339795" />
+  <Source Uri="https://github.com/dotnet/dotnet" Mapping="sourcelink" Sha="90c3948f4b9906165869eb3b6111fce798396707" BarId="342910" />
   <ProductDependencies>
-    <Dependency Name="System.CommandLine" Version="2.0.15">
+    <Dependency Name="System.CommandLine" Version="2.0.17">
       <Uri>https://github.com/dotnet/dotnet</Uri>
-      <Sha>ff41d8ee47bfc3bd0e5e9dfe7b0a4f5e89fc385a</Sha>
+      <Sha>90c3948f4b9906165869eb3b6111fce798396707</Sha>
     </Dependency>
-    <Dependency Name="System.Security.Cryptography.Xml" Version="10.0.15">
+    <Dependency Name="System.Security.Cryptography.Xml" Version="10.0.17">
       <Uri>https://github.com/dotnet/dotnet</Uri>
-      <Sha>ff41d8ee47bfc3bd0e5e9dfe7b0a4f5e89fc385a</Sha>
+      <Sha>90c3948f4b9906165869eb3b6111fce798396707</Sha>
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="10.0.0-beta.26553.121">
+    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="10.0.0-beta.26573.116">
       <Uri>https://github.com/dotnet/dotnet</Uri>
-      <Sha>ff41d8ee47bfc3bd0e5e9dfe7b0a4f5e89fc385a</Sha>
+      <Sha>90c3948f4b9906165869eb3b6111fce798396707</Sha>
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>
